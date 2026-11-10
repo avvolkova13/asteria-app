@@ -1793,6 +1793,211 @@ class MessageLookup extends MessageLookupByLibrary {
       "Сохранение...",
     ),
     "savings": MessageLookupByLibrary.simpleMessage("Выгода"),
+    "scenarioCalendarActivityName": MessageLookupByLibrary.simpleMessage(
+      "Название дела",
+    ),
+    "scenarioCalendarChangeDate": MessageLookupByLibrary.simpleMessage(
+      "Заменить дату",
+    ),
+    "scenarioCalendarChooseActivity": MessageLookupByLibrary.simpleMessage(
+      "Что вы планируете?",
+    ),
+    "scenarioCalendarChooseDate": MessageLookupByLibrary.simpleMessage(
+      "Подобрать день",
+    ),
+    "scenarioCalendarChooseDates": MessageLookupByLibrary.simpleMessage(
+      "Какие дни вам подходят?",
+    ),
+    "scenarioCalendarCompareAction": MessageLookupByLibrary.simpleMessage(
+      "Сравнить даты",
+    ),
+    "scenarioCalendarComparisonTitle": MessageLookupByLibrary.simpleMessage(
+      "Сравнение дат",
+    ),
+    "scenarioCalendarEmptyPlans": MessageLookupByLibrary.simpleMessage(
+      "Здесь появятся дела, для которых вы выбрали дату.",
+    ),
+    "scenarioCalendarEqualRating": MessageLookupByLibrary.simpleMessage(
+      "У обоих дней одинаковая оценка для этого дела.",
+    ),
+    "scenarioCalendarFindDate": MessageLookupByLibrary.simpleMessage(
+      "Подобрать день для дела",
+    ),
+    "scenarioCalendarMonthError": MessageLookupByLibrary.simpleMessage(
+      "Не удалось загрузить месяц.",
+    ),
+    "scenarioCalendarMyPlans": MessageLookupByLibrary.simpleMessage(
+      "Мои планы",
+    ),
+    "scenarioCalendarNoActivities": MessageLookupByLibrary.simpleMessage(
+      "Пока нет рекомендаций по делам для этого месяца.",
+    ),
+    "scenarioCalendarPlansError": MessageLookupByLibrary.simpleMessage(
+      "Не удалось открыть планы.",
+    ),
+    "scenarioCalendarRecommendationMissing":
+        MessageLookupByLibrary.simpleMessage(
+          "Для этого дела пока нет рекомендации на этот день.",
+        ),
+    "scenarioCalendarRemoveDate": MessageLookupByLibrary.simpleMessage(
+      "Снимите выбор с одной из дат.",
+    ),
+    "scenarioCalendarRepotPlants": MessageLookupByLibrary.simpleMessage(
+      "Пересадка растений",
+    ),
+    "scenarioCalendarSaveError": MessageLookupByLibrary.simpleMessage(
+      "Не удалось сохранить план. Попробуйте ещё раз.",
+    ),
+    "scenarioCalendarSavePlan": MessageLookupByLibrary.simpleMessage(
+      "Сохранить план",
+    ),
+    "scenarioCalendarSaved": MessageLookupByLibrary.simpleMessage(
+      "План сохранён",
+    ),
+    "scenarioCalendarSelectDay": MessageLookupByLibrary.simpleMessage(
+      "Выбрать этот день",
+    ),
+    "scenarioCalendarSingleDate": MessageLookupByLibrary.simpleMessage(
+      "Посмотреть этот день",
+    ),
+    "scenarioCalendarSubtitle": MessageLookupByLibrary.simpleMessage(
+      "Сравните две удобные даты по лунному календарю и сохраните свой план.",
+    ),
+    "scenarioCalendarTitle": MessageLookupByLibrary.simpleMessage(
+      "Подобрать день для дела",
+    ),
+    "scenarioGoHome": MessageLookupByLibrary.simpleMessage("На главную"),
+    "scenarioPracticeChooseMood": MessageLookupByLibrary.simpleMessage(
+      "Что вам сейчас нужно?",
+    ),
+    "scenarioPracticeFocus": MessageLookupByLibrary.simpleMessage("Собраться"),
+    "scenarioPracticeSlowDown": MessageLookupByLibrary.simpleMessage(
+      "Успокоиться",
+    ),
+    "scenarioPracticeSubtitle": MessageLookupByLibrary.simpleMessage(
+      "Послушайте «У меня есть время» — короткую практику, чтобы замедлиться.",
+    ),
+    "scenarioPracticeTitle": MessageLookupByLibrary.simpleMessage(
+      "Взять минуту для себя",
+    ),
+    "scenarioPracticeUnavailable": MessageLookupByLibrary.simpleMessage(
+      "Сейчас нет доступных аудиопрактик.",
+    ),
+    "scenarioPracticeUnwind": MessageLookupByLibrary.simpleMessage(
+      "Выдохнуть после трудного дня",
+    ),
+    "scenarioRelationshipCare": MessageLookupByLibrary.simpleMessage(
+      "Мы по-разному проявляем чувства",
+    ),
+    "scenarioRelationshipCareOffer": MessageLookupByLibrary.simpleMessage(
+      "Выберите сохранённую пару или добавьте данные партнёра. Посмотрим, как вы выражаете заботу, и найдём вопрос для разговора.",
+    ),
+    "scenarioRelationshipCareQuestion": MessageLookupByLibrary.simpleMessage(
+      "По какой мелочи ты понимаешь, что я о тебе забочусь?",
+    ),
+    "scenarioRelationshipChooseSituation": MessageLookupByLibrary.simpleMessage(
+      "Что вас сейчас волнует?",
+    ),
+    "scenarioRelationshipConversationLabel":
+        MessageLookupByLibrary.simpleMessage("Для разговора вдвоём"),
+    "scenarioRelationshipDisagreement": MessageLookupByLibrary.simpleMessage(
+      "После спора трудно начать разговор",
+    ),
+    "scenarioRelationshipDisagreementOffer":
+        MessageLookupByLibrary.simpleMessage(
+          "Выберите сохранённую пару или добавьте данные партнёра. Откроем разбор разногласий и предложим первую фразу для разговора.",
+        ),
+    "scenarioRelationshipDisagreementQuestion":
+        MessageLookupByLibrary.simpleMessage(
+          "Хочу вернуться к нашему разговору. Тебе удобнее сейчас или немного позже?",
+        ),
+    "scenarioRelationshipFullReading": MessageLookupByLibrary.simpleMessage(
+      "Посмотреть полный разбор",
+    ),
+    "scenarioRelationshipOpenPair": MessageLookupByLibrary.simpleMessage(
+      "Открыть разбор пары",
+    ),
+    "scenarioRelationshipOpenSpread": MessageLookupByLibrary.simpleMessage(
+      "Начать любовный расклад",
+    ),
+    "scenarioRelationshipOwnFeelings": MessageLookupByLibrary.simpleMessage(
+      "Хочу разобраться в своих чувствах",
+    ),
+    "scenarioRelationshipReflectionLabel": MessageLookupByLibrary.simpleMessage(
+      "Вопрос для размышления",
+    ),
+    "scenarioRelationshipReflectionQuestion":
+        MessageLookupByLibrary.simpleMessage(
+          "Какого поступка я жду от другого человека? Говорили ли мы об этом?",
+        ),
+    "scenarioRelationshipShareQuestion": MessageLookupByLibrary.simpleMessage(
+      "Поделиться вопросом",
+    ),
+    "scenarioRelationshipSpreadOffer": MessageLookupByLibrary.simpleMessage(
+      "Любовный расклад поможет посмотреть на ситуацию с нескольких сторон. Его можно пройти самостоятельно.",
+    ),
+    "scenarioRelationshipsSubtitle": MessageLookupByLibrary.simpleMessage(
+      "Выберите, что вас волнует в отношениях. Asteria подскажет, с чего начать.",
+    ),
+    "scenarioRelationshipsTitle": MessageLookupByLibrary.simpleMessage(
+      "Хочу лучше понять нас",
+    ),
+    "scenarioSave": MessageLookupByLibrary.simpleMessage("Сохранить"),
+    "scenarioStartTitle": MessageLookupByLibrary.simpleMessage(
+      "С чего начнём?",
+    ),
+    "scenarioStrengthChartSource": MessageLookupByLibrary.simpleMessage(
+      "Из натальной карты",
+    ),
+    "scenarioStrengthChooseArea": MessageLookupByLibrary.simpleMessage(
+      "В какой ситуации вам пригодится подсказка?",
+    ),
+    "scenarioStrengthChooseSituation": MessageLookupByLibrary.simpleMessage(
+      "Что вам предстоит?",
+    ),
+    "scenarioStrengthExplanation": MessageLookupByLibrary.simpleMessage(
+      "Почему такая подсказка?",
+    ),
+    "scenarioStrengthForecastSource": MessageLookupByLibrary.simpleMessage(
+      "Из прогноза на этот день",
+    ),
+    "scenarioStrengthFullReading": MessageLookupByLibrary.simpleMessage(
+      "Открыть полный разбор",
+    ),
+    "scenarioStrengthNeedsReading": MessageLookupByLibrary.simpleMessage(
+      "Для персональной подсказки понадобится ваш натальный разбор.",
+    ),
+    "scenarioStrengthNoPersonalMatch": MessageLookupByLibrary.simpleMessage(
+      "В вашем разборе пока нет достаточно точной подсказки по этой ситуации.",
+    ),
+    "scenarioStrengthOpenChart": MessageLookupByLibrary.simpleMessage(
+      "Открыть натальный разбор",
+    ),
+    "scenarioStrengthSave": MessageLookupByLibrary.simpleMessage(
+      "Сохранить подсказку",
+    ),
+    "scenarioStrengthSaveError": MessageLookupByLibrary.simpleMessage(
+      "Не удалось сохранить подсказку. Попробуйте ещё раз.",
+    ),
+    "scenarioStrengthSaved": MessageLookupByLibrary.simpleMessage(
+      "Подсказка сохранена",
+    ),
+    "scenarioStrengthSavedTips": MessageLookupByLibrary.simpleMessage(
+      "Мои подсказки",
+    ),
+    "scenarioStrengthSubtitle": MessageLookupByLibrary.simpleMessage(
+      "Выберите ситуацию и узнайте, на какое своё качество можно опереться сегодня.",
+    ),
+    "scenarioStrengthTitle": MessageLookupByLibrary.simpleMessage(
+      "Найти свою сильную сторону",
+    ),
+    "scenarioStrengthTry": MessageLookupByLibrary.simpleMessage("Попробуйте"),
+    "scenarioStrengthTryToday": MessageLookupByLibrary.simpleMessage(
+      "Попробуйте сегодня",
+    ),
+    "scenarioStrengthViewSaved": MessageLookupByLibrary.simpleMessage(
+      "Открыть сохранённые",
+    ),
     "settingsCurrentLocationDescription": MessageLookupByLibrary.simpleMessage(
       "Используем текущий город для лунного календаря и фазы луны. Место рождения остаётся только для натальной карты.",
     ),

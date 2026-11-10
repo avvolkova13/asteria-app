@@ -7844,6 +7844,696 @@ class AppLocalizations {
       args: [],
     );
   }
+
+  /// `Repotting plants`
+  String get scenarioCalendarRepotPlants {
+    return Intl.message(
+      'Repotting plants',
+      name: 'scenarioCalendarRepotPlants',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `What are you planning?`
+  String get scenarioCalendarChooseActivity {
+    return Intl.message(
+      'What are you planning?',
+      name: 'scenarioCalendarChooseActivity',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No activity recommendations are available for this month yet.`
+  String get scenarioCalendarNoActivities {
+    return Intl.message(
+      'No activity recommendations are available for this month yet.',
+      name: 'scenarioCalendarNoActivities',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Deselect one date first.`
+  String get scenarioCalendarRemoveDate {
+    return Intl.message(
+      'Deselect one date first.',
+      name: 'scenarioCalendarRemoveDate',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Which dates work for you?`
+  String get scenarioCalendarChooseDates {
+    return Intl.message(
+      'Which dates work for you?',
+      name: 'scenarioCalendarChooseDates',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Could not load this month.`
+  String get scenarioCalendarMonthError {
+    return Intl.message(
+      'Could not load this month.',
+      name: 'scenarioCalendarMonthError',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Compare dates`
+  String get scenarioCalendarCompareAction {
+    return Intl.message(
+      'Compare dates',
+      name: 'scenarioCalendarCompareAction',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `View this day`
+  String get scenarioCalendarSingleDate {
+    return Intl.message(
+      'View this day',
+      name: 'scenarioCalendarSingleDate',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Compare dates`
+  String get scenarioCalendarComparisonTitle {
+    return Intl.message(
+      'Compare dates',
+      name: 'scenarioCalendarComparisonTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Both dates have the same rating for this activity.`
+  String get scenarioCalendarEqualRating {
+    return Intl.message(
+      'Both dates have the same rating for this activity.',
+      name: 'scenarioCalendarEqualRating',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Choose this day`
+  String get scenarioCalendarSelectDay {
+    return Intl.message(
+      'Choose this day',
+      name: 'scenarioCalendarSelectDay',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `There is no recommendation for this activity on this date yet.`
+  String get scenarioCalendarRecommendationMissing {
+    return Intl.message(
+      'There is no recommendation for this activity on this date yet.',
+      name: 'scenarioCalendarRecommendationMissing',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Change date`
+  String get scenarioCalendarChangeDate {
+    return Intl.message(
+      'Change date',
+      name: 'scenarioCalendarChangeDate',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Save plan`
+  String get scenarioCalendarSavePlan {
+    return Intl.message(
+      'Save plan',
+      name: 'scenarioCalendarSavePlan',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Activity name`
+  String get scenarioCalendarActivityName {
+    return Intl.message(
+      'Activity name',
+      name: 'scenarioCalendarActivityName',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Could not save the plan. Try again.`
+  String get scenarioCalendarSaveError {
+    return Intl.message(
+      'Could not save the plan. Try again.',
+      name: 'scenarioCalendarSaveError',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Save`
+  String get scenarioSave {
+    return Intl.message('Save', name: 'scenarioSave', desc: '', args: []);
+  }
+
+  /// `Plan saved`
+  String get scenarioCalendarSaved {
+    return Intl.message(
+      'Plan saved',
+      name: 'scenarioCalendarSaved',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Go home`
+  String get scenarioGoHome {
+    return Intl.message('Go home', name: 'scenarioGoHome', desc: '', args: []);
+  }
+
+  /// `My plans`
+  String get scenarioCalendarMyPlans {
+    return Intl.message(
+      'My plans',
+      name: 'scenarioCalendarMyPlans',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Activities you schedule will appear here.`
+  String get scenarioCalendarEmptyPlans {
+    return Intl.message(
+      'Activities you schedule will appear here.',
+      name: 'scenarioCalendarEmptyPlans',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Choose a date`
+  String get scenarioCalendarChooseDate {
+    return Intl.message(
+      'Choose a date',
+      name: 'scenarioCalendarChooseDate',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Find a day for an activity`
+  String get scenarioCalendarFindDate {
+    return Intl.message(
+      'Find a day for an activity',
+      name: 'scenarioCalendarFindDate',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Could not open your plans.`
+  String get scenarioCalendarPlansError {
+    return Intl.message(
+      'Could not open your plans.',
+      name: 'scenarioCalendarPlansError',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `We show affection differently`
+  String get scenarioRelationshipCare {
+    return Intl.message(
+      'We show affection differently',
+      name: 'scenarioRelationshipCare',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `It is hard to talk after an argument`
+  String get scenarioRelationshipDisagreement {
+    return Intl.message(
+      'It is hard to talk after an argument',
+      name: 'scenarioRelationshipDisagreement',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `I want to understand my feelings`
+  String get scenarioRelationshipOwnFeelings {
+    return Intl.message(
+      'I want to understand my feelings',
+      name: 'scenarioRelationshipOwnFeelings',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Choose a saved pair or enter your partner’s details. Explore how you show care and find a question to discuss.`
+  String get scenarioRelationshipCareOffer {
+    return Intl.message(
+      'Choose a saved pair or enter your partner’s details. Explore how you show care and find a question to discuss.',
+      name: 'scenarioRelationshipCareOffer',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Choose a saved pair or enter your partner’s details. Explore disagreements and find a way to start talking.`
+  String get scenarioRelationshipDisagreementOffer {
+    return Intl.message(
+      'Choose a saved pair or enter your partner’s details. Explore disagreements and find a way to start talking.',
+      name: 'scenarioRelationshipDisagreementOffer',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Explore your feelings from several angles with a love spread. You can do this on your own.`
+  String get scenarioRelationshipSpreadOffer {
+    return Intl.message(
+      'Explore your feelings from several angles with a love spread. You can do this on your own.',
+      name: 'scenarioRelationshipSpreadOffer',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `What little thing tells you that I care about you?`
+  String get scenarioRelationshipCareQuestion {
+    return Intl.message(
+      'What little thing tells you that I care about you?',
+      name: 'scenarioRelationshipCareQuestion',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `I would like to come back to our conversation. Would now or a little later work better for you?`
+  String get scenarioRelationshipDisagreementQuestion {
+    return Intl.message(
+      'I would like to come back to our conversation. Would now or a little later work better for you?',
+      name: 'scenarioRelationshipDisagreementQuestion',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `What am I hoping the other person will do? Have we talked about it?`
+  String get scenarioRelationshipReflectionQuestion {
+    return Intl.message(
+      'What am I hoping the other person will do? Have we talked about it?',
+      name: 'scenarioRelationshipReflectionQuestion',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `What is on your mind?`
+  String get scenarioRelationshipChooseSituation {
+    return Intl.message(
+      'What is on your mind?',
+      name: 'scenarioRelationshipChooseSituation',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Open pair reading`
+  String get scenarioRelationshipOpenPair {
+    return Intl.message(
+      'Open pair reading',
+      name: 'scenarioRelationshipOpenPair',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Open love spread`
+  String get scenarioRelationshipOpenSpread {
+    return Intl.message(
+      'Open love spread',
+      name: 'scenarioRelationshipOpenSpread',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `For your conversation`
+  String get scenarioRelationshipConversationLabel {
+    return Intl.message(
+      'For your conversation',
+      name: 'scenarioRelationshipConversationLabel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Share question`
+  String get scenarioRelationshipShareQuestion {
+    return Intl.message(
+      'Share question',
+      name: 'scenarioRelationshipShareQuestion',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `See full reading`
+  String get scenarioRelationshipFullReading {
+    return Intl.message(
+      'See full reading',
+      name: 'scenarioRelationshipFullReading',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `A question to reflect on`
+  String get scenarioRelationshipReflectionLabel {
+    return Intl.message(
+      'A question to reflect on',
+      name: 'scenarioRelationshipReflectionLabel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Where could you use some guidance?`
+  String get scenarioStrengthChooseArea {
+    return Intl.message(
+      'Where could you use some guidance?',
+      name: 'scenarioStrengthChooseArea',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `My saved tips`
+  String get scenarioStrengthSavedTips {
+    return Intl.message(
+      'My saved tips',
+      name: 'scenarioStrengthSavedTips',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `What lies ahead?`
+  String get scenarioStrengthChooseSituation {
+    return Intl.message(
+      'What lies ahead?',
+      name: 'scenarioStrengthChooseSituation',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Could not save this tip. Please try again.`
+  String get scenarioStrengthSaveError {
+    return Intl.message(
+      'Could not save this tip. Please try again.',
+      name: 'scenarioStrengthSaveError',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Try this`
+  String get scenarioStrengthTry {
+    return Intl.message(
+      'Try this',
+      name: 'scenarioStrengthTry',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Try this today`
+  String get scenarioStrengthTryToday {
+    return Intl.message(
+      'Try this today',
+      name: 'scenarioStrengthTryToday',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `A personal tip uses your birth chart reading.`
+  String get scenarioStrengthNeedsReading {
+    return Intl.message(
+      'A personal tip uses your birth chart reading.',
+      name: 'scenarioStrengthNeedsReading',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Your reading has no specific guidance for this situation yet.`
+  String get scenarioStrengthNoPersonalMatch {
+    return Intl.message(
+      'Your reading has no specific guidance for this situation yet.',
+      name: 'scenarioStrengthNoPersonalMatch',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Open birth chart reading`
+  String get scenarioStrengthOpenChart {
+    return Intl.message(
+      'Open birth chart reading',
+      name: 'scenarioStrengthOpenChart',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Why this tip?`
+  String get scenarioStrengthExplanation {
+    return Intl.message(
+      'Why this tip?',
+      name: 'scenarioStrengthExplanation',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `From your birth chart`
+  String get scenarioStrengthChartSource {
+    return Intl.message(
+      'From your birth chart',
+      name: 'scenarioStrengthChartSource',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `From this day’s forecast`
+  String get scenarioStrengthForecastSource {
+    return Intl.message(
+      'From this day’s forecast',
+      name: 'scenarioStrengthForecastSource',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Open full reading`
+  String get scenarioStrengthFullReading {
+    return Intl.message(
+      'Open full reading',
+      name: 'scenarioStrengthFullReading',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Tip saved`
+  String get scenarioStrengthSaved {
+    return Intl.message(
+      'Tip saved',
+      name: 'scenarioStrengthSaved',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `View saved tips`
+  String get scenarioStrengthViewSaved {
+    return Intl.message(
+      'View saved tips',
+      name: 'scenarioStrengthViewSaved',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Save tip`
+  String get scenarioStrengthSave {
+    return Intl.message(
+      'Save tip',
+      name: 'scenarioStrengthSave',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Where shall we start?`
+  String get scenarioStartTitle {
+    return Intl.message(
+      'Where shall we start?',
+      name: 'scenarioStartTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Find a day for a plan`
+  String get scenarioCalendarTitle {
+    return Intl.message(
+      'Find a day for a plan',
+      name: 'scenarioCalendarTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Compare two dates in the lunar calendar and save your plan.`
+  String get scenarioCalendarSubtitle {
+    return Intl.message(
+      'Compare two dates in the lunar calendar and save your plan.',
+      name: 'scenarioCalendarSubtitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Take a minute for yourself`
+  String get scenarioPracticeTitle {
+    return Intl.message(
+      'Take a minute for yourself',
+      name: 'scenarioPracticeTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Slow down with a short audio practice, “I Have Time”.`
+  String get scenarioPracticeSubtitle {
+    return Intl.message(
+      'Slow down with a short audio practice, “I Have Time”.',
+      name: 'scenarioPracticeSubtitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Understand our relationship`
+  String get scenarioRelationshipsTitle {
+    return Intl.message(
+      'Understand our relationship',
+      name: 'scenarioRelationshipsTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Choose what is on your mind. Asteria will suggest a place to start.`
+  String get scenarioRelationshipsSubtitle {
+    return Intl.message(
+      'Choose what is on your mind. Asteria will suggest a place to start.',
+      name: 'scenarioRelationshipsSubtitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Find a personal strength`
+  String get scenarioStrengthTitle {
+    return Intl.message(
+      'Find a personal strength',
+      name: 'scenarioStrengthTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Choose a situation and find a strength you can draw on today.`
+  String get scenarioStrengthSubtitle {
+    return Intl.message(
+      'Choose a situation and find a strength you can draw on today.',
+      name: 'scenarioStrengthSubtitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Slow down`
+  String get scenarioPracticeSlowDown {
+    return Intl.message(
+      'Slow down',
+      name: 'scenarioPracticeSlowDown',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Find focus`
+  String get scenarioPracticeFocus {
+    return Intl.message(
+      'Find focus',
+      name: 'scenarioPracticeFocus',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Unwind after a long day`
+  String get scenarioPracticeUnwind {
+    return Intl.message(
+      'Unwind after a long day',
+      name: 'scenarioPracticeUnwind',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `What do you need right now?`
+  String get scenarioPracticeChooseMood {
+    return Intl.message(
+      'What do you need right now?',
+      name: 'scenarioPracticeChooseMood',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No audio practices are available right now.`
+  String get scenarioPracticeUnavailable {
+    return Intl.message(
+      'No audio practices are available right now.',
+      name: 'scenarioPracticeUnavailable',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<AppLocalizations> {

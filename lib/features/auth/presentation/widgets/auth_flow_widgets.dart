@@ -183,6 +183,7 @@ class AuthGradientButton extends StatelessWidget {
       container: true,
       enabled: _isEnabled,
       label: text,
+      onTap: _isEnabled ? onPressed : null,
       child: ExcludeSemantics(
         child: SizedBox(
           width: double.infinity,

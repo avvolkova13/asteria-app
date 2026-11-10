@@ -1757,6 +1757,203 @@ class MessageLookup extends MessageLookupByLibrary {
     "runesTitle": MessageLookupByLibrary.simpleMessage("Runes"),
     "saveButtonLoadingText": MessageLookupByLibrary.simpleMessage("Saving..."),
     "savings": MessageLookupByLibrary.simpleMessage("Save"),
+    "scenarioCalendarActivityName": MessageLookupByLibrary.simpleMessage(
+      "Activity name",
+    ),
+    "scenarioCalendarChangeDate": MessageLookupByLibrary.simpleMessage(
+      "Change date",
+    ),
+    "scenarioCalendarChooseActivity": MessageLookupByLibrary.simpleMessage(
+      "What are you planning?",
+    ),
+    "scenarioCalendarChooseDate": MessageLookupByLibrary.simpleMessage(
+      "Choose a date",
+    ),
+    "scenarioCalendarChooseDates": MessageLookupByLibrary.simpleMessage(
+      "Which dates work for you?",
+    ),
+    "scenarioCalendarCompareAction": MessageLookupByLibrary.simpleMessage(
+      "Compare dates",
+    ),
+    "scenarioCalendarComparisonTitle": MessageLookupByLibrary.simpleMessage(
+      "Compare dates",
+    ),
+    "scenarioCalendarEmptyPlans": MessageLookupByLibrary.simpleMessage(
+      "Activities you schedule will appear here.",
+    ),
+    "scenarioCalendarEqualRating": MessageLookupByLibrary.simpleMessage(
+      "Both dates have the same rating for this activity.",
+    ),
+    "scenarioCalendarFindDate": MessageLookupByLibrary.simpleMessage(
+      "Find a day for an activity",
+    ),
+    "scenarioCalendarMonthError": MessageLookupByLibrary.simpleMessage(
+      "Could not load this month.",
+    ),
+    "scenarioCalendarMyPlans": MessageLookupByLibrary.simpleMessage("My plans"),
+    "scenarioCalendarNoActivities": MessageLookupByLibrary.simpleMessage(
+      "No activity recommendations are available for this month yet.",
+    ),
+    "scenarioCalendarPlansError": MessageLookupByLibrary.simpleMessage(
+      "Could not open your plans.",
+    ),
+    "scenarioCalendarRecommendationMissing":
+        MessageLookupByLibrary.simpleMessage(
+          "There is no recommendation for this activity on this date yet.",
+        ),
+    "scenarioCalendarRemoveDate": MessageLookupByLibrary.simpleMessage(
+      "Deselect one date first.",
+    ),
+    "scenarioCalendarRepotPlants": MessageLookupByLibrary.simpleMessage(
+      "Repotting plants",
+    ),
+    "scenarioCalendarSaveError": MessageLookupByLibrary.simpleMessage(
+      "Could not save the plan. Try again.",
+    ),
+    "scenarioCalendarSavePlan": MessageLookupByLibrary.simpleMessage(
+      "Save plan",
+    ),
+    "scenarioCalendarSaved": MessageLookupByLibrary.simpleMessage("Plan saved"),
+    "scenarioCalendarSelectDay": MessageLookupByLibrary.simpleMessage(
+      "Choose this day",
+    ),
+    "scenarioCalendarSingleDate": MessageLookupByLibrary.simpleMessage(
+      "View this day",
+    ),
+    "scenarioCalendarSubtitle": MessageLookupByLibrary.simpleMessage(
+      "Compare two dates in the lunar calendar and save your plan.",
+    ),
+    "scenarioCalendarTitle": MessageLookupByLibrary.simpleMessage(
+      "Find a day for a plan",
+    ),
+    "scenarioGoHome": MessageLookupByLibrary.simpleMessage("Go home"),
+    "scenarioPracticeChooseMood": MessageLookupByLibrary.simpleMessage(
+      "What do you need right now?",
+    ),
+    "scenarioPracticeFocus": MessageLookupByLibrary.simpleMessage("Find focus"),
+    "scenarioPracticeSlowDown": MessageLookupByLibrary.simpleMessage(
+      "Slow down",
+    ),
+    "scenarioPracticeSubtitle": MessageLookupByLibrary.simpleMessage(
+      "Slow down with a short audio practice, “I Have Time”.",
+    ),
+    "scenarioPracticeTitle": MessageLookupByLibrary.simpleMessage(
+      "Take a minute for yourself",
+    ),
+    "scenarioPracticeUnavailable": MessageLookupByLibrary.simpleMessage(
+      "No audio practices are available right now.",
+    ),
+    "scenarioPracticeUnwind": MessageLookupByLibrary.simpleMessage(
+      "Unwind after a long day",
+    ),
+    "scenarioRelationshipCare": MessageLookupByLibrary.simpleMessage(
+      "We show affection differently",
+    ),
+    "scenarioRelationshipCareOffer": MessageLookupByLibrary.simpleMessage(
+      "Choose a saved pair or enter your partner’s details. Explore how you show care and find a question to discuss.",
+    ),
+    "scenarioRelationshipCareQuestion": MessageLookupByLibrary.simpleMessage(
+      "What little thing tells you that I care about you?",
+    ),
+    "scenarioRelationshipChooseSituation": MessageLookupByLibrary.simpleMessage(
+      "What is on your mind?",
+    ),
+    "scenarioRelationshipConversationLabel":
+        MessageLookupByLibrary.simpleMessage("For your conversation"),
+    "scenarioRelationshipDisagreement": MessageLookupByLibrary.simpleMessage(
+      "It is hard to talk after an argument",
+    ),
+    "scenarioRelationshipDisagreementOffer":
+        MessageLookupByLibrary.simpleMessage(
+          "Choose a saved pair or enter your partner’s details. Explore disagreements and find a way to start talking.",
+        ),
+    "scenarioRelationshipDisagreementQuestion":
+        MessageLookupByLibrary.simpleMessage(
+          "I would like to come back to our conversation. Would now or a little later work better for you?",
+        ),
+    "scenarioRelationshipFullReading": MessageLookupByLibrary.simpleMessage(
+      "See full reading",
+    ),
+    "scenarioRelationshipOpenPair": MessageLookupByLibrary.simpleMessage(
+      "Open pair reading",
+    ),
+    "scenarioRelationshipOpenSpread": MessageLookupByLibrary.simpleMessage(
+      "Open love spread",
+    ),
+    "scenarioRelationshipOwnFeelings": MessageLookupByLibrary.simpleMessage(
+      "I want to understand my feelings",
+    ),
+    "scenarioRelationshipReflectionLabel": MessageLookupByLibrary.simpleMessage(
+      "A question to reflect on",
+    ),
+    "scenarioRelationshipReflectionQuestion":
+        MessageLookupByLibrary.simpleMessage(
+          "What am I hoping the other person will do? Have we talked about it?",
+        ),
+    "scenarioRelationshipShareQuestion": MessageLookupByLibrary.simpleMessage(
+      "Share question",
+    ),
+    "scenarioRelationshipSpreadOffer": MessageLookupByLibrary.simpleMessage(
+      "Explore your feelings from several angles with a love spread. You can do this on your own.",
+    ),
+    "scenarioRelationshipsSubtitle": MessageLookupByLibrary.simpleMessage(
+      "Choose what is on your mind. Asteria will suggest a place to start.",
+    ),
+    "scenarioRelationshipsTitle": MessageLookupByLibrary.simpleMessage(
+      "Understand our relationship",
+    ),
+    "scenarioSave": MessageLookupByLibrary.simpleMessage("Save"),
+    "scenarioStartTitle": MessageLookupByLibrary.simpleMessage(
+      "Where shall we start?",
+    ),
+    "scenarioStrengthChartSource": MessageLookupByLibrary.simpleMessage(
+      "From your birth chart",
+    ),
+    "scenarioStrengthChooseArea": MessageLookupByLibrary.simpleMessage(
+      "Where could you use some guidance?",
+    ),
+    "scenarioStrengthChooseSituation": MessageLookupByLibrary.simpleMessage(
+      "What lies ahead?",
+    ),
+    "scenarioStrengthExplanation": MessageLookupByLibrary.simpleMessage(
+      "Why this tip?",
+    ),
+    "scenarioStrengthForecastSource": MessageLookupByLibrary.simpleMessage(
+      "From this day’s forecast",
+    ),
+    "scenarioStrengthFullReading": MessageLookupByLibrary.simpleMessage(
+      "Open full reading",
+    ),
+    "scenarioStrengthNeedsReading": MessageLookupByLibrary.simpleMessage(
+      "A personal tip uses your birth chart reading.",
+    ),
+    "scenarioStrengthNoPersonalMatch": MessageLookupByLibrary.simpleMessage(
+      "Your reading has no specific guidance for this situation yet.",
+    ),
+    "scenarioStrengthOpenChart": MessageLookupByLibrary.simpleMessage(
+      "Open birth chart reading",
+    ),
+    "scenarioStrengthSave": MessageLookupByLibrary.simpleMessage("Save tip"),
+    "scenarioStrengthSaveError": MessageLookupByLibrary.simpleMessage(
+      "Could not save this tip. Please try again.",
+    ),
+    "scenarioStrengthSaved": MessageLookupByLibrary.simpleMessage("Tip saved"),
+    "scenarioStrengthSavedTips": MessageLookupByLibrary.simpleMessage(
+      "My saved tips",
+    ),
+    "scenarioStrengthSubtitle": MessageLookupByLibrary.simpleMessage(
+      "Choose a situation and find a strength you can draw on today.",
+    ),
+    "scenarioStrengthTitle": MessageLookupByLibrary.simpleMessage(
+      "Find a personal strength",
+    ),
+    "scenarioStrengthTry": MessageLookupByLibrary.simpleMessage("Try this"),
+    "scenarioStrengthTryToday": MessageLookupByLibrary.simpleMessage(
+      "Try this today",
+    ),
+    "scenarioStrengthViewSaved": MessageLookupByLibrary.simpleMessage(
+      "View saved tips",
+    ),
     "settingsCurrentLocationDescription": MessageLookupByLibrary.simpleMessage(
       "We use your current city for the lunar calendar and moon phase. Birth place stays only for your natal chart.",
     ),
