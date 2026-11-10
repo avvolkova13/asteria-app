@@ -8,6 +8,7 @@ import 'first_session.dart';
 import 'practice_scenario.dart';
 import 'relationships_scenario.dart';
 import 'scenario_ui.dart';
+import 'scenario_card_grid.dart';
 import 'strength_scenario.dart';
 
 class ScenarioPicker extends StatefulWidget {
@@ -51,28 +52,32 @@ class _ScenarioPickerState extends State<ScenarioPicker> {
           ),
         ),
       ),
-      child: Column(
-        children: [
-          ScenarioTile(
+      child: ScenarioCardGrid(
+        cards: [
+          ScenarioCard(
+            mood: ScenarioMood.calendar,
             title: context.l10n.scenarioCalendarTitle,
             subtitle: context.l10n.scenarioCalendarSubtitle,
             art: 'assets/icons/clay/calendar_icon.webp',
             onTap: () => _choose(() => _screen(const CalendarScenarioScreen())),
           ),
-          ScenarioTile(
+          ScenarioCard(
+            mood: ScenarioMood.practice,
             title: context.l10n.scenarioPracticeTitle,
             subtitle: context.l10n.scenarioPracticeSubtitle,
             art: 'assets/images/affirmation/lavender-clay-lotus.webp',
             onTap: () => _choose(() => openPracticeScenario(context)),
           ),
-          ScenarioTile(
+          ScenarioCard(
+            mood: ScenarioMood.relationships,
             title: context.l10n.scenarioRelationshipsTitle,
             subtitle: context.l10n.scenarioRelationshipsSubtitle,
             art: 'assets/icons/clay/ic_heart.webp',
             onTap: () =>
                 _choose(() => _screen(const RelationshipsScenarioScreen())),
           ),
-          ScenarioTile(
+          ScenarioCard(
+            mood: ScenarioMood.strength,
             title: context.l10n.scenarioStrengthTitle,
             subtitle: context.l10n.scenarioStrengthSubtitle,
             art: 'assets/icons/clay/natal_wheel.webp',
