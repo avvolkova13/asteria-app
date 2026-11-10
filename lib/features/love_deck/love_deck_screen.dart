@@ -28,7 +28,9 @@ class _LoveDeckColors {
 }
 
 class LoveDeckScreen extends StatefulWidget {
-  const LoveDeckScreen({Key? key}) : super(key: key);
+  const LoveDeckScreen({super.key, this.afterReading});
+
+  final Widget? afterReading;
 
   @override
   State<LoveDeckScreen> createState() => _LoveDeckScreenState();
@@ -165,7 +167,10 @@ class _LoveDeckScreenState extends State<LoveDeckScreen> {
                           ),
                         )
                       else
-                        _LoveDeckContent(onRefresh: onRefreshPressed),
+                        _LoveDeckContent(
+                          onRefresh: onRefreshPressed,
+                          afterReading: widget.afterReading,
+                        ),
                       const SizedBox(height: 100),
                     ],
                   ),
@@ -182,7 +187,9 @@ class _LoveDeckScreenState extends State<LoveDeckScreen> {
 class _LoveDeckContent extends StatelessWidget {
   final VoidCallback onRefresh;
 
-  const _LoveDeckContent({Key? key, required this.onRefresh}) : super(key: key);
+  const _LoveDeckContent({required this.onRefresh, this.afterReading});
+
+  final Widget? afterReading;
 
   void _showHowToUseCardsModal(BuildContext context) {
     showModalBottomSheet<void>(
@@ -280,6 +287,9 @@ class _LoveDeckContent extends StatelessWidget {
                   letterSpacing: 0,
                 ),
               ),
+            if (afterReading != null &&
+                userProvider.isAllCardsOpened('love_deck'))
+              afterReading!,
             const SizedBox(height: 16),
           ],
         );

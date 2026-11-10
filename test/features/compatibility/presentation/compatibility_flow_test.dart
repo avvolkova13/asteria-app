@@ -18,6 +18,8 @@ import 'package:asteria_app/features/home/presentation/cubit/home_state.dart';
 import 'package:asteria_app/features/home/presentation/screens/personal_screen.dart';
 import 'package:asteria_app/features/monetization/presentation/monetization_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:asteria_app/features/scenarios/relationships_scenario.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -78,6 +80,10 @@ void main() {
       routes: [
         GoRoute(path: '/home', builder: (_, __) => const PersonalScreen()),
         GoRoute(
+          path: '/relationships',
+          builder: (_, __) => const RelationshipsScenarioScreen(),
+        ),
+        GoRoute(
           path: CompatibilityRoutes.createCompatibilityInitialRouteName,
           name: CompatibilityRoutes.createCompatibilityInitialRouteName,
           builder: (_, __) => const CreateCompatibilityInitialScreen(),
@@ -135,6 +141,75 @@ void main() {
     await tester.pumpAndSettle();
     expect(tester.takeException(), isNull);
   }
+
+  testWidgets('themed reading reuses a saved pair and shares only its question', (
+    tester,
+  ) async {
+    const channel = MethodChannel('dev.fluttercommunity.plus/share');
+    MethodCall? share;
+    final messenger =
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
+    messenger.setMockMethodCallHandler(channel, (call) async {
+      share = call;
+      return '';
+    });
+    addTearDown(() => messenger.setMockMethodCallHandler(channel, null));
+    await mount(tester);
+    router.push('/relationships');
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('После спора трудно начать разговор'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Открыть разбор пары'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('42%'));
+    await tester.pumpAndSettle();
+    expect(find.text('Конфликты'), findsOneWidget);
+    expect(find.text('Любовь'), findsNothing);
+    await tester.tap(find.text('Поделиться вопросом'));
+    await tester.pumpAndSettle();
+    expect(share?.method, 'share');
+    final payload = share!.arguments as Map;
+    expect(
+      payload['text'],
+      'Хочу вернуться к нашему разговору. Тебе удобнее сейчас или немного позже?',
+    );
+    expect(payload.keys.where((key) => !(key as String).startsWith('origin')), [
+      'text',
+    ]);
+    expect(find.text('Конфликты'), findsOneWidget);
+    expect(user.currentUser!.compatibilityHistory, hasLength(2));
+    expect(tester.takeException(), isNull);
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
+
+  testWidgets(
+    'empty history opens the existing pair form and returns its saved result to the chosen topic',
+    (tester) async {
+      user.currentUser = user.currentUser!.copyWith(compatibilityHistory: []);
+      await mount(tester);
+      router.push('/relationships');
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Мы по-разному проявляем чувства'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Открыть разбор пары'));
+      await tester.pumpAndSettle();
+      expect(find.byType(CreateCompatibilityInitialScreen), findsOneWidget);
+      await tester.enterText(find.byType(TextField), 'Партнёр');
+      await tester.tap(find.text('Дата рождения'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Выбрать'));
+      await tester.pumpAndSettle();
+      await tester.ensureVisible(find.text('Рассчитать'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Рассчитать'));
+      await tester.pumpAndSettle();
+      expect(find.byType(RelationshipPairResult), findsOneWidget);
+      expect(find.text('Любовь'), findsOneWidget);
+      expect(user.currentUser!.compatibilityHistory, hasLength(1));
+      expect(tester.takeException(), isNull);
+      await tester.pumpWidget(const SizedBox.shrink());
+    },
+  );
 
   testWidgets(
     'reset keeps history, opens input, and history selection restores preview',

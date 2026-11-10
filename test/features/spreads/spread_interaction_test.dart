@@ -1,5 +1,8 @@
 import 'dart:async';
 
+import 'package:asteria_app/app/data/models/love_deck/love_deck_model.dart';
+import 'package:asteria_app/features/scenarios/relationships_scenario.dart';
+
 import 'package:asteria_app/app/data/models/rune_of_day/rune_of_day_model.dart';
 import 'package:asteria_app/app/data/models/kelt_deck/kelt_deck_model.dart';
 import 'package:asteria_app/app/data/models/tarot_card/tarot_card_model.dart';
@@ -22,6 +25,7 @@ import 'package:asteria_app/features/taro_cards/widgets/tarot_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:provider/provider.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -186,7 +190,7 @@ void main() {
     });
   });
 
-  group('celtic cross interaction', () {
+  group('saved spread interaction', () {
     late UserProvider userProvider;
     late ContentProvider contentProvider;
     late List<TarotCardModel> cards;
@@ -223,6 +227,47 @@ void main() {
       await di.reset();
     });
 
+    testWidgets(
+      'relationship entry opens the saved love spread and reveals a question after the sixth card',
+      (tester) async {
+        final savedCards = cards.take(6);
+        userProvider.applyServerUserSnapshot(
+          userProvider.currentUser!.copyWith(
+            loveDeck: LoveDeckModel(
+              loveDeckCards: {for (final card in savedCards) card.id: false},
+            ),
+          ),
+        );
+        await tester.binding.setSurfaceSize(const Size(390, 844));
+        addTearDown(() => tester.binding.setSurfaceSize(null));
+        await tester.pumpWidget(
+          ChangeNotifierProvider<UserProvider>.value(
+            value: userProvider,
+            child: _localizedApp(const RelationshipsScenarioScreen()),
+          ),
+        );
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Хочу разобраться в своих чувствах'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Начать любовный расклад'));
+        await tester.pumpAndSettle();
+        expect(find.text('Вопрос для размышления'), findsNothing);
+        for (int index = 1; index <= 6; index++) {
+          final card = find.byKey(ValueKey('love_deck_card_$index'));
+          await tester.ensureVisible(card);
+          await tester.pumpAndSettle();
+          await tester.tap(card);
+          await tester.pumpAndSettle();
+        }
+        expect(userProvider.isAllCardsOpened('love_deck'), isTrue);
+        expect(find.text('Вопрос для размышления'), findsOneWidget);
+        await tester.binding.handlePopRoute();
+        await tester.pumpAndSettle();
+        expect(find.text('Начать любовный расклад'), findsOneWidget);
+        expect(tester.takeException(), isNull);
+      },
+    );
+
     testWidgets('opens a visible non-first card when it is tapped', (
       tester,
     ) async {
@@ -258,7 +303,6 @@ void main() {
       );
     });
   });
-
 }
 
 Widget _localizedApp(Widget child) {
@@ -271,13 +315,12 @@ Widget _localizedApp(Widget child) {
       GlobalCupertinoLocalizations.delegate,
     ],
     supportedLocales: AppLocalizations.delegate.supportedLocales,
-    home: Builder(
-      builder: (context) => Theme(
-        data: AppThemeDark.instance.getThemeData(context),
-        child: Scaffold(
-          body: Center(child: SizedBox(width: 358, child: child)),
-        ),
-      ),
+    builder: (context, navigator) => Theme(
+      data: AppThemeDark.instance.getThemeData(context),
+      child: navigator!,
+    ),
+    home: Scaffold(
+      body: Center(child: SizedBox(width: 358, child: child)),
     ),
   );
 }

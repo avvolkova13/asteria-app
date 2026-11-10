@@ -1,3 +1,4 @@
+import 'package:asteria_app/features/love_deck/love_deck_access.dart';
 import 'package:asteria_app/app/data/models/user/tarot_deck_model.dart';
 import 'package:asteria_app/app/providers/content_provider.dart';
 import 'package:asteria_app/app/providers/user_provider.dart';
@@ -199,88 +200,10 @@ class _TaroCardsContentState extends State<_TaroCardsContent> {
     }
   }
 
-  Future<void> _onBuyLoveDeckPressed() async {
-    final userProvider = di.get<UserProvider>();
-    final navigatorContext = context;
-    final facade = di.get<AnalyticsFacade>();
-    final loveFeatureParam = {
-      EventParams.featureName: FeatureName.loveDeck.eventValue,
-    };
-    if (!_hasDeck(userProvider, DeckType.love)) {
-      final loaded = await _loadExistingDeck(userProvider, DeckType.love);
-      if (!mounted) return;
-      if (loaded) {
-        facade.trackEvent(
-          AnalyticsEvents.loveDeckOpen,
-          params: loveFeatureParam,
-        );
-        LoveDeckRoute.push(context);
-        return;
-      }
-      facade.trackEvent(
-        AnalyticsEvents.paywallView,
-        params: {
-          ...loveFeatureParam,
-          EventParams.paywallVariant: 'one_time_purchase',
-          EventParams.price: PurchaseProductsConst.loveDeck.price,
-          EventParams.currency: 'coins',
-        },
-      );
-      showFeaturePurchaseModal(
-        context: context,
-        backgroundColor: Colors.transparent,
-        builder: (modalContext) => SharedPurchaseModal(
-          featureKey: 'tarot_spread',
-          purchaseTitle: context.l10n.loveDeckTitle,
-          price: PurchaseProductsConst.loveDeck.price,
-          originSurface: 'tarot',
-          offerType: OfferType.oneOffUnlock,
-          onAccessPurchase: (requirePro, idempotencyKey) async {
-            facade.trackEvent(
-              AnalyticsEvents.paywallCtaClick,
-              params: loveFeatureParam,
-            );
-            try {
-              await facade.runFeatureAction(
-                'love_deck',
-                () => userProvider.buyLoveDeck(
-                  idempotencyKey: idempotencyKey,
-                  requirePro: requirePro,
-                ),
-              );
-              if (!di.get<MonetizationProvider>().effectivePro) {
-                facade.trackPurchaseSuccess(
-                  feature: FeatureName.loveDeck,
-                  productId: 'love_deck',
-                  price: PurchaseProductsConst.loveDeck.price,
-                  currency: 'coins',
-                  purchaseType: 'one_time',
-                );
-              }
-            } catch (e) {
-              if (!di.get<MonetizationProvider>().effectivePro) {
-                facade.trackPurchaseFailed(
-                  feature: FeatureName.loveDeck,
-                  productId: 'love_deck',
-                  failureStage: 'buy_love_deck',
-                  failureReason: e.toString(),
-                );
-              }
-              rethrow;
-            }
-          },
-          onSuccess: () {
-            if (navigatorContext.mounted) {
-              LoveDeckRoute.push(navigatorContext);
-            }
-          },
-        ),
-      );
-    } else {
-      facade.trackEvent(AnalyticsEvents.loveDeckOpen, params: loveFeatureParam);
-      LoveDeckRoute.push(context);
-    }
-  }
+  Future<void> _onBuyLoveDeckPressed() => openLoveDeck(
+    context,
+    onOpen: () => LoveDeckRoute.push(context),
+  );
 
   Future<void> _onBuyKeltDeckPressed() async {
     final userProvider = di.get<UserProvider>();

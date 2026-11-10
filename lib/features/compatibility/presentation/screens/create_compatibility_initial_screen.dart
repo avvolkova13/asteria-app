@@ -22,7 +22,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class CreateCompatibilityInitialScreen extends StatefulWidget {
-  const CreateCompatibilityInitialScreen({Key? key}) : super(key: key);
+  const CreateCompatibilityInitialScreen({
+    super.key,
+    this.returnCreatedPair = false,
+  });
+
+  final bool returnCreatedPair;
 
   @override
   State<CreateCompatibilityInitialScreen> createState() =>
@@ -36,6 +41,7 @@ class _CreateCompatibilityInitialScreenState
   final ContentProvider _contentProvider = di.get<ContentProvider>();
   final GlobalLoaderService _loaderService = di.get<GlobalLoaderService>();
   DateTime? _partnerSelectedDate;
+  bool _submitting = false;
 
   bool get _canSubmit =>
       _partnerNameController.text.trim().isNotEmpty &&
@@ -81,6 +87,16 @@ class _CreateCompatibilityInitialScreenState
   }
 
   Future<void> _onCreateCompatibilityTap() async {
+    if (_submitting) return;
+    setState(() => _submitting = true);
+    try {
+      await _submitPair();
+    } finally {
+      if (mounted) setState(() => _submitting = false);
+    }
+  }
+
+  Future<void> _submitPair() async {
     final user = _userProvider.currentUser;
     final userBirthDate = user?.personalInfo?.birthDate?.birthDate;
 
@@ -156,7 +172,11 @@ class _CreateCompatibilityInitialScreenState
         return;
       }
       if (!mounted) return;
-      CreateCompatibilityLoadedRoute.pushReplacement(context);
+      if (widget.returnCreatedPair) {
+        Navigator.of(context).pop(compatibility);
+      } else {
+        CreateCompatibilityLoadedRoute.pushReplacement(context);
+      }
     } catch (e) {
       stopwatch.stop();
       facade.trackEvent(
@@ -218,19 +238,22 @@ class _CreateCompatibilityInitialScreenState
           const SizedBox(height: 24),
           CompatibilityGradientButton(
             text: context.l10n.compatibilityCalculate,
-            onPressed: _canSubmit ? _onCreateCompatibilityTap : null,
+            onPressed: _canSubmit && !_submitting
+                ? _onCreateCompatibilityTap
+                : null,
           ),
           const SizedBox(height: 14),
-          TextButton(
-            onPressed: () => CreateCompatibilityHistoryRoute.push(context),
-            child: Text(
-              context.l10n.viewHistory,
-              style: context.textTheme.tertiaryUrbanistSemiBold14.copyWith(
-                decoration: TextDecoration.underline,
-                decorationColor: AppColors.textTertiary,
+          if (!widget.returnCreatedPair)
+            TextButton(
+              onPressed: () => CreateCompatibilityHistoryRoute.push(context),
+              child: Text(
+                context.l10n.viewHistory,
+                style: context.textTheme.tertiaryUrbanistSemiBold14.copyWith(
+                  decoration: TextDecoration.underline,
+                  decorationColor: AppColors.textTertiary,
+                ),
               ),
             ),
-          ),
         ],
       ),
     );
