@@ -1,3 +1,6 @@
+import 'package:asteria_app/features/scenarios/scenario_picker.dart';
+import 'package:asteria_app/features/scenarios/first_session.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:asteria_app/core/analytics/analytics_route_observer.dart';
 import 'package:asteria_app/core/di/di.dart';
 import 'package:asteria_app/core/routing/navigator_key.dart';

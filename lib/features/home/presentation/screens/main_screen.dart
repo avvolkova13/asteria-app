@@ -1,3 +1,6 @@
+import 'package:asteria_app/features/scenarios/first_session.dart';
+import 'package:go_router/go_router.dart';
+import 'package:asteria_app/features/scenarios/calendar_scenario.dart';
 import 'package:asteria_app/app/providers/content_provider.dart';
 import 'package:asteria_app/app/providers/user_provider.dart';
 import 'package:asteria_app/core/analytics/analytics_route_observer.dart';
@@ -175,7 +178,13 @@ class _MainScreenState extends State<MainScreen> {
                           children: [
                             const SizedBox(height: 26),
                             const MoonPhaseWidget(),
+                            const CalendarPlanHomeEntry(),
                             const SizedBox(height: 24),
+                            TextButton.icon(
+                              onPressed: () => context.push(FirstSession.path),
+                              icon: const Icon(Icons.auto_awesome_outlined, size: 18, color: AppColors.cardTinted),
+                              label: Text(context.l10n.scenarioStartTitle, style:context.textTheme.inversePlayfairSemiBold16),
+                            ),
                             _buildSubscriptionPromoSection(),
                             _buildAffirmationCard(),
                             const SizedBox(height: 24),

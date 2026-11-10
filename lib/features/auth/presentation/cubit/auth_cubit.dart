@@ -1,3 +1,4 @@
+import 'package:asteria_app/features/scenarios/first_session.dart';
 import 'dart:async';
 
 import 'package:asteria_app/app/data/models/user/user_model.dart';
@@ -187,6 +188,7 @@ class AuthCubit extends Cubit<AuthState> {
           ? _currentUser!.copyWith(attribution: attributionSnapshot.toJson())
           : _currentUser!;
 
+      await FirstSession.begin(userToCreate.id);
       final savedUser = await _authRepository.createUser(userToCreate);
       debugPrint('savedUser: ${savedUser.id}');
       _currentUser = savedUser;

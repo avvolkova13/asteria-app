@@ -6,7 +6,19 @@ final _routes = [
   ...CompatibilityRoutes.routes,
   ...SonnikRoutes.routes,
   ...AnakraChatRoutes.routes,
-  OnboardingRoute(),
+  GoRoute(
+    path: FirstSession.path,
+    pageBuilder: (context, state) => CupertinoPage<void>(
+      key: state.pageKey,
+      name: FirstSession.path,
+      child: const ScenarioPicker(),
+    ),
+  ),
+  GoRoute(
+    path: OnboardingRoute.routeName,
+    name: OnboardingRoute.routeName,
+    redirect: (_, __) => AuthRoutes.loginRouteName,
+  ),
   HomeRoute(routes: [HomeProfileRoute()]),
   SettingsRoute(),
   SubscriptionRoute(),

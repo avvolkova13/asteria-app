@@ -1,3 +1,5 @@
+import 'package:asteria_app/features/scenarios/first_session.dart';
+import 'package:go_router/go_router.dart';
 import 'package:asteria_app/core/localization/localization.dart';
 import 'package:asteria_app/core/routing/app_route.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
@@ -60,7 +62,7 @@ class EmailCodeScreen extends StatelessWidget {
                           return;
                         }
                         if (state.profileExists) {
-                          HomeRoute.go(context);
+                          context.go(FirstSession.pending(state.identity.userId) ? FirstSession.path : HomeRoute.routeName);
                         } else {
                           AuthPersonalInfoRoute.pushReplacement(
                             context,

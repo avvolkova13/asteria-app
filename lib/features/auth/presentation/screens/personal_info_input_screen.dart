@@ -1,5 +1,6 @@
+import 'package:asteria_app/features/scenarios/first_session.dart';
+import 'package:go_router/go_router.dart';
 import 'package:asteria_app/app/data/models/user/user_model.dart';
-import 'package:asteria_app/core/routing/app_route.dart';
 import 'package:asteria_app/core/extensions/build_context_extensions.dart';
 import 'package:asteria_app/core/localization/locale_formatters.dart';
 import 'package:asteria_app/features/auth/localization/auth_localization_contract.dart';
@@ -117,7 +118,7 @@ class _PersonalInfoInputScreenState extends State<PersonalInfoInputScreen> {
     return BlocListener<AuthCubit, AuthState>(
       listener: (context, state) {
         if (state is UserSaved) {
-          HomeRoute.go(context);
+          context.go(FirstSession.path);
         } else if (state is UserSaveError) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(_authErrorMessage(context, state.code))),
