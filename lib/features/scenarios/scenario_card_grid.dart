@@ -78,8 +78,7 @@ class ScenarioCard extends StatelessWidget {
   final VoidCallback onTap;
 
   static const _inset = 16.0;
-  static const _glyph = 36.0;
-  static const _gap = 12.0;
+  static const _gap = 8.0;
   static const _radius = BorderRadius.all(Radius.circular(30));
   TextStyle _title(BuildContext context) =>
       context.textTheme.inversePlayfairSemiBold18.copyWith(
@@ -111,12 +110,17 @@ class ScenarioCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  LotusRasterIcon(
-                    art,
-                    width: _glyph,
-                    height: _glyph,
-                    fit: BoxFit.contain,
-                    excludeFromSemantics: true,
+                  Center(
+                    child: LotusRasterIcon(
+                      art,
+                      width: 126,
+                      height: switch (mood) {
+                        ScenarioMood.calendar || ScenarioMood.strength => 110,
+                        ScenarioMood.practice || ScenarioMood.relationships => 64,
+                      },
+                      fit: BoxFit.contain,
+                      excludeFromSemantics: true,
+                    ),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(top: _gap),
