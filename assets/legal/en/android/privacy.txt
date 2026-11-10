@@ -1,0 +1,96 @@
+
+Privacy Policy
+Version: 1.01 Effective Date: July 22, 2026 Asteria Web Application
+
+1. General Provisions
+This Privacy Policy defines the procedures for collecting, processing, storing, and protecting the personal data of users of the Asteria internet application (hereinafter referred to as the "Application").
+By using the App, the user confirms their free, conscious, and informed consent to the terms of this Privacy Policy.
+Personal Data Operator: Kyulchoro Limited Liability Company
+Registered address: Kyrgyz Republic, Bishkek, Leninsky District, 172A Kyzyl-Adyr St. (Archa-Beshik residential complex).
+LLC "Kyulchoro" is the personal data operator for users of the Asteria internet application.
+2. Applicable Law
+The processing of personal data is carried out in accordance with:
+By the Constitution of the Kyrgyz Republic;
+The Law of the Kyrgyz Republic "On Personal Data" No. 58 of April 14, 2008;
+other regulatory legal acts of the Kyrgyz Republic;
+Google Play Developer Policy requirements.
+3. What Data We Collect
+3.1. Data Provided by the User
+The application may process the following data voluntarily provided by the user:
+name or alias (if applicable);
+date, time, and place of birth (for astrological calculations);
+email address (when contacting customer support or during registration, if applicable);
+location (optional) — used exclusively when the user has explicitly given their consent, in order to improve the accuracy of astrological calculations.
+3.2. Technical Specifications
+We may automatically collect:
+device type and model;
+the operating system and its version;
+system language;
+unique device identifiers, including Advertising ID;
+app usage data (screens viewed, features used, session duration);
+Crash reports and diagnostic data.
+3.3. Geolocation
+Geolocation is used only with the user's permission and solely to ensure the proper functioning of the Application's features. The user may revoke this permission at any time through their device settings.
+4. Purposes and Legal Bases for Data Processing
+4.1. Processing Purposes
+Personal data is processed exclusively for:
+providing and improving the functionality of the Application;
+performing astrological calculations and generating personalized content;
+analytics and user experience improvements;
+displaying advertisements (if applicable);
+processing requests and providing support to users;
+compliance with the legislation of the Kyrgyz Republic.
+Personal data is not used for automated decision-making that produces legally significant effects.
+4.2. Legal Grounds
+The processing of personal data is carried out on the basis of:
+user consent;
+the necessity of fulfilling the user agreement;
+the requirements of the legislation of the Kyrgyz Republic.
+5. Advertising and Analytics
+If the Application uses advertising:
+advertising identifiers (Advertising ID) may be used;
+advertising may be personalized;
+The user has the right to limit ad personalization in their device settings.
+Google services (including Google Play Services, Firebase, and similar tools) may be used for the Application's analytics, stability, and security purposes.
+6. Sharing Data with Third Parties
+We do not sell users' personal data.
+The transfer of personal data is permitted only in the following cases:
+upon a lawful request from government authorities;
+to service providers (hosting, analytics, advertising partners), solely within the scope of the stated processing purposes;
+when using Google services;
+in the event of a business reorganization (merger, acquisition, or asset transfer);
+with the user's explicit consent.
+All third parties are required to comply with confidentiality and personal data protection requirements.
+7. Cross-Border Data Transfer and Storage
+Personal data may be stored and processed both within the territory of the Kyrgyz Republic and outside of it, provided that the requirements of the legislation of the Kyrgyz Republic are met and an adequate level of personal data protection is ensured.
+Data is not retained for longer than is necessary to fulfill the purposes for which it is processed, unless a longer retention period is required by law.
+8. User Rights
+The user has the right to:
+to receive information about their personal data;
+to demand the correction, blocking, or deletion of data;
+withdraw consent to the processing of personal data;
+restrict the processing of personal data;
+to seek protection of their rights by contacting the authorized bodies or a court.
+To exercise their rights, the user may submit a request via the email address provided in the "Contacts" section.
+9. Children
+The app is not intended for use by children under the age of 14 and is not directed at children under the age of 13, in accordance with Google Play requirements.
+We do not knowingly collect personal data from children.
+If you become aware that a child's data has been shared with us, please contact us to have it removed.
+10. Personal Data Protection Measures
+We implement the necessary organizational and technical measures to protect personal data, including:
+storage of data on secure servers;
+restricting data access to authorized personnel only;
+the use of confidentiality agreements;
+Regular measures to prevent unauthorized access.
+The user is solely responsible for taking measures to protect their device and credentials.
+11. Policy Changes
+We reserve the right to make changes to this Privacy Policy. The current version is always available at the link provided in Google Play.
+Continued use of the Application constitutes acceptance of the updated version.
+12. Contacts
+For all matters related to the processing of personal data, you may contact us:
+Email: info@kyulchoro.kg
+
+
+
+
+

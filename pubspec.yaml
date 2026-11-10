@@ -1,0 +1,170 @@
+name: asteria_app
+description: "Asteria App"
+publish_to: "none"
+version: 1.0.5+65
+
+environment:
+  sdk: ^3.10.0
+  flutter: ">=3.38.1"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.8
+  intl: ^0.20.2
+  flutter_bloc: ^9.1.1
+  equatable: ^2.0.5
+  go_router: ^16.1.0
+  get_it: ^8.2.0
+  hive: ^2.2.3
+  path_provider: ^2.1.5
+  package_info_plus: 9.0.1
+  flutter_dotenv: ^5.2.1
+  dio: ^5.9.0
+  uuid: ^4.5.1
+  crypto: ^3.0.6
+  bottom_picker: ^4.1.0
+  flutter_svg: ^2.0.13
+  google_places_flutter: ^2.1.1
+  table_calendar: ^3.2.0
+  provider: ^6.1.5+1
+  lottie: ^3.3.2
+  url_launcher: ^6.3.2
+  device_preview: ^1.3.1
+  appsflyer_sdk: ^6.17.8
+  in_app_purchase: ^3.3.0
+  in_app_purchase_android: ^0.5.2
+  in_app_purchase_storekit: ^0.4.11+1
+  app_tracking_transparency: ^2.0.6+1
+  app_links: 7.2.1
+  share_plus: ^12.0.1
+  geolocator: ^14.0.2
+  geocoding: ^5.0.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  integration_test:
+    sdk: flutter
+
+  flutter_lints: ^5.0.0
+  intl_utils: ^2.8.11
+  very_good_analysis: ^9.0.0
+  flutter_launcher_icons: ^0.14.4
+  fake_async: ^1.3.3
+  in_app_purchase_platform_interface: ^1.4.1
+
+flutter:
+  config:
+    enable-swift-package-manager: false
+
+  uses-material-design: true
+  generate: true
+
+  assets:
+    - .env
+    - assets/lottie/
+    - assets/background/
+    - assets/images/moon_phase_days/
+    - assets/images/articles/
+    - assets/images/affirmation/
+    - assets/images/onboarding/
+    - assets/images/home/
+    - assets/images/year_animals/
+    - assets/images/cards/
+    - assets/images/cards/en/
+    - assets/images/cards/card_back/
+    - assets/images/runes/
+    - assets/images/achievements/
+    - assets/images/horoscope/
+    - assets/images/horoscope/core_positions/
+    - assets/images/shop/
+    - assets/images/anakra/
+    - assets/images/balance/
+    - assets/images/sonnik/
+    - assets/icons/
+    - assets/icons/nav_bar/
+    - assets/icons/sphere_icon/
+    - assets/icons/sub/
+    - assets/images/zodiacs/
+    - assets/images/zodiacs/constellation/
+    - assets/images/zodiacs/constellation_foreground/
+    - assets/images/zodiacs/compatibility_round/
+    - assets/images/zodiacs/round_zodiacs/
+    - assets/images/prediction_images/
+    - assets/images/payment/
+    - assets/images/auth/
+    - assets/images/onboarding/figma/
+
+    - assets/agreement_text.txt
+    - assets/agreement_text_google_play.txt
+    - assets/privacy_text.txt
+    - assets/privacy_text_google_play.txt
+    - assets/legal/en/ios/
+    - assets/legal/en/android/
+
+
+  shaders:
+    - assets/shaders/anakra_glass.frag
+
+  fonts:
+    - family: Arimo
+      fonts:
+        - asset: assets/fonts/arimo/Arimo-VariableFont_wght.ttf
+          weight: 400
+        - asset: assets/fonts/arimo/Arimo-VariableFont_wght.ttf
+          weight: 700
+    - family: PlayfairDisplay
+      fonts:
+        - asset: assets/fonts/playfair/PlayfairDisplay-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/playfair/PlayfairDisplay-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/playfair/PlayfairDisplay-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/playfair/PlayfairDisplay-Bold.ttf
+          weight: 700
+    - family: Urbanist
+      fonts:
+        - asset: assets/fonts/urbanist/Urbanist-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/urbanist/Urbanist-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/urbanist/Urbanist-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/urbanist/Urbanist-Bold.ttf
+          weight: 700
+    - family: Lora
+      fonts:
+        - asset: assets/fonts/lora/Lora-VariableFont_wght.ttf
+          weight: 500
+        - asset: assets/fonts/lora/Lora-VariableFont_wght.ttf
+          weight: 600
+        - asset: assets/fonts/lora/Lora-VariableFont_wght.ttf
+          weight: 700
+    - family: Onest
+      fonts:
+        - asset: assets/fonts/onest/Onest-VariableFont_wght.ttf
+          weight: 400
+        - asset: assets/fonts/onest/Onest-VariableFont_wght.ttf
+          weight: 600
+
+flutter_intl:
+  enabled: true
+  class_name: AppLocalizations
+  main_locale: en
+  arb_dir: lib/core/localization/l10n
+  output_dir: lib/core/localization/generated
+  use_deferred_loading: false
+
+# dart run flutter_launcher_icons
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "app_icon.png"
+  image_path_ios: "app_icon_ios.png"
+  min_sdk_android: 21
+  remove_alpha_ios: true

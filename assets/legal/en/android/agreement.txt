@@ -1,0 +1,71 @@
+Terms of Use
+Revision dated July 22, 2026
+1. Subject of the User Agreement.
+1.1 The subject of this User Agreement governs the relationship between the owner of the Asteria web application (hereinafter referred to as the "Application"), along with the features and services available within it (hereinafter referred to as the "Services"), and an adult individual using the Asteria web application (hereinafter referred to as the "User").
+By using the Asteria web application, the User agrees to comply with the terms described in this User Agreement.
+1.2 The User Agreement governs the use of all Services. The provisions of this User Agreement are binding on all users of Asteria's Services. Users may review the current version of the User Agreement by following the relevant link displayed on the registration and/or login screen of the Asteria web application.
+1.3 The User Agreement may be amended by the owner of the Asteria web application without any prior notice.
+2. Description of Services.
+2.1 The Asteria internet application provides access to a suite of various services available via personal computer and a range of mobile devices.
+2.2 The Services are available 24 hours a day, 7 days a week, except during necessary maintenance and repair work, which will be scheduled at times that cause the least possible disruption to the User's interests.
+2.3 The User acknowledges and agrees that all services of the "Asteria" web application are provided "as is." The owner of the "Asteria" web application assumes no liability for any direct or indirect damages suffered by the User as a result of using or being unable to use the "Asteria" web application, or incurred through reliance on or by means of its services, or arising from any errors in the services or interruptions in their operation.
+2.4 The owner of the "Asteria" internet application also assumes no liability for any delay, deletion, or failure to upload any User data.
+2.5. The owner of the "Asteria" internet application may provide space for advertisements. The advertiser is responsible for the content of the advertisements.
+2.6. A User who is dissatisfied with the terms, rules, or quality of the services provided has the exclusive right to discontinue use of the services. In such case, the mutual settlements between the parties shall be carried out in accordance with the terms set forth in Sections 6 and 8 of this Agreement.
+3. Entry into Force of the User Agreement.
+3.1 This User Agreement, as well as any amendments and additions thereto, shall take effect upon their publication on the registration and authorization screen of the Asteria web application.
+The User's acceptance of the terms of this Agreement is expressed by registering in the "Asteria" web application, performing other actions that confirm acceptance of its terms, or by actually using the Services.
+3.2 The User has the right to decline any amendments and modifications to the Terms of Use made by the owner of the Asteria web application, which shall constitute the User's refusal to use the Asteria web application.
+4. Denial of Services.
+4.1 The refusal to provide services may be caused by the following circumstances:
+4.1.1 The provision of services may pose a threat to the health and safety of individuals;
+4.1.2 The provision of services is impossible due to any physical, technical, technological, man-made, natural, or other objective impediments;
+4.1.3 The User does not agree to these Terms of Service or fails to make timely payments for paid services;
+4.1.4 The user attempts to hack or otherwise cause any damage to the system.
+4.1.5 The provision of services was previously terminated due to the User's violation of this Agreement.
+5. Terms of Use for Services
+5.1 When using the services, the following actions are prohibited:
+5.1.1 Restricting or otherwise impeding other Users' access to or use of the services.
+5.1.2 To engage in unauthorized (unsanctioned) access to any technological components (nodes), programs, databases, or other constituent elements of the services.
+5.2 The User bears full responsibility for all information, data, text, messages, and other materials (hereinafter "Materials") uploaded by the User to the Asteria web application. This means that the User, and not the owner of the Asteria web application, is solely responsible for all Materials that the User uploads to the Asteria web application.
+5.3 The owner of the Asteria web application reserves the right to send informational notifications to the User via email.
+5.4. Community Guidelines. When posting Materials, including posts, comments, images, and profile information, you must not post:
+(a) sexual content, pornography, or nudity, or any content that sexualizes minors;
+(b) content that promotes, advertises, or facilitates the distribution of drugs or other illegal substances;
+(c) depictions or descriptions of violence or cruelty, including cruelty to animals;
+(d) threats, bullying, harassment, or insults directed at other users;
+(e) hate speech or discrimination based on race, ethnicity, nationality, religion, sex, gender, sexual orientation, disability, or any other characteristic;
+(f) extremist or terrorist material;
+(g) content that encourages self-harm, suicide, or eating disorders;
+(h) offers to sell weapons or illegal goods or services;
+(i) spam, scams, advertising, or links to third-party resources without the Application owner's permission;
+(j) other people's personal data, including contact details, addresses, documents, or birth data, without their consent;
+(k) images of other people without their consent, or content impersonating another person;
+(l) encouragement to refuse medical care or to make medical, legal, or financial decisions based solely on astrological interpretations;
+(m) advertising of real-money gambling;
+(n) content that infringes intellectual property rights.
+5.5. Zero Tolerance. We do not tolerate objectionable content or abusive users. By posting Materials, you confirm that you agree to the community guidelines set out in this section.
+5.6. Filtering and Moderation. We use automated filtering and moderation to prevent objectionable content from being posted. Content may be rejected at the time of posting, hidden, modified (for example, by masking profanity), or removed without prior notice.
+5.7. Reporting and Blocking. You can report a post or a user and block a user directly in the Application. We review reports within 24 hours, remove content that violates these guidelines, and take action against the user responsible. Reports can also be sent to support@asteria-calendar.com.
+5.8. Consequences of Violations. If you violate the community guidelines, we may remove content, restrict access to features, or suspend or permanently ban your account. We may report content involving the sexual exploitation of minors, credible threats to life or health, or other unlawful activity to the competent authorities.
+6. Payment for Services.
+6.1 The Services are provided free of charge with no time limit, but with limited functionality; access to the full paid features of the Services requires a paid subscription.
+6.2 The prices for the paid services provided are set in rubles.
+6.3 Information on the current subscription status and its validity period is displayed on the "Account" page upon logging in with the User's personal username and password.
+6.4 The User is solely responsible for maintaining the confidentiality and security of their password.
+6.5 The User is solely responsible for all costs associated with accessing the Services (internet service provider fees, etc.).
+7. Liability for Non-Performance of the Agreement.
+7.1 The owner of the Asteria web application reserves the right to terminate the User's access to the Services, or any part thereof, without prior notice if the User engages in activities that the owner of the Asteria web application deems to be in violation of this Agreement.
+7.2 The User agrees not to name the owner of the Asteria internet application as a defendant or co-defendant in any claims arising from obligations or expenses related to the User's breach of this Agreement, or any breach committed by other individuals using the User's login and password.
+8. Return Policy.
+A user of the Asteria internet application has the right to cancel a paid subscription in the manner prescribed by this Agreement and applicable law.
+8.2. Subscription fees are refundable in the following cases:
+- erroneous or duplicate charges;
+- the inability to provide paid functionality due to the fault of the application owner;
+- other cases provided for by the legislation of the Kyrgyz Republic.
+8.3. If the User has begun using the features included in the paid subscription, the cost of services actually rendered may be deducted from any refund in cases permitted by applicable law.
+8.4. To submit a return request for review, the User must send an inquiry through the contact details provided on the official website or in the application, specifying their account information, payment date, amount, and reason for the request.
+8.5. The application will be reviewed within a reasonable timeframe, after which the User will be notified of the decision made. If the decision is favorable, the refund will be issued using the same payment method that was used for the original transaction, unless otherwise required by applicable law or the rules of the payment system.
+8.6. Refunds will not be issued in cases where the inability to use the Services arises due to reasons attributable to the User (including lack of Internet access, hardware incompatibility, or loss of access to the account as a result of the User's failure to maintain the confidentiality of their credentials), unless otherwise required by applicable law.
+8.7. This Refund Policy applies in conjunction with the other provisions of this Agreement and does not limit any rights granted to the User under applicable law.
+

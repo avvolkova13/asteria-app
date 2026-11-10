@@ -1,0 +1,346 @@
+PRIVACY POLICY
+Asteria web applications
+Version: 2.0
+Effective Date: July 24, 2026
+This Policy has been prepared for the Asteria application, distributed through, among other channels, the Apple App Store. It explains what personal data TOOL SAFE SOLUTIONS LIMITED processes, for what purposes, on what legal grounds, to whom the data may be disclosed, how long it is retained, and what rights users have.
+1. General Provisions and Information About the Operator
+1.1. This Privacy Policy (hereinafter referred to as the "Policy") applies to the use of the Asteria mobile and/or web application, associated web pages, features, support services, and other digital services that reference this Policy (collectively referred to as the "Application").
+1.2. The data controller is:
+TOOL SAFE SOLUTIONS LIMITED ("Company," "we," "us," "our").
+Registered address of the Company: Raymont, Welbury, Northallerton, DL6 2SG, United Kingdom.
+Registration number: 16708611.
+Contact for privacy inquiries and the exercise of data subject rights: support@asteria-calendar.com
+1.3. Depending on the nature of the specific interaction, the Company may act as an independent personal data controller. Hosting, analytics, support, notification delivery, and other service providers typically act as data processors on behalf of the Company, unless otherwise expressly required by law or contract.
+1.4. This Policy does not constitute an agreement for the provision of astrological, medical, psychological, financial, or any other professional services. The content of the Application is intended for informational and entertainment purposes only.
+2. Applicable Law and Apple Standards
+2.1. The processing of personal data is carried out in accordance with applicable UK legislation, including:
+UK General Data Protection Regulation (UK GDPR), including requirements on lawfulness, fairness, transparency, data minimisation, accuracy, storage limitation, integrity and confidentiality;
+Data Protection Act 2018;
+and, where applicable, to electronic messages, identifiers, cookies, and similar technologies;
+Data (Use and Access) Act 2025 and any other acts amending or supplementing the UK data protection regime;
+other mandatory provisions of the United Kingdom applicable to the specific processing.
+2.2. With respect to the distribution of the Application through the Apple App Store, the Company also adheres to the applicable App Store Review Guidelines, App Privacy Details requirements, App Tracking Transparency requirements, device permission usage rules, account and data deletion requirements, as well as third-party SDK and privacy manifest requirements.
+2.3. If the user is located in a jurisdiction whose laws grant additional mandatory rights, the Company shall comply with such requirements to the extent that they apply to the Company and the relevant processing activities.
+3. Core Processing Principles
+The company processes personal data based on the following principles:
+data is collected for specified, explicit, and legitimate purposes and is not processed in a manner incompatible with those purposes;
+the volume of data is limited to what is reasonably necessary for the operation of the relevant function;
+where possible, on-device processing, aggregation, pseudonymization, and other risk mitigation measures are applied;
+iOS permissions are requested immediately before the corresponding feature is used and are accompanied by a clear explanation;
+Declining an optional permission, including a tracking permission, must not deprive the user of access to core functionality that is objectively independent of such permission;
+Personal data is never sold or shared with data brokers.
+4. Categories of Data Collected
+[[table]]
+[[row]]
+[[cell]]
+Category
+[[cell]]
+Examples
+[[cell]]
+Primary Purpose
+[[row]]
+[[cell]]
+Profile and Account Details
+[[cell]]
+Name, alias, account ID, email address, login credentials, selected language, profile settings.
+[[cell]]
+Registration, authentication, feature provisioning, user communication, security.
+[[row]]
+[[cell]]
+Data for astrological calculations
+[[cell]]
+Date, exact or approximate time, and place of birth; city/country entered by the user; calculation results and selected calculation parameters.
+[[cell]]
+Generating the calculations and personalized content requested by the user.
+[[row]]
+[[cell]]
+Location
+[[cell]]
+The device's precise or approximate location — only with the user's system permission; or a location entered manually.
+[[cell]]
+Automatic detection of the location for calculations and functions explicitly selected by the user.
+[[row]]
+[[cell]]
+Contact Information and Inquiries
+[[cell]]
+Emails, request contents, support messages, and attached materials.
+[[cell]]
+Support, responding to inquiries, handling complaints, and rights protection.
+[[row]]
+[[cell]]
+Technical Specifications
+[[cell]]
+Device model, iOS version, App version, language, time zone, IP address, network and system parameters.
+[[cell]]
+Compatibility, security, abuse prevention, diagnostics.
+[[row]]
+[[cell]]
+Usage Data
+[[cell]]
+Launches, screens and features, session duration, interaction events, aggregated statistics.
+[[cell]]
+Analytics, interface improvements, and feature enhancements.
+[[row]]
+[[cell]]
+Diagnostic data
+[[cell]]
+Information on outages, performance, error logs, and technical events.
+[[cell]]
+Error detection and correction, stability, and security.
+[[row]]
+[[cell]]
+Advertising and tracking data — if applicable
+[[cell]]
+IDFA and other data used for cross-app/cross-site tracking by third-party companies, only with ATT permission.
+[[cell]]
+Personalized advertising, ad attribution, or ad measurement — only where valid consent and a legal basis exist.
+[[row]]
+[[cell]]
+Payment details — if applicable
+[[cell]]
+Purchase status details, subscription information, product details, transaction date, and transaction token/ID. The Company does not receive full bank card details from Apple.
+[[cell]]
+Providing paid content, verifying access rights, restoring purchases, and maintaining accounting and legal records.
+[[row]]
+[[cell]]
+Notifications
+[[cell]]
+The device push token and notification settings — after the user grants permission.
+[[cell]]
+Delivery of user-selected notifications and service messages.
+[[/table]]
+
+4.2. The Company does not intend to collect special categories of personal data, including information relating to health, religion, political views, sexual life, or biometric data. Users should not submit such information through free-text fields or inquiries unless it is strictly required for a specific request. Should such data be provided voluntarily, the Company will limit its use and will delete or anonymize it once retention is no longer necessary.
+4.3. A user's date, time, and place of birth are not, in and of themselves, considered by the Company to constitute health or religious information. However, the results of analyses and an interest in astrological content may give rise to inferences about a user. The Company does not use such inferences to make legally significant decisions, or to determine eligibility for services, creditworthiness, employment, insurance, or any other decisions with a comparably material effect.
+5. Data Sources and Collection Methods
+directly from the user during registration, data entry, use of features, making a purchase, or contacting support;
+automatically from the device and the Application via system APIs, logs, analytics, and diagnostic tools;
+from Apple in connection with downloading the Application, purchases, subscriptions, purchase restoration, receipt verification, and Apple services, to the extent provided by Apple;
+from the Company's contractors, where necessary for hosting, security, analytics, support, or notification delivery;
+from publicly available sources only in exceptional cases where it is necessary to prevent fraud, protect rights, or enforce the law.
+6. Purposes and Legal Bases for Processing
+[[table]]
+[[row]]
+[[cell]]
+Goal
+[[cell]]
+Legal basis
+[[row]]
+[[cell]]
+Account creation, authentication, and delivery of requested features
+[[cell]]
+The necessity of performing a contract or taking steps at the request of the user prior to entering into a contract — Article 6(1)(b) UK GDPR.
+[[row]]
+[[cell]]
+Astrological Calculations and Personalized Content
+[[cell]]
+Performance of contract — Article 6(1)(b); for non-mandatory location data, also consent — Article 6(1)(a).
+[[row]]
+[[cell]]
+Support and Appeals Processing
+[[cell]]
+Performance of a contract; the Company's legitimate interest in providing user support and protecting its rights — Article 6(1)(f).
+[[row]]
+[[cell]]
+Security, abuse prevention, account protection
+[[cell]]
+Legitimate interest in ensuring security, preventing fraud, and protecting the Application and its users — Article 6(1)(f); legal obligation — Article 6(1)(c), where applicable.
+[[row]]
+[[cell]]
+Diagnostics, non-personalized analytics, and product improvement
+[[cell]]
+Legitimate interest in maintaining and improving the Application — Article 6(1)(f), balanced against the rights and reasonable expectations of the user; consent, where required by PECR or platform settings.
+[[row]]
+[[cell]]
+Push notifications
+[[cell]]
+User consent and system-level permission; for strictly service-related messages — performance of a contract or legitimate interest, depending on the content.
+[[row]]
+[[cell]]
+Purchases and Subscriptions through Apple
+[[cell]]
+Performance of a contract; fulfilment of accounting, tax, and other legal obligations — Articles 6(1)(b) and 6(1)(c).
+[[row]]
+[[cell]]
+Personalized advertising and tracking
+[[cell]]
+Consent only — Article 6(1)(a), App Tracking Transparency permission, and compliance with PECR where applicable.
+[[row]]
+[[cell]]
+Defense and Assertion of Legal Claims
+[[cell]]
+Legitimate interest — Article 6(1)(f), legal obligation — Article 6(1)(c).
+[[row]]
+[[cell]]
+Corporate Restructuring
+[[cell]]
+Legitimate interest in organizing and developing business — Article 6(1)(f), subject to the observance of confidentiality and user rights.
+[[/table]]
+
+6.2. When the Company relies on legitimate interest, it assesses the purpose, the necessity of processing, and the impact on the user's rights. The user has the right to object to such processing; the Company will cease it unless it demonstrates compelling legitimate grounds that override the user's interests, or the necessity of processing for legal claims.
+6.3. Where processing is based on consent, that consent is voluntary, specific, informed, and unambiguous. It may be withdrawn at any time without affecting the lawfulness of processing carried out prior to its withdrawal.
+7. Apple Permissions and Access to Device Features
+7.1. The application may only request iOS permissions for its declared functionality. Apple's system prompt is a separate user control mechanism and does not replace this Policy.
+[[table]]
+[[row]]
+[[cell]]
+Permission
+[[cell]]
+Purpose and Limitations
+[[row]]
+[[cell]]
+Location
+[[cell]]
+Determining a location for astrological calculations or another selected function. The user can choose between precise or approximate location if iOS offers that option, or enter a location manually.
+[[row]]
+[[cell]]
+Notifications
+[[cell]]
+Delivery of service or user-selected notifications.
+[[row]]
+[[cell]]
+Tracking (ATT)
+[[cell]]
+Requested only if the App actually tracks activity across other companies' apps or websites, or uses the IDFA for tracking purposes.
+[[row]]
+[[cell]]
+Photos/camera/contacts/calendar — if the feature is added
+[[cell]]
+Access is permitted only with a separate system-level permission and exclusively for a clearly defined user-facing function. The Privacy Policy and App Privacy Details must be updated prior to any such data collection.
+[[/table]]
+
+Permissions can be changed in the device's Settings. Revoking a permission may only limit the specific feature for which access is objectively required.
+8. App Tracking Transparency, Advertising, and Identifiers
+8.1. "Tracking" within the meaning of Apple's guidelines refers, in particular, to linking data collected about a user or device within the App with third-party data for the purposes of targeted advertising or advertising measurement, as well as to sharing such data with a data broker.
+8.2. If the Application engages in tracking, the Company shall use the AppTrackingTransparency framework and obtain the user's system permission prior to initiating any tracking. Before permission is granted, the Company shall not access a non-zero IDFA value or employ alternative methods, including fingerprinting, to circumvent the user's choice.
+8.3. Opting out of tracking does not restrict access to the App's core functionality and does not result in less favorable conditions, except for the absence of personalized advertising or features that are objectively dependent on permitted tracking.
+8.4. Users may change their tracking permission in iOS settings. The Company also provides a mechanism for withdrawing marketing consent where applicable.
+8.5. If personalized advertising and tracking are not used in the current version of the App, the ATT prompt must not be displayed, the IDFA must not be collected, and the App Privacy Details must accurately reflect the actual absence of tracking.
+9. Analytics, Diagnostics, and Third-Party SDKs
+9.1. The Company may use its own or third-party tools for analytics, diagnostics, crash reporting, push notification delivery, hosting, and support. The specific list must reflect the actual technical configuration of the Application and the disclosures made in App Store Connect.
+9.2. Before integrating a third-party SDK, the Company evaluates its purpose, data scope, configuration, legal basis, transfers outside the United Kingdom, retention periods, Apple's privacy manifest and signature requirements, and the ability to disable optional data collection.
+9.3. The SDK provider may not use Application data for its own incompatible purposes, tracking, or profiling unless this is disclosed to the user, reflected in the App Privacy Details, and based on valid consent and a legal basis.
+9.4. Apple Analytics data or Apple diagnostic data may be processed by Apple in accordance with device settings and Apple's documentation. The company receives only the amount of data that Apple makes available to the developer.
+10. Purchases and Subscriptions via Apple
+10.1. If digital purchases or subscriptions are available within the App, payments are processed by Apple through In-App Purchase. The Company does not typically receive the user's full bank card number, CVV, or any other complete payment details.
+10.2. The Company may collect the transaction ID, product details, subscription status, purchase/expiration date, refund information, and any other data required for access verification, purchase restoration, abuse prevention, and accounting purposes.
+10.3. Subscription management, cancellation of auto-renewal, and refund requests are handled through Apple's services and policies, unless otherwise required by applicable law.
+11. Disclosure of Data to Recipients
+The Company may disclose data only to the extent necessary to the following categories of recipients:
+Apple — in connection with the distribution of the Application, purchases, subscriptions, push notifications, security verification, and other Apple services;
+cloud infrastructure, hosting, database, content delivery, and backup service providers;
+analytics, crash reporting, and technical monitoring providers, where actually in use;
+providers of customer support, communications, and notification delivery services;
+professional consultants, auditors, insurers, and lawyers subject to a duty of confidentiality;
+government authorities, courts, and law enforcement agencies, where disclosure is required by law or necessary to protect rights;
+a buyer, investor, or successor in the context of a reorganization, business sale, or asset transfer, subject to appropriate safeguards.
+11.2. The Company does not sell personal data. It requires processors to implement security measures no less stringent than those set forth in the agreement and applicable law, and to process data only on documented instructions when acting as processors.
+12. International Data Transfers
+12.1. The Company's suppliers and Apple's infrastructure may be located outside the United Kingdom. In such cases, data may be transferred to countries whose level of protection differs from that of the United Kingdom.
+12.2. International transfers are carried out only where an appropriate mechanism is in place, including:
+the UK adequacy regulations;
+International Data Transfer Agreement (IDTA);
+UK Addendum to the European Commission's Standard Contractual Clauses;
+a mandatory exemption provided for under the UK GDPR, applied restrictively;
+other lawful mechanisms in effect at the time of transfer.
+12.3. Where necessary, the Company carries out a transfer risk assessment and applies additional technical and organizational measures, such as encryption, pseudonymization, access restrictions, and minimization of the data transferred.
+12.4. Information about the applicable warranty, or a copy thereof, may be requested at the contact address provided in Section 22, subject to applicable confidentiality restrictions.
+13. Retention Periods
+[[table]]
+[[row]]
+[[cell]]
+Category
+[[cell]]
+Estimated timeframe
+[[row]]
+[[cell]]
+Account and Profile
+[[cell]]
+For as long as the account remains active; following deletion — up to 30 days for the technical completion of the deletion process, unless a longer retention period is required by law, security needs, or a dispute.
+[[row]]
+[[cell]]
+Astrological Calculation Data
+[[cell]]
+Until deleted by the user/account, or up to 24 months after the last activity, if the data is needed to retain history and the user has not deleted it beforehand.
+[[row]]
+[[cell]]
+Location
+[[cell]]
+Precise location data is not retained for longer than is necessary to perform the selected function; the stored place of birth is kept as part of the profile/calculation.
+[[row]]
+[[cell]]
+Support Requests
+[[cell]]
+For up to 24 months after the case is closed; longer in the event of a dispute or legal obligation.
+[[row]]
+[[cell]]
+Technical Logs and Security
+[[cell]]
+Typically up to 12 months; individual incident records — up to 6 years, where necessary for the protection of rights or investigative purposes.
+[[row]]
+[[cell]]
+Analytics and Diagnostics Data
+[[cell]]
+Typically between 3 and 24 months depending on the tool and settings; aggregated or anonymized sooner where possible.
+[[row]]
+[[cell]]
+Purchases, subscriptions, accounting and tax records
+[[cell]]
+No less than the period required by applicable law; generally, up to 6 years after the end of the relevant financial period or relationship.
+[[row]]
+[[cell]]
+ATT/advertising consents and confirmation of choice
+[[cell]]
+For as long as the relevant processing continues and for a reasonable period after it ceases, in order to confirm compliance with the requirements.
+[[row]]
+[[cell]]
+Backups
+[[cell]]
+Deleted during the normal overwrite cycle, typically within 90 days, unless isolation or longer retention is required for security purposes.
+[[/table]]
+
+13.2. Retention periods may be shortened or extended based on the volume, nature, and sensitivity of the data, the risk of unauthorized use, the purposes of processing, legal requirements, disputes, investigations, and technical backup cycles. Upon expiration of the retention period, data is deleted, irreversibly anonymized, or isolated pending secure disposal.
+14. Account and Data Deletion
+14.1. If the App allows users to create an account, it must provide users with the ability to initiate account deletion directly within the App, in accordance with Apple's requirements.
+14.2. Account deletion means removing the account from active systems and deleting or irreversibly anonymizing any associated data that the Company is not required to retain. Simply deactivating, logging out of, or uninstalling the Application from a device does not constitute account deletion.
+14.3. To prevent accidental or fraudulent deletion, the Company may request reasonable identity verification and clearly communicate the steps involved and the expected outcomes. Unreasonable barriers, including mandatory phone calls, shall not apply if the account was created through the Application without a comparable requirement.
+14.4. Certain information may be retained in restricted access after account deletion where required for tax and accounting purposes, fraud prevention, law enforcement, dispute resolution, protection of legal claims, or safety purposes. Such data is not used for marketing or profile reinstatement.
+14.5. Deleting your Asteria account does not necessarily cancel your Apple subscription. The subscription must be cancelled separately in your Apple ID/App Store settings if it is still active.
+15. User Rights
+Depending on the circumstances, the user has the following rights:
+the right to obtain information about the processing and a copy of personal data;
+the right to correct inaccurate or complete incomplete data;
+the right to request the deletion of data ("right to erasure") where there are no grounds for its further retention;
+the right to restrict processing;
+the right to receive the provided data in a structured, commonly used, and machine-readable format and to transmit it to another controller, where applicable;
+the right to object to processing based on legitimate interests, and to unconditionally object to direct marketing;
+the right to withdraw consent at any time;
+the right not to be subject to a decision based solely on automated processing that produces legal or similarly significant effects, where applicable;
+the right to lodge a complaint with the Information Commissioner's Office (ICO) and to seek redress through the courts.
+15.2. The Company typically responds without undue delay and no later than one month after receiving a request. The deadline may be extended in cases provided for by law, of which the user will be notified.
+15.3. The Company may request information necessary to verify identity but must not collect excessive data. Requests are generally fulfilled free of charge; a fee may be charged, or a request refused, only in cases permitted by law, such as where requests are manifestly unfounded or excessive in their repetition.
+16. Automated Decision-Making and Profiling
+16.1. Asteria generates personalized content based on data provided by the user, but does not use it to make decisions that produce legal effects or similarly significantly impact the user.
+16.2. Astrological calculation results must not be used as the sole basis for decisions regarding health, finances, employment, education, insurance, legal matters, or safety.
+17. Children
+17.1. The Application is not intended for children under the age of 16. The Company does not knowingly request or collect data from children under the age of 16, nor does it direct targeted advertising at them.
+17.2. If the Company becomes aware that it has received a child's data without a proper legal basis or the required consent of a person with parental responsibility, it will take reasonable steps to delete that data and close the account, unless retaining it is necessary to protect the child or comply with applicable law.
+17.3. If the Application is in the future intended for or likely to be accessible to children, the Company shall, prior to launching the relevant feature, conduct a separate risk assessment and apply the requirements of the UK Children's Code (Age Appropriate Design Code), including high privacy settings by default, minimization of geolocation and profiling, and clear age-appropriate notices.
+18. Security and Personal Data Breaches
+18.1. The Company implements proportionate technical and organizational measures, including access controls, the principle of least privilege, encryption in transit and, where justified, at rest, vulnerability management, data backup, logging, staff training, contractual confidentiality obligations, and incident response procedures.
+18.2. No method of transmission or storage is completely secure. Users are responsible for protecting their device, access code, and credentials, and must not share them with third parties.
+18.3. In the event of a security breach, the Company assesses the risk to the rights and freedoms of users and, where required by UK GDPR, notifies the ICO and affected users within the prescribed timeframes.
+19. Electronic Messages and Push Notifications
+Service messages required for account management, security, changes to terms, or contract performance may be sent without marketing consent, where permitted by law.
+19.2. Marketing emails and optional promotional push notifications are only sent where the required consent or another lawful basis under PECR exists. Users may opt out via the unsubscribe link in the message, the App or device settings, or by contacting the Company.
+20. Cookies and Similar Technologies
+20.1. Where Asteria's linked web pages use cookies, local storage, pixels, SDKs, or similar technologies, strictly necessary technologies may be used for security, login, and the delivery of a requested feature. Optional analytics or advertising technologies are only used after consent has been obtained, where this is required by PECR.
+Details regarding the name, provider, purpose, and expiration of such technologies may be disclosed in a separate cookie notice or consent settings panel.
+21. Policy Changes
+21.1. The Company may update this Policy in response to changes in legislation, functionality, data composition, vendors, or Apple's requirements. The revised version will be published within the App and/or via a link in App Store Connect, along with its effective date.
+22. Contacts and Complaints
+22.1. TOOL SAFE SOLUTIONS LIMITED (the "Company", "we", "us", "our").
+The Company's registered address is: Raymont, Welbury, Northallerton, DL6 2SG, United Kingdom.
+Registration number: 16708611.
+Contact for privacy inquiries and the exercise of data subject rights: support@asteria-calendar.com
+22.2. The User has the right to lodge a complaint with the Information Commissioner's Office (ICO), the UK's data protection supervisory authority. While it is recommended that the User first give the Company the opportunity to address the matter, this does not restrict the User's right to contact the regulator directly.

@@ -1,0 +1,257 @@
+import 'package:asteria_app/app/providers/content_provider.dart';
+import 'package:asteria_app/core/di/di.dart';
+import 'package:asteria_app/core/routing/app_route.dart';
+import 'package:asteria_app/core/ui_kit/ui_kit.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+
+class ArticlesSectionWidget extends StatefulWidget {
+  final String? excludeArticleId;
+  const ArticlesSectionWidget({Key? key, this.excludeArticleId})
+    : super(key: key);
+
+  @override
+  State<ArticlesSectionWidget> createState() => _ArticlesSectionWidgetState();
+}
+
+class _ArticlesSectionWidgetState extends State<ArticlesSectionWidget> {
+  static const double _articleCardWidth = 201;
+  static const double _articleCardGap = 16;
+
+  final ScrollController _articlesScrollController = ScrollController();
+
+  @override
+  void dispose() {
+    _articlesScrollController.dispose();
+    super.dispose();
+  }
+
+  void _onArticleTap(BuildContext context, String articleId) {
+    ArticleRoute.push(context, articleId: articleId);
+  }
+
+  void _scrollArticlesForward() {
+    if (!_articlesScrollController.hasClients) {
+      return;
+    }
+
+    final maxScrollExtent = _articlesScrollController.position.maxScrollExtent;
+    if (maxScrollExtent <= 0) {
+      return;
+    }
+
+    final nextOffset =
+        _articlesScrollController.offset + _articleCardWidth + _articleCardGap;
+    final targetOffset = nextOffset >= maxScrollExtent ? 0.0 : nextOffset;
+
+    _articlesScrollController.animateTo(
+      targetOffset,
+      duration: const Duration(milliseconds: 280),
+      curve: Curves.easeOutCubic,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isMainSection = widget.excludeArticleId == null;
+    final isDarkSection = !isMainSection;
+    final sectionTitle = isMainSection
+        ? context.l10n.articlesTitle
+        : context.l10n.articlesReadMore;
+    var articles = di.get<ContentProvider>().articles;
+    if (widget.excludeArticleId != null) {
+      articles = articles
+          .where((article) => article.id != widget.excludeArticleId)
+          .toList();
+    }
+    return Container(
+      width: double.infinity,
+      color: isMainSection ? AppColors.textPrimary : null,
+      padding: EdgeInsets.symmetric(horizontal: isMainSection ? 16 : 0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Text(
+                sectionTitle,
+                style: context.textTheme.playfairSemiBold24.copyWith(
+                  color: AppColors.white,
+                  height: 1,
+                ),
+              ),
+              const Spacer(),
+              Semantics(
+                button: true,
+                label: context.l10n.articlesScrollLabel,
+                child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: _scrollArticlesForward,
+                  child: SizedBox(
+                    width: 48,
+                    height: 24,
+                    child: Align(
+                      alignment: Alignment.centerRight,
+                      child: SvgPicture.asset(
+                        'assets/icons/right_arrow_icon.svg',
+                        width: 24,
+                        height: 24,
+                        colorFilter: const ColorFilter.mode(
+                          AppColors.warning,
+                          BlendMode.srcIn,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          SingleChildScrollView(
+            controller: _articlesScrollController,
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: [
+                for (var index = 0; index < articles.length; index++) ...[
+                  Semantics(
+                    button: true,
+                    label: context.l10n.openArticleLabel(articles[index].title),
+                    child: GestureDetector(
+                      onTap: () => _onArticleTap(context, articles[index].id),
+                      child: _ArticleCard(
+                        title: articles[index].title,
+                        category: articles[index].category,
+                        timeToRead: articles[index].timeToRead,
+                        imageName: articles[index].id,
+                        isRedesigned: isMainSection,
+                        isDarkSection: isDarkSection,
+                      ),
+                    ),
+                  ),
+                  if (index != articles.length - 1) const SizedBox(width: 16),
+                ],
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ArticleCard extends StatelessWidget {
+  final String title;
+  final String category;
+  final int timeToRead;
+  final String imageName;
+  final bool isRedesigned;
+  final bool isDarkSection;
+
+  const _ArticleCard({
+    Key? key,
+    required this.title,
+    required this.category,
+    required this.timeToRead,
+    required this.imageName,
+    required this.isRedesigned,
+    required this.isDarkSection,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 201,
+      height: 252,
+      decoration: BoxDecoration(
+        color: isRedesigned || isDarkSection
+            ? AppColors.deepPurple
+            : AppColors.cardTinted,
+        borderRadius: BorderRadius.circular(isRedesigned ? 16 : 8),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: SizedBox(
+        width: 201,
+        height: 252,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ClipRRect(
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(8),
+                topRight: Radius.circular(8),
+              ),
+              child: Image.asset(
+                'assets/images/articles/$imageName.webp',
+                width: 201,
+                height: 167,
+                fit: BoxFit.cover,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: context.textTheme.playfairMedium20.copyWith(
+                      color: isRedesigned || isDarkSection
+                          ? AppColors.white
+                          : AppColors.textPrimary,
+                      height: 1.1,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 2,
+                  ),
+                  const SizedBox(height: 8),
+                  _ArticleMetadata(category: category, timeToRead: timeToRead),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ArticleMetadata extends StatelessWidget {
+  final String category;
+  final int timeToRead;
+
+  const _ArticleMetadata({
+    Key? key,
+    required this.category,
+    required this.timeToRead,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final textStyle = context.textTheme.tertiaryUrbanistMedium14.copyWith(
+      letterSpacing: 0,
+      height: 0.9,
+    );
+
+    return Row(
+      children: [
+        Flexible(
+          child: Text(
+            category,
+            style: textStyle,
+            overflow: TextOverflow.ellipsis,
+            maxLines: 1,
+          ),
+        ),
+        const SizedBox(width: 8),
+        Container(width: 1, height: 10, color: AppColors.textTertiary),
+        const SizedBox(width: 8),
+        Text(
+          '$timeToRead ${context.l10n.readingTimeMinutes}',
+          style: textStyle,
+        ),
+      ],
+    );
+  }
+}

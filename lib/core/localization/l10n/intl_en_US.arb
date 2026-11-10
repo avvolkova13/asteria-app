@@ -1,0 +1,13 @@
+{
+  "@@locale": "en_US",
+  "googleSubscriptionPerWeek": "{price} per week",
+  "@googleSubscriptionPerWeek": {"placeholders": {"price": {"type": "String"}}},
+  "googleSubscriptionPerMonth": "{price} per month",
+  "@googleSubscriptionPerMonth": {"placeholders": {"price": {"type": "String"}}},
+  "googleSubscriptionPerYear": "{price} per year",
+  "@googleSubscriptionPerYear": {"placeholders": {"price": {"type": "String"}}},
+  "googleSubscriptionTrialTerms": "7 days free, then {price}. Renews automatically. Cancel anytime.",
+  "@googleSubscriptionTrialTerms": {"placeholders": {"price": {"type": "String"}}},
+  "googleSubscriptionRecurringTerms": "{price}. Renews automatically. Cancel anytime.",
+  "@googleSubscriptionRecurringTerms": {"placeholders": {"price": {"type": "String"}}}
+}

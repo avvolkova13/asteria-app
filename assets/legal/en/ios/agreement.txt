@@ -1,0 +1,140 @@
+ASTERIA USER AGREEMENT
+Version dated July 27, 2026
+1. GENERAL PROVISIONS
+1.1. This User Agreement (hereinafter referred to as the "Agreement") governs the relationship between TOOL SAFE SOLUTIONS LIMITED, a company registered under number 16708611, with its registered address at Raymont, Welbury, Northallerton, DL6 2SG, United Kingdom (hereinafter referred to as the "Company", "we", "us", "our"), and the individual using the Asteria application (hereinafter referred to as the "Application", and such individual as the "User", "you", "your").
+1.2. The Application provides access to digital content, features, subscriptions, communication, and other services described within the Application's interface (collectively, the "Services"). The specific set of Services available may vary depending on the device, operating system, country, pricing plan, and version of the Application.
+1.3. This Agreement is a legally binding contract. Please read its terms carefully before registering, subscribing, or using the Services. If you do not agree to these terms, do not create an account, do not purchase a subscription, and discontinue use of the Application.
+1.4. For users who download the Application from the Apple App Store, this Agreement is an end user license agreement between the User and the Company, and not between the User and Apple. Apple is not a provider of the Services and bears no responsibility for the Application, except as expressly provided under the applicable Apple terms.
+1.5. If the mandatory legislation of the country where you reside grants you rights that cannot be excluded or limited by contract, those rights remain in full force and shall prevail.
+2. ACCEPTANCE OF AGREEMENT AND AMENDMENTS
+2.1. You accept the Agreement by installing or launching the Application, creating an account, clicking an agree button, purchasing a subscription, or actually using the Services.
+2.2. We reserve the right to amend the Agreement to reflect changes in legislation, Apple's requirements, functionality, payment models, security measures, or business practices. Material changes will not be applied retroactively without a lawful basis.
+2.3. We will notify you of material changes via the App, by email, or by other reasonable means before they take effect, where required by law. Your continued use after the effective date of any changes constitutes acceptance of the updated version, unless applicable law requires separate consent.
+2.4. If you do not agree with the changes, you may stop using the Services, cancel your subscription, and delete your account. Already paid periods are governed by the terms that were in effect at the time of payment, unless otherwise required by law or Apple's guidelines.
+3. AGE AND LEGAL CAPACITY
+3.1. You may enter into this Agreement on your own if you are at least 16 years of age and have the legal capacity required under applicable law. If the laws of your country set a higher age for independently entering into contracts or for the processing of personal data, that higher age requirement shall apply.
+3.2. If the User has not reached the age of full contractual capacity, use is permitted only with the consent and supervision of a parent or legal guardian, provided that this is allowed by the Application and applicable law.
+3.3. The Application is not intended for children under the age of 13. We reserve the right to request age verification and to restrict or terminate access if we have reasonable grounds to believe that the requirements of this section have been violated.
+4. ACCOUNT AND SECURITY
+4.1. Registration may be required to access certain features. You agree to provide accurate, up-to-date, and complete information and to keep it current at all times.
+4.2. You are responsible for keeping your login credentials secure and for any actions carried out through your account, except where such actions result from a security breach on the part of the Company or other circumstances for which you are not legally liable.
+4.3. Notify us immediately if you suspect unauthorized access. We may temporarily restrict the account to protect the User, other individuals, or the Services.
+4.4. You may not create an account on behalf of another person without proper authorization, nor sell, transfer, or share an account, unless such actions are explicitly permitted by the Application's functionality.
+5. APPLICATION LICENSE
+5.1. Subject to your compliance with the Agreement, the Company grants you a limited, personal, revocable, non-exclusive, non-transferable, and non-sublicensable license to install and use the Application on compatible devices solely for your personal, non-commercial purposes.
+5.2. The license for the Application obtained through the Apple App Store is limited to use on Apple devices that you own or control, in accordance with the Usage Rules set forth in the Apple Media Services Terms and Conditions, including access via Family Sharing or legacy contacts where permitted by Apple.
+5.3. This Agreement does not transfer to you any ownership rights in the Company's Application, source code, databases, designs, trademarks, content, or technologies.
+5.4. Updates, patches, and new versions are part of the Application and are governed by this Agreement, unless they are accompanied by separate terms.
+6. ACCEPTABLE USE
+6.1. You agree to use the Services lawfully, in good faith, with due regard for the rights of others and applicable technical limitations.
+6.2. The following is prohibited:
+violate the law, intellectual property rights, privacy rights, or any other rights of third parties;
+gain unauthorized access to systems, accounts, APIs, servers, or data;
+distribute malicious code, carry out attacks, vulnerability scanning, circumvention of restrictions, or interference with the operation of the Services;
+decompile, disassemble, reverse engineer, or attempt to extract the source code, except where expressly permitted by applicable mandatory law;
+use bots, scrapers, automated tools, or make excessive requests without prior written permission;
+copy, resell, rent, commercially exploit, or create derivative products based on the Services without permission;
+impersonate another person, engage in deception, commit fraud, or use the Services for any unlawful activity;
+upload illegal, offensive, discriminatory, threatening, pornographic, or rights-infringing content.
+6.3. We reserve the right to implement reasonable technical measures to prevent misuse and ensure security, without limiting any of the User's statutory rights.
+7. USER CONTENT
+7.1. If the Application allows you to upload texts, images, messages, or other materials ("User Content"), the rights to such content remain with you or the respective rights holder.
+7.2. You grant the Company a non-exclusive, royalty-free, worldwide license to store, reproduce, technically process, transmit, and display User Content solely to the extent necessary to provide, protect, and improve the Services.
+7.3. You confirm that you have the rights and permissions to your User Content. We may remove or restrict access to content that violates applicable law, this Agreement, third-party rights, or Apple's guidelines.
+7.4. If the Services allow for the public posting of content, you independently determine the scope of what you publish and acknowledge that the information you post may be accessible to other individuals.
+7.5. Community Guidelines. When posting User Content, including posts, comments, images, and profile information, you must not post:
+(a) sexual content, pornography, or nudity, or any content that sexualizes minors;
+(b) content that promotes, advertises, or facilitates the distribution of drugs or other illegal substances;
+(c) depictions or descriptions of violence or cruelty, including cruelty to animals;
+(d) threats, bullying, harassment, or insults directed at other users;
+(e) hate speech or discrimination based on race, ethnicity, nationality, religion, sex, gender, sexual orientation, disability, or any other characteristic;
+(f) extremist or terrorist material;
+(g) content that encourages self-harm, suicide, or eating disorders;
+(h) offers to sell weapons or illegal goods or services;
+(i) spam, scams, advertising, or links to third-party resources without the Company's permission;
+(j) other people's personal data, including contact details, addresses, documents, or birth data, without their consent;
+(k) images of other people without their consent, or content impersonating another person;
+(l) encouragement to refuse medical care or to make medical, legal, or financial decisions based solely on astrological interpretations;
+(m) advertising of real-money gambling;
+(n) content that infringes intellectual property rights.
+7.6. Zero Tolerance. We do not tolerate objectionable content or abusive users. By posting User Content, you confirm that you agree to the community guidelines set out in this section.
+7.7. Filtering and Moderation. We use automated filtering and moderation to prevent objectionable content from being posted. Content may be rejected at the time of posting, hidden, modified (for example, by masking profanity), or removed without prior notice.
+7.8. Reporting and Blocking. You can report a post or a user and block a user directly in the Application. We review reports within 24 hours, remove content that violates these guidelines, and take action against the user responsible. Reports can also be sent to support@asteria-calendar.com.
+7.9. Consequences of Violations. If you violate the community guidelines, we may remove content, restrict access to features, or suspend or permanently ban your account. We may report content involving the sexual exploitation of minors, credible threats to life or health, or other unlawful activity to the competent authorities.
+8. PAID FEATURES AND SUBSCRIPTIONS
+8.1. Some of the Services may be provided free of charge, while others are available for a fee, including one-time purchases and automatically renewing subscriptions. The product description, duration, price, currency, and available features are displayed prior to purchase confirmation.
+8.2. Purchases of digital content and subscriptions in the iOS version are made through Apple's In-App Purchase mechanism and are processed by Apple. Payment relations, billing, taxes, payment methods, and receipts are also governed by Apple's terms and conditions.
+8.3. An auto-renewable subscription renews for the same period unless the User cancels it at least 24 hours before the end of the current period, or within any other timeframe displayed by Apple. The renewal charge may be applied within 24 hours prior to the end of the period.
+8.4. Subscription management and cancellation are handled through your Apple ID / App Store settings. Deleting the App or your account does not in itself cancel the subscription; it must be cancelled separately through Apple.
+8.5. Upon cancellation, access to paid features is generally retained until the end of the current billing period. Cancellation prevents the next renewal but does not automatically entitle the user to a prorated refund, except as required by law or Apple's policies.
+8.6. If a free or discounted trial period is offered, its duration and terms are displayed prior to checkout. Any unused portion of the trial period may be forfeited upon purchasing a subscription, where indicated by Apple.
+8.7. The Company may change the price or content of future subscription periods in compliance with Apple's requirements and applicable law. Apple may request your consent to a price increase. If consent is not provided, the subscription may not renew.
+8.8. The purchase restoration feature is provided in accordance with Apple's requirements and available technical functionality.
+9. CANCELLATIONS, REFUNDS, AND CONSUMER RIGHTS
+9.1. For purchases processed by Apple, refund requests are handled by Apple in accordance with the App Store guidelines and applicable law. The Company cannot independently reverse a payment made through Apple or guarantee that a refund will be approved.
+9.2. Nothing in the Agreement limits your statutory rights under the Consumer Rights Act 2015. Digital content must match its description, be of satisfactory quality, and fit for any particular purpose made known to the Company.
+9.3. If the digital content does not conform to the contract, you may be entitled to a remedy or replacement, a price reduction, or a refund, in the cases and manner provided by law.
+9.4. If you are a consumer in the United Kingdom and have explicitly agreed to the immediate supply of digital content, acknowledging that your applicable 14-day right of withdrawal will be forfeited, that right may cease once supply has begun. This does not affect your rights in relation to content that is defective or not as described.
+9.5. Erroneous or duplicate charges should be disputed with Apple immediately and reported to the Company for technical review. We will provide reasonable assistance; however, the final decision regarding any refund for a payment processed by Apple rests with Apple.
+10. AVAILABILITY, CHANGES, AND SUPPORT
+10.1. We strive to maintain reasonable availability of the Services, but we do not guarantee uninterrupted or error-free operation. Downtime may occur due to maintenance, updates, outages, communication failures, third-party provider actions, and other circumstances.
+10.2. We may modify, add, or discontinue individual features where reasonably necessary for security, legal compliance, Apple's requirements, product improvement, or the removal of an unused feature. Any material degradation of a paid product during the current subscription period does not limit your statutory rights.
+10.3. The Company is responsible for the maintenance and support of the Application to the extent required by law and this Agreement. Apple has no obligation to provide any maintenance or support services for the Application.
+Up-to-date support contact information must be available within the App or on the App's App Store page.
+11. INTELLECTUAL PROPERTY
+11.1. All rights to the Application and Services belong to the Company or its licensors. The names, logos, interfaces, graphics, source code, texts, and databases are protected by intellectual property laws.
+11.2. Any feedback may be used by the Company without compensation, provided that doing so does not transfer to the Company your personal data or proprietary materials beyond what is necessary.
+11.3. If a third party claims that the Application or your use of it infringes their intellectual property rights, the Company — not Apple — is solely responsible for investigating, defending, settling, and resolving such a claim to the extent required by law.
+11.4. Reports of alleged rights infringement must be submitted to the Company's contact details and should include the subject of the right, the disputed material, the grounds for the claim, and the claimant's contact information.
+12. THIRD-PARTY SERVICES AND ADVERTISING
+12.1. The Application may contain links, integrations, SDKs, advertisements, or third-party content. Such third parties may apply their own terms and privacy policies.
+12.2. The Company does not control third-party services and is not responsible for them, except where liability arises by law or as a result of our breach of the duty to exercise reasonable care.
+12.3. The use of Apple services is governed by separate Apple terms and conditions. The mention of any third party does not imply endorsement, partnership, or warranty.
+13. CONFIDENTIALITY AND DATA
+13.1. The processing of personal data is governed by the Asteria Privacy Policy, available in the Application and on the product page. The Policy is a separate document and should be read in conjunction with this Agreement.
+13.2. You agree not to transmit the personal data of other individuals through the Services without a lawful basis and the required notifications.
+Device permissions, notifications, tracking, and advertising identifiers are used solely in accordance with device settings, Apple's requirements, and the Privacy Policy.
+14. ACCOUNT DELETION AND TERMINATION OF USE
+14.1. You may stop using the App at any time. If the App supports account creation, it must provide a way to initiate account deletion directly within the App.
+14.2. Deleting an account results in the deletion or anonymization of associated data, except for data that the Company is required or entitled to retain in order to comply with applicable law, fulfill accounting obligations, prevent fraud, resolve disputes, or protect its rights.
+14.3. Deleting your account does not automatically cancel an active Apple subscription. It must be cancelled separately in your Apple ID settings.
+14.4. We may suspend or terminate access in the event of a material breach of the Agreement, a security threat, fraud, illegal activity, or upon request from a competent authority. Where reasonably practicable and legally permissible, we will notify you and provide an opportunity to remedy the breach.
+14.5. Upon termination, provisions that by their nature are intended to survive shall remain in effect, including those relating to intellectual property rights, limitations of liability, dispute resolution, and payment obligations for Services already rendered.
+15. WARRANTIES AND MANDATORY RIGHTS
+15.1. The Services are provided with reasonable skill and care. Nothing in the Agreement excludes conditions or warranties that cannot be excluded under the Consumer Rights Act 2015 or any other applicable mandatory law.
+15.2. To the extent permitted by law, the Company does not warrant that the Services will meet all individual expectations, operate without interruption on any device, or be compatible with every third-party system.
+15.3. If the Application does not conform to the applicable warranty, you may notify Apple, and Apple may refund the purchase price of the Application, if any was paid. To the maximum extent permitted by applicable law, Apple will have no other warranty obligation whatsoever with respect to the Application.
+16. LIMITATION OF LIABILITY
+16.1. Nothing in the Agreement excludes or limits liability for death or personal injury caused by negligence, fraud or fraudulent misrepresentation, breach of mandatory consumer rights, or any other liability that cannot be excluded by law.
+16.2. If you are a consumer, the Company is liable for losses that are a foreseeable result of a breach of the Agreement or a failure to exercise reasonable care and skill. A loss is foreseeable if it is obvious that it will occur, or if both parties were aware of the possibility at the time the contract was entered into.
+16.3. The Company shall not be liable for any commercial losses, loss of profit, revenue, business opportunities, or data if you use the Services for business or professional purposes that have not been agreed upon with the Company.
+16.4. We are not liable for delays or failures caused by circumstances beyond our reasonable control, but we will take reasonable steps to mitigate their impact. If a material disruption continues, you may terminate the affected paid services and request a refund for the undelivered portion, where required by law.
+16.5. Apple is not responsible for addressing any claims made by the User or third parties relating to the Application, including claims related to product liability, legal compliance, consumer protection, or privacy; such claims shall be directed to the Company in accordance with applicable law.
+17. INDEMNIFICATION
+17.1. If you use the Services as a consumer, you are liable only for damages directly caused by your culpable breach of the Agreement or applicable law, to the extent permitted by applicable law.
+17.2. The indemnification provisions do not require the consumer to defend the Company against claims arising from the Company's own actions, negligence, or misconduct, nor do they limit any mandatory rights.
+18. EXPORT CONTROLS AND SANCTIONS
+18.1. You may not use, export, or re-export the Application in violation of applicable export control and sanctions laws of the United Kingdom, the United States, the European Union, or any other applicable jurisdiction.
+18.2. You confirm that you are not located in a country or region subject to an applicable embargo, and that you are not listed on any applicable list of prohibited or restricted parties, where such confirmation is required by Apple's terms or by law.
+18.3. We may restrict access where necessary to comply with sanctions, export restrictions, or a mandatory requirement of a competent authority.
+19. APPLE-SPECIFIC TERMS
+19.1. This Agreement is entered into between the User and the Company. Apple is not a party to this Agreement and is not responsible for the Application or its content.
+19.2. Apple and its subsidiaries are third-party beneficiaries of the relevant provisions of this Agreement. Upon your acceptance of the Agreement, Apple will have the right to enforce such provisions against you as a third-party beneficiary.
+19.3. The Company, and not Apple, is responsible for licensing, support, warranties, user claims, product liability, regulatory compliance, and intellectual property claims relating to the Application, except for obligations that Apple expressly assumes under its own terms.
+19.4. The User must comply with applicable third-party terms when using the Application, including the terms of their carrier and the Apple Media Services Terms and Conditions.
+19.5. The terms of this section are intended to comply with Apple's minimum end user license conditions. In the event that Apple's mandatory requirements change, they shall be interpreted in a manner as closely aligned with such requirements as possible.
+20. GOVERNING LAW AND DISPUTES
+20.1. This Agreement is governed by the laws of England and Wales. If you are a consumer, this does not affect any protection you may have under the mandatory laws of the country where you normally reside.
+20.2. Prior to initiating court proceedings, the parties shall make a good-faith effort to resolve the dispute by contacting the support service with a description of the issue and the desired resolution.
+20.3. A consumer may bring a claim in the courts of England and Wales or, where permitted by mandatory law, in the courts of the country in which they reside. The Company may only bring a claim against a consumer in the courts permitted by the mandatory rules of jurisdiction.
+Nothing in this agreement limits your right to contact a consumer protection authority, a regulatory body, Apple, or any other competent authority.
+21. MISCELLANEOUS CONDITIONS
+21.1. If any individual provision is found to be invalid, the remaining provisions shall continue in full force and effect. The invalid provision shall be applied to the maximum extent permitted by law.
+21.2. Failure to exercise a right does not constitute a waiver of that right. The User may only assign this agreement with the Company's consent, unless otherwise provided by law. The Company may assign this agreement in the context of a reorganization or sale of its business, provided that doing so does not diminish the User's statutory rights.
+21.3. The Agreement, the Privacy Policy, and the terms of a specific purchase together constitute the contract between the parties. In the event of a conflict, Apple's mandatory terms apply to any payment processed by Apple.
+21.4. The Russian version is provided for convenience. The English version shall be the governing version for interpretation, except where mandatory law requires otherwise.
+22. CONTACTS
+22.1. TOOL SAFE SOLUTIONS LIMITED
+22.2. Company number: 16708611
+22.3. Registered address: Raymont, Welbury, Northallerton, DL6 2SG, United Kingdom.
+22.4. Support e-mail: support@asteria-calendar.com

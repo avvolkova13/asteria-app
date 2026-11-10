@@ -1,0 +1,1174 @@
+import 'package:asteria_app/app/data/models/lunar_calendar/lunar_recommendation_models.dart';
+import 'package:asteria_app/app/data/models/lunar_calendar/personalized_lunar_month_model.dart';
+import 'package:asteria_app/app/data/models/moon_phase/moon_phase_day_image.dart';
+import 'package:asteria_app/app/data/models/user/user_model.dart';
+import 'package:asteria_app/app/data/models/moon_phase/moon_phase_model.dart';
+import 'package:asteria_app/app/providers/content_provider.dart';
+import 'package:asteria_app/app/providers/user_provider.dart';
+import 'package:asteria_app/core/di/di.dart';
+import 'package:asteria_app/core/extensions/string_extensions.dart';
+import 'package:asteria_app/core/localization/locale_formatters.dart';
+import 'package:asteria_app/core/location/current_location_resolver.dart';
+import 'package:asteria_app/core/location/device_location_service.dart';
+import 'package:asteria_app/core/location/widgets/current_location_controls.dart';
+import 'package:asteria_app/core/ui_kit/ui_kit.dart';
+import 'package:asteria_app/features/home/home.dart';
+import 'package:asteria_app/features/home/presentation/models/day_status.dart';
+import 'package:asteria_app/features/home/presentation/models/day_status_advice.dart';
+import 'package:asteria_app/features/home/presentation/widgets/day_status_icon.dart';
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+
+int _moonAgeDayIndexFromLunarDay(int lunarDay) {
+  return ((lunarDay - 1) % 30 + 30) % 30;
+}
+
+int _moonAgeImageIndex({required int lunarDay, required int? moonAgeDayIndex}) {
+  if (moonAgeDayIndex != null &&
+      moonAgeDayIndex >= 0 &&
+      moonAgeDayIndex <= 29) {
+    return moonAgeDayIndex;
+  }
+  return _moonAgeDayIndexFromLunarDay(lunarDay);
+}
+
+// Use the same five spheres as the calendar's aggregate category status.
+// A missing recommendation is unknown, not a neutral forecast.
+DayStatus? _dayStatus(PersonalizedLunarDayModel? day) {
+  if (day == null) return null;
+  var score = 0;
+  for (final sphere in const [
+    'beauty',
+    'gardening',
+    'health',
+    'work_and_rest',
+    'relationships',
+  ]) {
+    final recommendation = day.spheres[sphere];
+    if (recommendation == null) return null;
+    score += switch (recommendation.status) {
+      RecommendationStatus.favorable => 1,
+      RecommendationStatus.neutral => 0,
+      RecommendationStatus.unfavorable => -1,
+    };
+  }
+  return DayStatus.fromValue(score);
+}
+
+class MoonPhaseWidget extends StatefulWidget {
+  const MoonPhaseWidget({super.key});
+
+  @override
+  State<MoonPhaseWidget> createState() => _MoonPhaseWidgetState();
+}
+
+class _MoonPhaseWidgetState extends State<MoonPhaseWidget> {
+  static const _minSwipeVelocity = 100.0;
+  static const _dayStripWidth = 418.0;
+  static const _dayTileWidth = 46.0;
+  static const _dayTileHeight = 102.0;
+  static const _dayTileGap = 16.0;
+  static const _accentOrange = Color(0xFFE6994D);
+  static const _accentOrangeLight = Color(0xFFF3B76A);
+  static const _buttonPurple = Color(0xFF6E4BFF);
+  static const _buttonPurpleDark = Color(0xFF5A3FD1);
+  static const _dayCardBackground = Color(0x1A9A7DB8);
+  static const _dayCardBorder = Color(0x33FFFFFF);
+
+  static const _orangeGradient = LinearGradient(
+    colors: [_accentOrange, _accentOrangeLight, _accentOrange],
+  );
+
+  static const _purpleGradient = LinearGradient(
+    colors: [_buttonPurple, _buttonPurpleDark],
+  );
+
+  bool _isLoading = false;
+  bool _isLocationUpdateInProgress = false;
+  bool _isMoonPhaseLoadCheckInFlight = false;
+  MoonPhaseModel? _displayedMoonPhase;
+  bool _slideDirectionIsNext = true;
+  String? _lastLocationKey;
+  String? _lastPersonalizedMonthKey;
+  bool _isPersonalizedMonthLoadInFlight = false;
+  bool _didAttemptAutoLocationRefresh = false;
+  final Map<DateTime, MoonPhaseModel> _moonPhasesByDate = {};
+  final Set<DateTime> _prefetchingDates = {};
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkAndLoadMoonPhase();
+    });
+  }
+
+  Future<void> _checkAndLoadMoonPhase() async {
+    if (!mounted) return;
+    if (_isLocationUpdateInProgress) return;
+    if (_isMoonPhaseLoadCheckInFlight) return;
+
+    _isMoonPhaseLoadCheckInFlight = true;
+    try {
+      final userProvider = di.get<UserProvider>();
+      final user = userProvider.currentUser;
+      final locationResolution = const CurrentLocationResolver().resolve(user);
+
+      if (locationResolution.status ==
+          CurrentLocationResolutionStatus.needsSetup) {
+        await _tryLoadAutoLocationIfAlreadyAllowed();
+        if (!mounted) return;
+      } else {
+        await _tryRefreshAutoLocationIfAlreadyAllowed(locationResolution);
+        if (!mounted) return;
+        setState(() {});
+      }
+
+      final freshUser = userProvider.currentUser;
+      final freshLocationResolution = const CurrentLocationResolver().resolve(
+        freshUser,
+      );
+      if (freshLocationResolution.status ==
+          CurrentLocationResolutionStatus.needsSetup) {
+        return;
+      }
+
+      if (freshUser?.moonPhase == null ||
+          freshUser?.moonPhase?.isToday() == false) {
+        setState(() {
+          _isLoading = true;
+        });
+
+        try {
+          final contentProvider = di.get<ContentProvider>();
+          await contentProvider.loadMoonPhase();
+        } catch (e) {
+          debugPrint('[ERROR] Ошибка загрузки фазы луны: $e');
+        } finally {
+          if (mounted) {
+            setState(() {
+              _isLoading = false;
+            });
+          }
+        }
+      }
+      await _loadPersonalizedMonthForDate(DateTime.now());
+    } finally {
+      _isMoonPhaseLoadCheckInFlight = false;
+    }
+  }
+
+  Future<void> _tryLoadAutoLocationIfAlreadyAllowed() async {
+    if (!di.isRegistered<DeviceLocationService>()) return;
+    final result = await di.get<DeviceLocationService>().detectCurrentLocation(
+      requestPermission: false,
+    );
+    final location = result.location;
+    if (result.status != DeviceLocationStatus.available || location == null) {
+      return;
+    }
+    _didAttemptAutoLocationRefresh = true;
+    await di.get<UserProvider>().updateCurrentLocation(
+      location,
+      preserveManualLocation: true,
+    );
+  }
+
+  Future<void> _tryRefreshAutoLocationIfAlreadyAllowed(
+    CurrentLocationResolution locationResolution,
+  ) async {
+    final currentLocation = locationResolution.location;
+    if (_didAttemptAutoLocationRefresh ||
+        currentLocation == null ||
+        currentLocation.source != CurrentLocationSource.auto ||
+        !di.isRegistered<DeviceLocationService>()) {
+      return;
+    }
+
+    _didAttemptAutoLocationRefresh = true;
+    final result = await di.get<DeviceLocationService>().detectCurrentLocation(
+      requestPermission: false,
+    );
+    final refreshedLocation = result.location;
+    if (result.status != DeviceLocationStatus.available ||
+        refreshedLocation == null ||
+        _isSameLocation(currentLocation, refreshedLocation)) {
+      return;
+    }
+
+    await di.get<UserProvider>().updateCurrentLocation(
+      refreshedLocation,
+      preserveManualLocation: true,
+    );
+  }
+
+  bool _isSameLocation(
+    CurrentLocationModel currentLocation,
+    CurrentLocationModel nextLocation,
+  ) {
+    return (currentLocation.latitude - nextLocation.latitude).abs() < 0.0001 &&
+        (currentLocation.longitude - nextLocation.longitude).abs() < 0.0001 &&
+        currentLocation.location.trim() == nextLocation.location.trim();
+  }
+
+  Future<void> _changeDate(
+    MoonPhaseModel currentMoonPhase, {
+    required bool isNextDay,
+  }) {
+    return _changeDateByOffset(currentMoonPhase, isNextDay ? 1 : -1);
+  }
+
+  Future<void> _changeDateByOffset(
+    MoonPhaseModel currentMoonPhase,
+    int dayOffset,
+  ) async {
+    if (_isLoading || dayOffset == 0) return;
+
+    _slideDirectionIsNext = dayOffset > 0;
+    final currentDate = currentMoonPhase.date.fromRussianShortDate();
+    final targetDate = currentDate.add(Duration(days: dayOffset));
+
+    setState(() => _isLoading = true);
+    try {
+      final contentProvider = di.get<ContentProvider>();
+      final moonPhase = await contentProvider.getMoonPhaseForDate(targetDate);
+      await _loadPersonalizedMonthForDate(targetDate);
+      if (mounted) {
+        setState(() {
+          _displayedMoonPhase = moonPhase;
+          _moonPhasesByDate[_normalizeDate(targetDate)] = moonPhase;
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      debugPrint('[ERROR] Ошибка загрузки фазы луны: $e');
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
+  }
+
+  void _handleHorizontalDragEnd(
+    DragEndDetails details,
+    MoonPhaseModel moonPhase,
+  ) {
+    final velocity = details.primaryVelocity ?? 0;
+    if (velocity < -_minSwipeVelocity) {
+      _changeDate(moonPhase, isNextDay: true);
+    } else if (velocity > _minSwipeVelocity) {
+      _changeDate(moonPhase, isNextDay: false);
+    }
+  }
+
+  Widget _buildLoadingContent() {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            context.l10n.moonPhaseTitle,
+            style: context.textTheme.playfairSemiBold32.copyWith(
+              color: AppColors.textInverse,
+            ),
+          ),
+          const SizedBox(height: 16),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
+            decoration: BoxDecoration(
+              color: const Color(0xFF1D1429),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: const Color(0x40FFFFFF)),
+            ),
+            child: Column(
+              children: [
+                const SizedBox(
+                  width: 28,
+                  height: 28,
+                  child: CircularProgressIndicator(strokeWidth: 2.5),
+                ),
+                const SizedBox(height: 18),
+                Text(
+                  context.l10n.moonPhaseLoadingTitle,
+                  textAlign: TextAlign.center,
+                  style: context.textTheme.playfairSemiBold24.copyWith(
+                    color: const Color(0xFFE6994D),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  context.l10n.moonPhaseLoadingDescription,
+                  textAlign: TextAlign.center,
+                  style: context.textTheme.inverseUrbanistRegular17.copyWith(
+                    color: AppColors.textInverse.withValues(alpha: 0.82),
+                    height: 1.25,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildContent(MoonPhaseModel moonPhase) {
+    final displayedMoonPhase = _displayedMoonPhase ?? moonPhase;
+    final selectedDate = displayedMoonPhase.date.fromRussianShortDate();
+    _moonPhasesByDate[_normalizeDate(selectedDate)] = displayedMoonPhase;
+    _schedulePersonalizedMonthLoad(selectedDate);
+    final personalizedDay = di
+        .get<ContentProvider>()
+        .getPersonalizedLunarDayByDate(selectedDate);
+    if (personalizedDay == null) {
+      return _buildLoadingContent();
+    }
+    _scheduleNeighborPhasePrefetch(displayedMoonPhase);
+    final location = const CurrentLocationResolver()
+        .resolve(di.get<UserProvider>().currentUser)
+        .location;
+
+    const inset = EdgeInsets.symmetric(horizontal: 16);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Padding(
+          padding: inset,
+          child: OverflowBar(
+            alignment: MainAxisAlignment.spaceBetween,
+            overflowAlignment: OverflowBarAlignment.start,
+            spacing: 8,
+            children: [
+              Text(
+                context.l10n.moonPhaseTitle,
+                style: context.textTheme.playfairSemiBold32.copyWith(
+                  fontFamily: 'Lora',
+                  color: AppColors.textInverse,
+                  height: 1.2,
+                ),
+              ),
+              _MoonCalendarButton(
+                onPressed: () => context.read<HomeCubit>().changeTab(2),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 16),
+        GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onHorizontalDragEnd: (details) =>
+              _handleHorizontalDragEnd(details, displayedMoonPhase),
+          child: _buildDayStrip(displayedMoonPhase, selectedDate),
+        ),
+        const SizedBox(height: 16),
+        Padding(
+          padding: inset,
+          child: _LocationBlock(
+            location: location?.location ?? context.l10n.locationNotConfigured,
+          ),
+        ),
+        const SizedBox(height: 16),
+        Padding(
+          padding: inset,
+          child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onHorizontalDragEnd: (details) =>
+                _handleHorizontalDragEnd(details, displayedMoonPhase),
+            child: _MoonPhaseCard(
+              moonPhase: displayedMoonPhase,
+              personalizedDay: personalizedDay,
+              slideDirectionIsNext: _slideDirectionIsNext,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildLocationSetup() {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            context.l10n.moonPhaseTitle,
+            style: context.textTheme.playfairSemiBold32.copyWith(
+              color: AppColors.textInverse,
+            ),
+            textAlign: TextAlign.left,
+          ),
+          const SizedBox(height: 16),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 22),
+            decoration: BoxDecoration(
+              color: const Color(0xFF1D1429),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: const Color(0x40FFFFFF)),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFF6E4BFF).withValues(alpha: 0.16),
+                  blurRadius: 30,
+                  offset: const Offset(0, 18),
+                ),
+              ],
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  context.l10n.moonLocationSetupTitle,
+                  style: context.textTheme.playfairSemiBold24.copyWith(
+                    color: const Color(0xFFE6994D),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  context.l10n.moonLocationSetupDescription,
+                  style: context.textTheme.inverseUrbanistRegular17.copyWith(
+                    color: AppColors.textInverse.withValues(alpha: 0.88),
+                    height: 1.25,
+                  ),
+                ),
+                const SizedBox(height: 18),
+                CurrentLocationControls(
+                  onLocationUpdateStarted: () {
+                    if (!mounted) return;
+                    setState(() {
+                      _isLoading = true;
+                      _isLocationUpdateInProgress = true;
+                    });
+                  },
+                  onLocationUpdated: () {
+                    _displayedMoonPhase = null;
+                    _moonPhasesByDate.clear();
+                    final location = const CurrentLocationResolver()
+                        .resolve(di.get<UserProvider>().currentUser)
+                        .location;
+                    if (location?.source == CurrentLocationSource.auto) {
+                      _didAttemptAutoLocationRefresh = true;
+                    }
+                    if (mounted) {
+                      setState(() {
+                        _isLoading = false;
+                        _isLocationUpdateInProgress = false;
+                        _lastPersonalizedMonthKey = null;
+                      });
+                    }
+                  },
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDayStrip(MoonPhaseModel moonPhase, DateTime selectedDate) {
+    return SizedBox(
+      height: 102,
+      child: ClipRect(
+        child: OverflowBox(
+          minWidth: _dayStripWidth,
+          maxWidth: _dayStripWidth,
+          alignment: Alignment.center,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: List.generate(7, (index) {
+              final offset = index - 3;
+              final date = selectedDate.add(Duration(days: offset));
+              return Padding(
+                padding: EdgeInsets.only(right: index == 6 ? 0 : _dayTileGap),
+                child: _MoonDayTile(
+                  date: date,
+                  phaseImagePath: _moonImageForDate(moonPhase, date),
+                  hasPrimaryPhase: _hasPrimaryPhaseForDate(date),
+                  status: _dayStatus(
+                    di.get<ContentProvider>().getPersonalizedLunarDayByDate(
+                      date,
+                    ),
+                  ),
+                  isSelected: offset == 0,
+                  onTap: () => _changeDateByOffset(moonPhase, offset),
+                ),
+              );
+            }),
+          ),
+        ),
+      ),
+    );
+  }
+
+  String _moonImageForDate(MoonPhaseModel selectedMoonPhase, DateTime date) {
+    final moonPhase = _moonPhasesByDate[_normalizeDate(date)];
+    final personalizedDay = di
+        .get<ContentProvider>()
+        .getPersonalizedLunarDayByDate(date);
+    final moonAgeDayIndex = personalizedDay != null
+        ? _moonAgeImageIndex(
+            lunarDay: personalizedDay.lunarContext.lunarDay,
+            moonAgeDayIndex: personalizedDay.lunarContext.moonAgeDayIndex,
+          )
+        : (moonPhase == null
+              ? _moonAgeDayIndexForDate(selectedMoonPhase, date)
+              : _moonAgeDayIndexFromLunarDay(moonPhase.lunarDay));
+
+    return MoonPhaseDayImage.resolve(moonAgeDayIndex);
+  }
+
+  int _moonAgeDayIndexForDate(MoonPhaseModel selectedMoonPhase, DateTime date) {
+    final selectedDate = _normalizeDate(
+      selectedMoonPhase.date.fromRussianShortDate(),
+    );
+    final offset = _normalizeDate(date).difference(selectedDate).inDays;
+    final imageDay = _moonAgeDayIndexFromLunarDay(selectedMoonPhase.lunarDay);
+    return (imageDay + offset) % 30;
+  }
+
+  bool _hasPrimaryPhaseForDate(DateTime date) {
+    final personalizedDay = di
+        .get<ContentProvider>()
+        .getPersonalizedLunarDayByDate(date);
+    return personalizedDay?.lunarContext.phaseEvent != null ||
+        (_moonPhasesByDate[_normalizeDate(date)]?.hasPrimaryPhase ?? false);
+  }
+
+  void _scheduleNeighborPhasePrefetch(MoonPhaseModel selectedMoonPhase) {
+    final selectedDate = selectedMoonPhase.date.fromRussianShortDate();
+    final datesToLoad = <DateTime>[];
+
+    for (var offset = -3; offset <= 3; offset++) {
+      final date = _normalizeDate(selectedDate.add(Duration(days: offset)));
+      if (_moonPhasesByDate.containsKey(date) ||
+          _prefetchingDates.contains(date)) {
+        continue;
+      }
+      datesToLoad.add(date);
+      _prefetchingDates.add(date);
+    }
+
+    if (datesToLoad.isEmpty) return;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _prefetchMoonPhases(datesToLoad);
+    });
+  }
+
+  Future<void> _prefetchMoonPhases(List<DateTime> dates) async {
+    final contentProvider = di.get<ContentProvider>();
+    var hasUpdates = false;
+
+    for (final date in dates) {
+      try {
+        final moonPhase = await contentProvider.getMoonPhaseForDate(date);
+        _moonPhasesByDate[_normalizeDate(date)] = moonPhase;
+        hasUpdates = true;
+      } catch (e) {
+        debugPrint('[ERROR] Ошибка предзагрузки фазы луны: $e');
+      } finally {
+        _prefetchingDates.remove(_normalizeDate(date));
+      }
+    }
+
+    if (mounted && hasUpdates) {
+      setState(() {});
+    }
+  }
+
+  void _schedulePersonalizedMonthLoad(DateTime date) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _loadPersonalizedMonthForDate(date);
+    });
+  }
+
+  Future<void> _loadPersonalizedMonthForDate(DateTime date) async {
+    if (_isPersonalizedMonthLoadInFlight) return;
+    final monthKey = '${date.year}-${date.month}';
+    if (_lastPersonalizedMonthKey == monthKey) return;
+
+    _isPersonalizedMonthLoadInFlight = true;
+    try {
+      await di.get<ContentProvider>().loadPersonalizedLunarMonth(date);
+      if (!mounted) return;
+      setState(() {
+        _lastPersonalizedMonthKey = monthKey;
+      });
+    } catch (e) {
+      debugPrint('[ERROR] Ошибка загрузки персонального лунного календаря: $e');
+    } finally {
+      _isPersonalizedMonthLoadInFlight = false;
+    }
+  }
+
+  DateTime _normalizeDate(DateTime date) {
+    return DateTime(date.year, date.month, date.day);
+  }
+
+  String? _locationKey(CurrentLocationResolution resolution) {
+    final location = resolution.location;
+    if (location == null) return null;
+    return '${location.latitude.toStringAsFixed(4)}:${location.longitude.toStringAsFixed(4)}:${location.source.name}';
+  }
+
+  bool _shouldWaitForAutoLocationRefresh(
+    CurrentLocationResolution locationResolution,
+  ) {
+    final location = locationResolution.location;
+    return locationResolution.status !=
+            CurrentLocationResolutionStatus.needsSetup &&
+        location?.source == CurrentLocationSource.auto &&
+        !_didAttemptAutoLocationRefresh &&
+        di.isRegistered<DeviceLocationService>();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<UserProvider>(
+      builder: (context, userProvider, _) {
+        final user = userProvider.currentUser;
+        final locationResolution = const CurrentLocationResolver().resolve(
+          user,
+        );
+        final locationKey = _locationKey(locationResolution);
+        if (locationKey != _lastLocationKey) {
+          _lastLocationKey = locationKey;
+          _displayedMoonPhase = null;
+          _moonPhasesByDate.clear();
+          _prefetchingDates.clear();
+          _lastPersonalizedMonthKey = null;
+        }
+        if (locationResolution.status ==
+            CurrentLocationResolutionStatus.needsSetup) {
+          return _buildLocationSetup();
+        }
+
+        if (_shouldWaitForAutoLocationRefresh(locationResolution)) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            _checkAndLoadMoonPhase();
+          });
+          return _buildLoadingContent();
+        }
+
+        final moonPhase = user?.moonPhase;
+        final hasContent = _displayedMoonPhase != null || moonPhase != null;
+
+        if (!hasContent) {
+          if (!_isLoading && !_isLocationUpdateInProgress) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              _checkAndLoadMoonPhase();
+            });
+          }
+          return _buildLoadingContent();
+        }
+
+        return _buildContent(_displayedMoonPhase ?? moonPhase!);
+      },
+    );
+  }
+}
+
+class _MoonDayTile extends StatelessWidget {
+  const _MoonDayTile({
+    required this.date,
+    required this.phaseImagePath,
+    required this.hasPrimaryPhase,
+    required this.status,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  final DateTime date;
+  final String phaseImagePath;
+  final bool hasPrimaryPhase;
+  final DayStatus? status;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final textColor = isSelected ? AppColors.textPrimary : AppColors.textInverse;
+    final weekdayOpacity = isSelected ? 0.8 : 0.5;
+    final locale = Localizations.localeOf(context);
+
+    return Semantics(
+      button: true,
+      selected: isSelected,
+      label: [
+        _formatWeekday(date, locale),
+        _formatDayMonth(date, locale),
+        if (status != null) status!.title(context).replaceAll('\n', ' '),
+      ].join(', '),
+      onTap: onTap,
+      child: ExcludeSemantics(
+        child: GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: onTap,
+          child: Container(
+            width: _MoonPhaseWidgetState._dayTileWidth,
+            height: _MoonPhaseWidgetState._dayTileHeight,
+            padding: const EdgeInsets.all(4),
+            decoration: BoxDecoration(
+              gradient: isSelected
+                  ? _MoonPhaseWidgetState._orangeGradient
+                  : null,
+              borderRadius: BorderRadius.circular(24),
+              border: isSelected
+                  ? null
+                  : Border.all(color: _MoonPhaseWidgetState._dayCardBorder),
+              boxShadow: const [
+                BoxShadow(
+                  color: Color(0x33000000),
+                  blurRadius: 4,
+                  offset: Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                SizedBox(
+                  height: 14,
+                  child: Center(
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (status != null)
+                          DayStatusIcon(
+                            status: status!,
+                            size: 14,
+                            excludeFromSemantics: true,
+                          ),
+                        if (hasPrimaryPhase) ...[
+                          if (status != null) const SizedBox(width: 2),
+                          Container(
+                            width: 5,
+                            height: 5,
+                            decoration: BoxDecoration(
+                              color: isSelected
+                                  ? AppColors.textPrimary
+                                  : _MoonPhaseWidgetState._accentOrangeLight,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 14,
+                  child: Center(
+                    child: Text(
+                      _formatWeekday(date, locale),
+                      style: context.textTheme.urbanistRegular12.copyWith(
+                        color: textColor.withValues(alpha: weekdayOpacity),
+                        fontFamily: 'Onest',
+                        height: 1,
+                        letterSpacing: -0.41,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 14,
+                  child: Center(
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text(
+                        _formatDayMonth(date, locale),
+                        maxLines: 1,
+                        style:
+                            (isSelected
+                                    ? context.textTheme.urbanistSemiBold12
+                                    : context.textTheme.urbanistRegular12)
+                                .copyWith(
+                                  color: textColor,
+                                  fontFamily: 'Onest',
+                                  height: 1,
+                                  letterSpacing: -0.41,
+                                ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
+                ),
+                _TintedMoonImage(
+                  imagePath: phaseImagePath,
+                  size: 37,
+                  shadowBlur: 4,
+                  shadowColor: const Color(0x40000000),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  static String _formatWeekday(DateTime date, Locale locale) {
+    return DateFormat(
+      'EE',
+      locale.toLanguageTag(),
+    ).format(date).replaceAll('.', '').toUpperCase();
+  }
+
+  static String _formatDayMonth(DateTime date, Locale locale) {
+    return LocaleFormatters.dayMonth(date, locale).replaceAll('.', '');
+  }
+}
+
+class _MoonPhaseCard extends StatelessWidget {
+  const _MoonPhaseCard({
+    required this.moonPhase,
+    required this.personalizedDay,
+    required this.slideDirectionIsNext,
+  });
+
+  final MoonPhaseModel moonPhase;
+  final PersonalizedLunarDayModel personalizedDay;
+  final bool slideDirectionIsNext;
+
+  @override
+  Widget build(BuildContext context) {
+    final lunarDay = personalizedDay.lunarContext.lunarDay;
+    final status = _dayStatus(personalizedDay);
+    final phase =
+        moonPhase.phaseEvent?.phase ??
+        personalizedDay.lunarContext.phaseEvent?.phase ??
+        personalizedDay.lunarContext.moonPhase;
+    final description = personalizedDay.dailyBackground.summary;
+    final eventTime = moonPhase.phaseEvent?.localTimeLabel;
+
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 250),
+      switchInCurve: Curves.easeOut,
+      switchOutCurve: Curves.easeIn,
+      transitionBuilder: (child, animation) {
+        final offset = slideDirectionIsNext
+            ? const Offset(0.08, 0)
+            : const Offset(-0.08, 0);
+        return SlideTransition(
+          position: Tween<Offset>(
+            begin: offset,
+            end: Offset.zero,
+          ).animate(animation),
+          child: FadeTransition(opacity: animation, child: child),
+        );
+      },
+      child: Container(
+        key: ValueKey(moonPhase.date),
+        width: double.infinity,
+        padding: const EdgeInsets.all(16),
+        clipBehavior: Clip.antiAlias,
+        decoration: BoxDecoration(
+          color: _MoonPhaseWidgetState._dayCardBackground,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _MoonPhaseBadgeRow(lunarDay: lunarDay, status: status),
+            const SizedBox(height: 8),
+            _GradientText(
+              text: _phaseTitle(context, phase),
+              gradient: _MoonPhaseWidgetState._orangeGradient,
+              style: context.textTheme.playfairMedium20.copyWith(
+                fontFamily: 'Lora',
+                height: 1.1,
+              ),
+            ),
+            if (eventTime != null && eventTime.isNotEmpty) ...[
+              const SizedBox(height: 6),
+              Text(
+                context.l10n.moonPhaseEventTime(eventTime),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: context.textTheme.urbanistRegular14.copyWith(
+                  color: AppColors.textInverse.withValues(alpha: 0.8),
+                  height: 1.2,
+                  letterSpacing: 0,
+                ),
+              ),
+            ],
+            const SizedBox(height: 8),
+            Text(
+              description,
+              style: context.textTheme.urbanistRegular16.copyWith(
+                fontFamily: 'Onest',
+                color: AppColors.textInverse,
+                height: 1.2,
+                letterSpacing: 0,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  static String _phaseTitle(BuildContext context, String phase) =>
+      switch (phase) {
+        'new_moon' => context.l10n.moonPhaseNewMoon,
+        'waxing_crescent' => context.l10n.moonPhaseWaxingCrescent,
+        'first_quarter' => context.l10n.moonPhaseFirstQuarter,
+        'waxing_gibbous' => context.l10n.moonPhaseWaxingGibbous,
+        'full_moon' => context.l10n.moonPhaseFullMoon,
+        'waning_gibbous' => context.l10n.moonPhaseWaningGibbous,
+        'last_quarter' => context.l10n.moonPhaseLastQuarter,
+        'waning_crescent' => context.l10n.moonPhaseWaningCrescent,
+        _ => context.l10n.moonPhaseUnknown,
+      };
+}
+
+class _MoonPhaseBadgeRow extends StatelessWidget {
+  const _MoonPhaseBadgeRow({required this.lunarDay, required this.status});
+
+  final int lunarDay;
+  final DayStatus? status;
+
+  @override
+  Widget build(BuildContext context) {
+    return Wrap(
+      spacing: 4,
+      runSpacing: 4,
+      children: [
+        _LunarDayChip(
+          gradient: _MoonPhaseWidgetState._orangeGradient,
+          lunarDay: lunarDay,
+          textColor: AppColors.textPrimary,
+        ),
+        if (status != null)
+          DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: _MoonPhaseWidgetState._purpleGradient,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Flexible(
+                    child: Text(
+                      status!.title(context).replaceAll('\n', ' '),
+                      style: context.textTheme.urbanistMedium12.copyWith(
+                        fontFamily: 'Onest',
+                        color: AppColors.textInverse,
+                        height: 1.1,
+                        letterSpacing: -0.41,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  DayStatusIcon(
+                    status: status!,
+                    size: 16,
+                    excludeFromSemantics: true,
+                  ),
+                ],
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+class _LunarDayChip extends StatelessWidget {
+  const _LunarDayChip({
+    required this.gradient,
+    required this.lunarDay,
+    required this.textColor,
+  });
+
+  final Gradient gradient;
+  final int lunarDay;
+  final Color textColor;
+
+  @override
+  Widget build(BuildContext context) {
+    return ConstrainedBox(
+      key: const ValueKey('moon-phase-lunar-day-chip'),
+      constraints: const BoxConstraints(minHeight: 20),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          gradient: gradient,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+          child: Center(
+            widthFactor: 1,
+            heightFactor: 1,
+            child: Text.rich(
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: '$lunarDay',
+                    style: const TextStyle(fontWeight: FontWeight.w700),
+                  ),
+                  TextSpan(text: ' ${context.l10n.lunarDay}'),
+                ],
+              ),
+              key: const ValueKey('moon-phase-lunar-day-label'),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: context.textTheme.urbanistMedium12.copyWith(
+                fontFamily: 'Onest',
+                color: textColor,
+                height: 0.9,
+                letterSpacing: -0.41,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _GradientText extends StatelessWidget {
+  const _GradientText({
+    required this.text,
+    required this.gradient,
+    required this.style,
+  });
+
+  final String text;
+  final Gradient gradient;
+  final TextStyle style;
+
+  @override
+  Widget build(BuildContext context) {
+    return ShaderMask(
+      blendMode: BlendMode.srcIn,
+      shaderCallback: (bounds) => gradient.createShader(bounds),
+      child: Text(
+        text,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: style.copyWith(color: Colors.white),
+      ),
+    );
+  }
+}
+
+class _TintedMoonImage extends StatelessWidget {
+  const _TintedMoonImage({
+    required this.imagePath,
+    required this.size,
+    required this.shadowBlur,
+    required this.shadowColor,
+  });
+
+  final String imagePath;
+  final double size;
+  final double shadowBlur;
+  final Color shadowColor;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        boxShadow: [
+          BoxShadow(
+            color: shadowColor,
+            blurRadius: shadowBlur,
+            offset: Offset.zero,
+          ),
+        ],
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: Image.asset(imagePath, fit: BoxFit.cover),
+    );
+  }
+}
+
+class _LocationBlock extends StatelessWidget {
+  const _LocationBlock({required this.location});
+
+  final String location;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        const Icon(
+          Icons.location_on_outlined,
+          size: 14,
+          color: AppColors.textInverse,
+        ),
+        const SizedBox(width: 4),
+        Expanded(
+          child: Text(
+            location,
+            style: context.textTheme.urbanistRegular12.copyWith(
+              fontFamily: 'Onest',
+              color: AppColors.textInverse,
+              height: 1.2,
+            ),
+          ),
+        ),
+        const SizedBox(width: 8),
+        Flexible(
+          child: Text(
+            context.l10n.moonLocationNote,
+            textAlign: TextAlign.end,
+            style: context.textTheme.tertiaryUrbanistRegular12.copyWith(
+              fontFamily: 'Onest',
+              fontSize: 10,
+              height: 1.2,
+              letterSpacing: -0.41,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _MoonCalendarButton extends StatelessWidget {
+  const _MoonCalendarButton({required this.onPressed});
+
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      button: true,
+      label: context.l10n.openLunarCalendarLabel,
+      onTap: onPressed,
+      child: ExcludeSemantics(
+        child: TextButton(
+          onPressed: onPressed,
+          style: TextButton.styleFrom(
+            padding: const EdgeInsets.symmetric(vertical: 6),
+            minimumSize: const Size(44, 44),
+            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          ),
+          child: _GradientText(
+            text: context.l10n.homeOpenCalendar,
+            gradient: _MoonPhaseWidgetState._orangeGradient,
+            style: context.textTheme.urbanistSemiBold16.copyWith(
+              fontFamily: 'Onest',
+              height: 1.2,
+              letterSpacing: -0.41,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}

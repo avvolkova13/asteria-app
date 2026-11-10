@@ -1,0 +1,233 @@
+{
+  "identifier" : "AsteriaStoreKit",
+  "nonRenewingSubscriptions" : [
+
+  ],
+  "products" : [
+    {
+      "displayPrice" : "0.99",
+      "familyShareable" : false,
+      "internalID" : "asteria-stars-10",
+      "localizations" : [
+        {
+          "description" : "10 звёзд для сервисов Asteria",
+          "displayName" : "10 звёзд",
+          "locale" : "ru_RU"
+        },
+        {
+          "description" : "10 Star Coins for Asteria services",
+          "displayName" : "10 Star Coins",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "asteria_stars_10",
+      "referenceName" : "Asteria Stars 10",
+      "type" : "Consumable"
+    },
+    {
+      "displayPrice" : "1.99",
+      "familyShareable" : false,
+      "internalID" : "asteria-stars-30",
+      "localizations" : [
+        {
+          "description" : "30 звёзд для сервисов Asteria",
+          "displayName" : "30 звёзд",
+          "locale" : "ru_RU"
+        },
+        {
+          "description" : "30 Star Coins for Asteria services",
+          "displayName" : "30 Star Coins",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "asteria_stars_30",
+      "referenceName" : "Asteria Stars 30",
+      "type" : "Consumable"
+    },
+    {
+      "displayPrice" : "2.99",
+      "familyShareable" : false,
+      "internalID" : "asteria-stars-60",
+      "localizations" : [
+        {
+          "description" : "60 звёзд для сервисов Asteria",
+          "displayName" : "60 звёзд",
+          "locale" : "ru_RU"
+        },
+        {
+          "description" : "60 Star Coins for Asteria services",
+          "displayName" : "60 Star Coins",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "asteria_stars_60",
+      "referenceName" : "Asteria Stars 60",
+      "type" : "Consumable"
+    },
+    {
+      "displayPrice" : "4.99",
+      "familyShareable" : false,
+      "internalID" : "asteria-stars-120",
+      "localizations" : [
+        {
+          "description" : "120 звёзд для сервисов Asteria",
+          "displayName" : "120 звёзд",
+          "locale" : "ru_RU"
+        },
+        {
+          "description" : "120 Star Coins for Asteria services",
+          "displayName" : "120 Star Coins",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "asteria_stars_120",
+      "referenceName" : "Asteria Stars 120",
+      "type" : "Consumable"
+    },
+    {
+      "displayPrice" : "9.99",
+      "familyShareable" : false,
+      "internalID" : "asteria-stars-300",
+      "localizations" : [
+        {
+          "description" : "300 звёзд для сервисов Asteria",
+          "displayName" : "300 звёзд",
+          "locale" : "ru_RU"
+        },
+        {
+          "description" : "300 Star Coins for Asteria services",
+          "displayName" : "300 Star Coins",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "asteria_stars_300",
+      "referenceName" : "Asteria Stars 300",
+      "type" : "Consumable"
+    }
+  ],
+  "settings" : {
+    "_applicationInternalID" : "com.toolsafesolutions.asteria",
+    "_developerTeamID" : "R93Z9MG29X",
+    "_failTransactionsEnabled" : false,
+    "_lastSynchronizedDate" : 0,
+    "_locale" : "en_US",
+    "_storefront" : "USA",
+    "_storeKitErrors" : [
+
+    ]
+  },
+  "subscriptionGroups" : [
+    {
+      "id" : "asteria-pro-group",
+      "localizations" : [
+
+      ],
+      "name" : "Asteria PRO",
+      "subscriptions" : [
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "0.99",
+          "familyShareable" : false,
+          "groupNumber" : 1,
+          "internalID" : "asteria-pro-week",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "Full access to Asteria PRO features for one week",
+              "displayName" : "Asteria PRO Weekly",
+              "locale" : "en_US"
+            },
+            {
+              "description" : "Полный доступ к функциям Asteria PRO на одну неделю",
+              "displayName" : "Asteria PRO на неделю",
+              "locale" : "ru_RU"
+            }
+          ],
+          "productID" : "asteria_pro_week",
+          "recurringSubscriptionPeriod" : "P1W",
+          "referenceName" : "Asteria PRO Weekly",
+          "subscriptionGroupID" : "asteria-pro-group",
+          "type" : "RecurringSubscription",
+          "winbackOffers" : [
+
+          ]
+        },
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "4.99",
+          "familyShareable" : false,
+          "groupNumber" : 1,
+          "internalID" : "asteria-pro-month",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "Full access to Asteria PRO features for one month",
+              "displayName" : "Asteria PRO Monthly",
+              "locale" : "en_US"
+            },
+            {
+              "description" : "Полный доступ к функциям Asteria PRO на один месяц",
+              "displayName" : "Asteria PRO на месяц",
+              "locale" : "ru_RU"
+            }
+          ],
+          "productID" : "asteria_pro_month",
+          "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "Asteria PRO Monthly",
+          "subscriptionGroupID" : "asteria-pro-group",
+          "type" : "RecurringSubscription",
+          "winbackOffers" : [
+
+          ]
+        },
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "29.99",
+          "familyShareable" : false,
+          "groupNumber" : 1,
+          "internalID" : "asteria-pro-year",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "Full access to Asteria PRO features for one year",
+              "displayName" : "Asteria PRO Annual",
+              "locale" : "en_US"
+            },
+            {
+              "description" : "Полный доступ к функциям Asteria PRO на один год",
+              "displayName" : "Asteria PRO на год",
+              "locale" : "ru_RU"
+            }
+          ],
+          "productID" : "asteria_pro_year",
+          "recurringSubscriptionPeriod" : "P1Y",
+          "referenceName" : "Asteria PRO Annual",
+          "subscriptionGroupID" : "asteria-pro-group",
+          "type" : "RecurringSubscription",
+          "winbackOffers" : [
+
+          ]
+        }
+      ]
+    }
+  ],
+  "version" : {
+    "major" : 4,
+    "minor" : 0
+  }
+}

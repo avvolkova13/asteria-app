@@ -1,0 +1,674 @@
+import 'package:asteria_app/app/providers/user_provider.dart';
+import 'package:asteria_app/core/di/di.dart';
+import 'package:asteria_app/core/ui_kit/ui_kit.dart';
+import 'package:asteria_app/core/ui_kit/widgets/static_glass_surface.dart';
+import 'package:asteria_app/core/localization/locale_formatters.dart';
+import 'package:asteria_app/features/balance/presentation/balance_history_controller.dart';
+import 'package:asteria_app/features/balance/presentation/widgets/balance_history_style.dart';
+import 'package:asteria_app/features/monetization/data/monetization_api.dart';
+import 'package:asteria_app/features/monetization/domain/monetization_models.dart';
+import 'package:asteria_app/features/monetization/presentation/monetization_provider.dart';
+import 'package:asteria_app/features/profile_flow/profile_flow_ui.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
+
+class BalanceHistoryScreen extends StatefulWidget {
+  const BalanceHistoryScreen({super.key});
+
+  @override
+  State<BalanceHistoryScreen> createState() => _BalanceHistoryScreenState();
+}
+
+class _BalanceHistoryScreenState extends State<BalanceHistoryScreen> {
+  late final _history = BalanceHistoryController(
+    loadPage: ({required filter, beforeSequence}) => di
+        .get<MonetizationApi>()
+        .getWalletHistoryPage(filter: filter, beforeSequence: beforeSequence),
+  );
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _history.setAccount(context.watch<UserProvider>().currentUser?.id);
+  }
+
+  @override
+  void dispose() {
+    _history.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final monetization = MonetizationProvider.maybeOf(context);
+    return BalanceHistoryView(
+      key: ValueKey(context.watch<UserProvider>().currentUser?.id),
+      controller: _history,
+      balance: monetization?.balance ?? 0,
+      hasPro: monetization?.effectivePro ?? false,
+      onBack: () => Navigator.of(context).pop(),
+    );
+  }
+}
+
+class BalanceHistoryView extends StatefulWidget {
+  const BalanceHistoryView({
+    super.key,
+    required this.controller,
+    required this.balance,
+    required this.hasPro,
+    required this.onBack,
+  });
+  final BalanceHistoryController controller;
+  final int balance;
+  final bool hasPro;
+  final VoidCallback onBack;
+
+  @override
+  State<BalanceHistoryView> createState() => _BalanceHistoryViewState();
+}
+
+class _BalanceHistoryViewState extends State<BalanceHistoryView> {
+  final _scroll = ScrollController();
+  bool _checkScheduled = false;
+  BalanceHistoryController get history => widget.controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _scroll.addListener(_loadMore);
+  }
+
+  void _loadMore() {
+    if (_scroll.hasClients &&
+        _scroll.position.extentAfter < 300 &&
+        history.pageError == null) {
+      history.loadMore();
+    }
+  }
+
+  void _checkNextPage() {
+    if (_checkScheduled) return;
+    _checkScheduled = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkScheduled = false;
+      if (mounted) _loadMore();
+    });
+  }
+
+  void _selectFilter(WalletHistoryFilter value) {
+    if (value == history.filter) return;
+    if (_scroll.hasClients) _scroll.jumpTo(0);
+    history.selectFilter(value);
+  }
+
+  @override
+  void dispose() {
+    _scroll.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => AnnotatedRegion<SystemUiOverlayStyle>(
+    value: SystemUiOverlayStyle.light,
+    child: Scaffold(
+      backgroundColor: BalanceHistoryStyle.background,
+      body: StaticGlassBackdrop(
+        asset: 'assets/images/home/profile_background.webp',
+        paintBackdrop: BalanceHistoryStyle.paintBackground,
+        child: SafeArea(
+          bottom: false,
+          child: Column(
+            children: [
+              _HistoryHeader(
+                balance: widget.balance,
+                hasPro: widget.hasPro,
+                onBack: widget.onBack,
+              ),
+              Expanded(
+                child: ListenableBuilder(
+                  listenable: history,
+                  builder: (context, _) {
+                    _checkNextPage();
+                    return RefreshIndicator(
+                      onRefresh: history.refresh,
+                      color: const Color(0xFFF3B76A),
+                      backgroundColor: BalanceHistoryStyle.modal,
+                      child: CustomScrollView(
+                        key: const Key('history-scroll'),
+                        controller: _scroll,
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        slivers: [
+                          if (!history.isGloballyEmpty)
+                            SliverPadding(
+                              padding: const EdgeInsets.fromLTRB(
+                                16,
+                                18,
+                                16,
+                                18,
+                              ),
+                              sliver: SliverToBoxAdapter(
+                                child: _FilterTabs(
+                                  selectedFilter: history.filter,
+                                  onFilterChanged: _selectFilter,
+                                ),
+                              ),
+                            ),
+                          if (history.isLoading)
+                            const SliverToBoxAdapter(child: _LoadingHistory())
+                          else if (history.error != null)
+                            SliverToBoxAdapter(
+                              child: _HistoryError(
+                                key: const Key('history-error'),
+                                message: context.l10n.balanceHistoryLoadError,
+                                onRetry: history.refresh,
+                              ),
+                            )
+                          else ...[
+                            if (history.isRefreshing)
+                              const SliverToBoxAdapter(
+                                child: _LoadingHistory(),
+                              ),
+                            if (history.refreshError != null)
+                              SliverToBoxAdapter(
+                                child: _HistoryError(
+                                  message:
+                                      context.l10n.balanceHistoryRefreshError,
+                                  onRetry: history.refresh,
+                                ),
+                              ),
+                            if (history.isGloballyEmpty)
+                              const SliverPadding(
+                                padding: EdgeInsets.fromLTRB(16, 24, 16, 24),
+                                sliver: SliverToBoxAdapter(
+                                  child: _EmptyState(),
+                                ),
+                              )
+                            else if (history.items.isEmpty)
+                              SliverToBoxAdapter(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(24),
+                                  child: Text(
+                                    history.filter ==
+                                            WalletHistoryFilter.withdrawals
+                                        ? context
+                                              .l10n
+                                              .balanceHistoryNoWithdrawals
+                                        : context.l10n.balanceHistoryNoDeposits,
+                                    textAlign: TextAlign.center,
+                                    style: BalanceHistoryStyle.body.copyWith(
+                                      color: BalanceHistoryStyle.muted,
+                                    ),
+                                  ),
+                                ),
+                              )
+                            else
+                              SliverPadding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                ),
+                                sliver: SliverList.builder(
+                                  addRepaintBoundaries: false,
+                                  itemCount: history.items.length,
+                                  itemBuilder: (context, index) => Padding(
+                                    padding: const EdgeInsets.only(bottom: 8),
+                                    child: _HistoryItem(
+                                      key: ValueKey(
+                                        history.items[index].entryId,
+                                      ),
+                                      item: history.items[index],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            if (history.isLoadingMore)
+                              const SliverToBoxAdapter(
+                                child: _LoadingHistory(),
+                              ),
+                            if (history.pageError != null)
+                              SliverToBoxAdapter(
+                                child: _HistoryError(
+                                  key: const Key('history-page-error'),
+                                  message: context.l10n.balanceHistoryLoadError,
+                                  onRetry: history.loadMore,
+                                ),
+                              ),
+                          ],
+                          SliverToBoxAdapter(
+                            child: SizedBox(
+                              height: MediaQuery.paddingOf(context).bottom + 24,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    ),
+  );
+}
+
+class _HistoryHeader extends StatelessWidget {
+  const _HistoryHeader({
+    required this.balance,
+    required this.hasPro,
+    required this.onBack,
+  });
+  final int balance;
+  final bool hasPro;
+  final VoidCallback onBack;
+
+  @override
+  Widget build(BuildContext context) {
+    final title = Text(
+      context.l10n.balanceHistoryTitle,
+      style: BalanceHistoryStyle.title,
+    );
+    final wallet = Wrap(
+      spacing: 10,
+      runSpacing: 8,
+      crossAxisAlignment: WrapCrossAlignment.center,
+      children: [
+        Text.rich(
+          TextSpan(
+            children: [
+              TextSpan(text: '$balance'),
+              WidgetSpan(
+                alignment: PlaceholderAlignment.middle,
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 3),
+                  child: Image.asset(
+                    'assets/icons/star_coin_icon.png',
+                    width: 13,
+                    height: 13,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          style: BalanceHistoryStyle.title,
+        ),
+        ProfileProPill(isActive: hasPro),
+      ],
+    );
+    return Padding(
+      padding: const EdgeInsets.only(right: 16),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final large =
+              MediaQuery.textScalerOf(context).scale(17) > 22 ||
+              balance.toString().length > 7;
+          final titleRow = Row(
+            children: [
+              SizedBox(
+                width: 44,
+                height: 44,
+                child: IconButton(
+                  onPressed: onBack,
+                  tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+                  icon: const Icon(
+                    Icons.chevron_left,
+                    size: 28,
+                    color: BalanceHistoryStyle.muted,
+                  ),
+                  constraints: const BoxConstraints(
+                    minWidth: 44,
+                    minHeight: 44,
+                  ),
+                  padding: EdgeInsets.zero,
+                  style: IconButton.styleFrom(
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
+                ),
+              ),
+              Expanded(child: title),
+              if (!large) ...[const SizedBox(width: 8), wallet],
+            ],
+          );
+          if (!large) return titleRow;
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              titleRow,
+              Padding(
+                padding: const EdgeInsets.only(left: 44, top: 4),
+                child: wallet,
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+}
+
+double _textWidth(BuildContext context, String text, TextStyle style) {
+  final painter = TextPainter(
+    text: TextSpan(text: text, style: style),
+    textDirection: Directionality.of(context),
+    textScaler: MediaQuery.textScalerOf(context),
+  )..layout();
+  final width = painter.width;
+  painter.dispose();
+  return width;
+}
+
+class _HistoryItem extends StatelessWidget {
+  const _HistoryItem({super.key, required this.item});
+  final WalletHistoryEntryModel item;
+
+  @override
+  Widget build(BuildContext context) {
+    final date = LocaleFormatters.shortDate(
+      item.createdAt,
+      Localizations.localeOf(context),
+    );
+    final amount = '${item.isDeposit ? '+' : '-'}${item.amount}';
+    final amountStyle = BalanceHistoryStyle.body.copyWith(
+      fontWeight: FontWeight.w600,
+      color: item.isDeposit
+          ? BalanceHistoryStyle.credit
+          : BalanceHistoryStyle.debit,
+    );
+    return StaticGlassSurface(
+      radius: 8,
+      tint: BalanceHistoryStyle.card,
+      light: 0.8,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final dateWidth = _textWidth(
+              context,
+              date,
+              BalanceHistoryStyle.body,
+            ).ceilToDouble();
+            final amountWidth = _textWidth(
+              context,
+              amount,
+              amountStyle,
+            ).ceilToDouble();
+            final dateText = Text(date, style: BalanceHistoryStyle.body);
+            final amountText = Text(amount, style: amountStyle);
+            final description = Text(
+              item.description,
+              style: BalanceHistoryStyle.body,
+            );
+            final groupWidth = (dateWidth + amountWidth + 16).clamp(
+              180.0,
+              double.infinity,
+            );
+            if (groupWidth + 30 + 80 <= constraints.maxWidth) {
+              return Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(
+                    width: groupWidth,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [dateText, amountText],
+                    ),
+                  ),
+                  const SizedBox(width: 30),
+                  Expanded(child: description),
+                ],
+              );
+            }
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Wrap(
+                  spacing: 30,
+                  runSpacing: 8,
+                  children: [dateText, amountText],
+                ),
+                const SizedBox(height: 8),
+                description,
+              ],
+            );
+          },
+        ),
+      ),
+    );
+  }
+}
+
+class _FilterTabs extends StatelessWidget {
+  const _FilterTabs({
+    required this.selectedFilter,
+    required this.onFilterChanged,
+  });
+  final WalletHistoryFilter selectedFilter;
+  final ValueChanged<WalletHistoryFilter> onFilterChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final labels = [
+      context.l10n.balanceDeposits,
+      context.l10n.balanceWithdrawals,
+      context.l10n.balanceAllOperations,
+    ];
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final tabWidth = (constraints.maxWidth - 4) / 3;
+        final style = BalanceHistoryStyle.body.copyWith(
+          fontSize: 13,
+          fontWeight: FontWeight.w600,
+        );
+        var textHeight = 16.0;
+        for (final label in labels) {
+          final painter = TextPainter(
+            text: TextSpan(text: label, style: style),
+            textDirection: Directionality.of(context),
+            textScaler: MediaQuery.textScalerOf(context),
+          )..layout(maxWidth: tabWidth - 12);
+          if (painter.height > textHeight) textHeight = painter.height;
+          painter.dispose();
+        }
+        final height = textHeight + 16;
+        return SizedBox(
+          key: const Key('history-filters'),
+          height: height + 12,
+          child: Stack(
+            children: [
+              Positioned(
+                left: 0,
+                right: 0,
+                top: 6,
+                bottom: 6,
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: BalanceHistoryStyle.modal,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+              ),
+              if (selectedFilter != WalletHistoryFilter.withdrawals)
+                Positioned(
+                  left:
+                      2 +
+                      tabWidth *
+                          (selectedFilter == WalletHistoryFilter.all ? 1 : 2),
+                  top: (height + 12 - 16) / 2,
+                  child: const SizedBox(
+                    width: 0.5,
+                    height: 16,
+                    child: ColoredBox(color: BalanceHistoryStyle.border),
+                  ),
+                ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 2),
+                child: Row(
+                  children: [
+                    for (var i = 0; i < labels.length; i++)
+                      Expanded(
+                        child: Semantics(
+                          button: true,
+                          selected:
+                              selectedFilter == WalletHistoryFilter.values[i],
+                          child: Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              borderRadius: BorderRadius.circular(8),
+                              onTap: () => onFilterChanged(
+                                WalletHistoryFilter.values[i],
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 8,
+                                ),
+                                child: Container(
+                                  alignment: Alignment.center,
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 6,
+                                  ),
+                                  decoration:
+                                      selectedFilter ==
+                                          WalletHistoryFilter.values[i]
+                                      ? BoxDecoration(
+                                          color: BalanceHistoryStyle.selected,
+                                          borderRadius: BorderRadius.circular(
+                                            8,
+                                          ),
+                                          border: Border.all(
+                                            color: BalanceHistoryStyle.border,
+                                            width: 0.5,
+                                          ),
+                                          boxShadow: const [
+                                            BoxShadow(
+                                              color: Color(0x1F000000),
+                                              offset: Offset(0, 3),
+                                              blurRadius: 8,
+                                            ),
+                                            BoxShadow(
+                                              color: Color(0x0A000000),
+                                              offset: Offset(0, 3),
+                                              blurRadius: 1,
+                                            ),
+                                          ],
+                                        )
+                                      : null,
+                                  child:
+                                      selectedFilter ==
+                                          WalletHistoryFilter.values[i]
+                                      ? ShaderMask(
+                                          blendMode: BlendMode.srcIn,
+                                          shaderCallback: BalanceHistoryStyle
+                                              .accent
+                                              .createShader,
+                                          child: Text(
+                                            labels[i],
+                                            textAlign: TextAlign.center,
+                                            style: style,
+                                          ),
+                                        )
+                                      : Text(
+                                          labels[i],
+                                          textAlign: TextAlign.center,
+                                          style: style.copyWith(
+                                            fontWeight: FontWeight.w400,
+                                            color: BalanceHistoryStyle.muted,
+                                          ),
+                                        ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _EmptyState extends StatelessWidget {
+  const _EmptyState();
+
+  @override
+  Widget build(BuildContext context) => StaticGlassSurface(
+    key: const Key('history-empty'),
+    radius: 16,
+    tint: BalanceHistoryStyle.card,
+    light: 0.8,
+    child: Padding(
+      padding: const EdgeInsets.all(16),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              context.l10n.balanceHistoryEmpty,
+              style: BalanceHistoryStyle.emptyTitle,
+            ),
+          ),
+          const SizedBox(width: 8),
+          Image.asset(
+            'assets/images/balance/history_empty.png',
+            key: const Key('history-empty-art'),
+            width: 74,
+            height: 85,
+            excludeFromSemantics: true,
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+class _LoadingHistory extends StatelessWidget {
+  const _LoadingHistory();
+  @override
+  Widget build(BuildContext context) => const Padding(
+    padding: EdgeInsets.all(24),
+    child: Center(
+      child: SizedBox(
+        width: 24,
+        height: 24,
+        child: CircularProgressIndicator(
+          strokeWidth: 2,
+          color: Color(0xFFF3B76A),
+        ),
+      ),
+    ),
+  );
+}
+
+class _HistoryError extends StatelessWidget {
+  const _HistoryError({
+    super.key,
+    required this.message,
+    required this.onRetry,
+  });
+  final String message;
+  final VoidCallback onRetry;
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.all(16),
+    child: Column(
+      children: [
+        Text(
+          message,
+          textAlign: TextAlign.center,
+          style: BalanceHistoryStyle.body,
+        ),
+        TextButton.icon(
+          onPressed: onRetry,
+          icon: const Icon(Icons.refresh),
+          style: TextButton.styleFrom(foregroundColor: const Color(0xFFF3B76A)),
+          label: Text(context.l10n.retry),
+        ),
+      ],
+    ),
+  );
+}

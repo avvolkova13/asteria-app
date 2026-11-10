@@ -1,0 +1,4 @@
+"CFBundleDisplayName" = "Asteria";
+"NSLocationWhenInUseUsageDescription" = "Asteria can use your location to tailor astrological forecasts and local content to your region.";
+"NSLocalNetworkUsageDescription" = "Asteria uses the local network to connect to a development server.";
+"NSUserTrackingUsageDescription" = "Asteria uses this data to understand which features are useful and improve your personal forecasts. We never share your personal data with third parties without your consent.";
