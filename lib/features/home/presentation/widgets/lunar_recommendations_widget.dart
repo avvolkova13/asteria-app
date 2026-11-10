@@ -2,6 +2,7 @@ import 'package:asteria_app/app/data/models/lunar_calendar/lunar_recommendation_
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/features/home/presentation/widgets/lunar_card_image.dart';
 import 'package:asteria_app/features/home/presentation/widgets/moon_design_tokens.dart';
+import 'package:flutter/foundation.dart' show mergeSort;
 import 'package:flutter/material.dart';
 
 class LunarRecommendationsWidget extends StatelessWidget {
@@ -14,23 +15,28 @@ class LunarRecommendationsWidget extends StatelessWidget {
     final tasks = recommendation.tasks.entries.toList();
     if (tasks.isEmpty) return const SizedBox.shrink();
 
+    mergeSort(
+      tasks,
+      compare: (a, b) => LunarCardAsset.displayOrder(
+        a.key,
+      ).compareTo(LunarCardAsset.displayOrder(b.key)),
+    );
+
     return SingleChildScrollView(
       clipBehavior: Clip.none,
       scrollDirection: Axis.horizontal,
-      child: IntrinsicHeight(
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            for (final task in tasks) ...[
-              if (task.key != tasks.first.key) const SizedBox(width: 16),
-              _LunarRecommendationCard(
-                title: _taskTitle(context, task.key),
-                assetName: LunarCardAsset.forTaskKey(task.key),
-                recommendation: task.value,
-              ),
-            ],
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          for (final task in tasks) ...[
+            if (task.key != tasks.first.key) const SizedBox(width: 16),
+            _LunarRecommendationCard(
+              title: _taskTitle(context, task.key),
+              assetName: LunarCardAsset.forTaskKey(task.key),
+              recommendation: task.value,
+            ),
           ],
-        ),
+        ],
       ),
     );
   }
@@ -85,8 +91,6 @@ class LunarRecommendationsWidget extends StatelessWidget {
 }
 
 class _LunarRecommendationCard extends StatelessWidget {
-  static const double width = 304;
-  static const double minHeight = 182;
   static const double _padding = 8;
   static const double _imageWidth = 83;
   static const double _imageHeight = 44;
@@ -127,8 +131,10 @@ class _LunarRecommendationCard extends StatelessWidget {
     final imageAssetName = assetName;
 
     return Container(
-      width: width,
-      constraints: const BoxConstraints(minHeight: minHeight),
+      width: switch (imageAssetName) {
+        'moon_card_beauty_haircut' || 'moon_card_beauty_hair_coloring' => 304,
+        _ => 325,
+      },
       padding: const EdgeInsets.all(_padding),
       decoration: BoxDecoration(
         color: MoonDesignTokens.cardSurface.withValues(alpha: 0.2),
@@ -136,13 +142,14 @@ class _LunarRecommendationCard extends StatelessWidget {
         border: Border.all(color: AppColors.white.withValues(alpha: 0.12)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.16),
-            blurRadius: 18,
-            offset: const Offset(0, 6),
+            color: Colors.black.withValues(alpha: 0.25),
+            blurRadius: 4,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
@@ -151,8 +158,6 @@ class _LunarRecommendationCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   title,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
                   style: titleStyle(context),
                   textHeightBehavior: const TextHeightBehavior(
                     applyHeightToFirstAscent: false,

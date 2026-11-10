@@ -6,10 +6,10 @@ import 'package:asteria_app/core/analytics/product_analytics_service.dart';
 import 'package:asteria_app/core/di/di.dart';
 import 'package:asteria_app/core/routing/app_route.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
+import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 import 'package:asteria_app/features/affirmation/widgets/affirmation_category_widget.dart';
 import 'package:asteria_app/features/monetization/presentation/monetization_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 const Set<String> freeAffirmationCategoryIds = {'love', 'abundance'};
 const Color _affirmationSurface = Color(0xFF0E031F);
@@ -143,14 +143,11 @@ class _AffirmationTopNavBar extends StatelessWidget {
                       onTap: () => Navigator.of(context).pop(),
                       child: Padding(
                         padding: const EdgeInsets.only(right: 8),
-                        child: SvgPicture.asset(
+                        child: ClayAssetIcon(
                           'assets/icons/back_icon.svg',
                           width: 18,
                           height: 24,
-                          colorFilter: const ColorFilter.mode(
-                            AppColors.textInverse,
-                            BlendMode.srcIn,
-                          ),
+                          tint: AppColors.textInverse,
                         ),
                       ),
                     ),
@@ -265,7 +262,7 @@ class _AffirmationProBadge extends StatelessWidget {
               ),
               if (!isActive) ...[
                 const SizedBox(width: 4),
-                const Icon(
+                const ClayIcon(
                   Icons.lock_outline,
                   size: 12,
                   color: AppColors.textInverse,

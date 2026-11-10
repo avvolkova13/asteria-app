@@ -1,5 +1,6 @@
 import 'package:asteria_app/app/data/models/rune_of_day/rune_of_day_model.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
+import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 import 'package:flutter/material.dart';
 
 class _RunesBlockColors {
@@ -344,7 +345,7 @@ class _RunesBlockState extends State<RunesBlock> with TickerProviderStateMixin {
                     color: Colors.grey[300],
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: const Icon(Icons.image_not_supported, size: 64),
+                  child: const ClayIcon(Icons.image_not_supported, size: 64),
                 );
               },
             ),

@@ -1,8 +1,9 @@
-import 'package:asteria_app/core/ui_kit/ui_kit.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'anakra_glass_surface.dart';
 import 'anakra_layout.dart';
+import 'package:asteria_app/core/ui_kit/ui_kit.dart';
+import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 
 class AnakraComposer extends StatelessWidget {
   const AnakraComposer({
@@ -64,7 +65,7 @@ class AnakraComposer extends StatelessWidget {
                           tooltip: context.l10n.clearMessage,
                           onPressed: busy ? null : controller.clear,
                           padding: EdgeInsets.zero,
-                          icon: Icon(
+                          icon: ClayIcon(
                             Icons.cancel,
                             size: 18,
                             color: Colors.white.withValues(alpha: 0.2),

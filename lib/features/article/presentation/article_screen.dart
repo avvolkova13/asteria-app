@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 
 import 'package:asteria_app/app/data/models/article/article_model.dart';
 import 'package:asteria_app/app/providers/content_provider.dart';
@@ -13,7 +14,6 @@ import 'package:asteria_app/features/balance/presentation/provider/rewards_provi
 import 'package:asteria_app/features/monetization/presentation/monetization_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 
 class _ArticlePageColors {
@@ -194,12 +194,9 @@ class _ArticleTopBar extends StatelessWidget {
                         onTap: () => Navigator.of(context).pop(),
                         child: Padding(
                           padding: const EdgeInsets.only(right: 8),
-                          child: SvgPicture.asset(
+                          child: ClayAssetIcon(
                             'assets/icons/back_icon.svg',
-                            colorFilter: const ColorFilter.mode(
-                              AppColors.textSecondary,
-                              BlendMode.srcIn,
-                            ),
+                            tint: AppColors.textSecondary,
                             height: 24,
                           ),
                         ),

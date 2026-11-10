@@ -1,7 +1,7 @@
 import 'package:asteria_app/core/extensions/build_context_extensions.dart';
 import 'package:asteria_app/core/ui_kit/app_colors/app_colors.dart';
+import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 // Local tokens from Figma 4825:51040 (dark purchase sheet).
 const Color _notEnoughStarsError = Color(0xFFE36A6A);
@@ -119,14 +119,11 @@ class _TitleRow extends StatelessWidget {
         SizedBox.square(
           dimension: 24,
           child: Center(
-            child: SvgPicture.asset(
+            child: ClayAssetIcon(
               'assets/icons/close_icon.svg',
               width: 20,
               height: 20,
-              colorFilter: const ColorFilter.mode(
-                _notEnoughStarsError,
-                BlendMode.srcIn,
-              ),
+              tint: _notEnoughStarsError,
             ),
           ),
         ),

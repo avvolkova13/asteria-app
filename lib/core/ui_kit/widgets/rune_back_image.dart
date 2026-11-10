@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 import 'package:flutter/material.dart';
 
 class RuneBackImage extends StatelessWidget {
@@ -39,7 +40,7 @@ class RuneBackImage extends StatelessWidget {
                   return ColoredBox(
                     color: Colors.grey.shade300,
                     child: const Center(
-                      child: Icon(Icons.image_not_supported, size: 64),
+                      child: ClayIcon(Icons.image_not_supported, size: 64),
                     ),
                   );
                 },

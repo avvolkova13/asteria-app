@@ -1,12 +1,12 @@
 import 'package:asteria_app/core/const/pricing_catalog.dart';
 import 'package:asteria_app/core/routing/app_route.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
+import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 import 'package:asteria_app/features/balance/presentation/provider/rewards_provider.dart';
 import 'package:asteria_app/features/balance/presentation/widgets/earn_rewards_section.dart';
 import 'package:asteria_app/features/home/presentation/widgets/card_advertisement_widget.dart';
 import 'package:asteria_app/features/profile_flow/profile_flow_ui.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 
 class BalanceScreen extends StatefulWidget {
@@ -136,7 +136,7 @@ class _HistoryButton extends StatelessWidget {
                 borderRadius: BorderRadius.circular(6),
                 border: Border.all(color: ProfileFlowColors.accent, width: 2),
               ),
-              child: const Icon(
+              child: const ClayIcon(
                 Icons.chevron_right_rounded,
                 color: ProfileFlowColors.accent,
                 size: 18,
@@ -190,14 +190,11 @@ class _WhereToSpend extends StatelessWidget {
       constraints: const BoxConstraints(minHeight: 32),
       child: Row(
         children: [
-          SvgPicture.asset(
+          ClayAssetIcon(
             item.icon,
             width: 24,
             height: 24,
-            colorFilter: const ColorFilter.mode(
-              ProfileFlowColors.accent,
-              BlendMode.srcIn,
-            ),
+            tint: ProfileFlowColors.accent,
           ),
           const SizedBox(width: 9),
           Expanded(

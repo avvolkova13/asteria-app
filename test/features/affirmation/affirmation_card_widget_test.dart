@@ -2,12 +2,14 @@ import 'package:asteria_app/app/data/models/affirmation/affirmation_model.dart';
 import 'package:asteria_app/core/analytics/product_analytics_service.dart';
 import 'package:asteria_app/core/di/di.dart';
 import 'package:asteria_app/core/localization/localization.dart';
+import 'package:asteria_app/core/routing/app_route.dart';
 import 'package:asteria_app/core/ui_kit/theme/theme.dart';
 import 'package:asteria_app/features/affirmation/widgets/affirmation_card_widget.dart';
 import 'package:asteria_app/features/affirmation/widgets/affirmation_category_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 
 void main() {
   const categoryImageNames = <String, String>{
@@ -65,6 +67,81 @@ void main() {
 
     tearDown(() {
       di.unregister<ProductAnalyticsService>();
+    });
+
+    testWidgets('a swipe changes the card and a tap opens the shared player', (
+      tester,
+    ) async {
+      final cards = [
+        _affirmation(id: 'first', text: 'Первая'),
+        _affirmation(id: 'second', text: 'Вторая'),
+      ];
+      final router = GoRouter(
+        routes: [
+          GoRoute(
+            path: '/',
+            builder: (context, _) => Scaffold(
+              body: Column(
+                children: [
+                  AffirmationCategoryWidget(
+                    category: 'love',
+                    affirmations: cards,
+                  ),
+                  AffirmationCategoryWidget(
+                    category: 'calm',
+                    affirmations: cards,
+                    showAffirmations: false,
+                  ),
+                ],
+              ),
+            ),
+          ),
+          GoRoute(
+            path: AffirmationPlayerRoute.routeName,
+            name: AffirmationPlayerRoute.routeName,
+            builder: (context, _) => Scaffold(
+              body: TextButton(
+                onPressed: () => context.pop(),
+                child: const Text('Закрыть плеер'),
+              ),
+            ),
+          ),
+        ],
+      );
+      addTearDown(router.dispose);
+      await tester.pumpWidget(
+        MaterialApp.router(
+          routerConfig: router,
+          builder: (context, child) => Theme(
+            data: AppThemeDark.instance.getThemeData(context),
+            child: child!,
+          ),
+          locale: const Locale('ru'),
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            ...GlobalMaterialLocalizations.delegates,
+          ],
+          supportedLocales: AppLocaleService.supportedLocales,
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final stack = find.byType(AffirmationCardStack);
+      expect(stack, findsOneWidget);
+      await tester.tap(stack);
+      await tester.pumpAndSettle();
+      expect(find.text('Закрыть плеер'), findsOneWidget);
+      await tester.tap(find.text('Закрыть плеер'));
+      await tester.pumpAndSettle();
+      await tester.drag(stack, const Offset(-145, 0));
+      await tester.pumpAndSettle();
+      expect(_frontImageAssetPath(tester), endsWith('category_love_2.webp'));
+      await tester.tap(stack);
+      await tester.pumpAndSettle();
+      expect(find.text('Закрыть плеер'), findsOneWidget);
+      await tester.tap(find.text('Закрыть плеер'));
+      await tester.pumpAndSettle();
+      expect(_frontImageAssetPath(tester), endsWith('category_love_2.webp'));
     });
 
     testWidgets(
@@ -145,7 +222,10 @@ AffirmationModel _affirmation({
 List<String> _imageAssetPaths(WidgetTester tester) {
   return tester
       .widgetList<Image>(find.byType(Image))
-      .map((image) => (image.image as AssetImage).assetName)
+      .map((widget) => widget.image)
+      .whereType<AssetImage>()
+      .map((image) => image.assetName)
+      .where((path) => path.startsWith('assets/images/affirmation/category_'))
       .toList();
 }
 

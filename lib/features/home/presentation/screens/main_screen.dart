@@ -154,18 +154,17 @@ class _MainScreenState extends State<MainScreen> {
             statusBarBrightness: Brightness.dark,
           ),
           child: ColoredBox(
-            color: AppColors.textPrimary,
+            color: AppColorsDark.homeCanvas,
             child: SafeArea(
               bottom: false,
               child: CustomScrollView(
                 slivers: [
-                  SliverPersistentHeader(
-                    pinned: true,
-                    floating: false,
-                    delegate: const TopNavBarDelegate(
-                      userName: '',
-                      type: TopNavBarType.moon,
-                      moonTopPadding: 0,
+                  PinnedHeaderSliver(
+                    child: HomeAccountBar(
+                      accountLabelStyle: context
+                          .textTheme
+                          .inversePlayfairSemiBold17
+                          .copyWith(fontFamily: 'Lora'),
                     ),
                   ),
                   SliverToBoxAdapter(
@@ -181,7 +180,7 @@ class _MainScreenState extends State<MainScreen> {
                             _buildAffirmationCard(),
                             const SizedBox(height: 24),
                             _buildDailySymbolWidget(state),
-                            const SizedBox(height: 32),
+                            const SizedBox(height: 24),
                           ],
                         );
                       },

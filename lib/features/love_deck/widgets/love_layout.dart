@@ -1,9 +1,10 @@
 import 'package:asteria_app/app/data/models/tarot_card/tarot_card_model.dart';
 import 'package:asteria_app/app/providers/content_provider.dart';
 import 'package:asteria_app/app/providers/user_provider.dart';
-import 'package:asteria_app/core/localization/tarot_card_asset_resolver.dart';
 import 'package:asteria_app/core/di/di.dart';
+import 'package:asteria_app/core/localization/tarot_card_asset_resolver.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
+import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 import 'package:asteria_app/core/utils/enums.dart';
 import 'package:asteria_app/features/love_deck/widgets/card_description_modal.dart';
 import 'package:flutter/material.dart';
@@ -221,7 +222,7 @@ class _LoveLayoutState extends State<LoveLayout> {
                 color: Colors.grey[300],
                 borderRadius: BorderRadius.circular(_cardBorderRadius),
               ),
-              child: const Icon(Icons.image_not_supported, size: 48),
+              child: const ClayIcon(Icons.image_not_supported, size: 48),
             );
           },
         ),
@@ -254,7 +255,7 @@ class _LoveLayoutState extends State<LoveLayout> {
                 color: Colors.grey[300],
                 borderRadius: BorderRadius.circular(_cardBorderRadius),
               ),
-              child: const Icon(Icons.image_not_supported, size: 48),
+              child: const ClayIcon(Icons.image_not_supported, size: 48),
             );
           },
         ),

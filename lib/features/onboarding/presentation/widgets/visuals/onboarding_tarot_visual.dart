@@ -1,8 +1,8 @@
 import 'dart:math' as math;
+import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 
 import 'package:asteria_app/core/localization/generated/l10n.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 import 'onboarding_visual_styles.dart';
 
@@ -275,11 +275,11 @@ class _SphereTag extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          SvgPicture.asset(
+          ClayAssetIcon(
             'assets/icons/sphere_icon/ic_$icon.svg',
             width: 17,
             height: 17,
-            colorFilter: ColorFilter.mode(foreground, BlendMode.srcIn),
+            tint: foreground,
             excludeFromSemantics: true,
           ),
           const SizedBox(width: 4),

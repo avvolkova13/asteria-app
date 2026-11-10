@@ -5,7 +5,13 @@ class CitySuggestion {
   final String placeId;
   final String description;
 
-  const CitySuggestion({required this.placeId, required this.description});
+  final CurrentLocationModel? knownLocation;
+
+  const CitySuggestion({
+    required this.placeId,
+    required this.description,
+    this.knownLocation,
+  });
 }
 
 class CitySearchException implements Exception {

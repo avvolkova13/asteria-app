@@ -1,5 +1,6 @@
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/features/home/presentation/widgets/card_advertisement_widget.dart';
+import 'package:asteria_app/features/home/presentation/widgets/home_glass_surface.dart';
 import 'package:flutter/material.dart';
 
 class HomeProSubscriptionCard extends StatelessWidget {
@@ -49,11 +50,7 @@ class _CompactHomePromo extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: horizontalMargin),
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: const Color(0x339A7DB8),
-          borderRadius: BorderRadius.circular(16),
-        ),
+      child: HomeGlassSurface(
         child: LayoutBuilder(
           builder: (context, constraints) {
             final artWidth = (constraints.maxWidth * 99 / 358).clamp(0.0, 99.0);
@@ -77,7 +74,11 @@ class _CompactHomePromo extends StatelessWidget {
                                 style: context
                                     .textTheme
                                     .inversePlayfairSemiBold24
-                                    .copyWith(fontFamily: 'Lora', height: 1),
+                                    .copyWith(
+                                      fontFamily: 'Lora',
+                                      height: 1,
+                                      letterSpacing: 0,
+                                    ),
                               ),
                               const SizedBox(height: 8),
                               Text(
@@ -120,6 +121,9 @@ class _CompactHomePromo extends StatelessWidget {
                           vertical: 8,
                         ),
                         decoration: BoxDecoration(
+                          boxShadow: const [
+                            BoxShadow(color: Color(0x0D6E4BFF), blurRadius: 15),
+                          ],
                           gradient: const LinearGradient(
                             colors: [
                               Color(0xFFE6994D),

@@ -6,14 +6,14 @@ import 'package:flutter/material.dart';
 class AdviceWidget extends StatelessWidget {
   final String title;
   final String text;
-  final DayStatus status;
+  final DayStatus? status;
 
   const AdviceWidget({
-    Key? key,
+    super.key,
     required this.title,
     required this.text,
-    required this.status,
-  }) : super(key: key);
+    this.status,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -24,15 +24,20 @@ class AdviceWidget extends StatelessWidget {
           duration: const Duration(milliseconds: 360),
           curve: Curves.easeOutCubic,
           style: context.textTheme.playfairSemiBold24.copyWith(
-            color: MoonDesignTokens.statusColor(status),
+            fontFamily: 'Lora',
+            color: status == null
+                ? AppColors.textInverse
+                : MoonDesignTokens.statusColor(status!),
             height: 1,
           ),
-          child: Text(title),
+          child: Semantics(header: true, child: Text(title)),
         ),
         const SizedBox(height: 16),
         Text(
           text,
           style: context.textTheme.urbanistRegular16.copyWith(
+            fontFamily: 'Onest',
+            letterSpacing: -0.408,
             color: AppColors.textInverse,
             height: 1.2,
           ),

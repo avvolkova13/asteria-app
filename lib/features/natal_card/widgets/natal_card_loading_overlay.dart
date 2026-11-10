@@ -1,10 +1,10 @@
 import 'dart:async';
+import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/core/ui_kit/widgets/subscription_widget.dart';
 import 'package:asteria_app/features/monetization/presentation/monetization_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 /// Shared by chart generation and loading a translated chart.
 class NatalCardLoadingOverlay extends StatefulWidget {
@@ -80,7 +80,7 @@ class _NatalCardLoadingOverlayState extends State<NatalCardLoadingOverlay> {
                           padding: const EdgeInsets.symmetric(horizontal: 16),
                           child: Row(
                             children: [
-                              SvgPicture.asset(
+                              ClayAssetIcon(
                                 'assets/icons/back_icon.svg',
                                 width: 24,
                                 height: 24,

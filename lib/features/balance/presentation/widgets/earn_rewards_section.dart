@@ -1,4 +1,5 @@
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
+import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 import 'package:asteria_app/features/balance/domain/reward_models.dart';
 import 'package:asteria_app/features/balance/presentation/provider/rewards_provider.dart';
 import 'package:asteria_app/features/profile_flow/profile_flow_ui.dart';
@@ -260,7 +261,7 @@ class _RewardArtwork extends StatelessWidget {
       ),
       clipBehavior: Clip.hardEdge,
       child: assetPath == null
-          ? Icon(
+          ? ClayIcon(
               icon,
               color: isComplete ? AppColors.success : ProfileFlowColors.purple,
               size: 44,

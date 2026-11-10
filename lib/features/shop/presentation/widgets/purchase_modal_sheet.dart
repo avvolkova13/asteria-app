@@ -3,10 +3,10 @@ import 'package:asteria_app/core/analytics/dictionaries/offer_type.dart';
 import 'package:asteria_app/core/analytics/product_analytics_service.dart';
 import 'package:asteria_app/core/di/di.dart';
 import 'package:asteria_app/core/routing/app_route.dart';
+import 'package:asteria_app/core/ui_kit/ui_kit.dart';
+import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 import 'package:asteria_app/features/monetization/presentation/monetization_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:asteria_app/core/ui_kit/ui_kit.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
@@ -348,7 +348,7 @@ class _PurchaseSuccessScreen extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            SvgPicture.asset(
+            ClayAssetIcon(
               'assets/icons/success_square_icon.svg',
               width: 24,
               height: 24,
@@ -531,15 +531,12 @@ class _QuantitySelector extends StatelessWidget {
                 child: ExcludeSemantics(
                   child: GestureDetector(
                     onTap: quantity > 1 ? onDecrement : null,
-                    child: SvgPicture.asset(
+                    child: ClayAssetIcon(
                       'assets/icons/minus_circle_icon.svg',
                       height: 22,
-                      colorFilter: ColorFilter.mode(
-                        quantity > 1
+                      tint: quantity > 1
                             ? _purchaseModalPurple
                             : _purchaseModalPurple.withValues(alpha: 0.62),
-                        BlendMode.srcIn,
-                      ),
                     ),
                   ),
                 ),
@@ -560,13 +557,10 @@ class _QuantitySelector extends StatelessWidget {
                 child: ExcludeSemantics(
                   child: GestureDetector(
                     onTap: onIncrement,
-                    child: SvgPicture.asset(
+                    child: ClayAssetIcon(
                       'assets/icons/plus_circle_icon.svg',
                       height: 22,
-                      colorFilter: const ColorFilter.mode(
-                        _purchaseModalGold,
-                        BlendMode.srcIn,
-                      ),
+                      tint: _purchaseModalGold,
                     ),
                   ),
                 ),

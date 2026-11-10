@@ -1,14 +1,14 @@
-import 'package:asteria_app/features/monetization/presentation/contextual_purchase_page.dart';
 import 'package:asteria_app/core/analytics/dictionaries/failure_reason.dart';
 import 'package:asteria_app/core/analytics/dictionaries/offer_type.dart';
 import 'package:asteria_app/core/analytics/product_analytics_service.dart';
 import 'package:asteria_app/core/di/di.dart';
 import 'package:asteria_app/core/services/global_loader_service.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
+import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 import 'package:asteria_app/features/monetization/data/feature_execution_api.dart';
+import 'package:asteria_app/features/monetization/presentation/contextual_purchase_page.dart';
 import 'package:asteria_app/features/monetization/presentation/monetization_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:uuid/uuid.dart';
 
 enum PurchaseModalOutcome { purchased, proActivated }
@@ -507,7 +507,7 @@ class _SuccessContent extends StatelessWidget {
         children: [
           const _Grabber(),
           const SizedBox(height: 24),
-          SvgPicture.asset(
+          ClayAssetIcon(
             'assets/icons/success_square_icon.svg',
             width: 42,
             height: 42,

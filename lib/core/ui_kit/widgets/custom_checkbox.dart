@@ -1,5 +1,6 @@
-import 'package:flutter/material.dart';
 import '../app_colors/app_colors.dart';
+import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
+import 'package:flutter/material.dart';
 
 class CustomCheckbox extends StatelessWidget {
   final bool value;
@@ -28,7 +29,7 @@ class CustomCheckbox extends StatelessWidget {
               color: value ? AppColors.primary : Colors.transparent,
             ),
             child: value
-                ? const Icon(Icons.check, size: 16, color: Colors.white)
+                ? const ClayIcon(Icons.check, size: 16, color: Colors.white)
                 : null,
           ),
         ),

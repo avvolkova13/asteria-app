@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 
 import 'package:asteria_app/app/data/models/rune_of_day/rune_of_day_model.dart';
 import 'package:asteria_app/app/data/models/tarot_card/tarot_card_model.dart';
@@ -6,7 +7,6 @@ import 'package:asteria_app/core/localization/tarot_card_asset_resolver.dart';
 import 'package:asteria_app/core/routing/app_route.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 enum _DailySymbolTab { tarot, rune }
 
@@ -50,8 +50,8 @@ class _DailySymbolOfTheDayWidgetState extends State<DailySymbolOfTheDayWidget>
   static const double _runeWidth = 189;
   static const double _runeHeight = 307;
   static const double _runeRadius = 41;
-  static const Color _pickerBackground = Color(0xFF171026);
-  static const Color _selectedBackground = Color(0xFF24182F);
+  static const Color _pickerBackground = Color(0xFF1B1433);
+  static const Color _selectedBackground = Color(0xFF151028);
   static const LinearGradient _orangeGradient = LinearGradient(
     colors: [Color(0xFFE6994D), Color(0xFFF3B76A), Color(0xFFE6994D)],
   );
@@ -111,9 +111,13 @@ class _DailySymbolOfTheDayWidgetState extends State<DailySymbolOfTheDayWidget>
     }
 
     if (isOpened) {
-      controller.forward();
+      if (MediaQuery.disableAnimationsOf(context)) {
+        controller.value = 1;
+      } else {
+        controller.forward();
+      }
     } else {
-      controller.reverse();
+      controller.value = 0;
     }
   }
 
@@ -128,7 +132,6 @@ class _DailySymbolOfTheDayWidgetState extends State<DailySymbolOfTheDayWidget>
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
-      decoration: const BoxDecoration(color: AppColors.textPrimary),
       child: LayoutBuilder(
         builder: (context, constraints) {
           return Column(
@@ -139,6 +142,7 @@ class _DailySymbolOfTheDayWidgetState extends State<DailySymbolOfTheDayWidget>
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: context.textTheme.inversePlayfairSemiBold24.copyWith(
+                  fontFamily: 'Lora',
                   height: 1,
                   letterSpacing: 0,
                 ),
@@ -149,7 +153,7 @@ class _DailySymbolOfTheDayWidgetState extends State<DailySymbolOfTheDayWidget>
                 onChanged: _selectTab,
                 orangeGradient: _orangeGradient,
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 9),
               AnimatedSwitcher(
                 duration: const Duration(milliseconds: 180),
                 switchInCurve: Curves.easeOut,
@@ -271,9 +275,11 @@ class _SegmentedOption extends StatelessWidget {
                 ? context.textTheme.inverseUrbanistSemiBold14
                 : context.textTheme.tertiaryUrbanistMedium14)
             .copyWith(
+              fontFamily: 'Onest',
+              fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
               fontSize: 13,
               height: 1.2,
-              letterSpacing: 0,
+              letterSpacing: -0.08,
               color: isSelected ? Colors.white : AppColors.textTertiary,
             );
 
@@ -281,6 +287,7 @@ class _SegmentedOption extends StatelessWidget {
       button: true,
       selected: isSelected,
       label: text,
+      onTap: onTap,
       child: ExcludeSemantics(
         child: GestureDetector(
           behavior: HitTestBehavior.opaque,
@@ -295,14 +302,14 @@ class _SegmentedOption extends StatelessWidget {
                   : Colors.transparent,
               borderRadius: BorderRadius.circular(8),
               border: isSelected
-                  ? Border.all(color: AppColors.primary, width: 0.5)
+                  ? Border.all(color: const Color(0xFF302654), width: 0.5)
                   : null,
               boxShadow: isSelected
                   ? [
                       BoxShadow(
-                        color: AppColors.primary.withValues(alpha: 0.22),
-                        blurRadius: 8,
-                        offset: const Offset(0, 2),
+                        color: Colors.black.withValues(alpha: 0.12),
+                        blurRadius: 4,
+                        offset: const Offset(0, 3),
                       ),
                     ]
                   : null,
@@ -358,15 +365,15 @@ class _TarotSymbolContent extends StatelessWidget {
           refreshSemanticLabel: context.l10n.refreshDailyTarotLabel,
           onRefresh: onRefresh,
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 9),
         _buildContent(context),
       ],
     );
   }
 
   Widget _buildContent(BuildContext context) {
-    final shouldShowLoading = isLoading || (isOpened && tarotCard == null);
-    if (shouldShowLoading) {
+    final symbol = tarotCard;
+    if (symbol == null && (isLoading || isOpened)) {
       return _LoadingContent(text: context.l10n.dailyTarotLoading);
     }
 
@@ -374,20 +381,21 @@ class _TarotSymbolContent extends StatelessWidget {
       children: [
         Center(
           child: Semantics(
-            button: onCardTap != null,
-            label: isOpened && tarotCard != null
-                ? context.l10n.dailyTarotOpenedLabel(tarotCard!.title)
-                : context.l10n.dailyTarotFlipLabel,
+            button: symbol != null && onCardTap != null,
+            onTap: symbol == null ? null : onCardTap,
+            label: symbol == null
+                ? context.l10n.commonUnavailable
+                : context.l10n.dailyTarotOpenedLabel(symbol.title),
             child: ExcludeSemantics(
               child: GestureDetector(
                 behavior: HitTestBehavior.opaque,
-                onTap: onCardTap,
-                child: tarotCard == null
+                onTap: symbol == null ? null : onCardTap,
+                child: symbol == null
                     ? const _TarotCardBack()
                     : _FlipContent(
                         animation: flipAnimation,
                         back: const _TarotCardBack(),
-                        front: _TarotCardFront(tarotCard: tarotCard!),
+                        front: _TarotCardFront(tarotCard: symbol),
                       ),
               ),
             ),
@@ -396,24 +404,27 @@ class _TarotSymbolContent extends StatelessWidget {
         const SizedBox(height: 16),
         AnimatedSwitcher(
           duration: const Duration(milliseconds: 220),
-          child: isOpened && tarotCard != null
+          child: symbol != null
               ? _OpenedDescription(
                   key: const ValueKey('tarot_opened'),
-                  text: tarotCard!.cardOfDayDescription,
+                  text: symbol.cardOfDayDescription,
                   maxTextWidth: maxTextWidth,
                 )
               : _ClosedDescription(
                   key: const ValueKey('tarot_closed'),
-                  text: context.l10n.dailyTarotTap,
+                  text: context.l10n.commonUnavailable,
                   maxTextWidth: maxTextWidth,
                 ),
         ),
-        if (isOpened && tarotCard != null) ...[
+        if (symbol != null) ...[
           const SizedBox(height: 8),
           _GradientActionText(
             text: context.l10n.dailyTarotReading,
             gradient: orangeGradient,
-            onTap: () => TaroCardsRoute.push(context),
+            onTap: () => TaroCardsRoute.push(
+              context,
+              params: const TaroCardsRouteParams.spread(),
+            ),
           ),
         ],
       ],
@@ -453,15 +464,15 @@ class _RuneSymbolContent extends StatelessWidget {
           refreshSemanticLabel: context.l10n.refreshDailyRuneLabel,
           onRefresh: onRefresh,
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 9),
         _buildContent(context),
       ],
     );
   }
 
   Widget _buildContent(BuildContext context) {
-    final shouldShowLoading = isLoading || (isOpened && rune == null);
-    if (shouldShowLoading) {
+    final symbol = rune;
+    if (symbol == null && (isLoading || isOpened)) {
       return _LoadingContent(text: context.l10n.dailyRuneLoading);
     }
 
@@ -469,20 +480,21 @@ class _RuneSymbolContent extends StatelessWidget {
       children: [
         Center(
           child: Semantics(
-            button: onRuneTap != null,
-            label: isOpened && rune != null
-                ? context.l10n.dailyRuneOpenedLabel(rune!.title)
-                : context.l10n.dailyRuneFlipLabel,
+            button: symbol != null && onRuneTap != null,
+            onTap: symbol == null ? null : onRuneTap,
+            label: symbol == null
+                ? context.l10n.commonUnavailable
+                : context.l10n.dailyRuneOpenedLabel(symbol.title),
             child: ExcludeSemantics(
               child: GestureDetector(
                 behavior: HitTestBehavior.opaque,
-                onTap: onRuneTap,
-                child: rune == null
+                onTap: symbol == null ? null : onRuneTap,
+                child: symbol == null
                     ? const _RuneBack()
                     : _FlipContent(
                         animation: flipAnimation,
                         back: const _RuneBack(),
-                        front: _RuneFront(rune: rune!),
+                        front: _RuneFront(rune: symbol),
                       ),
               ),
             ),
@@ -491,24 +503,27 @@ class _RuneSymbolContent extends StatelessWidget {
         const SizedBox(height: 16),
         AnimatedSwitcher(
           duration: const Duration(milliseconds: 220),
-          child: isOpened && rune != null
+          child: symbol != null
               ? _RuneOpenedDescription(
                   key: const ValueKey('rune_opened'),
-                  rune: rune!,
+                  rune: symbol,
                   maxTextWidth: maxTextWidth,
                 )
               : _ClosedDescription(
                   key: const ValueKey('rune_closed'),
-                  text: context.l10n.dailyRuneTap,
+                  text: context.l10n.commonUnavailable,
                   maxTextWidth: maxTextWidth,
                 ),
         ),
-        if (isOpened && rune != null) ...[
+        if (symbol != null) ...[
           const SizedBox(height: 8),
           _GradientActionText(
             text: context.l10n.dailyRuneReading,
             gradient: orangeGradient,
-            onTap: () => RunesRoute.push(context),
+            onTap: () => RunesRoute.push(
+              context,
+              params: const RunesRouteParams.spread(),
+            ),
           ),
         ],
       ],
@@ -537,7 +552,8 @@ class _SectionTitleRow extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: context.textTheme.inversePlayfairSemiBold24.copyWith(
-              height: 1.2,
+              fontFamily: 'Lora',
+              height: 1,
               letterSpacing: 0,
             ),
           ),
@@ -553,14 +569,10 @@ class _SectionTitleRow extends StatelessWidget {
               height: 44,
               child: Align(
                 alignment: Alignment.centerRight,
-                child: SvgPicture.asset(
-                  'assets/icons/repeat_icon.svg',
+                child: ClayAssetIcon(
+                  'assets/icons/daily_symbol_shuffle.svg',
                   width: 24,
                   height: 24,
-                  colorFilter: const ColorFilter.mode(
-                    Color(0xFFE6994D),
-                    BlendMode.srcIn,
-                  ),
                 ),
               ),
             ),
@@ -587,18 +599,21 @@ class _FlipContent extends StatelessWidget {
     return AnimatedBuilder(
       animation: animation,
       builder: (context, child) {
+        if (animation.isDismissed || animation.isCompleted) return front;
+        final turns = animation.value;
+        final showBack = turns > 0.25 && turns < 0.75;
         return Transform(
           alignment: Alignment.center,
           transform: Matrix4.identity()
             ..setEntry(3, 2, 0.001)
-            ..rotateY(animation.value * math.pi),
-          child: animation.value < 0.5
-              ? back
-              : Transform(
+            ..rotateY(turns * 2 * math.pi),
+          child: showBack
+              ? Transform(
                   alignment: Alignment.center,
                   transform: Matrix4.identity()..rotateY(math.pi),
-                  child: front,
-                ),
+                  child: back,
+                )
+              : front,
         );
       },
     );
@@ -779,9 +794,10 @@ class _OpenedDescription extends StatelessWidget {
         text,
         textAlign: TextAlign.center,
         style: context.textTheme.inverseUrbanistRegular16.copyWith(
-          color: AppColors.textInverse.withValues(alpha: 0.82),
+          fontFamily: 'Onest',
+          color: AppColors.surface,
           height: 1.2,
-          letterSpacing: 0,
+          letterSpacing: -0.408,
         ),
       ),
     );
@@ -810,6 +826,7 @@ class _RuneOpenedDescription extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
             textAlign: TextAlign.center,
             style: context.textTheme.inversePlayfairSemiBold20.copyWith(
+              fontFamily: 'Lora',
               height: 1.1,
               letterSpacing: 0,
             ),
@@ -819,9 +836,10 @@ class _RuneOpenedDescription extends StatelessWidget {
             rune.cardOfDayDescription,
             textAlign: TextAlign.center,
             style: context.textTheme.inverseUrbanistRegular16.copyWith(
-              color: AppColors.textInverse.withValues(alpha: 0.82),
+              fontFamily: 'Onest',
+              color: AppColors.surface,
               height: 1.2,
-              letterSpacing: 0,
+              letterSpacing: -0.408,
             ),
           ),
         ],
@@ -846,6 +864,7 @@ class _GradientActionText extends StatelessWidget {
     return Semantics(
       button: true,
       label: text,
+      onTap: onTap,
       child: ExcludeSemantics(
         child: GestureDetector(
           behavior: HitTestBehavior.opaque,
@@ -857,8 +876,9 @@ class _GradientActionText extends StatelessWidget {
                 text: text,
                 gradient: gradient,
                 style: context.textTheme.inverseUrbanistSemiBold16.copyWith(
+                  fontFamily: 'Onest',
                   height: 1.2,
-                  letterSpacing: 0,
+                  letterSpacing: -0.408,
                 ),
               ),
             ),
@@ -916,7 +936,7 @@ class _ImageFallback extends StatelessWidget {
         color: AppColors.uiDisabled,
         borderRadius: BorderRadius.circular(radius),
       ),
-      child: const Icon(Icons.image_not_supported, size: 48),
+      child: const ClayIcon(Icons.image_not_supported, size: 48),
     );
   }
 }

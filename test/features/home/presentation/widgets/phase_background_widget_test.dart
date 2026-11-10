@@ -2,7 +2,6 @@ import 'package:asteria_app/app/data/models/lunar_calendar/lunar_recommendation_
 import 'package:asteria_app/core/localization/localization.dart';
 import 'package:asteria_app/core/ui_kit/theme/theme.dart';
 import 'package:asteria_app/features/home/presentation/widgets/phase_background_widget.dart';
-import 'package:asteria_app/features/home/presentation/widgets/sphere_selection_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -15,7 +14,7 @@ void main() {
       _app(const PhaseBackgroundWidget(background: _background)),
     );
 
-    expect(find.text('Фон дня: Восстановление'), findsOneWidget);
+    expect(find.text('Восстановление'), findsOneWidget);
     expect(find.text('Нужно сбавить темп.'), findsOneWidget);
     expect(find.textContaining('Неблагоприятный'), findsNothing);
   });
@@ -27,15 +26,14 @@ void main() {
       _app(
         PhaseBackgroundWidget(
           background: _background,
-          sphere: Sphere.garden,
           recommendation: _recommendation,
         ),
       ),
     );
 
-    expect(find.text('Сфера «Садоводство»: благоприятно'), findsOneWidget);
+    expect(find.text('Благоприятный день'), findsOneWidget);
     expect(find.text('Нужно сбавить темп.'), findsOneWidget);
-    expect(find.text('Фон дня: Восстановление'), findsNothing);
+    expect(find.text('Восстановление'), findsNothing);
   });
 }
 

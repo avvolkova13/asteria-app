@@ -2,8 +2,8 @@ import 'package:asteria_app/app/providers/content_provider.dart';
 import 'package:asteria_app/core/di/di.dart';
 import 'package:asteria_app/core/routing/app_route.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
+import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 class ArticlesSectionWidget extends StatefulWidget {
   final String? excludeArticleId;
@@ -92,14 +92,11 @@ class _ArticlesSectionWidgetState extends State<ArticlesSectionWidget> {
                     height: 24,
                     child: Align(
                       alignment: Alignment.centerRight,
-                      child: SvgPicture.asset(
+                      child: ClayAssetIcon(
                         'assets/icons/right_arrow_icon.svg',
                         width: 24,
                         height: 24,
-                        colorFilter: const ColorFilter.mode(
-                          AppColors.warning,
-                          BlendMode.srcIn,
-                        ),
+                        tint: AppColors.warning,
                       ),
                     ),
                   ),

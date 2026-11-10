@@ -4,6 +4,7 @@ import 'package:asteria_app/core/di/di.dart';
 import 'package:asteria_app/core/extensions/datetime_extensions.dart';
 import 'package:asteria_app/core/routing/app_route.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
+import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 import 'package:asteria_app/features/sonnik/presentation/provider/sonnik_provider.dart';
 import 'package:asteria_app/features/sonnik/presentation/widgets/sonnik_layout.dart';
 import 'package:flutter/material.dart';
@@ -99,7 +100,7 @@ class _SonnikHistoryItem extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 12),
-          const Icon(
+          const ClayIcon(
             Icons.arrow_forward_ios_rounded,
             color: SonnikPalette.white,
             size: 18,

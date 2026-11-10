@@ -1,12 +1,13 @@
 import 'package:asteria_app/app/data/models/user/user_model.dart';
 import 'package:asteria_app/app/providers/user_provider.dart';
+import 'package:asteria_app/core/extensions/datetime_extensions.dart';
 import 'package:asteria_app/core/routing/app_route.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
-import 'package:asteria_app/core/extensions/datetime_extensions.dart';
+import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 import 'package:asteria_app/core/ui_kit/widgets/subscription_widget.dart';
+import 'package:asteria_app/features/home/presentation/widgets/profile_avatar.dart';
 import 'package:asteria_app/features/monetization/presentation/monetization_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 
 enum TopNavBarType {
@@ -226,12 +227,9 @@ class TopNavBarDelegate extends SliverPersistentHeaderDelegate {
                         onTap: () => Navigator.of(context).pop(),
                         child: Padding(
                           padding: const EdgeInsets.only(right: 8),
-                          child: SvgPicture.asset(
+                          child: ClayAssetIcon(
                             'assets/icons/back_icon.svg',
-                            colorFilter: ColorFilter.mode(
-                              AppColors.textSecondary,
-                              BlendMode.srcIn,
-                            ),
+                            tint: AppColors.textSecondary,
                             height: 24,
                           ),
                         ),
@@ -381,12 +379,9 @@ class _TopNavBarTitle extends StatelessWidget {
               onTap: () => Navigator.of(context).pop(),
               child: Padding(
                 padding: const EdgeInsets.only(right: 8),
-                child: SvgPicture.asset(
+                child: ClayAssetIcon(
                   'assets/icons/back_icon.svg',
-                  colorFilter: ColorFilter.mode(
-                    AppColors.textSecondary,
-                    BlendMode.srcIn,
-                  ),
+                  tint: AppColors.textSecondary,
                   height: 24,
                 ),
               ),
@@ -405,8 +400,58 @@ class _TopNavBarTitle extends StatelessWidget {
   }
 }
 
+class HomeAccountBar extends StatelessWidget {
+  const HomeAccountBar({
+    super.key,
+    this.backgroundColor = AppColorsDark.homeCanvas,
+    this.accountLabelStyle,
+    this.showAccountActions = true,
+  });
+
+  final Color backgroundColor;
+  final TextStyle? accountLabelStyle;
+  final bool showAccountActions;
+
+  @override
+  Widget build(BuildContext context) {
+    final gender = context.select<UserProvider, Gender?>(
+      (provider) => provider.currentUser?.personalInfo?.gender,
+    );
+    return ColoredBox(
+      color: backgroundColor,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: Row(
+          children: [
+            SizedBox.square(
+              dimension: 44,
+              child: IconButton(
+                tooltip: context.l10n.navProfile,
+                alignment: Alignment.centerLeft,
+                padding: EdgeInsets.zero,
+                onPressed: () => HomeProfileRoute.push(context),
+                icon: ClayPressFeedback(
+                  child: ProfileAvatar(size: 36, gender: gender),
+                ),
+              ),
+            ),
+            if (showAccountActions) ...[
+              const Spacer(),
+              Transform.translate(
+                offset: const Offset(0, 2),
+                child: _MoonTopNavBarActions(labelStyle: accountLabelStyle),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class _MoonTopNavBarActions extends StatelessWidget {
-  const _MoonTopNavBarActions();
+  const _MoonTopNavBarActions({this.labelStyle});
+  final TextStyle? labelStyle;
 
   @override
   Widget build(BuildContext context) {
@@ -425,7 +470,9 @@ class _MoonTopNavBarActions extends StatelessWidget {
                     padding: const EdgeInsets.only(bottom: 4),
                     child: Text(
                       '${MonetizationProvider.maybeOf(context)?.balance ?? 0} ',
-                      style: context.textTheme.inverseUrbanistSemiBold17,
+                      style:
+                          labelStyle ??
+                          context.textTheme.inverseUrbanistSemiBold17,
                     ),
                   );
                 },
@@ -441,7 +488,11 @@ class _MoonTopNavBarActions extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 8),
-        const SizedBox(width: 76, height: 28, child: SubscriptionWidget()),
+        SizedBox(
+          width: 76,
+          height: 28,
+          child: SubscriptionWidget(labelStyle: labelStyle),
+        ),
       ],
     );
   }
@@ -512,12 +563,9 @@ class _HomeTopNavBarWidget extends StatelessWidget {
                             onTap: () => Navigator.of(context).pop(),
                             child: Padding(
                               padding: const EdgeInsets.only(right: 8),
-                              child: SvgPicture.asset(
+                              child: ClayAssetIcon(
                                 'assets/icons/back_icon.svg',
-                                colorFilter: ColorFilter.mode(
-                                  AppColors.textSecondary,
-                                  BlendMode.srcIn,
-                                ),
+                                tint: AppColors.textSecondary,
                                 height: 24,
                               ),
                             ),
@@ -889,12 +937,9 @@ class _TransparentTopNavBar extends StatelessWidget {
                             onTap: () => Navigator.of(context).pop(),
                             child: Padding(
                               padding: const EdgeInsets.only(right: 8),
-                              child: SvgPicture.asset(
+                              child: ClayAssetIcon(
                                 'assets/icons/back_icon.svg',
-                                colorFilter: ColorFilter.mode(
-                                  AppColors.textSecondary,
-                                  BlendMode.srcIn,
-                                ),
+                                tint: AppColors.textSecondary,
                                 height: 24,
                               ),
                             ),
@@ -968,7 +1013,7 @@ class _TopNavBackButton extends StatelessWidget {
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTap: onTap,
-        child: child,
+        child: ClayPressFeedback(child: child),
       ),
     );
   }
@@ -992,11 +1037,7 @@ class _AppBarButton extends StatelessWidget {
             color: AppColors.primary,
             borderRadius: BorderRadius.circular(8),
           ),
-          child: SvgPicture.asset(
-            'assets/icons/$icon.svg',
-            width: 24,
-            height: 24,
-          ),
+          child: ClayAssetIcon('assets/icons/$icon.svg', width: 24, height: 24),
         ),
         const SizedBox(height: 4),
         Text(label, style: context.textTheme.inversePlayfairMedium20),

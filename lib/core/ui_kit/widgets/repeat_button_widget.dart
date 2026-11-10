@@ -1,5 +1,5 @@
+import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 class RepeatButtonWidget extends StatelessWidget {
   const RepeatButtonWidget({super.key});
@@ -8,7 +8,7 @@ class RepeatButtonWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(left: 8.0, top: 6.0),
-      child: SvgPicture.asset(
+      child: ClayAssetIcon(
         'assets/icons/repeat_icon.svg',
         width: 24,
         height: 24,

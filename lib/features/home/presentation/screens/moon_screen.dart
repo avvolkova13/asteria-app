@@ -6,9 +6,11 @@ import 'package:asteria_app/core/analytics/analytics_route_observer.dart';
 import 'package:asteria_app/core/analytics/dictionaries/entry_surface.dart';
 import 'package:asteria_app/core/analytics/event_params.dart';
 import 'package:asteria_app/core/analytics/product_analytics_service.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:asteria_app/core/ui_kit/widgets/top_nav_bar.dart';
 import 'package:asteria_app/features/home/presentation/cubit/moon_screen_cubit.dart';
 import 'package:asteria_app/features/home/presentation/cubit/moon_screen_state.dart';
+import 'package:asteria_app/features/home/presentation/widgets/home_section_heading.dart';
 import 'package:asteria_app/features/home/presentation/widgets/advice_widget.dart';
 import 'package:asteria_app/features/home/presentation/widgets/calendar_statuses_widget.dart';
 import 'package:asteria_app/features/home/presentation/widgets/lunar_recommendations_widget.dart';
@@ -144,52 +146,73 @@ class _MoonScreenState extends State<MoonScreen> {
           listener: (context, state) => _handleStateAnalytics(state),
           builder: (context, state) {
             _handleStateAnalytics(state);
+            final recommendation = _selectedRecommendation(state);
             return PrimaryScrollController(
               controller: _scrollController,
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  gradient: MoonDesignTokens.pageGlow(state.selectedDayStatus),
-                ),
-                child: CustomScrollView(
-                  controller: _scrollController,
-                  slivers: [
-                    SliverPersistentHeader(
-                      pinned: true,
-                      floating: false,
-                      delegate: TopNavBarDelegate(
-                        userName: context.l10n.lunarCalendarTitle,
-                        type: TopNavBarType.moon,
-                      ),
-                    ),
-                    SliverToBoxAdapter(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const SizedBox(height: 26),
-                            _MoonScreenAdvice(state: state),
-                            const SizedBox(height: 24),
-                            const SphereSelectionWidget(),
-                            const SizedBox(height: 24),
-                            const MoonCalendarWidget(),
-                            const SizedBox(height: 12),
-                            CalendarStatusesWidget(
-                              visible: state.selectedSphere != null,
-                            ),
-                            if (_selectedRecommendation(state) != null) ...[
-                              const SizedBox(height: 16),
-                              LunarRecommendationsWidget(
-                                recommendation: _selectedRecommendation(state)!,
-                              ),
-                            ],
-                            const SizedBox(height: 120),
-                          ],
+              child: CustomScrollView(
+                controller: _scrollController,
+                slivers: [
+                  const PinnedHeaderSliver(
+                    child: ColoredBox(
+                      color: MoonDesignTokens.pageBackground,
+                      child: SafeArea(
+                        bottom: false,
+                        child: HomeAccountBar(
+                          backgroundColor: MoonDesignTokens.pageBackground,
                         ),
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                  SliverToBoxAdapter(
+                    child: Stack(
+                      children: [
+                        Positioned.fill(
+                          top: -(MediaQuery.viewPaddingOf(context).top + 44),
+                          child: ExcludeSemantics(
+                            child: SvgPicture.asset(
+                              'assets/background/lunar_calendar_${state.selectedDayStatus.name}.svg',
+                              fit: BoxFit.fitWidth,
+                              alignment: Alignment.topCenter,
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const SizedBox(height: 26),
+                              HomeSectionHeading(
+                                context.l10n.lunarCalendarTitle,
+                              ),
+                              const SizedBox(height: 16),
+                              _MoonScreenAdvice(
+                                state: state,
+                                recommendation: recommendation,
+                              ),
+                              const SizedBox(height: 24),
+                              const SphereSelectionWidget(),
+                              const SizedBox(height: 24),
+                              const MoonCalendarWidget(),
+                              const SizedBox(height: 16),
+                              CalendarStatusesWidget(
+                                visible: state.selectedSphere != null,
+                              ),
+                              if (recommendation != null) ...[
+                                const SizedBox(height: 16),
+                                LunarRecommendationsWidget(
+                                  key: ValueKey(state.selectedSphere),
+                                  recommendation: recommendation,
+                                ),
+                              ],
+                              const SizedBox(height: 24),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             );
           },
@@ -217,7 +240,8 @@ class _MoonScreenState extends State<MoonScreen> {
 }
 
 class _MoonScreenAdvice extends StatelessWidget {
-  const _MoonScreenAdvice({required this.state});
+  const _MoonScreenAdvice({required this.state, required this.recommendation});
+  final SphereRecommendationModel? recommendation;
 
   final MoonScreenState state;
 
@@ -232,25 +256,9 @@ class _MoonScreenAdvice extends StatelessWidget {
       );
     }
 
-    final selectedSphere = state.selectedSphere;
-    final recommendation = selectedSphere == null
-        ? null
-        : personalizedDay.spheres[_sphereApiCode(selectedSphere)];
-
     return PhaseBackgroundWidget(
       background: personalizedDay.dailyBackground,
-      sphere: selectedSphere,
       recommendation: recommendation,
     );
-  }
-
-  String _sphereApiCode(Sphere sphere) {
-    return switch (sphere) {
-      Sphere.beauty => 'beauty',
-      Sphere.garden => 'gardening',
-      Sphere.health => 'health',
-      Sphere.workAndRest => 'work_and_rest',
-      Sphere.relationships => 'relationships',
-    };
   }
 }

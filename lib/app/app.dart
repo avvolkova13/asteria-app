@@ -1,6 +1,7 @@
-import 'package:asteria_app/core/payments/apple/apple_purchase_coordinator.dart';
 import 'dart:async';
 import 'dart:io' show Platform;
+import 'package:asteria_app/core/payments/apple/apple_purchase_coordinator.dart';
+import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 
 import 'package:asteria_app/core/analytics/durable/durable_analytics.dart';
 import 'package:asteria_app/core/analytics/durable/analytics_lifecycle.dart';
@@ -22,6 +23,9 @@ import 'package:asteria_app/core/payments/storage/pending_purchases_store.dart';
 import 'package:asteria_app/core/payments/recovery/google_purchase_recovery.dart';
 import 'package:asteria_app/core/payments/routing/payment_return_link_service.dart';
 import 'package:asteria_app/core/routing/initial_route_resolver.dart';
+import 'package:app_links/app_links.dart';
+import 'package:asteria_app/core/routing/app_route.dart';
+import 'package:asteria_app/core/routing/practice_link_intake.dart';
 import 'package:asteria_app/core/services/apps_flyer_service.dart';
 import 'package:asteria_app/core/services/auth/auth_session_service.dart';
 import 'package:asteria_app/core/services/att_permission_service.dart';
@@ -54,6 +58,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   late Future<String> _initFuture;
+  final _practiceLinks = PracticeLinkIntake(playerRouteName: AffirmationPlayerRoute.routeName);
   ApplePurchaseCoordinator? _appleCoordinator;
   GooglePurchaseRecovery? _googlePurchaseRecovery;
 
@@ -67,6 +72,7 @@ class _MyAppState extends State<MyApp> {
   @override
   void dispose() {
     widget.localeService.removeListener(_handleLocaleChanged);
+    _practiceLinks.dispose();
     _appleCoordinator?.dispose();
     _googlePurchaseRecovery?.dispose();
     super.dispose();
@@ -91,6 +97,8 @@ class _MyAppState extends State<MyApp> {
     di.get<AnalyticsLifecycle>().start();
     // Start listening before routing so a cold-start payment return is buffered.
     di.get<PaymentReturnLinkService>();
+    final appLinks = AppLinks();
+    _practiceLinks.start(appLinks.uriLinkStream, appLinks.getInitialLink);
 
     // 1. Конфигурируем AppsFlyer SDK (initSdk), но ещё не запускаем.
     final appsFlyerService = di.get<AppsFlyerService>();
@@ -236,6 +244,7 @@ class _MyAppState extends State<MyApp> {
               );
             }
 
+            _practiceLinks.attachRouter(di.get<GoRouter>());
             return _App(
               initialRoute: snapshot.data!,
               localeService: widget.localeService,
@@ -367,7 +376,7 @@ class _ErrorScreen extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.error_outline, size: 64, color: Colors.white),
+                const ClayIcon(Icons.error_outline, size: 64, color: Colors.white),
                 const SizedBox(height: 16),
                 Text(
                   l10n.initializationError,

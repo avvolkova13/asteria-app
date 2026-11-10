@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 
 import 'package:asteria_app/app/providers/user_provider.dart';
 import 'package:asteria_app/core/di/di.dart';
@@ -6,7 +7,6 @@ import 'package:asteria_app/core/extensions/datetime_extensions.dart';
 import 'package:asteria_app/core/extensions/string_extensions.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 class CompatibilitySectionWidget extends StatelessWidget {
   final VoidCallback onPressed;
@@ -46,14 +46,11 @@ class CompatibilitySectionWidget extends StatelessWidget {
                           child: GestureDetector(
                             behavior: HitTestBehavior.opaque,
                             onTap: onPressed,
-                            child: SvgPicture.asset(
+                            child: ClayAssetIcon(
                               'assets/icons/repeat_icon.svg',
                               width: 24,
                               height: 24,
-                              colorFilter: const ColorFilter.mode(
-                                Color(0xFFE6994D),
-                                BlendMode.srcIn,
-                              ),
+                              tint: Color(0xFFE6994D),
                             ),
                           ),
                         ),

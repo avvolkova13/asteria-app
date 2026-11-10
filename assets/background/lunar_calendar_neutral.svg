@@ -1,0 +1,21 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="390" height="1297" viewBox="0 0 390 1297" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Group 481440">
+<rect id="Rectangle 17" x="2" width="388" height="1297" fill="url(#paint0_radial_0_450)" fill-opacity="0.3"/>
+<ellipse id="Ellipse 2" cx="195" cy="650.122" rx="195" ry="277.125" fill="url(#paint1_radial_0_450)" fill-opacity="0.2"/>
+<circle id="Ellipse 3" cx="194.999" cy="650.088" r="114.089" fill="url(#paint2_radial_0_450)" fill-opacity="0.2"/>
+</g>
+<defs>
+<radialGradient id="paint0_radial_0_450" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(196 648.5) rotate(90) scale(648.5 194)">
+<stop stop-color="#F1B452"/>
+<stop offset="1" stop-color="#F1B452" stop-opacity="0"/>
+</radialGradient>
+<radialGradient id="paint1_radial_0_450" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(195 650.122) rotate(90) scale(277.125 195)">
+<stop stop-color="#F1B452"/>
+<stop offset="1" stop-color="#F1B452" stop-opacity="0"/>
+</radialGradient>
+<radialGradient id="paint2_radial_0_450" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(194.999 650.088) rotate(90) scale(114.089)">
+<stop stop-color="#F1B452" stop-opacity="0.5"/>
+<stop offset="1" stop-color="#F1B452" stop-opacity="0"/>
+</radialGradient>
+</defs>
+</svg>

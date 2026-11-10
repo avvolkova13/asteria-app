@@ -6,10 +6,10 @@ import 'package:asteria_app/core/analytics/feature_names.dart';
 import 'package:asteria_app/core/analytics/product_analytics_service.dart';
 import 'package:asteria_app/core/di/di.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
+import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 import 'package:asteria_app/features/compatibility/presentation/widgets/compatibility_layout.dart';
 import 'package:asteria_app/features/monetization/presentation/monetization_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 class CreateCompatibilitySubscriptionScreen extends StatefulWidget {
   const CreateCompatibilitySubscriptionScreen({Key? key}) : super(key: key);
@@ -220,11 +220,10 @@ class _PackageCard extends StatelessWidget {
             const SizedBox(width: 4),
             Image.asset('assets/icons/star_coin_icon.png', height: 18),
             const SizedBox(width: 10),
-            Text(
-              '→',
-              style: context.textTheme.urbanistRegular20.copyWith(
-                color: const Color(0xFF7C4DFF),
-              ),
+            const ClayIcon(
+              Icons.arrow_forward_rounded,
+              size: 20,
+              color: Color(0xFF7C4DFF),
             ),
             const SizedBox(width: 10),
             Expanded(
@@ -261,14 +260,11 @@ class _SelectionMark extends StatelessWidget {
       ),
       child: isSelected
           ? Center(
-              child: SvgPicture.asset(
+              child: ClayAssetIcon(
                 'assets/icons/checbox_round_selected.svg',
                 width: 24,
                 height: 24,
-                colorFilter: const ColorFilter.mode(
-                  AppColors.textPrimary,
-                  BlendMode.srcIn,
-                ),
+                tint: AppColors.textPrimary,
               ),
             )
           : null,

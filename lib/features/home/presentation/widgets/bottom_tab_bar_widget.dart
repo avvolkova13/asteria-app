@@ -1,6 +1,7 @@
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
+import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
+import 'package:asteria_app/features/home/presentation/widgets/home_glass_surface.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 const _barContentHeight = 58.0;
 const _barTopPadding = 16.0;
@@ -8,15 +9,17 @@ const _barHorizontalPadding = 25.0;
 const _compactHorizontalPadding = 16.0;
 const _buttonGap = 16.0;
 const _compactButtonGap = 10.0;
-const _pillInnerPadding = 2.0;
+const _tabsHeight = 50.0;
+const _barBottomPadding = 25.0;
+const _tabsInset = 6.0;
 const _barBackgroundInset = -4.0;
 const _aiButtonSize = 58.0;
 const _aiGlowSize = 118.0;
-const _inactiveOpacity = 0.64;
+const _inactiveOpacity = 0.30;
 const _tabItemGap = 1.0;
-const _activePillColor = AppColors.textPrimary;
-const _inactiveItemColor = AppColors.uiDisabled;
-const _footerBackdropColor = AppColors.textPrimary;
+const _activePillColor = Color(0xFF151028);
+const _inactiveItemColor = AppColors.white;
+const _footerBackdropColor = AppColorsDark.homeCanvas;
 
 const _activeGradient = LinearGradient(
   colors: [Color(0xFFE6994D), Color(0xFFF3B76A), Color(0xFFE6994D)],
@@ -38,7 +41,8 @@ class BottomTabBarWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bottomPadding = MediaQuery.paddingOf(context).bottom;
+    final bottomPadding =
+        MediaQuery.paddingOf(context).bottom + _barBottomPadding;
 
     return ColoredBox(
       color: _footerBackdropColor,
@@ -65,7 +69,7 @@ class BottomTabBarWidget extends StatelessWidget {
                   children: [
                     Expanded(
                       child: SizedBox(
-                        height: _barContentHeight,
+                        height: _tabsHeight,
                         child: Stack(
                           clipBehavior: Clip.none,
                           children: [
@@ -74,27 +78,28 @@ class BottomTabBarWidget extends StatelessWidget {
                               top: _barBackgroundInset,
                               right: _barBackgroundInset,
                               bottom: _barBackgroundInset,
-                              child: DecoratedBox(
+                              child: const DecoratedBox(
                                 decoration: BoxDecoration(
-                                  color: const Color(
-                                    0xFF9A7DB8,
-                                  ).withValues(alpha: 0.2),
-                                  borderRadius: BorderRadius.circular(100),
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(100),
+                                  ),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Colors.black.withValues(
-                                        alpha: 0.12,
-                                      ),
+                                      color: Color(0x1F000000),
                                       blurRadius: 40,
-                                      offset: const Offset(0, 8),
+                                      offset: Offset(0, 8),
                                     ),
                                   ],
+                                ),
+                                child: HomeGlassSurface(
+                                  radius: 100,
+                                  child: SizedBox.expand(),
                                 ),
                               ),
                             ),
                             Padding(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: _pillInnerPadding,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: _tabsInset,
                               ),
                               child: Row(
                                 children: [
@@ -166,6 +171,30 @@ class _AiAstrologerButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (assetPath == 'assets/images/year_animals/horse.webp') {
+      // The artwork includes the off-centre glow around the 58-point button.
+      return SizedBox.square(
+        dimension: _aiButtonSize,
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            Positioned(
+              left: -40.5,
+              top: -32.5,
+              width: 371 / 3,
+              height: 139,
+              child: IgnorePointer(
+                child: Image.asset(
+                  'assets/icons/nav_bar/anakra_horse_badge.png',
+                  fit: BoxFit.fill,
+                  excludeFromSemantics: true,
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
     return SizedBox(
       width: _aiButtonSize,
       height: _aiButtonSize,
@@ -389,16 +418,13 @@ class _TabItem extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       mainAxisSize: MainAxisSize.min,
       children: [
-        SvgPicture.asset(
+        ClayAssetIcon(
           icon,
           width: 24,
           height: 24,
-          colorFilter: ColorFilter.mode(
-            isActive
-                ? AppColors.white
-                : _inactiveItemColor.withValues(alpha: _inactiveOpacity),
-            BlendMode.srcIn,
-          ),
+          tint: isActive
+              ? AppColors.white
+              : _inactiveItemColor.withValues(alpha: _inactiveOpacity),
         ),
         const SizedBox(height: _tabItemGap),
         Flexible(
@@ -411,6 +437,7 @@ class _TabItem extends StatelessWidget {
                 color: isActive
                     ? AppColors.white
                     : _inactiveItemColor.withValues(alpha: _inactiveOpacity),
+                fontFamily: 'Onest',
                 fontSize: 10,
                 fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
                 height: 1.2,
@@ -423,36 +450,45 @@ class _TabItem extends StatelessWidget {
     );
 
     return Expanded(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: _pillInnerPadding),
-        child: Semantics(
-          button: true,
-          selected: isActive,
-          label: label,
-          child: ExcludeSemantics(
-            child: GestureDetector(
-              onTap: onPressed,
-              behavior: HitTestBehavior.opaque,
-              child: Container(
-                height: double.infinity,
-                decoration: isActive
-                    ? BoxDecoration(
+      child: Semantics(
+        button: true,
+        selected: isActive,
+        label: label,
+        onTap: onPressed,
+        child: ExcludeSemantics(
+          child: GestureDetector(
+            onTap: onPressed,
+            behavior: HitTestBehavior.opaque,
+            child: Stack(
+              alignment: Alignment.center,
+              clipBehavior: Clip.none,
+              children: [
+                if (isActive)
+                  const Positioned(
+                    left: -6,
+                    right: -6,
+                    top: 0,
+                    bottom: 0,
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
                         color: _activePillColor,
-                        borderRadius: BorderRadius.circular(100),
-                      )
-                    : null,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 2),
-                  child: isActive
-                      ? ShaderMask(
-                          shaderCallback: (bounds) =>
-                              _activeGradient.createShader(bounds),
-                          blendMode: BlendMode.srcIn,
-                          child: content,
-                        )
-                      : content,
+                        borderRadius: BorderRadius.all(Radius.circular(100)),
+                      ),
+                    ),
+                  ),
+                SizedBox.expand(
+                  child: ClayPressFeedback(
+                    child: isActive
+                        ? ShaderMask(
+                            shaderCallback: (bounds) =>
+                                _activeGradient.createShader(bounds),
+                            blendMode: BlendMode.modulate,
+                            child: content,
+                          )
+                        : content,
+                  ),
                 ),
-              ),
+              ],
             ),
           ),
         ),

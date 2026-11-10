@@ -24,6 +24,7 @@ final _routes = [
   BalanceRoute(),
   BalanceHistoryRoute(),
   AffirmationRoute(),
+  AffirmationPlayerRoute(),
   PaymentsRoute(),
   CoinsPaywallRoute(),
 ];

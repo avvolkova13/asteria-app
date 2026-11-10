@@ -6,10 +6,12 @@ class SubscriptionWidget extends StatelessWidget {
   const SubscriptionWidget({
     super.key,
     this.onTap,
+    this.labelStyle,
     this.originSurface = 'top_nav_pro_badge',
   });
 
   final VoidCallback? onTap;
+  final TextStyle? labelStyle;
   final String originSurface;
 
   static const _gradient = LinearGradient(
@@ -32,7 +34,10 @@ class SubscriptionWidget extends StatelessWidget {
           borderRadius: BorderRadius.circular(100),
         ),
         alignment: Alignment.center,
-        child: Text('PRO', style: context.textTheme.inversePlayfairSemiBold17),
+        child: Text(
+          'PRO',
+          style: labelStyle ?? context.textTheme.inversePlayfairSemiBold17,
+        ),
       ),
     );
 

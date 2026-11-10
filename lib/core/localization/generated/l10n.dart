@@ -4251,10 +4251,10 @@ class AppLocalizations {
     );
   }
 
-  /// `Based on your location and local time.`
+  /// `Based on your location and time`
   String get moonLocationNote {
     return Intl.message(
-      'Based on your location and local time.',
+      'Based on your location and time',
       name: 'moonLocationNote',
       desc: '',
       args: [],
@@ -4741,6 +4741,36 @@ class AppLocalizations {
     return Intl.message(
       'Choose a city',
       name: 'citySelectionTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `is this your city?`
+  String get cityConfirmationQuestion {
+    return Intl.message(
+      'is this your city?',
+      name: 'cityConfirmationQuestion',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Could not save the city. Please try again.`
+  String get citySaveError {
+    return Intl.message(
+      'Could not save the city. Please try again.',
+      name: 'citySaveError',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No cities found`
+  String get citySearchEmpty {
+    return Intl.message(
+      'No cities found',
+      name: 'citySearchEmpty',
       desc: '',
       args: [],
     );
@@ -5531,6 +5561,16 @@ class AppLocalizations {
     return Intl.message(
       'This affirmation is included with a subscription. Get access to every affirmation, including locked categories, and other exclusive features.',
       name: 'affirmationSubscriptionRequired',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Open the audio player`
+  String get affirmationOpenPlayer {
+    return Intl.message(
+      'Open the audio player',
+      name: 'affirmationOpenPlayer',
       desc: '',
       args: [],
     );
@@ -7640,6 +7680,166 @@ class AppLocalizations {
     return Intl.message(
       'Check status',
       name: 'applePurchaseCheckStatus',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Affirmation  ·  1 min 15 sec`
+  String get playerMetadata {
+    return Intl.message(
+      'Affirmation  ·  1 min 15 sec',
+      name: 'playerMetadata',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Close player`
+  String get playerClose {
+    return Intl.message(
+      'Close player',
+      name: 'playerClose',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Repeat recording`
+  String get playerRepeat {
+    return Intl.message(
+      'Repeat recording',
+      name: 'playerRepeat',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Repeat on`
+  String get playerRepeatOn {
+    return Intl.message(
+      'Repeat on',
+      name: 'playerRepeatOn',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Repeat off`
+  String get playerRepeatOff {
+    return Intl.message(
+      'Repeat off',
+      name: 'playerRepeatOff',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Share affirmation`
+  String get playerShare {
+    return Intl.message(
+      'Share affirmation',
+      name: 'playerShare',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Play`
+  String get playerPlay {
+    return Intl.message('Play', name: 'playerPlay', desc: '', args: []);
+  }
+
+  /// `Play again`
+  String get playerReplay {
+    return Intl.message('Play again', name: 'playerReplay', desc: '', args: []);
+  }
+
+  /// `Pause`
+  String get playerPause {
+    return Intl.message('Pause', name: 'playerPause', desc: '', args: []);
+  }
+
+  /// `Favorite`
+  String get playerFavorite {
+    return Intl.message('Favorite', name: 'playerFavorite', desc: '', args: []);
+  }
+
+  /// `Added to favorites`
+  String get playerAddedFavorite {
+    return Intl.message(
+      'Added to favorites',
+      name: 'playerAddedFavorite',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Removed from favorites`
+  String get playerRemovedFavorite {
+    return Intl.message(
+      'Removed from favorites',
+      name: 'playerRemovedFavorite',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Playback position`
+  String get playerPosition {
+    return Intl.message(
+      'Playback position',
+      name: 'playerPosition',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Show full transcript`
+  String get playerShowTranscript {
+    return Intl.message(
+      'Show full transcript',
+      name: 'playerShowTranscript',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Collapse transcript`
+  String get playerHideTranscript {
+    return Intl.message(
+      'Collapse transcript',
+      name: 'playerHideTranscript',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Unable to play this recording`
+  String get playerPlayError {
+    return Intl.message(
+      'Unable to play this recording',
+      name: 'playerPlayError',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Could not open sharing options`
+  String get playerShareError {
+    return Intl.message(
+      'Could not open sharing options',
+      name: 'playerShareError',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Unable to save favorites`
+  String get playerFavoriteError {
+    return Intl.message(
+      'Unable to save favorites',
+      name: 'playerFavoriteError',
       desc: '',
       args: [],
     );

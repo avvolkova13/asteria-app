@@ -1,9 +1,9 @@
 import 'dart:ui' as ui;
+import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/features/monetization/presentation/monetization_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 class ProfileFlowColors {
   static const background = Color(0xFF080314);
@@ -106,7 +106,7 @@ class ProfileFlowHeader extends StatelessWidget {
                           height: 36,
                           child: Align(
                             alignment: Alignment.centerLeft,
-                            child: Icon(
+                            child: ClayIcon(
                               Icons.chevron_left,
                               color: Color(0xB8FFFFFF),
                               size: 32,
@@ -179,7 +179,7 @@ class ProfileProPill extends StatelessWidget {
           ),
           if (!isActive) ...[
             const SizedBox(width: 5),
-            const Icon(Icons.lock_outline, size: 13, color: AppColors.white),
+            const ClayIcon(Icons.lock_outline, size: 13, color: AppColors.white),
           ],
         ],
       ),
@@ -264,15 +264,15 @@ class ProfileIconBox extends StatelessWidget {
       ),
       child: Center(
         child: iconAsset != null
-            ? SvgPicture.asset(
+            ? ClayAssetIcon(
                 iconAsset!,
                 width: iconSize,
                 height: iconSize,
-                colorFilter: preserveAssetColors
+                tint: preserveAssetColors
                     ? null
-                    : const ColorFilter.mode(AppColors.white, BlendMode.srcIn),
+                    : AppColors.white,
               )
-            : Icon(
+            : ClayIcon(
                 icon ?? Icons.star_rounded,
                 color: AppColors.white,
                 size: iconSize,

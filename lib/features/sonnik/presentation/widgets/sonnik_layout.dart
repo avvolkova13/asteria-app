@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 
 import 'package:asteria_app/app/providers/user_provider.dart';
 import 'package:asteria_app/core/routing/app_route.dart';
@@ -132,7 +133,7 @@ class SonnikTopNavBar extends StatelessWidget {
                     tooltip: MaterialLocalizations.of(
                       context,
                     ).backButtonTooltip,
-                    icon: const Icon(
+                    icon: const ClayIcon(
                       Icons.arrow_back_ios_new_rounded,
                       color: SonnikPalette.white,
                       size: 20,
@@ -461,7 +462,7 @@ class SonnikOfferCard extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 4),
-                    const Icon(
+                    const ClayIcon(
                       Icons.arrow_forward_rounded,
                       color: SonnikPalette.white,
                       size: 20,

@@ -1,6 +1,3 @@
-import 'package:asteria_app/features/monetization/presentation/contextual_purchase_page.dart';
-import 'package:asteria_app/core/payments/catalog/google_subscription_offers.dart';
-import 'package:asteria_app/core/payments/widgets/google_subscription_price.dart';
 import 'package:asteria_app/app/providers/user_provider.dart';
 import 'package:asteria_app/core/analytics/analytics_events.dart';
 import 'package:asteria_app/core/analytics/analytics_facade.dart';
@@ -9,26 +6,29 @@ import 'package:asteria_app/core/analytics/product_analytics_service.dart';
 import 'package:asteria_app/core/di/di.dart';
 import 'package:asteria_app/core/extensions/datetime_extensions.dart';
 import 'package:asteria_app/core/payments/api/arc_pay_payments_api.dart';
+import 'package:asteria_app/core/payments/api/arc_pay_subscriptions_api.dart';
+import 'package:asteria_app/core/payments/catalog/google_subscription_offers.dart';
 import 'package:asteria_app/core/payments/catalog/product_catalog.dart';
 import 'package:asteria_app/core/payments/models/payment_product.dart';
-import 'package:asteria_app/core/payments/api/arc_pay_subscriptions_api.dart';
 import 'package:asteria_app/core/payments/routing/payment_provider_route.dart';
 import 'package:asteria_app/core/payments/routing/payment_provider_route_builder.dart';
+import 'package:asteria_app/core/payments/widgets/google_subscription_price.dart';
 import 'package:asteria_app/core/routing/app_route.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
-import 'package:asteria_app/features/monetization/presentation/monetization_provider.dart';
+import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 import 'package:asteria_app/features/monetization/domain/monetization_models.dart';
+import 'package:asteria_app/features/monetization/presentation/contextual_purchase_page.dart';
+import 'package:asteria_app/features/monetization/presentation/monetization_provider.dart';
 import 'package:asteria_app/features/payments/presentation/cubit/arc_pay_checkout_cubit.dart';
 import 'package:asteria_app/features/payments/presentation/cubit/arc_pay_checkout_state.dart';
 import 'package:asteria_app/features/profile_flow/profile_flow_ui.dart';
+import 'package:asteria_app/features/subscription/presentation/cubit/arc_pay_subscription_cubit.dart';
+import 'package:asteria_app/features/subscription/presentation/cubit/arc_pay_subscription_state.dart';
 import 'package:asteria_app/features/subscription/presentation/cubit/paywall_cubit.dart';
 import 'package:asteria_app/features/subscription/presentation/cubit/paywall_state.dart';
 import 'package:asteria_app/features/subscription/presentation/paywall_failure_localization.dart';
-import 'package:asteria_app/features/subscription/presentation/cubit/arc_pay_subscription_cubit.dart';
-import 'package:asteria_app/features/subscription/presentation/cubit/arc_pay_subscription_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 @visibleForTesting
@@ -1026,14 +1026,11 @@ class _BenefitsItem extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.only(top: 1),
-          child: SvgPicture.asset(
+          child: ClayAssetIcon(
             iconPath,
             width: 24,
             height: 24,
-            colorFilter: const ColorFilter.mode(
-              ProfileFlowColors.accent,
-              BlendMode.srcIn,
-            ),
+            tint: ProfileFlowColors.accent,
           ),
         ),
         const SizedBox(width: 8),
@@ -1096,7 +1093,7 @@ class _RestorePurchasesButton extends StatelessWidget {
                           color: ProfileFlowColors.accent,
                         ),
                       )
-                    : const Icon(
+                    : const ClayIcon(
                         Icons.chevron_right,
                         color: ProfileFlowColors.accent,
                         size: 18,

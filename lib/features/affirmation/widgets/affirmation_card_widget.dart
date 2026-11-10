@@ -1,5 +1,6 @@
 import 'package:asteria_app/app/data/models/affirmation/affirmation_model.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
+import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 import 'package:flutter/material.dart';
 
 class AffirmationCardWidget extends StatelessWidget {
@@ -70,7 +71,7 @@ class AffirmationCardWidget extends StatelessWidget {
             Positioned(
               top: 16,
               right: 16,
-              child: const _CardIconButton(icon: Icons.graphic_eq),
+              child: const _CardIconButton(icon: Icons.play_arrow),
             ),
             Positioned(
               left: 16,
@@ -104,7 +105,7 @@ class _CardIconButton extends StatelessWidget {
     return SizedBox(
       width: 24,
       height: 24,
-      child: Icon(
+      child: ClayIcon(
         icon,
         size: 20,
         color: AppColors.white.withValues(alpha: 0.74),

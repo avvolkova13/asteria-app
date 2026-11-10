@@ -23,6 +23,7 @@ import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/features/compatibility/domain/repositories/compatibility_repository.dart';
 import 'package:asteria_app/features/home/presentation/widgets/moon_phase_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -355,6 +356,71 @@ void main() {
       },
     );
   }
+
+  testWidgets('shows the full location note on one line on compact phones', (
+    tester,
+  ) async {
+    await _pumpMoonPhaseWidget(tester, moonPhase: _moonPhase(15));
+    const label = 'Учитываем твою локацию и время';
+    for (final width in [320.0, 390.0]) {
+      tester.view.physicalSize = Size(width, 844);
+      await tester.pumpAndSettle();
+      final note = find.text(label);
+      final paragraph = tester.renderObject<RenderParagraph>(note);
+      final boxes = paragraph.getBoxesForSelection(
+        TextSelection(baseOffset: 0, extentOffset: label.length),
+      );
+      expect(boxes.map((box) => box.top).toSet(), hasLength(1));
+      expect(paragraph.didExceedMaxLines, isFalse);
+      expect(tester.getTopRight(note).dx, closeTo(width - 16, 1));
+      expect(
+        tester.getTopLeft(note).dx,
+        greaterThan(
+          tester.getTopRight(find.text(_currentLocation().location)).dx,
+        ),
+      );
+      expect(tester.takeException(), isNull);
+    }
+  });
+
+  testWidgets('opens current city, confirms it, or changes it from the list', (
+    tester,
+  ) async {
+    final user = await _pumpMoonPhaseWidget(tester, moonPhase: _moonPhase(15));
+    final city = user.currentUser!.currentLocation!;
+    await tester.tap(find.text(city.location));
+    await tester.pumpAndSettle();
+    expect(
+      find.textContaining('это ваш город?', findRichText: true),
+      findsOneWidget,
+    );
+    await tester.tap(find.text('Верно'));
+    await tester.pumpAndSettle();
+    expect(identical(user.currentUser!.currentLocation, city), isTrue);
+    await tester.tap(find.text(city.location));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Сменить'));
+    await tester.pumpAndSettle();
+    expect(find.text('Выберите город'), findsOneWidget);
+    const next = 'Петропавловск-Камчатский, Россия';
+    await tester.tap(find.text(next));
+    await tester.pumpAndSettle();
+    expect(
+      find.textContaining(
+        'Петропавловск-Камчатский,\nэто ваш город?',
+        findRichText: true,
+      ),
+      findsOneWidget,
+    );
+    await tester.tap(find.text('Верно'));
+    await tester.pumpAndSettle();
+    expect(user.currentUser!.currentLocation!.location, next);
+    expect(
+      user.currentUser!.currentLocation!.source,
+      CurrentLocationSource.manual,
+    );
+    expect(tester.takeException(), isNull);
+  });
 
   testWidgets('keeps the day strip stable while the moon card animates', (
     tester,

@@ -1,6 +1,6 @@
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
+import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 class SharedRequestsLeftContent extends StatelessWidget {
   final int requestsLeft;
@@ -175,7 +175,7 @@ class _PurchaseBlock extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 8),
-                  SvgPicture.asset(
+                  ClayAssetIcon(
                     'assets/icons/cursor_icon.svg',
                     width: 20,
                     height: 20,

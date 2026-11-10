@@ -1,7 +1,7 @@
 import 'package:asteria_app/app/data/models/user/tarot_deck_model.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
+import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 enum TarotLayoutSphere {
   love('ic_heart'),
@@ -120,12 +120,9 @@ class _SphereSelectionItem extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       mainAxisSize: MainAxisSize.min,
       children: [
-        SvgPicture.asset(
+        ClayAssetIcon(
           'assets/icons/sphere_icon/${sphere.iconPath}.svg',
-          colorFilter: ColorFilter.mode(
-            isSelected ? _selectedText : _gold,
-            BlendMode.srcIn,
-          ),
+          tint: isSelected ? _selectedText : _gold,
           width: 24,
           height: 24,
         ),

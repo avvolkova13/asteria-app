@@ -132,7 +132,7 @@ void main() {
     addTearDown(tester.view.resetPadding);
     await mount(tester, initialTab: 0);
     final headerAction = find.descendant(
-      of: find.byType(SliverPersistentHeader),
+      of: find.byType(PinnedHeaderSliver),
       matching: find.byType(SubscriptionWidget),
     );
     expect(headerAction, findsOneWidget);

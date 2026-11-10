@@ -66,6 +66,7 @@ flutter:
 
   assets:
     - .env
+    - assets/audio/practice-75.wav
     - assets/lottie/
     - assets/background/
     - assets/images/moon_phase_days/
@@ -86,6 +87,7 @@ flutter:
     - assets/images/balance/
     - assets/images/sonnik/
     - assets/icons/
+    - assets/icons/clay/
     - assets/icons/nav_bar/
     - assets/icons/sphere_icon/
     - assets/icons/sub/
@@ -109,6 +111,7 @@ flutter:
 
   shaders:
     - assets/shaders/anakra_glass.frag
+    - assets/shaders/affirmation_lotus.frag
 
   fonts:
     - family: Arimo

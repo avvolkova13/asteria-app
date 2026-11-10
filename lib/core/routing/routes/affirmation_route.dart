@@ -26,3 +26,22 @@ class AffirmationRoute extends AppRoute {
 
   static void pushReplacement(BuildContext context) => context.pushReplacementNamed(routeName);
 }
+
+class AffirmationPlayerRoute extends AppRoute {
+  AffirmationPlayerRoute()
+    : super(
+        name: routeName,
+        path: routeName,
+        pageBuilder: (context, state) => CupertinoPage<void>(
+          key: state.pageKey,
+          name: routeName,
+          child: const AffirmationPlayerScreen(),
+        ),
+      );
+
+  static const routeName = '/affirmation/player';
+
+  static Future<void> push(BuildContext context) async {
+    await context.pushNamed<void>(routeName);
+  }
+}

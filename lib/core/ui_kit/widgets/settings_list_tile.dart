@@ -1,6 +1,6 @@
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
+import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 
 class SettingsListTile extends StatelessWidget {
   final String title;
@@ -15,10 +15,10 @@ class SettingsListTile extends StatelessWidget {
       return Container(
         decoration: BoxDecoration(color: AppColors.error, borderRadius: BorderRadius.circular(8)),
         padding: const EdgeInsets.all(8),
-        child: SvgPicture.asset(
+        child: ClayAssetIcon(
           'assets/icons/exit_icon.svg',
           height: 20,
-          colorFilter: ColorFilter.mode(AppColors.white, BlendMode.srcIn),
+          tint: AppColors.white,
         ),
       );
     }
@@ -26,7 +26,7 @@ class SettingsListTile extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(color: AppColors.primary, borderRadius: BorderRadius.circular(8)),
       padding: const EdgeInsets.all(8),
-      child: SvgPicture.asset('assets/icons/${icon}.svg', height: 20),
+      child: ClayAssetIcon('assets/icons/${icon}.svg', height: 20),
     );
   }
 
@@ -49,8 +49,8 @@ class SettingsListTile extends StatelessWidget {
                       Text(title, style: context.textTheme.urbanistRegular17),
                       Spacer(),
                       isExit != null && isExit!
-                          ? SvgPicture.asset('assets/icons/exit_icon.svg', height: 24)
-                          : SvgPicture.asset('assets/icons/right_arrow_icon.svg', height: 24),
+                          ? ClayAssetIcon('assets/icons/exit_icon.svg', height: 24)
+                          : ClayAssetIcon('assets/icons/right_arrow_icon.svg', height: 24),
                     ],
                   ),
                   const SizedBox(height: 8),

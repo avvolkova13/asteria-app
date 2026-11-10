@@ -2,9 +2,9 @@ import 'package:asteria_app/app/data/models/saved_compatibility/saved_compatibil
 import 'package:asteria_app/app/data/models/user/user_model.dart';
 import 'package:asteria_app/core/extensions/datetime_extensions.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
+import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 import 'package:asteria_app/features/compatibility/presentation/widgets/compatibility_layout.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 class CompatibilityHistoryScreen extends StatelessWidget {
   final UserModel? user;
@@ -113,13 +113,10 @@ class _CompatibilityHistoryItem extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 6),
-                      SvgPicture.asset(
+                      ClayAssetIcon(
                         'assets/icons/plus_icon.svg',
                         width: 12,
-                        colorFilter: const ColorFilter.mode(
-                          AppColors.white,
-                          BlendMode.srcIn,
-                        ),
+                        tint: AppColors.white,
                       ),
                       const SizedBox(width: 6),
                       Flexible(
@@ -154,13 +151,10 @@ class _CompatibilityHistoryItem extends StatelessWidget {
                 borderRadius: BorderRadius.circular(6),
               ),
               child: Center(
-                child: SvgPicture.asset(
+                child: ClayAssetIcon(
                   'assets/icons/right_arrow_icon.svg',
                   width: 12,
-                  colorFilter: const ColorFilter.mode(
-                    AppColors.white,
-                    BlendMode.srcIn,
-                  ),
+                  tint: AppColors.white,
                 ),
               ),
             ),

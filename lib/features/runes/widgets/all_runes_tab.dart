@@ -3,8 +3,8 @@ import 'package:asteria_app/app/providers/content_provider.dart';
 import 'package:asteria_app/app/providers/user_provider.dart';
 import 'package:asteria_app/core/di/di.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
+import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 class _AllRunesColors {
   static const surface = Color(0xFF140725);
@@ -135,7 +135,7 @@ class _RuneGridItem extends StatelessWidget {
                         width: width,
                         height: height,
                         color: AppColors.uiSecondary,
-                        child: const Icon(
+                        child: const ClayIcon(
                           Icons.image_not_supported,
                           size: 32,
                           color: AppColors.textSecondary,
@@ -151,14 +151,11 @@ class _RuneGridItem extends StatelessWidget {
                         ),
                       ),
                     ),
-                    SvgPicture.asset(
+                    ClayAssetIcon(
                       'assets/icons/white_lock_icon.svg',
                       width: 24,
                       height: 24,
-                      colorFilter: const ColorFilter.mode(
-                        _AllRunesColors.gold,
-                        BlendMode.srcIn,
-                      ),
+                      tint: _AllRunesColors.gold,
                     ),
                   ],
                 ],

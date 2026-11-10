@@ -4,284 +4,215 @@ import 'package:asteria_app/features/home/presentation/cubit/moon_screen_state.d
 import 'package:asteria_app/features/home/presentation/models/day_status.dart';
 import 'package:asteria_app/features/home/presentation/widgets/day_status_icon.dart';
 import 'package:asteria_app/features/home/presentation/widgets/moon_design_tokens.dart';
+import 'package:asteria_app/features/home/presentation/widgets/moon_phase_marker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class MoonCalendarWidget extends StatelessWidget {
-  const MoonCalendarWidget({Key? key}) : super(key: key);
+  const MoonCalendarWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<MoonScreenCubit, MoonScreenState>(
       builder: (context, state) {
         final localeTag = Localizations.localeOf(context).toLanguageTag();
-        final isCompactHeight = MediaQuery.sizeOf(context).height < 860;
-        final rowHeight = isCompactHeight ? 36.0 : 57.0;
+        final textScaler = MediaQuery.textScalerOf(context);
+        final dayHeight = (textScaler.scale(20) * 1.25 + 32).clamp(
+          57.0,
+          double.infinity,
+        );
+        final rowHeight = dayHeight + 16;
+        final weekdayHeight = textScaler.scale(13) * 18 / 13 + 8;
+        final monthLabel = DateFormat(
+          'LLLL y',
+          localeTag,
+        ).format(state.focusedDay);
+        final title = monthLabel[0].toUpperCase() + monthLabel.substring(1);
+        Widget dayCell(
+          DateTime day, {
+          bool selected = false,
+          bool outside = false,
+        }) {
+          final status = outside ? null : _getDayStatus(day, state.dayStatuses);
+          final primaryPhase =
+              !outside &&
+              state.selectedSphere == null &&
+              _hasPrimaryPhase(day, state.primaryPhaseDates);
+          return Center(
+            child: Opacity(
+              opacity: outside ? 0.4 : 1,
+              child: selected
+                  ? _buildSelectedDayCell(
+                      context,
+                      day,
+                      status,
+                      primaryPhase,
+                      state.selectedSphere != null ||
+                          state.dayStatuses.isNotEmpty,
+                      dayHeight,
+                    )
+                  : _buildDayCell(
+                      context,
+                      day,
+                      status,
+                      primaryPhase,
+                      state.selectedSphere != null ||
+                          state.dayStatuses.isNotEmpty,
+                      dayHeight,
+                    ),
+            ),
+          );
+        }
 
-        return Listener(
-          onPointerMove: (event) {
-            if (event.delta.dy.abs() > event.delta.dx.abs() &&
-                event.delta.dy.abs() > 1) {
-              final primaryScrollController = PrimaryScrollController.of(
-                context,
-              );
-              if (primaryScrollController.hasClients) {
-                primaryScrollController.jumpTo(
-                  (primaryScrollController.offset - event.delta.dy).clamp(
-                    0.0,
-                    primaryScrollController.position.maxScrollExtent,
-                  ),
-                );
-              }
-            }
-          },
-          child: NotificationListener<ScrollNotification>(
-            onNotification: (notification) {
-              if (notification is ScrollUpdateNotification) {
-                final metrics = notification.metrics;
-                if (metrics.axis == Axis.vertical) {
-                  final primaryScrollController = PrimaryScrollController.of(
-                    context,
-                  );
-                  if (primaryScrollController.hasClients) {
-                    final delta = notification.scrollDelta ?? 0;
-                    if (delta.abs() > 0) {
-                      primaryScrollController.jumpTo(
-                        (primaryScrollController.offset - delta).clamp(
-                          0.0,
-                          primaryScrollController.position.maxScrollExtent,
-                        ),
-                      );
-                    }
-                  }
-                  return true;
-                }
-              }
-              return false;
-            },
-            child: Container(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-              decoration: BoxDecoration(
-                color: MoonDesignTokens.calendarSurface,
-                borderRadius: BorderRadius.circular(24),
-                border: Border.all(
-                  color: AppColors.white.withValues(alpha: 0.1),
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.1),
-                    blurRadius: 30,
-                    offset: const Offset(0, 10),
-                  ),
-                ],
+        return DecoratedBox(
+          decoration: BoxDecoration(
+            color: MoonDesignTokens.calendarSurface,
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(color: AppColors.white.withValues(alpha: 0.1)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.1),
+                blurRadius: 30,
+                offset: const Offset(0, 10),
+                blurStyle: BlurStyle.outer,
               ),
-              child: Stack(
-                children: [
-                  Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      ExcludeSemantics(
-                        child: TableCalendar<DayStatus>(
-                          firstDay: DateTime.utc(2000, 1, 1),
-                          startingDayOfWeek: StartingDayOfWeek.monday,
-                          lastDay: DateTime.utc(2050, 12, 31),
-                          locale: localeTag,
-                          focusedDay: state.focusedDay,
-                          selectedDayPredicate: (day) {
-                            return isSameDay(state.selectedDate, day);
-                          },
-                          onDaySelected: (selectedDay, focusedDay) {
-                            _selectDay(context, state, selectedDay, focusedDay);
-                          },
-                          onPageChanged: (focusedDay) {
-                            if (_isSameMonth(focusedDay, state.focusedDay)) {
-                              return;
-                            }
-                            context.read<MoonScreenCubit>().loadDayStatuses(
-                              focusedDay,
-                            );
-                          },
-                          calendarStyle: CalendarStyle(
-                            outsideDaysVisible: true,
-                            outsideTextStyle: context
-                                .textTheme
-                                .urbanistRegular20
-                                .copyWith(
-                                  color: AppColors.textInverse.withValues(
-                                    alpha: 0.35,
-                                  ),
-                                  height: 1.25,
-                                ),
-                            weekendTextStyle: context
-                                .textTheme
-                                .urbanistRegular20
-                                .copyWith(
-                                  color: AppColors.textInverse,
-                                  height: 1.25,
-                                ),
-                            defaultTextStyle: context
-                                .textTheme
-                                .urbanistRegular20
-                                .copyWith(
-                                  color: AppColors.textInverse,
-                                  height: 1.25,
-                                ),
-                            selectedTextStyle: context
-                                .textTheme
-                                .urbanistRegular20
-                                .copyWith(
-                                  color: AppColors.textInverse,
-                                  height: 1.25,
-                                ),
-                            todayTextStyle: context.textTheme.urbanistRegular20
-                                .copyWith(
-                                  color: AppColors.textInverse,
-                                  height: 1.25,
-                                ),
-                            selectedDecoration: const BoxDecoration(
-                              color: Colors.transparent,
-                            ),
-                            todayDecoration: const BoxDecoration(
-                              color: Colors.transparent,
-                            ),
-                            defaultDecoration: const BoxDecoration(
-                              shape: BoxShape.circle,
-                            ),
-                            weekendDecoration: const BoxDecoration(
-                              shape: BoxShape.circle,
-                            ),
-                          ),
-                          rowHeight: rowHeight,
-                          headerStyle: HeaderStyle(
-                            formatButtonVisible: false,
-                            leftChevronVisible: false,
-                            rightChevronVisible: false,
-                            titleCentered: true,
-                            headerPadding: const EdgeInsets.only(bottom: 14),
-                            titleTextFormatter: (date, locale) {
-                              final formatted = DateFormat.yMMMM(
-                                localeTag,
-                              ).format(date);
-                              return formatted[0].toUpperCase() +
-                                  formatted.substring(1);
-                            },
-                            titleTextStyle: context.textTheme.urbanistSemiBold17
-                                .copyWith(
-                                  color: AppColors.textInverse,
-                                  height: 1.29,
-                                ),
-                            leftChevronIcon: Semantics(
-                              label: context.l10n.calendarPreviousMonth,
-                              child: ExcludeSemantics(
-                                child: Image.asset(
-                                  'assets/icons/chevron_left.png',
-                                  width: 10,
-                                  height: 18,
-                                ),
-                              ),
-                            ),
-                            rightChevronIcon: Semantics(
-                              label: context.l10n.calendarNextMonth,
-                              child: ExcludeSemantics(
-                                child: Image.asset(
-                                  'assets/icons/chevron_right.png',
-                                  width: 10,
-                                  height: 18,
-                                ),
-                              ),
-                            ),
-                          ),
-                          daysOfWeekStyle: DaysOfWeekStyle(
-                            weekdayStyle: context.textTheme.urbanistSemiBold12
-                                .copyWith(
-                                  color: AppColors.textInverse.withValues(
-                                    alpha: 0.55,
-                                  ),
-                                  fontSize: 13,
-                                  height: 1.38,
-                                ),
-                            weekendStyle: context.textTheme.urbanistSemiBold12
-                                .copyWith(
-                                  color: AppColors.textInverse.withValues(
-                                    alpha: 0.55,
-                                  ),
-                                  fontSize: 13,
-                                  height: 1.38,
-                                ),
-                          ),
-                          calendarBuilders: CalendarBuilders(
-                            defaultBuilder: (context, day, focusedDay) {
-                              final dayStatus = _getDayStatus(
-                                day,
-                                state.dayStatuses,
-                              );
-                              return _buildDayCell(
-                                context,
-                                day,
-                                dayStatus,
-                                _hasPrimaryPhase(day, state.primaryPhaseDates),
-                                rowHeight,
-                                isCompactHeight,
-                              );
-                            },
-                            selectedBuilder: (context, day, focusedDay) {
-                              final dayStatus = _getDayStatus(
-                                day,
-                                state.dayStatuses,
-                              );
-                              return _buildSelectedDayCell(
-                                context,
-                                day,
-                                dayStatus,
-                                _hasPrimaryPhase(day, state.primaryPhaseDates),
-                                rowHeight,
-                                isCompactHeight,
-                              );
-                            },
-                            outsideBuilder: (context, day, focusedDay) {
-                              return Opacity(
-                                opacity: 0.35,
-                                child: _buildDayCell(
-                                  context,
-                                  day,
-                                  null,
-                                  false,
-                                  rowHeight,
-                                  isCompactHeight,
-                                  showStatusIcon: false,
-                                ),
-                              );
-                            },
-                            todayBuilder: (context, day, focusedDay) {
-                              final dayStatus = _getDayStatus(
-                                day,
-                                state.dayStatuses,
-                              );
-                              return _buildDayCell(
-                                context,
-                                day,
-                                dayStatus,
-                                _hasPrimaryPhase(day, state.primaryPhaseDates),
-                                rowHeight,
-                                isCompactHeight,
-                              );
-                            },
+            ],
+          ),
+          child: Padding(
+            padding: const EdgeInsets.only(top: 16, bottom: 8),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    _MonthArrow(
+                      previous: true,
+                      onTap:
+                          (state.focusedDay.year > 2000 ||
+                              state.focusedDay.month > 1)
+                          ? () => _changeMonth(context, state.focusedDay, -1)
+                          : null,
+                    ),
+                    const SizedBox(width: 15),
+                    Flexible(
+                      child: Semantics(
+                        header: true,
+                        child: Text(
+                          title,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontFamily: '.SF Pro Text',
+                            fontWeight: FontWeight.w600,
+                            fontSize: 17,
+                            height: 22 / 17,
+                            letterSpacing: -0.408,
+                            color: AppColors.textInverse,
                           ),
                         ),
                       ),
-                    ],
-                  ),
-                  Positioned.fill(
-                    child: _buildCalendarSemanticsOverlay(
-                      context,
-                      state,
-                      rowHeight,
                     ),
-                  ),
-                ],
-              ),
+                    const SizedBox(width: 15),
+                    _MonthArrow(
+                      previous: false,
+                      onTap:
+                          (state.focusedDay.year < 2050 ||
+                              state.focusedDay.month < 12)
+                          ? () => _changeMonth(context, state.focusedDay, 1)
+                          : null,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                LayoutBuilder(
+                  builder: (context, constraints) {
+                    // Figma aligns the first and last 32-point digits 16 points from the card edges.
+                    final inset = ((448 - constraints.maxWidth) / 12).clamp(
+                      0.0,
+                      16.0,
+                    );
+                    return Padding(
+                      padding: EdgeInsets.symmetric(horizontal: inset),
+                      child: Stack(
+                        children: [
+                          ExcludeSemantics(
+                            child: TableCalendar<DayStatus>(
+                              firstDay: DateTime.utc(2000, 1, 1),
+                              lastDay: DateTime.utc(2050, 12, 31),
+                              startingDayOfWeek: StartingDayOfWeek.monday,
+                              availableGestures:
+                                  AvailableGestures.horizontalSwipe,
+                              headerVisible: false,
+                              locale: localeTag,
+                              focusedDay: state.focusedDay,
+                              selectedDayPredicate: (day) =>
+                                  isSameDay(state.selectedDate, day),
+                              onDaySelected: (selectedDay, focusedDay) =>
+                                  _selectDay(
+                                    context,
+                                    state,
+                                    selectedDay,
+                                    focusedDay,
+                                  ),
+                              onPageChanged: (focusedDay) {
+                                if (!_isSameMonth(
+                                  focusedDay,
+                                  state.focusedDay,
+                                )) {
+                                  context
+                                      .read<MoonScreenCubit>()
+                                      .loadDayStatuses(focusedDay);
+                                }
+                              },
+                              rowHeight: rowHeight,
+                              daysOfWeekHeight: weekdayHeight,
+                              calendarBuilders: CalendarBuilders(
+                                dowBuilder: (context, day) {
+                                  final label = DateFormat.E(
+                                    localeTag,
+                                  ).format(day);
+                                  return Align(
+                                    alignment: Alignment.topCenter,
+                                    child: Text(
+                                      label[0].toUpperCase() +
+                                          label.substring(1),
+                                      style: const TextStyle(
+                                        fontFamily: '.SF Pro Text',
+                                        fontSize: 13,
+                                        height: 18 / 13,
+                                        fontWeight: FontWeight.w600,
+                                        letterSpacing: -0.078,
+                                        color: Color(0xFFA89CAA),
+                                      ),
+                                    ),
+                                  );
+                                },
+                                defaultBuilder: (_, day, _) => dayCell(day),
+                                todayBuilder: (_, day, _) => dayCell(day),
+                                outsideBuilder: (_, day, _) =>
+                                    dayCell(day, outside: true),
+                                selectedBuilder: (_, day, _) =>
+                                    dayCell(day, selected: true),
+                              ),
+                            ),
+                          ),
+                          Positioned.fill(
+                            child: _buildCalendarSemanticsOverlay(
+                              context,
+                              state,
+                              rowHeight,
+                              weekdayHeight,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ],
             ),
           ),
         );
@@ -293,8 +224,8 @@ class MoonCalendarWidget extends StatelessWidget {
     BuildContext context,
     MoonScreenState state,
     double rowHeight,
+    double daysOfWeekHeight,
   ) {
-    const daysOfWeekHeight = 16.0;
     final localeTag = Localizations.localeOf(context).toLanguageTag();
     final focusedMonth = DateTime.utc(
       state.focusedDay.year,
@@ -312,84 +243,18 @@ class MoonCalendarWidget extends StatelessWidget {
         (DateTime.sunday - lastDayOfMonth.weekday) % DateTime.daysPerWeek;
     final displayedDayCount =
         lastDayOfMonth.difference(firstDisplayedDay).inDays + 1 + trailingDays;
-    final monthLabel = DateFormat.yMMMM(localeTag).format(focusedMonth);
-
     return LayoutBuilder(
       builder: (context, constraints) {
         final cellWidth = constraints.maxWidth / DateTime.daysPerWeek;
-        final weekCount = displayedDayCount ~/ DateTime.daysPerWeek;
-        // The title height follows the active font and text scale.
-        final headerHeight =
-            (constraints.maxHeight - daysOfWeekHeight - weekCount * rowHeight)
-                .clamp(0.0, double.infinity);
-
         return Semantics(
           container: true,
           explicitChildNodes: true,
           child: Stack(
             children: [
-              Positioned(
-                left: 0,
-                top: 0,
-                width: 60,
-                height: headerHeight,
-                child: Semantics(
-                  button: true,
-                  label: context.l10n.calendarPreviousMonth,
-                  child: GestureDetector(
-                    behavior: HitTestBehavior.opaque,
-                    onTap: () => _changeMonth(context, focusedMonth, -1),
-                    child: Center(
-                      child: ExcludeSemantics(
-                        child: Image.asset(
-                          'assets/icons/chevron_left.png',
-                          width: 10,
-                          height: 18,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              Positioned(
-                left: 60,
-                right: 60,
-                top: 0,
-                height: headerHeight,
-                child: Semantics(
-                  header: true,
-                  label: monthLabel[0].toUpperCase() + monthLabel.substring(1),
-                  child: const SizedBox.expand(),
-                ),
-              ),
-              Positioned(
-                right: 0,
-                top: 0,
-                width: 60,
-                height: headerHeight,
-                child: Semantics(
-                  button: true,
-                  label: context.l10n.calendarNextMonth,
-                  child: GestureDetector(
-                    behavior: HitTestBehavior.opaque,
-                    onTap: () => _changeMonth(context, focusedMonth, 1),
-                    child: Center(
-                      child: ExcludeSemantics(
-                        child: Image.asset(
-                          'assets/icons/chevron_right.png',
-                          width: 10,
-                          height: 18,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
               for (var index = 0; index < displayedDayCount; index++)
                 Positioned(
                   left: (index % DateTime.daysPerWeek) * cellWidth,
                   top:
-                      headerHeight +
                       daysOfWeekHeight +
                       (index ~/ DateTime.daysPerWeek) * rowHeight,
                   width: cellWidth,
@@ -411,12 +276,19 @@ class MoonCalendarWidget extends StatelessWidget {
                       final status = isInFocusedMonth
                           ? state.dayStatuses[normalizedDay]
                           : null;
+                      final phaseChange =
+                          isInFocusedMonth &&
+                          state.selectedSphere == null &&
+                          state.primaryPhaseDates.contains(normalizedDay);
                       return Semantics(
                         button: true,
                         selected: isSameDay(state.selectedDate, day),
-                        label: status == null
-                            ? dayLabel
-                            : '$dayLabel, ${_statusSemanticsLabel(context, status)}',
+                        label: [
+                          dayLabel,
+                          if (phaseChange) context.l10n.moonPhaseChange,
+                          if (status != null)
+                            _statusSemanticsLabel(context, status),
+                        ].join(', '),
                         onTap: () => _selectDay(context, state, day, day),
                         child: const SizedBox.expand(),
                       );
@@ -478,10 +350,9 @@ class MoonCalendarWidget extends StatelessWidget {
     DateTime day,
     DayStatus? status,
     bool hasPrimaryPhase,
+    bool showStatusRow,
     double rowHeight,
-    bool isCompactHeight, {
-    bool showStatusIcon = true,
-  }) {
+  ) {
     return Semantics(
       button: true,
       label: DateFormat.yMMMMEEEEd(
@@ -495,20 +366,24 @@ class MoonCalendarWidget extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
-                '${day.day}',
-                style: context.textTheme.urbanistRegular20.copyWith(
-                  color: AppColors.textInverse,
-                  fontSize: isCompactHeight ? 16 : 20,
-                  height: 1.25,
-                ),
+              _CalendarDayNumber(
+                day: day.day,
+                color: AppColors.textInverse,
+                hasPrimaryPhase: hasPrimaryPhase,
               ),
-              if (showStatusIcon)
-                _buildDayIndicators(
-                  context,
-                  status,
-                  hasPrimaryPhase: hasPrimaryPhase,
+              if (showStatusRow) ...[
+                const SizedBox(height: 5),
+                SizedBox.square(
+                  dimension: 14,
+                  child: status == null
+                      ? null
+                      : DayStatusIcon(
+                          status: status,
+                          size: 14,
+                          excludeFromSemantics: true,
+                        ),
                 ),
+              ],
             ],
           ),
         ),
@@ -522,10 +397,10 @@ class MoonCalendarWidget extends StatelessWidget {
     DateTime day,
     DayStatus? status,
     bool hasPrimaryPhase,
+    bool showStatusRow,
     double rowHeight,
-    bool isCompactHeight,
   ) {
-    final highlightHeight = isCompactHeight ? rowHeight : 48.0;
+    final highlightHeight = rowHeight;
 
     return Semantics(
       button: true,
@@ -554,91 +429,36 @@ class MoonCalendarWidget extends StatelessWidget {
                     duration: const Duration(milliseconds: 380),
                     curve: Curves.easeOutCubic,
                     builder: (context, value, child) {
-                      return Text(
-                        '${day.day}',
-                        style: context.textTheme.urbanistRegular20.copyWith(
-                          color: Color.lerp(
-                            AppColors.textInverse,
-                            AppColors.textPrimary,
-                            value,
-                          ),
-                          fontSize: isCompactHeight ? 16 : 20,
-                          height: 1.25,
-                        ),
+                      return _CalendarDayNumber(
+                        day: day.day,
+                        hasPrimaryPhase: hasPrimaryPhase,
+                        selected: true,
+                        color: Color.lerp(
+                          AppColors.textInverse,
+                          AppColors.textPrimary,
+                          value,
+                        )!,
                       );
                     },
                   ),
-                  _buildDayIndicators(
-                    context,
-                    status,
-                    hasPrimaryPhase: hasPrimaryPhase,
-                    isSelected: true,
-                  ),
+                  if (showStatusRow) ...[
+                    const SizedBox(height: 5),
+                    SizedBox.square(
+                      dimension: 14,
+                      child: status == null
+                          ? null
+                          : DayStatusIcon(
+                              status: status,
+                              size: 14,
+                              excludeFromSemantics: true,
+                            ),
+                    ),
+                  ],
                 ],
               ),
             ),
           ),
         ),
-      ),
-    );
-  }
-
-  // /// Создает ячейку сегодняшнего дня
-  // Widget _buildTodayCell(
-  //   BuildContext context,
-  //   DateTime day,
-  //   DayStatus? status,
-  // ) {
-  //   return Container(
-  //     child: Column(
-  //       mainAxisAlignment: MainAxisAlignment.center,
-  //       mainAxisSize: MainAxisSize.min,
-  //       children: [
-  //         Text(
-  //           '${day.day}',
-  //           style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w400),
-  //         ),
-  //         _buildStatusIcon(status),
-  //       ],
-  //     ),
-  //   );
-  // }
-
-  Widget _buildDayIndicators(
-    BuildContext context,
-    DayStatus? status, {
-    required bool hasPrimaryPhase,
-    bool isSelected = false,
-  }) {
-    return SizedBox(
-      width: 14,
-      height: 14,
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          if (status != null)
-            DayStatusIcon(
-              status: status,
-              size: 14,
-              semanticLabel: _statusSemanticsLabel(context, status),
-              excludeFromSemantics: true,
-            ),
-          if (hasPrimaryPhase)
-            Positioned(
-              right: -1,
-              bottom: -1,
-              child: Container(
-                width: 5,
-                height: 5,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: isSelected
-                      ? AppColors.textPrimary
-                      : MoonDesignTokens.selectedDay,
-                ),
-              ),
-            ),
-        ],
       ),
     );
   }
@@ -720,6 +540,92 @@ class _SelectedDayHighlight extends StatelessWidget {
         );
       },
       child: child,
+    );
+  }
+}
+
+class _CalendarDayNumber extends StatelessWidget {
+  const _CalendarDayNumber({
+    required this.day,
+    required this.color,
+    required this.hasPrimaryPhase,
+    this.selected = false,
+  });
+
+  final int day;
+  final Color color;
+  final bool hasPrimaryPhase;
+  final bool selected;
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Text(
+            '$day',
+            maxLines: 1,
+            softWrap: false,
+            style: TextStyle(
+              fontFamily: '.SF Pro Display',
+              fontSize: 20,
+              height: 1.25,
+              letterSpacing: 0.38,
+              fontWeight: FontWeight.w400,
+              color: color,
+            ),
+          ),
+        ),
+        if (hasPrimaryPhase)
+          Positioned(
+            top: -7,
+            right: -5,
+            child: MoonPhaseMarker(
+              color: selected
+                  ? AppColors.textPrimary
+                  : MoonDesignTokens.selectedDay,
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+class _MonthArrow extends StatelessWidget {
+  const _MonthArrow({required this.previous, required this.onTap});
+
+  final bool previous;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final label = previous
+        ? context.l10n.calendarPreviousMonth
+        : context.l10n.calendarNextMonth;
+    return SizedBox.square(
+      dimension: 44,
+      child: IconButton(
+        tooltip: label,
+        onPressed: onTap,
+        padding: EdgeInsets.zero,
+        icon: Opacity(
+          opacity: onTap == null ? 0.3 : 1,
+          child: SvgPicture.asset(
+            previous
+                ? 'assets/icons/moon_calendar_previous.svg'
+                : 'assets/icons/moon_calendar_next.svg',
+            width: 10,
+            height: 18,
+            excludeFromSemantics: true,
+            colorFilter: const ColorFilter.mode(
+              MoonDesignTokens.chipOrange,
+              BlendMode.srcIn,
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

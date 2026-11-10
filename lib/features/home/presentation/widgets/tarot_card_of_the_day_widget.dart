@@ -2,6 +2,7 @@ import 'package:asteria_app/app/data/models/tarot_card/tarot_card_model.dart';
 import 'package:asteria_app/core/localization/tarot_card_asset_resolver.dart';
 import 'package:asteria_app/core/routing/app_route.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
+import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 import 'package:flutter/material.dart';
 
 class TarotCardOfTheDayWidget extends StatefulWidget {
@@ -296,7 +297,7 @@ class _TarotCardOfTheDayWidgetState extends State<TarotCardOfTheDayWidget>
                 color: Colors.grey[300],
                 borderRadius: borderRadius,
               ),
-              child: const Icon(Icons.image_not_supported, size: 64),
+              child: const ClayIcon(Icons.image_not_supported, size: 64),
             );
           },
         ),
@@ -328,7 +329,7 @@ class _TarotCardOfTheDayWidgetState extends State<TarotCardOfTheDayWidget>
                 color: Colors.grey[300],
                 borderRadius: borderRadius,
               ),
-              child: const Icon(Icons.image_not_supported, size: 64),
+              child: const ClayIcon(Icons.image_not_supported, size: 64),
             );
           },
         ),

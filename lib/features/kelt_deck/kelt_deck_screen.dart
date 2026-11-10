@@ -1,4 +1,3 @@
-import 'package:asteria_app/features/monetization/presentation/monetization_provider.dart';
 import 'package:asteria_app/app/providers/content_provider.dart';
 import 'package:asteria_app/app/providers/user_provider.dart';
 import 'package:asteria_app/core/analytics/analytics_events.dart';
@@ -9,12 +8,14 @@ import 'package:asteria_app/core/analytics/feature_names.dart';
 import 'package:asteria_app/core/const/purchase_products_const.dart';
 import 'package:asteria_app/core/di/di.dart';
 import 'package:asteria_app/core/services/global_loader_service.dart';
+import 'package:asteria_app/core/ui_kit/ui_kit.dart';
+import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
+import 'package:asteria_app/core/ui_kit/widgets/top_nav_bar.dart';
 import 'package:asteria_app/core/utils/enums.dart';
 import 'package:asteria_app/core/utils/horoscope_parsers/horoscope_request_helper.dart';
-import 'package:asteria_app/core/ui_kit/ui_kit.dart';
-import 'package:asteria_app/core/ui_kit/widgets/top_nav_bar.dart';
 import 'package:asteria_app/features/kelt_deck/widgets/celtic_cross_layout.dart';
 import 'package:asteria_app/features/kelt_deck/widgets/how_to_use_kelt_deck.dart';
+import 'package:asteria_app/features/monetization/presentation/monetization_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -307,7 +308,7 @@ class _KeltDeckTitle extends StatelessWidget {
                   blendMode: BlendMode.srcIn,
                   shaderCallback: (bounds) =>
                       _KeltDeckColors.goldGradient.createShader(bounds),
-                  child: const Icon(
+                  child: const ClayIcon(
                     Icons.shuffle,
                     color: AppColors.white,
                     size: 24,

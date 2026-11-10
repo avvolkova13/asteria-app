@@ -1,8 +1,8 @@
 import 'package:asteria_app/app/data/models/rune_of_day/rune_of_day_model.dart';
 import 'package:asteria_app/core/routing/app_route.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
+import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 class RuneOfTheDayWidget extends StatefulWidget {
   final RuneOfDayModel? rune;
@@ -102,14 +102,11 @@ class _RuneOfTheDayWidgetState extends State<RuneOfTheDayWidget>
                         width: 32,
                         height: 32,
                         child: Center(
-                          child: SvgPicture.asset(
+                          child: ClayAssetIcon(
                             'assets/icons/repeat_icon.svg',
                             width: 24,
                             height: 24,
-                            colorFilter: const ColorFilter.mode(
-                              Color(0xFFF3B76A),
-                              BlendMode.srcIn,
-                            ),
+                            tint: Color(0xFFF3B76A),
                           ),
                         ),
                       )
@@ -256,7 +253,7 @@ class _RuneOfTheDayWidgetState extends State<RuneOfTheDayWidget>
                 color: Colors.grey[300],
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: const Icon(Icons.image_not_supported, size: 64),
+              child: const ClayIcon(Icons.image_not_supported, size: 64),
             );
           },
         ),

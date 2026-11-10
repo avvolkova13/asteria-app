@@ -1,14 +1,14 @@
 import 'package:asteria_app/app/providers/user_provider.dart';
-import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/core/extensions/build_context_extensions.dart';
+import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/core/ui_kit/widgets/closed_content_modal.dart';
-import 'package:asteria_app/features/monetization/presentation/monetization_provider.dart';
 import 'package:asteria_app/features/home/presentation/cubit/moon_screen_cubit.dart';
 import 'package:asteria_app/features/home/presentation/cubit/moon_screen_state.dart';
 import 'package:asteria_app/features/home/presentation/widgets/moon_design_tokens.dart';
+import 'package:asteria_app/features/monetization/presentation/monetization_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 enum Sphere {
   beauty('beauty', 'ic_beauty'),
@@ -72,6 +72,7 @@ class _SphereSelectionWidgetState extends State<SphereSelectionWidget> {
               context.l10n.sphereSelect,
               style: context.textTheme.playfairMedium20.copyWith(
                 color: AppColors.textInverse,
+                fontFamily: 'Lora',
                 height: 1.1,
               ),
             ),
@@ -108,8 +109,9 @@ class _SphereSelectionWidgetState extends State<SphereSelectionWidget> {
                       : label,
                   onTap: handleTap,
                   child: ExcludeSemantics(
-                    child: GestureDetector(
+                    child: InkWell(
                       onTap: handleTap,
+                      borderRadius: BorderRadius.circular(8),
                       child: _SphereSelectionItem(
                         sphere: sphere,
                         isSelected: isSelected,
@@ -137,82 +139,83 @@ class _SphereSelectionItem extends StatelessWidget {
     required this.isDisabled,
   });
 
-  Widget _buildIcon(BuildContext context) {
-    final icon = SvgPicture.asset(
-      isDisabled
-          ? 'assets/icons/sphere_icon/${sphere.getDisabledIconPath()}.svg'
-          : 'assets/icons/sphere_icon/${sphere.iconPath}.svg',
-      colorFilter: ColorFilter.mode(
-        isSelected ? AppColors.textInverse : MoonDesignTokens.chipOrange,
-        BlendMode.srcIn,
-      ),
-      width: 24,
-      height: 24,
-    );
-
-    if (!isDisabled) return icon;
-
-    return Stack(
-      clipBehavior: Clip.none,
-      children: [
-        Opacity(opacity: 0.52, child: icon),
-        Positioned(
-          right: -1,
-          bottom: -1,
-          child: Container(
-            width: 12,
-            height: 12,
-            decoration: const BoxDecoration(
-              color: MoonDesignTokens.pageBackground,
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(
-              Icons.lock_outline,
-              size: 8,
-              color: MoonDesignTokens.chipOrange,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final chip = Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-      decoration: BoxDecoration(
-        gradient: isSelected ? MoonDesignTokens.orangeGradient : null,
-        borderRadius: BorderRadius.circular(8),
-        border: isSelected
-            ? null
-            : Border.all(color: MoonDesignTokens.chipOrange, width: 1),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        mainAxisSize: MainAxisSize.min,
+  Widget _buildIcon(Color foreground) {
+    final (asset, left, top) = switch (sphere) {
+      Sphere.beauty => ('beauty', 3.25, 2.25),
+      Sphere.garden => ('garden', 2.25, 2.25),
+      Sphere.health => ('health', 1.59, 3.25),
+      Sphere.workAndRest => ('work', 2.25, 0.25),
+      Sphere.relationships => ('relationships', 1.25, 2.25),
+    };
+    return SizedBox.square(
+      dimension: 24,
+      child: Stack(
         children: [
-          if (sphere.iconPath.isNotEmpty)
-            _buildIcon(context)
-          else
-            const SizedBox(width: 24, height: 24),
-          const SizedBox(width: 4),
-          Text(
-            sphere.getLocalizedName(context),
-            style: context.textTheme.urbanistRegular16.copyWith(
-              color: isSelected
-                  ? AppColors.textInverse
-                  : MoonDesignTokens.chipOrange,
-              fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-              height: 1.2,
+          Positioned(
+            left: left,
+            top: top,
+            child: SvgPicture.asset(
+              'assets/icons/sphere_icon/calendar_$asset.svg',
+              colorFilter: ColorFilter.mode(foreground, BlendMode.srcIn),
+              excludeFromSemantics: true,
             ),
           ),
         ],
       ),
     );
+  }
 
-    if (!isDisabled) return chip;
-
-    return Opacity(opacity: 0.8, child: chip);
+  @override
+  Widget build(BuildContext context) {
+    final foreground = isSelected
+        ? AppColors.textPrimary
+        : MoonDesignTokens.chipOrange;
+    final label = Text(
+      sphere.getLocalizedName(context),
+      style: context.textTheme.urbanistRegular16.copyWith(
+        fontFamily: 'Onest',
+        color: foreground,
+        fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+        height: 1.2,
+        letterSpacing: -0.408,
+      ),
+    );
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        gradient: isSelected ? MoonDesignTokens.orangeGradient : null,
+        borderRadius: BorderRadius.circular(8),
+        border: isSelected
+            ? null
+            : Border.all(color: MoonDesignTokens.chipOrange),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _buildIcon(foreground),
+            const SizedBox(width: 4),
+            Flexible(
+              child: isSelected
+                  ? label
+                  : ShaderMask(
+                      blendMode: BlendMode.srcIn,
+                      shaderCallback:
+                          MoonDesignTokens.orangeGradient.createShader,
+                      child: label,
+                    ),
+            ),
+            if (isDisabled) ...[
+              const SizedBox(width: 6),
+              const Icon(
+                Icons.lock_rounded,
+                size: 16,
+                color: MoonDesignTokens.chipOrangeLight,
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
   }
 }

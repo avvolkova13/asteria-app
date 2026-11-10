@@ -1,5 +1,6 @@
 import 'package:asteria_app/core/analytics/dictionaries/offer_type.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
+import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 import 'package:asteria_app/features/sonnik/presentation/widgets/sonnik_layout.dart';
 import 'package:flutter/material.dart';
 
@@ -134,7 +135,7 @@ class _SonnikPackageItem extends StatelessWidget {
                 const SizedBox(width: 5),
                 Image.asset('assets/icons/star_coin_icon.png', height: 20),
                 const SizedBox(width: 12),
-                Icon(
+                ClayIcon(
                   Icons.arrow_forward_rounded,
                   color: SonnikPalette.white.withValues(alpha: 0.76),
                   size: 20,
@@ -166,7 +167,7 @@ class _SonnikPackageItem extends StatelessWidget {
               ),
             ),
             child: isSelected
-                ? const Icon(
+                ? const ClayIcon(
                     Icons.check_rounded,
                     color: SonnikPalette.purple,
                     size: 20,

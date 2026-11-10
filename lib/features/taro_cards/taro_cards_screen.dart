@@ -12,11 +12,12 @@ import 'package:asteria_app/core/const/purchase_products_const.dart';
 import 'package:asteria_app/core/di/di.dart';
 import 'package:asteria_app/core/routing/app_route.dart';
 import 'package:asteria_app/core/services/global_loader_service.dart';
-import 'package:asteria_app/core/utils/enums.dart';
-import 'package:asteria_app/core/utils/horoscope_parsers/horoscope_request_helper.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
+import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 import 'package:asteria_app/core/ui_kit/widgets/closed_content_modal.dart';
 import 'package:asteria_app/core/ui_kit/widgets/top_nav_bar.dart';
+import 'package:asteria_app/core/utils/enums.dart';
+import 'package:asteria_app/core/utils/horoscope_parsers/horoscope_request_helper.dart';
 import 'package:asteria_app/features/home/presentation/widgets/tarot_card_of_the_day_widget.dart';
 import 'package:asteria_app/features/monetization/presentation/monetization_provider.dart';
 import 'package:asteria_app/features/taro_cards/widgets/all_cards_tab.dart';
@@ -24,7 +25,6 @@ import 'package:asteria_app/features/taro_cards/widgets/how_to_use_taro_cards.da
 import 'package:asteria_app/features/taro_cards/widgets/special_decks.dart';
 import 'package:asteria_app/features/taro_cards/widgets/tarot_layout.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 enum TaroCardsTab {
   day,
@@ -53,7 +53,9 @@ class _TaroCardsColors {
 }
 
 class TaroCardsScreen extends StatelessWidget {
-  const TaroCardsScreen({Key? key}) : super(key: key);
+  const TaroCardsScreen({super.key, this.initialTab = TaroCardsTab.day});
+
+  final TaroCardsTab initialTab;
 
   @override
   Widget build(BuildContext context) {
@@ -92,7 +94,10 @@ class TaroCardsScreen extends StatelessWidget {
                           try {
                             final tarotCard = contentProvider
                                 .getTodayTarotCard();
-                            return _TaroCardsContent(tarotCard: tarotCard);
+                            return _TaroCardsContent(
+                              tarotCard: tarotCard,
+                              initialTab: initialTab,
+                            );
                           } catch (e) {
                             return ErrorScreenWidget(
                               error: context.l10n.tarotLoadError,
@@ -116,16 +121,16 @@ class TaroCardsScreen extends StatelessWidget {
 
 class _TaroCardsContent extends StatefulWidget {
   final dynamic tarotCard;
+  final TaroCardsTab initialTab;
 
-  const _TaroCardsContent({Key? key, required this.tarotCard})
-    : super(key: key);
+  const _TaroCardsContent({required this.tarotCard, required this.initialTab});
 
   @override
   _TaroCardsContentState createState() => _TaroCardsContentState();
 }
 
 class _TaroCardsContentState extends State<_TaroCardsContent> {
-  int _selectedTabIndex = 0;
+  late int _selectedTabIndex;
   bool _isRefreshingDeck = false;
   final ContentProvider _contentProvider = di.get<ContentProvider>();
 
@@ -134,6 +139,7 @@ class _TaroCardsContentState extends State<_TaroCardsContent> {
   @override
   void initState() {
     super.initState();
+    _selectedTabIndex = widget.initialTab.index;
     _contentProvider.resetTarotOpenState();
     di.get<AnalyticsFacade>().trackEvent(
       AnalyticsEvents.tarotDeckOpen,
@@ -561,14 +567,11 @@ class _TaroCardsContentState extends State<_TaroCardsContent> {
                               width: 32,
                               height: 32,
                               child: Center(
-                                child: SvgPicture.asset(
+                                child: ClayAssetIcon(
                                   'assets/icons/repeat_icon.svg',
                                   width: 24,
                                   height: 24,
-                                  colorFilter: const ColorFilter.mode(
-                                    _TaroCardsColors.gold,
-                                    BlendMode.srcIn,
-                                  ),
+                                  tint: _TaroCardsColors.gold,
                                 ),
                               ),
                             ),
@@ -849,16 +852,13 @@ class _TarotInsightSphereChip extends StatelessWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              SvgPicture.asset(
+              ClayAssetIcon(
                 'assets/icons/sphere_icon/${sphere.iconName}.svg',
                 width: 24,
                 height: 24,
-                colorFilter: ColorFilter.mode(
-                  isSelected
+                tint: isSelected
                       ? _TaroCardsColors.darkText
                       : _TaroCardsColors.gold,
-                  BlendMode.srcIn,
-                ),
               ),
               const SizedBox(width: 4),
               Flexible(

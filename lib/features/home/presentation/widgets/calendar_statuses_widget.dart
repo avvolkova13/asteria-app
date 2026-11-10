@@ -1,7 +1,7 @@
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/features/home/presentation/models/day_status.dart';
 import 'package:asteria_app/features/home/presentation/widgets/day_status_icon.dart';
-import 'package:asteria_app/features/home/presentation/widgets/moon_design_tokens.dart';
+import 'package:asteria_app/features/home/presentation/widgets/moon_phase_marker.dart';
 import 'package:flutter/material.dart';
 
 class CalendarStatusesWidget extends StatelessWidget {
@@ -12,60 +12,44 @@ class CalendarStatusesWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        if (visible) ...[
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                child: _CalendarStatusItem(
-                  status: DayStatus.favorable,
-                  title: context.l10n.dayFavorable,
-                ),
-              ),
-              Expanded(
-                child: _CalendarStatusItem(
-                  status: DayStatus.neutral,
-                  title: context.l10n.dayNeutral,
-                ),
-              ),
-              Expanded(
-                child: _CalendarStatusItem(
-                  status: DayStatus.unfavorable,
-                  title: context.l10n.dayUnfavorable,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-        ],
-        Row(
+    if (visible) {
+      return SizedBox(
+        width: double.infinity,
+        child: Wrap(
+          alignment: WrapAlignment.spaceBetween,
+          spacing: 6,
+          runSpacing: 8,
           children: [
-            const SizedBox(
-              width: 25,
-              child: Center(
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    color: MoonDesignTokens.selectedDay,
-                    shape: BoxShape.circle,
-                  ),
-                  child: SizedBox(width: 5, height: 5),
-                ),
-              ),
+            _CalendarStatusItem(
+              status: DayStatus.favorable,
+              title: context.l10n.dayFavorable,
             ),
-            const SizedBox(width: 4),
-            Flexible(
-              child: Text(
-                '— ${context.l10n.moonPhaseChange}',
-                style: context.textTheme.urbanistRegular12.copyWith(
-                  color: AppColors.textInverse,
-                ),
-              ),
+            _CalendarStatusItem(
+              status: DayStatus.neutral,
+              title: context.l10n.dayNeutral,
+            ),
+            _CalendarStatusItem(
+              status: DayStatus.unfavorable,
+              title: context.l10n.dayUnfavorable,
             ),
           ],
+        ),
+      );
+    }
+    return Row(
+      children: [
+        const SizedBox(
+          width: 25,
+          child: Center(child: MoonPhaseMarker(size: 16)),
+        ),
+        Flexible(
+          child: Text(
+            context.l10n.moonPhaseChange,
+            style: context.textTheme.urbanistRegular12.copyWith(
+              color: AppColors.textInverse,
+              fontFamily: 'Onest',
+            ),
+          ),
         ),
       ],
     );
@@ -91,7 +75,8 @@ class _CalendarStatusItem extends StatelessWidget {
           style: context.textTheme.urbanistRegular12.copyWith(
             color: AppColors.textInverse,
             fontSize: 8,
-            height: 1.05,
+            height: 1.2,
+            letterSpacing: -0.408,
           ),
         ),
       ],

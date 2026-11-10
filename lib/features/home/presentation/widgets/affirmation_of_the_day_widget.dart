@@ -1,9 +1,7 @@
-import 'dart:math' as math;
-
 import 'package:asteria_app/core/routing/app_route.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
+import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 class AffirmationOfTheDayWidget extends StatelessWidget {
   static const double _cardHeight = 264;
@@ -14,7 +12,7 @@ class AffirmationOfTheDayWidget extends StatelessWidget {
   static const double _flowerImageHeight = 231;
   static const double _flowerImageLeft = -13.33;
   static const double _flowerImageTop = -16;
-  static const double _flowerTop = 133;
+  static const double _flowerTop = 121;
   static const double _maxTextScaleFactor = 1.2;
   static const LinearGradient _accentGradient = LinearGradient(
     colors: [Color(0xFFE6994D), Color(0xFFF3B76A), Color(0xFFE6994D)],
@@ -28,9 +26,8 @@ class AffirmationOfTheDayWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textScaler = MediaQuery.textScalerOf(
-      context,
-    ).clamp(maxScaleFactor: _maxTextScaleFactor);
+    final textScaler = MediaQuery.textScalerOf(context)
+        .clamp(maxScaleFactor: _maxTextScaleFactor);
 
     return Semantics(
       button: true,
@@ -76,9 +73,8 @@ class AffirmationOfTheDayWidget extends StatelessWidget {
                     ),
                   ),
                   MediaQuery(
-                    data: MediaQuery.of(
-                      context,
-                    ).copyWith(textScaler: textScaler),
+                    data: MediaQuery.of(context)
+                        .copyWith(textScaler: textScaler),
                     child: Padding(
                       padding: const EdgeInsets.all(16),
                       child: Column(
@@ -153,7 +149,7 @@ class AffirmationUnavailableWidget extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
-                    fontFamily: 'PlayfairDisplay',
+                    fontFamily: 'Lora',
                     fontSize: 20,
                     fontWeight: FontWeight.w500,
                     height: 1.1,
@@ -167,6 +163,7 @@ class AffirmationUnavailableWidget extends StatelessWidget {
                   maxLines: 3,
                   overflow: TextOverflow.ellipsis,
                   style: context.textTheme.inverseUrbanistRegular16.copyWith(
+                    fontFamily: 'Onest',
                     height: 1.2,
                   ),
                 ),
@@ -195,7 +192,7 @@ class AffirmationUnavailableWidget extends StatelessWidget {
                         context.l10n.commonRetry,
                         maxLines: 1,
                         style: TextStyle(
-                          fontFamily: 'Urbanist',
+                          fontFamily: 'Onest',
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
                           height: 1.2,
@@ -228,7 +225,7 @@ class _Description extends StatelessWidget {
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
           style: TextStyle(
-            fontFamily: 'PlayfairDisplay',
+            fontFamily: 'Lora',
             fontSize: 20,
             fontWeight: FontWeight.w500,
             height: 1.1,
@@ -242,8 +239,9 @@ class _Description extends StatelessWidget {
             maxLines: 4,
             overflow: TextOverflow.ellipsis,
             style: context.textTheme.inverseUrbanistRegular16.copyWith(
+              fontFamily: 'Onest',
               height: 1.2,
-              letterSpacing: 0,
+              letterSpacing: -0.408,
             ),
           ),
         ),
@@ -266,22 +264,20 @@ class _AffirmationLink extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
-              fontFamily: 'Urbanist',
+              fontFamily: 'Onest',
               fontSize: 16,
               fontWeight: FontWeight.w400,
               height: 1.2,
-              letterSpacing: 0,
+              letterSpacing: -0.408,
             ),
           ),
         ),
         const SizedBox(width: 16),
-        Transform.rotate(
-          angle: -math.pi / 4,
-          child: SvgPicture.asset(
-            'assets/icons/affirmation_arrow_figma.svg',
-            width: 24,
-            height: 24,
-          ),
+        ClayAssetIcon(
+          'assets/icons/home_affirmation_link.svg',
+          width: 24,
+          height: 24,
+          excludeFromSemantics: true,
         ),
       ],
     );

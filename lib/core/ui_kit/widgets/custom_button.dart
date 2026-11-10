@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 import 'package:flutter/material.dart';
 
 import 'package:asteria_app/core/ui_kit/app_colors/app_colors.dart';
@@ -190,7 +191,10 @@ class CustomButton extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, size: defaultIconSize),
+          ClayPressFeedback(
+            enabled: onPressed != null && !isLoading,
+            child: ClayIcon(icon, size: defaultIconSize),
+          ),
           const SizedBox(width: 10),
           Text(
             text,

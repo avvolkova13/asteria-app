@@ -61,6 +61,50 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets(
+    'reads recommendations in calendar order across shuffled response keys',
+    (tester) async {
+      const advice = TaskRecommendationModel(
+        status: RecommendationStatus.neutral,
+        description: 'Рекомендация',
+      );
+      await tester.pumpWidget(
+        _app(
+          const LunarRecommendationsWidget(
+            recommendation: SphereRecommendationModel(
+              status: RecommendationStatus.neutral,
+              tasks: {
+                'skin_care': advice,
+                'new_kind': advice,
+                'hair_coloring': advice,
+                'haircut': advice,
+              },
+            ),
+          ),
+        ),
+      );
+      final strings = AppLocalizations.of(
+        tester.element(find.byType(LunarRecommendationsWidget)),
+      );
+      final titles = [
+        strings.lunarHaircut,
+        'Окрашивание волос',
+        'Уход за кожей',
+        'new kind',
+      ];
+      final positions = [
+        for (final title in titles) tester.getTopLeft(find.text(title)).dx,
+      ];
+      expect(positions, orderedEquals(positions.toList()..sort()));
+      await tester.drag(
+        find.byType(SingleChildScrollView),
+        const Offset(-680, 0),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('new kind').hitTestable(), findsOneWidget);
+    },
+  );
+
   testWidgets('renders English titles for current backend task keys', (
     tester,
   ) async {

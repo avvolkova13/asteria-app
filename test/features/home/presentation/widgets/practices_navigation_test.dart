@@ -54,7 +54,11 @@ void main() {
     );
     await tester.pumpAndSettle();
     final context = tester.element(find.byType(PracticesScreen));
-    await tester.tap(find.text(AppLocalizations.of(context).navProfile));
+    final profileLabel = AppLocalizations.of(context).navProfile;
+    final avatar = find.byTooltip(profileLabel);
+    expect(find.text(profileLabel), findsNothing);
+    expect(tester.getSize(avatar), const Size(44, 44));
+    await tester.tap(avatar);
     await tester.pumpAndSettle();
     expect(find.byType(ProfileScreen), findsOneWidget);
     expect(

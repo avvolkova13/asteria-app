@@ -216,6 +216,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "Загрузка аффирмации дня",
     ),
     "affirmationOfDay": MessageLookupByLibrary.simpleMessage("Аффирмация дня"),
+    "affirmationOpenPlayer": MessageLookupByLibrary.simpleMessage(
+      "Открыть аудиоплеер",
+    ),
     "affirmationRetryLabel": MessageLookupByLibrary.simpleMessage(
       "Повторить загрузку аффирмации",
     ),
@@ -446,6 +449,15 @@ class MessageLookup extends MessageLookupByLibrary {
       "Глубокий и точный расклад на 10 карт. Раскроет суть ситуации, скрытые влияния, поможет принять важное решение.",
     ),
     "choosePackageTitle": MessageLookupByLibrary.simpleMessage("Выбор пакета"),
+    "cityConfirmationQuestion": MessageLookupByLibrary.simpleMessage(
+      "это ваш город?",
+    ),
+    "citySaveError": MessageLookupByLibrary.simpleMessage(
+      "Не удалось сохранить город. Попробуйте ещё раз.",
+    ),
+    "citySearchEmpty": MessageLookupByLibrary.simpleMessage(
+      "Города не найдены",
+    ),
     "citySearchError": MessageLookupByLibrary.simpleMessage(
       "Не удалось загрузить города. Проверь название или попробуй ещё раз.",
     ),
@@ -1014,7 +1026,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "lunarHairColoring": MessageLookupByLibrary.simpleMessage(
       "Окрашивание волос",
     ),
-    "lunarHaircut": MessageLookupByLibrary.simpleMessage("Стрижки"),
+    "lunarHaircut": MessageLookupByLibrary.simpleMessage("Стрижка"),
     "lunarHarvestingPreserving": MessageLookupByLibrary.simpleMessage(
       "Сбор урожая и заготовки",
     ),
@@ -1103,7 +1115,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Показан общий лунный календарь",
     ),
     "moonLocationNote": MessageLookupByLibrary.simpleMessage(
-      "Учитываем твою геолокацию и время.",
+      "Учитываем твою локацию и время",
     ),
     "moonLocationSetupDescription": MessageLookupByLibrary.simpleMessage(
       "Лунный день и время восхода зависят от места, где ты находишься сейчас. Разреши геолокацию или введи город вручную.",
@@ -1527,6 +1539,44 @@ class MessageLookup extends MessageLookupByLibrary {
     "planetUranus": MessageLookupByLibrary.simpleMessage("Уран"),
     "planetVenus": MessageLookupByLibrary.simpleMessage("Венера"),
     "planetVertex": MessageLookupByLibrary.simpleMessage("Вертекс"),
+    "playerAddedFavorite": MessageLookupByLibrary.simpleMessage(
+      "Добавлено в избранное",
+    ),
+    "playerClose": MessageLookupByLibrary.simpleMessage("Закрыть плеер"),
+    "playerFavorite": MessageLookupByLibrary.simpleMessage("В избранном"),
+    "playerFavoriteError": MessageLookupByLibrary.simpleMessage(
+      "Не удалось сохранить избранное",
+    ),
+    "playerHideTranscript": MessageLookupByLibrary.simpleMessage(
+      "Свернуть текст",
+    ),
+    "playerMetadata": MessageLookupByLibrary.simpleMessage(
+      "Аффирмация  ·  1 мин 15 сек",
+    ),
+    "playerPause": MessageLookupByLibrary.simpleMessage("Пауза"),
+    "playerPlay": MessageLookupByLibrary.simpleMessage("Воспроизвести"),
+    "playerPlayError": MessageLookupByLibrary.simpleMessage(
+      "Не удалось воспроизвести запись",
+    ),
+    "playerPosition": MessageLookupByLibrary.simpleMessage(
+      "Позиция воспроизведения",
+    ),
+    "playerRemovedFavorite": MessageLookupByLibrary.simpleMessage(
+      "Удалено из избранного",
+    ),
+    "playerRepeat": MessageLookupByLibrary.simpleMessage("Повтор записи"),
+    "playerRepeatOff": MessageLookupByLibrary.simpleMessage("Повтор выключен"),
+    "playerRepeatOn": MessageLookupByLibrary.simpleMessage("Повтор включён"),
+    "playerReplay": MessageLookupByLibrary.simpleMessage("Прослушать ещё раз"),
+    "playerShare": MessageLookupByLibrary.simpleMessage(
+      "Поделиться аффирмацией",
+    ),
+    "playerShareError": MessageLookupByLibrary.simpleMessage(
+      "Не удалось открыть меню «Поделиться»",
+    ),
+    "playerShowTranscript": MessageLookupByLibrary.simpleMessage(
+      "Показать весь текст",
+    ),
     "policyText": MessageLookupByLibrary.simpleMessage(
       "Политики конфиденциальности",
     ),

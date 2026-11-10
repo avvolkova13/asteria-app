@@ -1,4 +1,5 @@
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
+import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 import 'package:asteria_app/features/monetization/presentation/monetization_provider.dart';
 import 'package:asteria_app/features/sonnik/presentation/widgets/sonnik_layout.dart';
 import 'package:flutter/material.dart';
@@ -221,7 +222,7 @@ class _BenefitRow extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(Icons.check_circle_rounded, color: SonnikPalette.gold, size: 18),
+        ClayIcon(Icons.check_circle_rounded, color: SonnikPalette.gold, size: 18),
         const SizedBox(width: 10),
         Expanded(
           child: Text(
@@ -257,7 +258,7 @@ class _OfferTitleRow extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 8),
-        const Icon(
+        const ClayIcon(
           Icons.arrow_forward_rounded,
           color: SonnikPalette.white,
           size: 20,

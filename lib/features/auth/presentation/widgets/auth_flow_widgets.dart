@@ -1,4 +1,5 @@
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
+import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -93,7 +94,7 @@ class AuthFlowScaffold extends StatelessWidget {
                       tooltip: MaterialLocalizations.of(
                         context,
                       ).backButtonTooltip,
-                      icon: const Icon(
+                      icon: const ClayIcon(
                         CupertinoIcons.chevron_left,
                         color: AppColors.white,
                         size: 28,
@@ -387,7 +388,7 @@ class _AuthTextInputState extends State<AuthTextInput> {
                     widget.onChanged('');
                   },
                   tooltip: context.l10n.commonClear,
-                  icon: const Icon(
+                  icon: const ClayIcon(
                     CupertinoIcons.clear_circled_solid,
                     color: AppColors.textTertiary,
                     size: 20,

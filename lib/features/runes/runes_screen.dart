@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 
 import 'package:asteria_app/app/providers/content_provider.dart';
 import 'package:asteria_app/app/providers/user_provider.dart';
@@ -22,7 +23,6 @@ import 'package:asteria_app/features/runes/widgets/how_to_use_runes.dart';
 import 'package:asteria_app/features/runes/widgets/rune_interpretation_block.dart';
 import 'package:asteria_app/features/runes/widgets/runes_block.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 enum RunesTab {
   day,
@@ -50,7 +50,9 @@ class _RunesColors {
 }
 
 class RunesScreen extends StatelessWidget {
-  const RunesScreen({Key? key}) : super(key: key);
+  const RunesScreen({super.key, this.initialTab = RunesTab.day});
+
+  final RunesTab initialTab;
 
   @override
   Widget build(BuildContext context) {
@@ -88,7 +90,10 @@ class RunesScreen extends StatelessWidget {
                         builder: (context, _) {
                           try {
                             final rune = contentProvider.getTodayRune();
-                            return _RunesContent(rune: rune);
+                            return _RunesContent(
+                              rune: rune,
+                              initialTab: initialTab,
+                            );
                           } catch (e) {
                             return ErrorScreenWidget(
                               error: context.l10n.runesLoadError,
@@ -112,15 +117,16 @@ class RunesScreen extends StatelessWidget {
 
 class _RunesContent extends StatefulWidget {
   final dynamic rune;
+  final RunesTab initialTab;
 
-  const _RunesContent({Key? key, required this.rune}) : super(key: key);
+  const _RunesContent({required this.rune, required this.initialTab});
 
   @override
   _RunesContentState createState() => _RunesContentState();
 }
 
 class _RunesContentState extends State<_RunesContent> {
-  int _selectedTabIndex = 0;
+  late int _selectedTabIndex;
   bool _isRefreshingDeck = false;
   final ContentProvider _contentProvider = di.get<ContentProvider>();
 
@@ -129,6 +135,7 @@ class _RunesContentState extends State<_RunesContent> {
   @override
   void initState() {
     super.initState();
+    _selectedTabIndex = widget.initialTab.index;
     _contentProvider.resetRuneOpenState();
     di.get<AnalyticsFacade>().trackEvent(
       AnalyticsEvents.runeView,
@@ -205,7 +212,10 @@ class _RunesContentState extends State<_RunesContent> {
 
     try {
       di.get<GlobalLoaderService>().show();
-      await facade.runFeatureAction('runes', _contentProvider.getRuneDeckLayoutInsight);
+      await facade.runFeatureAction(
+        'runes',
+        _contentProvider.getRuneDeckLayoutInsight,
+      );
     } catch (e) {
       if (mounted) {
         final messenger = ScaffoldMessenger.of(context);
@@ -225,7 +235,10 @@ class _RunesContentState extends State<_RunesContent> {
   Future<void> _onRefreshRuneDeckLayout() async {
     setState(() => _isRefreshingDeck = true);
     try {
-      final success = await di.get<AnalyticsFacade>().runFeatureAction('runes', _contentProvider.refreshRuneDeckLayout);
+      final success = await di.get<AnalyticsFacade>().runFeatureAction(
+        'runes',
+        _contentProvider.refreshRuneDeckLayout,
+      );
       if (!success && mounted) {
         ClosedContentModal.show(
           context,
@@ -425,14 +438,11 @@ class _RuneLayoutTabState extends State<_RuneLayoutTab> {
                         width: 32,
                         height: 32,
                         child: Center(
-                          child: SvgPicture.asset(
+                          child: ClayAssetIcon(
                             'assets/icons/repeat_icon.svg',
                             width: 24,
                             height: 24,
-                            colorFilter: const ColorFilter.mode(
-                              _RunesColors.gold,
-                              BlendMode.srcIn,
-                            ),
+                            tint: _RunesColors.gold,
                           ),
                         ),
                       ),

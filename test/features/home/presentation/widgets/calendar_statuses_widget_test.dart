@@ -1,6 +1,7 @@
 import 'package:asteria_app/core/localization/localization.dart';
 import 'package:asteria_app/core/ui_kit/theme/theme.dart';
 import 'package:asteria_app/features/home/presentation/widgets/calendar_statuses_widget.dart';
+import 'package:asteria_app/features/home/presentation/widgets/moon_phase_marker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -35,7 +36,7 @@ void main() {
       expect(image.width, 25);
       expect(image.height, 25);
     }
-    expect(find.text('— смена фазы Луны'), findsOneWidget);
+    expect(find.byType(MoonPhaseMarker), findsNothing);
     expect(tester.takeException(), isNull);
   });
 
@@ -61,7 +62,8 @@ void main() {
 
     expect(find.byType(Image), findsNothing);
     expect(find.textContaining('день'), findsNothing);
-    expect(find.text('— смена фазы Луны'), findsOneWidget);
+    expect(find.byType(MoonPhaseMarker), findsOneWidget);
+    expect(find.text('смена фазы Луны'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 }

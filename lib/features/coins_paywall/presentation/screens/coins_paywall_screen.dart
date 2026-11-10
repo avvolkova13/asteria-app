@@ -1,6 +1,7 @@
-import 'package:asteria_app/features/monetization/presentation/contextual_purchase_page.dart';
-import 'dart:ui' as ui;
 import 'dart:io' show Platform;
+import 'dart:ui' as ui;
+import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
+import 'package:asteria_app/features/monetization/presentation/contextual_purchase_page.dart';
 
 import 'package:asteria_app/core/analytics/analytics_events.dart';
 import 'package:asteria_app/core/analytics/analytics_facade.dart';
@@ -573,7 +574,7 @@ class _PackageSelectionControl extends StatelessWidget {
             : ProfileFlowColors.purpleDark,
       ),
       child: isSelected
-          ? const Icon(
+          ? const ClayIcon(
               Icons.check_rounded,
               color: ProfileFlowColors.purpleDark,
               size: 38,

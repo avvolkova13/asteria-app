@@ -1,4 +1,5 @@
 import 'dart:ui' as ui;
+import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 
 import 'package:asteria_app/app/data/models/shop_item/shop_item_model.dart';
 import 'package:asteria_app/app/providers/user_provider.dart';
@@ -18,7 +19,6 @@ import 'package:asteria_app/features/shop/presentation/bloc/shop_bloc.dart';
 import 'package:asteria_app/features/shop/presentation/widgets/purchase_modal_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 class ShopScreen extends StatefulWidget {
   const ShopScreen({super.key});
@@ -438,13 +438,10 @@ class _ShopHeader extends StatelessWidget {
                           height: 44,
                           child: Align(
                             alignment: Alignment.centerLeft,
-                            child: SvgPicture.asset(
+                            child: ClayAssetIcon(
                               'assets/icons/back_icon.svg',
                               height: 24,
-                              colorFilter: const ColorFilter.mode(
-                                _ShopColors.navMuted,
-                                BlendMode.srcIn,
-                              ),
+                              tint: _ShopColors.navMuted,
                             ),
                           ),
                         ),
@@ -545,14 +542,11 @@ class _ShopItemImage extends StatelessWidget {
                   ),
                 ),
                 Center(
-                  child: SvgPicture.asset(
+                  child: ClayAssetIcon(
                     'assets/icons/white_lock_icon.svg',
                     width: 32,
                     height: 32,
-                    colorFilter: const ColorFilter.mode(
-                      _ShopColors.lockPurple,
-                      BlendMode.srcIn,
-                    ),
+                    tint: _ShopColors.lockPurple,
                   ),
                 ),
               ],

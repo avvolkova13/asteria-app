@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 
 import 'package:asteria_app/app/providers/user_provider.dart';
 import 'package:asteria_app/core/routing/app_route.dart';
@@ -8,7 +9,6 @@ import 'package:asteria_app/features/monetization/presentation/monetization_prov
 import 'package:asteria_app/features/natal_card/widgets/natal_card_loading_overlay.dart';
 import 'package:asteria_app/core/ui_kit/widgets/subscription_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 
@@ -183,14 +183,11 @@ class _CompatibilityLoaderTopBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        SvgPicture.asset(
+        ClayAssetIcon(
           'assets/icons/back_icon.svg',
           width: 24,
           height: 24,
-          colorFilter: ColorFilter.mode(
-            AppColors.textSecondary,
-            BlendMode.srcIn,
-          ),
+          tint: AppColors.textSecondary,
         ),
         const SizedBox(width: 10),
         Expanded(

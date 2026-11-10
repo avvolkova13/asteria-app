@@ -28,6 +28,7 @@ private final class StorefrontUpdatesHandler: NSObject, FlutterStreamHandler {
 
 @main
 @objc class AppDelegate: FlutterAppDelegate, FlutterImplicitEngineDelegate {
+  private var practiceAudio: PracticeAudioBridge?
   private var appleTransactionsBridge: AnyObject?
   private var storefrontUpdatesHandler: AnyObject?
   private var storefrontMethodChannel: FlutterMethodChannel?
@@ -43,6 +44,7 @@ private final class StorefrontUpdatesHandler: NSObject, FlutterStreamHandler {
   func didInitializeImplicitFlutterEngine(_ engineBridge: FlutterImplicitEngineBridge) {
     GeneratedPluginRegistrant.register(with: engineBridge.pluginRegistry)
     let messenger = engineBridge.applicationRegistrar.messenger()
+    practiceAudio = PracticeAudioBridge(messenger: messenger)
     if #available(iOS 15.0, *) {
       let bridge = AppleTransactionsBridge()
       bridge.register(messenger: messenger)

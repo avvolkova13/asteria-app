@@ -222,6 +222,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "affirmationOfDay": MessageLookupByLibrary.simpleMessage(
       "Affirmation of the day",
     ),
+    "affirmationOpenPlayer": MessageLookupByLibrary.simpleMessage(
+      "Open the audio player",
+    ),
     "affirmationRetryLabel": MessageLookupByLibrary.simpleMessage(
       "Reload affirmation",
     ),
@@ -446,6 +449,13 @@ class MessageLookup extends MessageLookupByLibrary {
     "choosePackageTitle": MessageLookupByLibrary.simpleMessage(
       "Choose a package",
     ),
+    "cityConfirmationQuestion": MessageLookupByLibrary.simpleMessage(
+      "is this your city?",
+    ),
+    "citySaveError": MessageLookupByLibrary.simpleMessage(
+      "Could not save the city. Please try again.",
+    ),
+    "citySearchEmpty": MessageLookupByLibrary.simpleMessage("No cities found"),
     "citySearchError": MessageLookupByLibrary.simpleMessage(
       "We couldn\'t load cities. Check the city name or try again.",
     ),
@@ -1087,7 +1097,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Showing the general lunar calendar",
     ),
     "moonLocationNote": MessageLookupByLibrary.simpleMessage(
-      "Based on your location and local time.",
+      "Based on your location and time",
     ),
     "moonLocationSetupDescription": MessageLookupByLibrary.simpleMessage(
       "The lunar day and moonrise time depend on where you are now. Allow location access or enter a city manually.",
@@ -1507,6 +1517,40 @@ class MessageLookup extends MessageLookupByLibrary {
     "planetUranus": MessageLookupByLibrary.simpleMessage("Uranus"),
     "planetVenus": MessageLookupByLibrary.simpleMessage("Venus"),
     "planetVertex": MessageLookupByLibrary.simpleMessage("Vertex"),
+    "playerAddedFavorite": MessageLookupByLibrary.simpleMessage(
+      "Added to favorites",
+    ),
+    "playerClose": MessageLookupByLibrary.simpleMessage("Close player"),
+    "playerFavorite": MessageLookupByLibrary.simpleMessage("Favorite"),
+    "playerFavoriteError": MessageLookupByLibrary.simpleMessage(
+      "Unable to save favorites",
+    ),
+    "playerHideTranscript": MessageLookupByLibrary.simpleMessage(
+      "Collapse transcript",
+    ),
+    "playerMetadata": MessageLookupByLibrary.simpleMessage(
+      "Affirmation  ·  1 min 15 sec",
+    ),
+    "playerPause": MessageLookupByLibrary.simpleMessage("Pause"),
+    "playerPlay": MessageLookupByLibrary.simpleMessage("Play"),
+    "playerPlayError": MessageLookupByLibrary.simpleMessage(
+      "Unable to play this recording",
+    ),
+    "playerPosition": MessageLookupByLibrary.simpleMessage("Playback position"),
+    "playerRemovedFavorite": MessageLookupByLibrary.simpleMessage(
+      "Removed from favorites",
+    ),
+    "playerRepeat": MessageLookupByLibrary.simpleMessage("Repeat recording"),
+    "playerRepeatOff": MessageLookupByLibrary.simpleMessage("Repeat off"),
+    "playerRepeatOn": MessageLookupByLibrary.simpleMessage("Repeat on"),
+    "playerReplay": MessageLookupByLibrary.simpleMessage("Play again"),
+    "playerShare": MessageLookupByLibrary.simpleMessage("Share affirmation"),
+    "playerShareError": MessageLookupByLibrary.simpleMessage(
+      "Could not open sharing options",
+    ),
+    "playerShowTranscript": MessageLookupByLibrary.simpleMessage(
+      "Show full transcript",
+    ),
     "policyText": MessageLookupByLibrary.simpleMessage("Privacy Policy"),
     "privacySummary": MessageLookupByLibrary.simpleMessage(
       "How Asteria collects, uses, stores, and protects personal data.",

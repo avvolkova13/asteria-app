@@ -1,8 +1,9 @@
 import 'package:asteria_app/app/providers/user_provider.dart';
 import 'package:asteria_app/core/di/di.dart';
-import 'package:asteria_app/core/ui_kit/ui_kit.dart';
-import 'package:asteria_app/core/ui_kit/widgets/static_glass_surface.dart';
 import 'package:asteria_app/core/localization/locale_formatters.dart';
+import 'package:asteria_app/core/ui_kit/ui_kit.dart';
+import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
+import 'package:asteria_app/core/ui_kit/widgets/static_glass_surface.dart';
 import 'package:asteria_app/features/balance/presentation/balance_history_controller.dart';
 import 'package:asteria_app/features/balance/presentation/widgets/balance_history_style.dart';
 import 'package:asteria_app/features/monetization/data/monetization_api.dart';
@@ -312,7 +313,7 @@ class _HistoryHeader extends StatelessWidget {
                 child: IconButton(
                   onPressed: onBack,
                   tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-                  icon: const Icon(
+                  icon: const ClayIcon(
                     Icons.chevron_left,
                     size: 28,
                     color: BalanceHistoryStyle.muted,
@@ -664,7 +665,7 @@ class _HistoryError extends StatelessWidget {
         ),
         TextButton.icon(
           onPressed: onRetry,
-          icon: const Icon(Icons.refresh),
+          icon: const ClayIcon(Icons.refresh),
           style: TextButton.styleFrom(foregroundColor: const Color(0xFFF3B76A)),
           label: Text(context.l10n.retry),
         ),

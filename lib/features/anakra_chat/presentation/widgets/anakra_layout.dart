@@ -1,5 +1,6 @@
 import 'package:asteria_app/core/routing/app_route.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
+import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 import 'package:asteria_app/core/ui_kit/widgets/subscription_widget.dart';
 import 'package:asteria_app/features/monetization/presentation/monetization_provider.dart';
 import 'package:flutter/material.dart';
@@ -108,7 +109,7 @@ class AnakraTopNavBar extends StatelessWidget {
                     tooltip: MaterialLocalizations.of(
                       context,
                     ).backButtonTooltip,
-                    icon: const Icon(
+                    icon: const ClayIcon(
                       Icons.arrow_back_ios_new_rounded,
                       color: AnakraPalette.white,
                       size: 20,

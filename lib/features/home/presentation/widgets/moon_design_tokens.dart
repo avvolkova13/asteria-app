@@ -5,8 +5,7 @@ import 'package:flutter/material.dart';
 class MoonDesignTokens {
   const MoonDesignTokens._();
 
-  static const Color pageBackground = Color(0xFF0E0717);
-  static const Color pageBackgroundBottom = Color(0xFF170D22);
+  static const Color pageBackground = AppColorsDark.homeCanvas;
   static const Color calendarSurface = Color(0x1A9A7DB8);
   static const Color cardSurface = Color(0xFF9A7DB8);
   static const Color chipOrange = Color(0xFFE6994D);
@@ -47,24 +46,5 @@ class MoonDesignTokens {
       DayStatus.neutral => AppColors.warning,
       DayStatus.unfavorable => AppColors.error,
     };
-  }
-
-  static LinearGradient pageGlow(DayStatus status) {
-    final glowColor = switch (status) {
-      DayStatus.favorable => AppColors.success,
-      DayStatus.neutral => AppColors.warning,
-      DayStatus.unfavorable => AppColors.error,
-    };
-
-    return LinearGradient(
-      begin: Alignment.topCenter,
-      end: Alignment.bottomCenter,
-      colors: [
-        pageBackground,
-        Color.alphaBlend(glowColor.withValues(alpha: 0.14), pageBackground),
-        pageBackgroundBottom,
-      ],
-      stops: const [0, 0.42, 1],
-    );
   }
 }

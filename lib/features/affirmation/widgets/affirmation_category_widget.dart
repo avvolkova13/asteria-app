@@ -1,24 +1,15 @@
+import 'package:asteria_app/core/routing/app_route.dart';
 import 'package:asteria_app/app/data/models/affirmation/affirmation_model.dart';
 import 'package:asteria_app/core/analytics/dictionaries/offer_type.dart';
 import 'package:asteria_app/core/analytics/product_analytics_service.dart';
 import 'package:asteria_app/core/di/di.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
+import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 import 'package:asteria_app/core/ui_kit/widgets/closed_content_modal.dart';
 import 'package:asteria_app/features/affirmation/widgets/affirmation_card_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 const Color _affirmationGold = Color(0xFFF3B76A);
-const String _handSwipeLeftThinSvg = '''
-<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <path d="M11 6L7 10L11 14" stroke="black" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M7 10H17" stroke="black" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M14 20V12.5C14 11.6716 14.6716 11 15.5 11C16.3284 11 17 11.6716 17 12.5V18" stroke="black" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M17 18V16.5C17 15.6716 17.6716 15 18.5 15C19.3284 15 20 15.6716 20 16.5V18" stroke="black" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M20 18V17.5C20 16.6716 20.6716 16 21.5 16C22.3284 16 23 16.6716 23 17.5V20" stroke="black" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M23 20V19.5C23 18.6716 23.6716 18 24.5 18C25.3284 18 26 18.6716 26 19.5V22C26 26.4183 22.4183 30 18 30H17.25C14.7894 30 12.4659 28.8714 10.9459 26.9379L8.17547 23.4128C7.70111 22.8092 7.76692 21.9453 8.32783 21.4216C8.87791 20.9081 9.7253 20.8942 10.2919 21.3894L14 24.6316" stroke="black" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>
-''';
 
 class AffirmationCategoryWidget extends StatelessWidget {
   final String category;
@@ -142,14 +133,11 @@ class _CategoryIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final icon = SvgPicture.asset(
+    final icon = ClayAssetIcon(
       path,
       width: 24,
       height: 24,
-      colorFilter: ColorFilter.mode(
-        _affirmationGold.withValues(alpha: isLocked ? 0.7 : 1),
-        BlendMode.srcIn,
-      ),
+      tint: _affirmationGold.withValues(alpha: isLocked ? 0.7 : 1),
     );
 
     if (!isLocked) {
@@ -173,7 +161,7 @@ class _CategoryIcon extends StatelessWidget {
                 color: AppColors.cardTinted,
                 shape: BoxShape.circle,
               ),
-              child: const Icon(
+              child: const ClayIcon(
                 Icons.lock_outline,
                 size: 8,
                 color: AppColors.textInverse,
@@ -353,6 +341,18 @@ class _AffirmationCardStackState extends State<AffirmationCardStack> {
     return (index % length + length) % length;
   }
 
+  bool _playerOpen = false;
+
+  Future<void> _openPlayer() async {
+    if (_playerOpen || _isAnimatingOut || widget.affirmations.isEmpty) return;
+    _playerOpen = true;
+    try {
+      await AffirmationPlayerRoute.push(context);
+    } finally {
+      _playerOpen = false;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
@@ -366,6 +366,12 @@ class _AffirmationCardStackState extends State<AffirmationCardStack> {
         return Align(
           alignment: Alignment.center,
           child: Semantics(
+            button: widget.affirmations.isNotEmpty,
+            excludeSemantics: true,
+            onTap: widget.affirmations.isEmpty ? null : _openPlayer,
+            onTapHint: widget.affirmations.isEmpty
+                ? null
+                : context.l10n.affirmationOpenPlayer,
             label: _semanticLabel(context),
             hint: widget.affirmations.length > 1
                 ? context.l10n.affirmationSwipeHint
@@ -382,6 +388,7 @@ class _AffirmationCardStackState extends State<AffirmationCardStack> {
                 : null,
             child: GestureDetector(
               behavior: HitTestBehavior.opaque,
+              onTap: widget.affirmations.isEmpty ? null : _openPlayer,
               onHorizontalDragUpdate: _handleDragUpdate,
               onHorizontalDragEnd: (details) =>
                   _handleDragEnd(details, stackWidth),
@@ -517,14 +524,11 @@ class _SwipeHintIcon extends StatelessWidget {
 
     return SizedBox.square(
       dimension: size,
-      child: SvgPicture.string(
-        _handSwipeLeftThinSvg,
+      child: ClayAssetIcon(
+        'assets/icons/swipe_hand.svg',
         width: size,
         height: size,
-        colorFilter: ColorFilter.mode(
-          AppColors.white.withValues(alpha: 0.72),
-          BlendMode.srcIn,
-        ),
+        tint: AppColors.white.withValues(alpha: 0.72),
       ),
     );
   }

@@ -119,7 +119,7 @@ void main() {
 
     expect(find.text('Haircuts'), findsOneWidget);
     expect(find.text('Hair coloring'), findsOneWidget);
-    expect(find.text('Стрижки'), findsNothing);
+    expect(find.text('Стрижка'), findsNothing);
     expect(find.text('Окрашивание волос'), findsNothing);
     expect(tester.takeException(), isNull);
   });

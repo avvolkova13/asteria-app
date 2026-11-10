@@ -3,12 +3,14 @@ import 'package:asteria_app/app/providers/user_provider.dart';
 import 'package:asteria_app/app/data/repositories/content/content_repository.dart';
 import 'package:asteria_app/app/data/repositories/user/user_repository.dart';
 import 'package:asteria_app/core/localization/localization.dart';
-import 'package:asteria_app/core/ui_kit/theme/theme.dart';
+import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/features/compatibility/domain/repositories/compatibility_repository.dart';
 import 'package:asteria_app/features/home/presentation/cubit/moon_screen_cubit.dart';
 import 'package:asteria_app/features/home/presentation/cubit/moon_screen_state.dart';
 import 'package:asteria_app/features/home/presentation/models/day_status.dart';
 import 'package:asteria_app/features/home/presentation/widgets/moon_calendar_widget.dart';
+import 'package:asteria_app/features/home/presentation/widgets/moon_design_tokens.dart';
+import 'package:asteria_app/features/home/presentation/widgets/moon_phase_marker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -132,42 +134,44 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('keeps the primary phase marker with its status icon', (
+  testWidgets('anchors phase stars above one- and two-digit dates', (
     tester,
   ) async {
     _setCalendarViewport(tester);
     final cubit = _TestMoonScreenCubit();
     addTearDown(cubit.close);
-    final phaseDate = DateTime(2026, 5, 1);
-    cubit.replaceState(
-      MoonScreenState(
-        focusedDay: DateTime(2026, 5, 15),
-        dayStatuses: {phaseDate: DayStatus.favorable},
-        primaryPhaseDates: {phaseDate},
-      ),
-    );
-
-    await tester.pumpWidget(_calendarApp(cubit));
-    await tester.pump();
-
-    final statusIcon = _findStatusAsset(
-      'assets/icons/day_status_favorable_star.png',
-    );
-    final primaryPhaseMarker = find.byWidgetPredicate(
-      (widget) =>
-          widget is Container &&
-          widget.constraints?.maxWidth == 5 &&
-          widget.constraints?.maxHeight == 5 &&
-          widget.decoration is BoxDecoration &&
-          (widget.decoration! as BoxDecoration).shape == BoxShape.circle,
-    );
-
-    expect(statusIcon, findsOneWidget);
-    expect(primaryPhaseMarker, findsOneWidget);
-    expect(
-      _dayCellAncestor(tester.element(statusIcon)),
-      same(_dayCellAncestor(tester.element(primaryPhaseMarker))),
-    );
+    final first = DateTime(2026, 5, 9);
+    final second = DateTime(2026, 5, 17);
+    for (final selected in [first, second]) {
+      cubit.replaceState(
+        MoonScreenState(
+          focusedDay: first,
+          selectedDate: selected,
+          primaryPhaseDates: {first, second},
+        ),
+      );
+      await tester.pumpWidget(_calendarApp(cubit, textScale: 1));
+      await tester.pumpAndSettle();
+      expect(find.byType(MoonPhaseMarker), findsNWidgets(2));
+      for (final day in [first, second]) {
+        final number = find.text('${day.day}');
+        final cell = _dayCellAncestor(tester.element(number));
+        final marker = find.descendant(
+          of: find.byElementPredicate((e) => e == cell),
+          matching: find.byType(MoonPhaseMarker),
+        );
+        final star = tester.getCenter(marker);
+        final numeral = tester.getRect(number);
+        expect(star.dx, closeTo(numeral.right, 2));
+        expect(star.dy, lessThan(numeral.top));
+        expect(
+          tester.widget<MoonPhaseMarker>(marker).color,
+          day == selected
+              ? AppColors.textPrimary
+              : MoonDesignTokens.selectedDay,
+        );
+      }
+    }
     expect(tester.takeException(), isNull);
   });
 
@@ -192,7 +196,7 @@ void main() {
     final decoration = _selectedDayBackgroundDecoration(tester);
     final highlightSize = tester.getSize(find.byKey(_selectedDayHighlightKey));
 
-    expect(highlightSize, const Size(32, 48));
+    expect(highlightSize, const Size(32, 57));
     expect(decoration.color, isNull);
     expect(decoration.boxShadow, isNull);
     expect(decoration.gradient, isA<LinearGradient>());
@@ -262,7 +266,7 @@ void main() {
 
     expect(find.textContaining('Август 2026'), findsOneWidget);
 
-    await tester.tap(_findStatusAsset('assets/icons/chevron_right.png'));
+    await tester.tap(find.byTooltip('Следующий месяц'));
     await tester.pumpAndSettle();
 
     expect(find.textContaining('Сентябрь 2026'), findsOneWidget);
@@ -292,12 +296,6 @@ Widget _calendarApp(MoonScreenCubit cubit, {double textScale = 0.5}) {
         ),
       ),
     ),
-  );
-}
-
-Finder _findStatusAsset(String assetPath) {
-  return find.byWidgetPredicate(
-    (widget) => widget is Image && _assetName(widget) == assetPath,
   );
 }
 

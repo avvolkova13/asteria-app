@@ -1,0 +1,10 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="9.9707" height="17.3242" viewBox="0 0 9.9707 17.3242" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path id="SF Symbol / chevron.backward" d="M0 8.66211C0 9.00391 0.126953 9.29688 0.400391 9.55078L7.99805 16.9922C8.21289 17.207 8.48633 17.3242 8.80859 17.3242C9.45312 17.3242 9.9707 16.8164 9.9707 16.1621C9.9707 15.8398 9.83398 15.5566 9.61914 15.332L2.77344 8.66211L9.61914 1.99219C9.83398 1.76758 9.9707 1.47461 9.9707 1.16211C9.9707 0.507812 9.45312 0 8.80859 0C8.48633 0 8.21289 0.117188 7.99805 0.332031L0.400391 7.76367C0.126953 8.02734 0 8.32031 0 8.66211Z" fill="url(#paint0_linear_0_474)"/>
+<defs>
+<linearGradient id="paint0_linear_0_474" x1="0" y1="8.66211" x2="9.9707" y2="8.66211" gradientUnits="userSpaceOnUse">
+<stop stop-color="#E6994D"/>
+<stop offset="0.500323" stop-color="#F3B76A"/>
+<stop offset="1" stop-color="#E6994D"/>
+</linearGradient>
+</defs>
+</svg>

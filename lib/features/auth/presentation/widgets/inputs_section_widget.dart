@@ -2,6 +2,7 @@ import 'package:asteria_app/app/data/models/user/user_model.dart';
 import 'package:asteria_app/core/di/di.dart';
 import 'package:asteria_app/core/environment/environment.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
+import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 import 'package:asteria_app/core/utils/utils.dart';
 import 'package:asteria_app/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:asteria_app/features/auth/presentation/widgets/radio_button_group.dart';
@@ -229,7 +230,7 @@ class _InputsSectionWidgetState extends State<InputsSectionWidget> {
                     widget.placeController.clear();
                     context.read<AuthCubit>().updateUserBirthPlace('');
                   },
-                  icon: const Icon(
+                  icon: const ClayIcon(
                     CupertinoIcons.clear_circled_solid,
                     color: _authMutedText,
                     size: 20,
@@ -355,7 +356,7 @@ class _AuthTextInput extends StatelessWidget {
                 controller.clear();
                 onChanged('');
               },
-              icon: const Icon(
+              icon: const ClayIcon(
                 CupertinoIcons.clear_circled_solid,
                 color: _authMutedText,
                 size: 20,
@@ -466,7 +467,7 @@ class _AuthCheckbox extends StatelessWidget {
                             shaderCallback: (bounds) => const LinearGradient(
                               colors: [_authPurpleStart, _authPurpleEnd],
                             ).createShader(bounds),
-                            child: const Icon(
+                            child: const ClayIcon(
                               Icons.check,
                               color: AppColors.white,
                               size: 18,

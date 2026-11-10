@@ -1,3 +1,4 @@
+import 'dart:ui' as ui;
 import 'package:asteria_app/app/data/models/user/user_model.dart';
 import 'package:asteria_app/app/providers/content_provider.dart';
 import 'package:asteria_app/app/providers/user_provider.dart';
@@ -5,7 +6,9 @@ import 'package:asteria_app/core/di/di.dart';
 import 'package:asteria_app/core/location/city_search_service.dart';
 import 'package:asteria_app/core/location/device_location_service.dart';
 import 'package:asteria_app/core/location/widgets/city_selection_screen.dart';
+import 'package:asteria_app/core/location/suggested_cities.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
+import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -16,8 +19,22 @@ class CurrentLocationControls extends StatefulWidget {
     this.onLocationUpdateStarted,
     this.onLocationUpdated,
     this.citySearchService,
-  });
+  }) : city = null,
+       cityLabel = null;
 
+  const CurrentLocationControls.city({
+    super.key,
+    required CurrentLocationModel location,
+    required Widget label,
+    required this.onLocationUpdateStarted,
+    required this.onLocationUpdated,
+  }) : city = location,
+       cityLabel = label,
+       compact = true,
+       citySearchService = null;
+
+  final CurrentLocationModel? city;
+  final Widget? cityLabel;
   final bool compact;
   final VoidCallback? onLocationUpdateStarted;
   final VoidCallback? onLocationUpdated;
@@ -55,67 +72,118 @@ class _CurrentLocationControlsState extends State<CurrentLocationControls> {
     }
   }
 
+  bool _choosing = false;
+
   Future<void> _openCitySelection() async {
-    if (_isSavingManual) return;
-    final currentTheme = Theme.of(context);
-    final result = await Navigator.of(context).push<CitySelectionResult>(
-      MaterialPageRoute(
-        builder: (_) => Theme(
-          data: currentTheme,
-          child: CitySelectionScreen(
-            citySearchService: widget.citySearchService,
-            initialSuggestions: _lastCitySuggestions,
-            initialSelectedPlaceId: _lastCitySelectedPlaceId,
-          ),
-        ),
-      ),
-    );
-    if (!mounted || result == null) return;
-
-    _lastCitySuggestions = result.suggestions;
-    _lastCitySelectedPlaceId = result.suggestion.placeId;
-
-    final confirmed = await _showCityConfirmation(result.location);
-    if (!mounted) return;
-    if (confirmed == false) {
-      await _openCitySelection();
-      return;
-    }
-    if (confirmed != true) return;
-
-    setState(() => _isSavingManual = true);
-    widget.onLocationUpdateStarted?.call();
+    if (_choosing || _isSavingManual) return;
+    _choosing = true;
     try {
-      await _saveLocation(result.location, preserveManualLocation: false);
+      final city = widget.city;
+      if (city != null) {
+        final decision = await _showCityConfirmation(city);
+        if (!mounted || decision != false) return;
+      }
+      var initial = city == null
+          ? _lastCitySuggestions
+          : suggestedCities(city, Localizations.localeOf(context).languageCode);
+      var selected = city == null ? _lastCitySelectedPlaceId : 'current';
+      final view = View.of(context);
+      final topInset = view.padding.top / view.devicePixelRatio + 44;
+      while (true) {
+        if (!mounted) return;
+        final pageTheme = Theme.of(context);
+        final picker = CitySelectionScreen(
+          citySearchService: widget.citySearchService,
+          initialSuggestions: initial,
+          initialSelectedPlaceId: selected,
+          asSheet: city != null,
+        );
+        final result = city != null
+            ? await showModalBottomSheet<CitySelectionResult>(
+                context: context,
+                isScrollControlled: true,
+                useRootNavigator: true,
+                backgroundColor: Colors.transparent,
+                barrierColor: const Color(0xCC100B1D),
+                builder: (sheetContext) => FractionallySizedBox(
+                  heightFactor:
+                      (1 - topInset / MediaQuery.sizeOf(sheetContext).height)
+                          .clamp(0.25, 1.0)
+                          .toDouble(),
+                  child: picker,
+                ),
+              )
+            : await Navigator.of(context).push<CitySelectionResult>(
+                MaterialPageRoute(
+                  builder: (_) => Theme(data: pageTheme, child: picker),
+                ),
+              );
+        if (!mounted || result == null) return;
+        selected = result.suggestion.placeId;
+        initial = city == null
+            ? result.suggestions
+            : [
+                result.suggestion,
+                ...initial.where((s) => s.placeId != selected),
+              ];
+        _lastCitySuggestions = initial;
+        _lastCitySelectedPlaceId = selected;
+        final confirmed = await _showCityConfirmation(result.location);
+        if (!mounted || confirmed == null) return;
+        if (!confirmed) continue;
+        if (result.suggestion.placeId == 'current') return;
+        setState(() => _isSavingManual = true);
+        widget.onLocationUpdateStarted?.call();
+        final onUpdated = widget.onLocationUpdated;
+        try {
+          await _saveLocation(result.location, preserveManualLocation: false);
+        } catch (_) {
+          onUpdated?.call();
+          if (mounted) {
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(context.l10n.citySaveError)));
+          }
+        }
+        return;
+      }
     } finally {
-      if (mounted) setState(() => _isSavingManual = false);
+      _choosing = false;
+      if (mounted && _isSavingManual) setState(() => _isSavingManual = false);
     }
   }
 
   Future<bool?> _showCityConfirmation(CurrentLocationModel location) {
     return showDialog<bool>(
       context: context,
-      barrierColor: Colors.black.withValues(alpha: 0.58),
+      barrierColor: const Color(0xCC100B1D),
       useSafeArea: false,
-      builder: (dialogContext) {
-        return Align(
-          alignment: Alignment.topCenter,
-          child: Padding(
-            padding: const EdgeInsets.only(top: 103),
-            child: Material(
-              color: Colors.transparent,
-              child: SizedBox(
-                width: 300,
-                child: _CityConfirmationSheet(
-                  location: location,
-                  onConfirm: () => Navigator.of(dialogContext).pop(true),
-                  onChange: () => Navigator.of(dialogContext).pop(false),
+      builder: (dialogContext) => SafeArea(
+        minimum: const EdgeInsets.symmetric(horizontal: 16),
+        child: Padding(
+          padding: EdgeInsets.only(
+            top: (103 - MediaQuery.paddingOf(dialogContext).top)
+                .clamp(0, 103)
+                .toDouble(),
+          ),
+          child: Align(
+            alignment: Alignment.topRight,
+            child: SingleChildScrollView(
+              child: Material(
+                color: Colors.transparent,
+                child: SizedBox(
+                  width: 300,
+                  child: _CityConfirmationSheet(
+                    location: location,
+                    onConfirm: () => Navigator.of(dialogContext).pop(true),
+                    onChange: () => Navigator.of(dialogContext).pop(false),
+                  ),
                 ),
               ),
             ),
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 
@@ -123,6 +191,7 @@ class _CurrentLocationControlsState extends State<CurrentLocationControls> {
     CurrentLocationModel location, {
     required bool preserveManualLocation,
   }) async {
+    final onUpdated = widget.onLocationUpdated;
     await di.get<UserProvider>().updateCurrentLocation(
       location,
       preserveManualLocation: preserveManualLocation,
@@ -132,7 +201,7 @@ class _CurrentLocationControlsState extends State<CurrentLocationControls> {
     } catch (_) {
       // The selected location is still saved. A later content refresh can retry.
     }
-    widget.onLocationUpdated?.call();
+    onUpdated?.call();
   }
 
   void _showLocationError() {
@@ -144,6 +213,16 @@ class _CurrentLocationControlsState extends State<CurrentLocationControls> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.cityLabel case final label?) {
+      return Semantics(
+        button: true,
+        child: InkWell(
+          onTap: _isSavingManual ? null : _openCitySelection,
+          borderRadius: BorderRadius.circular(8),
+          child: SizedBox(height: 44, child: label),
+        ),
+      );
+    }
     final currentLocation = di.get<UserProvider>().currentUser?.currentLocation;
     final sourceLabel = currentLocation?.source == CurrentLocationSource.manual
         ? context.l10n.currentLocationManualLabel
@@ -199,48 +278,60 @@ class _CityConfirmationSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    final style = context.textTheme.inverseUrbanistRegular17.copyWith(
+      fontFamily: 'Onest',
+      height: 1.2,
+      letterSpacing: -0.408,
+      color: AppColors.textInverse,
+    );
+    return ClipRRect(
       key: const ValueKey('city-confirmation-sheet'),
-      height: 192,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: const Color(0xFF1B1328),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.white.withValues(alpha: 0.26)),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF6E4BFF).withValues(alpha: 0.28),
-            blurRadius: 28,
-            offset: const Offset(0, 12),
-          ),
-        ],
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            location.location,
-            textAlign: TextAlign.center,
-            maxLines: 3,
-            overflow: TextOverflow.ellipsis,
-            style: context.textTheme.inverseUrbanistRegular14.copyWith(
-              color: AppColors.textInverse,
-              height: 1.15,
+      borderRadius: BorderRadius.circular(34),
+      child: BackdropFilter(
+        filter: ui.ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: const Color(0x809A7DB8),
+            borderRadius: BorderRadius.circular(34),
+            border: Border.all(
+              color: AppColors.white.withValues(alpha: 0.24),
+              strokeAlign: BorderSide.strokeAlignInside,
             ),
           ),
-          const Spacer(),
-          _CityConfirmationButton(
-            text: context.l10n.citySelectionConfirm,
-            filled: true,
-            onPressed: onConfirm,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text.rich(
+                TextSpan(
+                  style: style,
+                  children: [
+                    TextSpan(
+                      text: location.location.split(',').first.trim(),
+                      style: const TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                    TextSpan(
+                      text: ',\n${context.l10n.cityConfirmationQuestion}',
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
+              _CityConfirmationButton(
+                text: context.l10n.citySelectionConfirm,
+                filled: true,
+                onPressed: onConfirm,
+              ),
+              const SizedBox(height: 8),
+              _CityConfirmationButton(
+                text: context.l10n.citySelectionChange,
+                filled: false,
+                onPressed: onChange,
+              ),
+            ],
           ),
-          const SizedBox(height: 8),
-          _CityConfirmationButton(
-            text: context.l10n.citySelectionChange,
-            filled: false,
-            onPressed: onChange,
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -259,33 +350,24 @@ class _CityConfirmationButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      height: 40,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          gradient: filled
-              ? const LinearGradient(
-                  colors: [Color(0xFF6E4BFF), Color(0xFF5A3FD1)],
-                )
-              : null,
-          color: filled ? null : AppColors.white.withValues(alpha: 0.06),
-          borderRadius: BorderRadius.circular(10),
-          border: filled
-              ? null
-              : Border.all(color: AppColors.white.withValues(alpha: 0.22)),
-        ),
-        child: TextButton(
-          onPressed: onPressed,
-          child: Text(
-            text,
-            style: context.textTheme.inverseUrbanistRegular14.copyWith(
-              color: AppColors.textInverse,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
+    return TextButton(
+      onPressed: onPressed,
+      style: TextButton.styleFrom(
+        visualDensity: VisualDensity.standard,
+        minimumSize: const Size.fromHeight(48),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        backgroundColor: filled ? const Color(0xFF6E4BFF) : Colors.transparent,
+        foregroundColor: AppColors.textInverse,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        side: filled ? null : const BorderSide(color: Color(0xFFE9E9EA)),
+        textStyle: const TextStyle(
+          fontFamily: 'Onest',
+          fontSize: 17,
+          height: 1.2,
+          letterSpacing: -0.408,
         ),
       ),
+      child: Text(text),
     );
   }
 }
@@ -323,7 +405,7 @@ class _LocationSecondaryButton extends StatelessWidget {
                   height: 18,
                   child: CircularProgressIndicator(strokeWidth: 2),
                 )
-              : Icon(icon, color: const Color(0xFFE6994D)),
+              : ClayIcon(icon, color: const Color(0xFFE6994D)),
           label: Text(
             title,
             style: context.textTheme.inverseUrbanistRegular17.copyWith(
@@ -369,7 +451,7 @@ class _LocationPrimaryButton extends StatelessWidget {
                   height: 18,
                   child: CircularProgressIndicator(strokeWidth: 2),
                 )
-              : Icon(icon, color: AppColors.white),
+              : ClayIcon(icon, color: AppColors.white),
           label: Text(
             title,
             style: context.textTheme.inverseUrbanistRegular17.copyWith(

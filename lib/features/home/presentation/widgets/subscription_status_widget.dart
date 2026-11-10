@@ -1,4 +1,5 @@
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
+import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 import 'package:asteria_app/features/profile_flow/profile_flow_ui.dart';
 import 'package:flutter/material.dart';
 
@@ -199,7 +200,7 @@ class _SubscriptionStatusCard extends StatelessWidget {
                           children: [
                             Text(actionText!),
                             const SizedBox(width: 6),
-                            const Icon(Icons.chevron_right),
+                            const ClayIcon(Icons.chevron_right),
                           ],
                         ),
                       ),

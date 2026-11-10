@@ -1,10 +1,10 @@
 import 'dart:ui' as ui;
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
+import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 import 'package:asteria_app/core/ui_kit/widgets/static_glass_surface.dart';
 import 'package:asteria_app/features/achievements/presentation/achievements_style.dart';
 import 'package:asteria_app/features/profile_flow/profile_flow_ui.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 class AchievementCard extends StatelessWidget {
   const AchievementCard({
@@ -147,14 +147,11 @@ class _Artwork extends StatelessWidget {
                 child: const ColoredBox(color: Color(0x1AFFFFFF)),
               ),
             ),
-            SvgPicture.asset(
+            ClayAssetIcon(
               'assets/icons/white_lock_icon.svg',
               width: 26,
               height: 28,
-              colorFilter: const ColorFilter.mode(
-                ProfileFlowColors.purple,
-                BlendMode.srcIn,
-              ),
+              tint: ProfileFlowColors.purple,
             ),
           ],
         ],

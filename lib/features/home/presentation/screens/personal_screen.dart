@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 
 import 'package:asteria_app/app/data/entities/zodiac_info_entity.dart';
 import 'package:asteria_app/app/data/models/horoscope/horoscope_day_model.dart';
@@ -240,15 +241,6 @@ class _PersonalScreenState extends State<PersonalScreen> {
     );
   }
 
-  String _personalGreeting(UserProvider userProvider) {
-    final name = userProvider.currentUser?.name?.trim();
-    if (name != null && name.isNotEmpty) {
-      return context.l10n.personalGreeting(name);
-    }
-
-    return context.l10n.personalGreetingGeneral;
-  }
-
   @override
   Widget build(BuildContext context) {
     final userProvider = di.get<UserProvider>();
@@ -274,15 +266,12 @@ class _PersonalScreenState extends State<PersonalScreen> {
                     const Positioned.fill(child: _PersonalBackground()),
                     Column(
                       children: [
-                        ListenableBuilder(
-                          listenable: userProvider,
-                          builder: (context, _) => SizedBox(
-                            height: 111,
-                            child: ClipRect(
-                              child: TopNavBar(
-                                userName: _personalGreeting(userProvider),
-                                type: TopNavBarType.transparent,
-                              ),
+                        const SafeArea(
+                          bottom: false,
+                          child: Padding(
+                            padding: EdgeInsets.only(bottom: 8),
+                            child: HomeAccountBar(
+                              backgroundColor: Colors.transparent,
                             ),
                           ),
                         ),
@@ -2081,14 +2070,11 @@ class _PersonalCompatibilitySection extends StatelessWidget {
                   },
                   child: Padding(
                     padding: const EdgeInsets.all(4),
-                    child: SvgPicture.asset(
+                    child: ClayAssetIcon(
                       'assets/icons/repeat_icon.svg',
                       width: 24,
                       height: 24,
-                      colorFilter: const ColorFilter.mode(
-                        Color(0xFFE6994D),
-                        BlendMode.srcIn,
-                      ),
+                      tint: Color(0xFFE6994D),
                     ),
                   ),
                 ),
@@ -2180,7 +2166,7 @@ class _EmptyCompatibilityCard extends StatelessWidget {
                           const SizedBox(width: 8),
                           Transform.rotate(
                             angle: -math.pi / 4,
-                            child: SvgPicture.asset(
+                            child: ClayAssetIcon(
                               'assets/icons/affirmation_arrow_figma.svg',
                               width: 20,
                               height: 20,

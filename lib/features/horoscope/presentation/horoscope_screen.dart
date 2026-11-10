@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 
 import 'package:asteria_app/app/data/models/horoscope/horoscope_year_model.dart';
 import 'package:asteria_app/app/providers/content_provider.dart';
@@ -24,7 +25,6 @@ import 'package:asteria_app/features/horoscope/presentation/widgets/horoscrope_c
 import 'package:asteria_app/features/monetization/presentation/monetization_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 
 class HoroscopeScreen extends StatefulWidget {
@@ -584,13 +584,10 @@ class _HoroscopeTopBar extends StatelessWidget {
                       height: 44,
                       child: Align(
                         alignment: Alignment.centerLeft,
-                        child: SvgPicture.asset(
+                        child: ClayAssetIcon(
                           'assets/icons/back_icon.svg',
                           height: 24,
-                          colorFilter: const ColorFilter.mode(
-                            AppColors.textSecondary,
-                            BlendMode.srcIn,
-                          ),
+                          tint: AppColors.textSecondary,
                         ),
                       ),
                     ),

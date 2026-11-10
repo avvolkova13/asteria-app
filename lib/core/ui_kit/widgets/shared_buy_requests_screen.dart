@@ -1,7 +1,7 @@
 import 'package:asteria_app/core/analytics/dictionaries/offer_type.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
+import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 class PurchasePackage {
   final int price;
@@ -180,18 +180,15 @@ class _PackageItem extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 12),
-                SvgPicture.asset(
+                ClayAssetIcon(
                   isSelected
                       ? 'assets/icons/radio_button_selected.svg'
                       : 'assets/icons/radio_button_unselected.svg',
                   width: 29,
                   height: 29,
-                  colorFilter: isSelected
+                  tint: isSelected
                       ? null
-                      : ColorFilter.mode(
-                          AppColors.white.withValues(alpha: 0.45),
-                          BlendMode.srcIn,
-                        ),
+                      : AppColors.white.withValues(alpha: 0.45),
                 ),
               ],
             ),

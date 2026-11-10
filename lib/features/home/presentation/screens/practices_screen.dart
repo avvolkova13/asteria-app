@@ -1,7 +1,8 @@
 import 'package:asteria_app/app/providers/content_provider.dart';
 import 'package:asteria_app/core/di/di.dart';
-import 'package:asteria_app/core/routing/app_route.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
+import 'package:asteria_app/core/ui_kit/widgets/top_nav_bar.dart';
+import 'package:asteria_app/features/home/presentation/widgets/home_section_heading.dart';
 import 'package:asteria_app/features/home/presentation/widgets/widgets_index.dart';
 import 'package:flutter/material.dart';
 
@@ -15,33 +16,18 @@ class PracticesScreen extends StatelessWidget {
       child: SafeArea(
         bottom: false,
         child: ListView(
-          padding: const EdgeInsets.symmetric(vertical: 16),
+          padding: const EdgeInsets.only(bottom: 16),
           children: [
+            const HomeAccountBar(
+              showAccountActions: false,
+              backgroundColor: AppColors.textPrimary,
+            ),
+            const SizedBox(height: 26),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Semantics(
-                      header: true,
-                      child: Text(
-                        context.l10n.navPractices,
-                        style: context.textTheme.inversePlayfairSemiBold24,
-                      ),
-                    ),
-                  ),
-                  TextButton.icon(
-                    onPressed: () => HomeProfileRoute.push(context),
-                    icon: const Icon(Icons.person_outline_rounded),
-                    label: Text(context.l10n.navProfile),
-                    style: TextButton.styleFrom(
-                      foregroundColor: AppColors.white,
-                    ),
-                  ),
-                ],
-              ),
+              child: HomeSectionHeading(context.l10n.navPractices),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 16),
             const EnergyOfTheDayWidget(),
             const SizedBox(height: 32),
             const AdvertisingBlockWidget(),

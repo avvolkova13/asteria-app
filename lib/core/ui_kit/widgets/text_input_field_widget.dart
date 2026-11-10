@@ -1,7 +1,7 @@
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
+import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_svg/svg.dart';
 
 enum TextInputFieldState { defaultState, active, typing, typed, error, toggle }
 
@@ -184,7 +184,7 @@ class _TextInputFieldWidgetState extends State<TextInputFieldWidget> {
                     width: 24,
                     height: 24,
                     margin: const EdgeInsets.only(right: 16),
-                    child: SvgPicture.asset(
+                    child: ClayAssetIcon(
                       'assets/icons/close_icon.svg',
                       width: 24,
                       height: 24,

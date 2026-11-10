@@ -7,8 +7,17 @@ import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 
 class MainActivity : FlutterActivity() {
+    private var practiceAudio: PracticeAudioBridge? = null
+
+    override fun cleanUpFlutterEngine(flutterEngine: FlutterEngine) {
+        practiceAudio?.dispose()
+        practiceAudio = null
+        super.cleanUpFlutterEngine(flutterEngine)
+    }
+
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
+        practiceAudio = PracticeAudioBridge(this, flutterEngine.dartExecutor.binaryMessenger)
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "asteria/analytics-device")
             .setMethodCallHandler { call, result ->
                 if (call.method != "read") {

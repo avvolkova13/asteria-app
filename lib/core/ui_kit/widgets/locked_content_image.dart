@@ -1,6 +1,6 @@
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
+import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 class LockedContentImage extends StatelessWidget {
   final String imagePath;
@@ -43,7 +43,7 @@ class LockedContentImage extends StatelessWidget {
                     color: AppColors.uiSecondary,
                     borderRadius: BorderRadius.circular(borderRadius),
                   ),
-                  child: const Icon(
+                  child: const ClayIcon(
                     Icons.image_not_supported,
                     size: 32,
                     color: AppColors.textSecondary,
@@ -60,7 +60,7 @@ class LockedContentImage extends StatelessWidget {
                   borderRadius: BorderRadius.circular(borderRadius),
                 ),
                 child: Center(
-                  child: SvgPicture.asset(
+                  child: ClayAssetIcon(
                     'assets/icons/white_lock_icon.svg',
                     width: 24,
                     height: 24,

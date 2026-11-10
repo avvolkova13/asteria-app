@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 import 'package:flutter/material.dart';
 
 import 'package:asteria_app/core/extensions/build_context_extensions.dart';
@@ -18,7 +19,7 @@ class ErrorScreenWidget extends StatelessWidget {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const Icon(Icons.error_outline, color: Colors.red, size: 64),
+        const ClayIcon(Icons.error_outline, color: Colors.red, size: 64),
         const SizedBox(height: 16),
         Text(
           context.l10n.errorWithDetails(error),
