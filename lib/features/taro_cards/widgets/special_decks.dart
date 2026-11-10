@@ -202,10 +202,7 @@ class _SpecialDeckDetails extends StatelessWidget {
             Flexible(
               child: _GoldGradientText(
                 text: context.l10n.buyForPrice(price.toString()),
-                style: context.textTheme.playfairMedium20.copyWith(
-                  color: _SpecialDecksColors.gold,
-                  height: 1.2,
-                ),
+                style: AppTypography.text1SemiBold.copyWith(color: _SpecialDecksColors.gold),
               ),
             ),
             const SizedBox(width: 4),

@@ -54,7 +54,7 @@ class CompatibilityWidget extends StatelessWidget {
                   children: [
                     Text(
                       firstZodiacSign,
-                      style: context.textTheme.inverseUrbanistSemiBold16,
+                      style: AppTypography.h4.copyWith(color: AppColors.textInverse),
                     ),
                     const SizedBox(height: 4),
                     Text(
@@ -76,7 +76,7 @@ class CompatibilityWidget extends StatelessWidget {
                   padding: const EdgeInsets.only(top: 40),
                   child: Text(
                     '$compatibilityPercentage%',
-                    style: context.textTheme.urbanistSemiBold24.copyWith(
+                    style: AppTypography.h2.copyWith(
                       color: AppColors.secondary,
                     ),
                   ),
@@ -87,7 +87,7 @@ class CompatibilityWidget extends StatelessWidget {
                   children: [
                     Text(
                       secondZodiacSign,
-                      style: context.textTheme.inverseUrbanistSemiBold16,
+                      style: AppTypography.h4.copyWith(color: AppColors.textInverse),
                     ),
                     const SizedBox(height: 4),
                     Text(

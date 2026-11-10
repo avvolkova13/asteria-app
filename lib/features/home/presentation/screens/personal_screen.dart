@@ -1660,9 +1660,7 @@ class _MonthPeriodItem extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(8, 8, 8, 16),
             child: Text(
               data.text,
-              style: context.textTheme.inversePlayfairMedium20.copyWith(
-                height: 1.1,
-              ),
+              style: AppTypography.text1.copyWith(color: AppColors.textInverse),
             ),
           ),
         ],

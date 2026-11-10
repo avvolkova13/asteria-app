@@ -971,7 +971,7 @@ class _SubscriptionInfoCard extends StatelessWidget {
                 else ...[
                   Text(
                     context.l10n.subscriptionBenefitsTitle,
-                    style: context.textTheme.inverseUrbanistSemiBold17,
+                    style: context.textTheme.inversePlayfairSemiBold17,
                   ),
                 ],
                 const SizedBox(height: 18),

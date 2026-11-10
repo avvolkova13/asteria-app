@@ -107,7 +107,7 @@ class _DateTimePickerBottomSheetState extends State<DateTimePickerBottomSheet> {
                           textTheme: CupertinoTextThemeData(
                             dateTimePickerTextStyle: TextStyle(
                               color: AppColors.white,
-                              fontFamily: 'Urbanist',
+                              fontFamily: AppTypography.bodyFamily,
                               fontSize: 22,
                               height: 1.27,
                               letterSpacing: 0.35,

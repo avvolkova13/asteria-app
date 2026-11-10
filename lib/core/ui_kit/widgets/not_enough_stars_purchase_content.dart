@@ -2,6 +2,7 @@ import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
 import 'package:asteria_app/core/extensions/build_context_extensions.dart';
 import 'package:asteria_app/core/ui_kit/app_colors/app_colors.dart';
+import 'package:asteria_app/core/ui_kit/app_typography.dart';
 import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 import 'package:flutter/material.dart';
 
@@ -67,13 +68,7 @@ class NotEnoughStarsPurchaseContent extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 12),
                     child: Text(
                       description ?? context.l10n.purchaseNotEnoughGeneric,
-                      style: context.textTheme.playfairMedium20.copyWith(
-                        fontFamily: 'Lora',
-                        letterSpacing: 0,
-                        fontVariations: const [FontVariation('wght', 500)],
-                        color: AppColors.textInverse,
-                        height: 1.1,
-                      ),
+                      style: AppTypography.h3.copyWith(color: AppColors.textInverse),
                       textAlign: TextAlign.center,
                     ),
                   ),
@@ -133,13 +128,7 @@ class _TitleRow extends StatelessWidget {
         Flexible(
           child: Text(
             context.l10n.notEnoughStarsTitle,
-            style: context.textTheme.playfairSemiBold24.copyWith(
-              fontFamily: 'Lora',
-              letterSpacing: 0,
-              fontVariations: const [FontVariation('wght', 600)],
-              color: AppColors.textInverse,
-              height: 1,
-            ),
+            style: AppTypography.h2.copyWith(color: AppColors.textInverse),
             textAlign: TextAlign.center,
           ),
         ),
@@ -191,21 +180,11 @@ class _AmountLabel extends StatelessWidget {
               children: [
                 TextSpan(
                   text: '$label ',
-                  style: context.textTheme.urbanistRegular16.copyWith(
-                    fontFamily: 'Onest',
-                    fontVariations: const [FontVariation('wght', 400)],
-                    color: AppColors.textInverse,
-                    height: 1.2,
-                  ),
+                  style: AppTypography.text1.copyWith(color: AppColors.textInverse),
                 ),
                 TextSpan(
                   text: '$amount',
-                  style: context.textTheme.urbanistSemiBold16.copyWith(
-                    fontFamily: 'Onest',
-                    fontVariations: const [FontVariation('wght', 600)],
-                    color: AppColors.textInverse,
-                    height: 1.2,
-                  ),
+                  style: AppTypography.text1SemiBold.copyWith(color: AppColors.textInverse),
                 ),
               ],
             ),
@@ -283,12 +262,7 @@ class _PurchaseActionButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final borderRadius = BorderRadius.circular(16);
-    final textStyle = context.textTheme.button.copyWith(
-      fontFamily: 'Onest',
-      fontVariations: const [FontVariation('wght', 400)],
-      fontSize: 17,
-      height: 20 / 17,
-      letterSpacing: -0.408,
+    final textStyle = AppTypography.text1SemiBold.copyWith(
       color: isPrimary ? AppColors.textInverse : _notEnoughStarsPrimary,
     );
 

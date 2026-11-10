@@ -148,9 +148,7 @@ class ProfileFlowHeader extends StatelessWidget {
           const SizedBox(height: 28),
           Text(
             title,
-            style: context.textTheme.inversePlayfairSemiBold32.copyWith(
-              height: 1.05,
-            ),
+            style: context.textTheme.inversePlayfairSemiBold32,
           ),
         ],
       ],
@@ -183,8 +181,8 @@ class ProfileProPill extends StatelessWidget {
         children: [
           Text(
             'PRO',
-            style: context.textTheme.inverseUrbanistSemiBold16.copyWith(
-              fontFamily: 'PlayfairDisplay',
+            style: AppTypography.navTitle.copyWith(
+              color: AppColors.textInverse,
               height: 1,
             ),
           ),

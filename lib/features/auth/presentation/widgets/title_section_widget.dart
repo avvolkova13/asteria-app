@@ -11,27 +11,19 @@ class TitleSectionWidget extends StatelessWidget {
       children: [
         Text(
           context.l10n.authCosmicEssence,
-          style: context.textTheme.inversePlayfairBold32.copyWith(
-            fontSize: 34,
-            height: 1.2,
-            letterSpacing: 0.374,
+          style: AppTypography.navLargeTitle.copyWith(
+            color: AppColors.textInverse,
           ),
         ),
         const SizedBox(height: 18),
         Text(
           context.l10n.authMoonRhythms,
-          style: context.textTheme.inverseUrbanistRegular16.copyWith(
-            color: const Color(0xFFB5AAB8),
-            height: 1.2,
-            letterSpacing: -0.408,
-          ),
+          style: AppTypography.text1.copyWith(color: const Color(0xFFB5AAB8)),
         ),
         const SizedBox(height: 15),
         Text(
           context.l10n.authBirthDetailsPrompt,
-          style: context.textTheme.inversePlayfairSemiBold24.copyWith(
-            height: 1,
-          ),
+          style: AppTypography.h2.copyWith(color: AppColors.textInverse),
         ),
       ],
     );

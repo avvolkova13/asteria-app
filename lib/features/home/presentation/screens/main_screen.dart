@@ -184,8 +184,17 @@ class _MainScreenState extends State<MainScreen> {
                             const SizedBox(height: 24),
                             LotusButtons.textIcon(
                               onPressed: () => context.push(FirstSession.path),
-                              icon: const ClayIcon(Icons.auto_awesome_outlined, size: 18, color: AppColors.cardTinted),
-                              label: Text(context.l10n.scenarioStartTitle, style:context.textTheme.inversePlayfairSemiBold16),
+                              icon: const ClayIcon(
+                                Icons.auto_awesome_outlined,
+                                size: 18,
+                                color: AppColors.cardTinted,
+                              ),
+                              label: Text(
+                                context.l10n.scenarioStartTitle,
+                                style: AppTypography.text1SemiBold.copyWith(
+                                  color: AppColors.textInverse,
+                                ),
+                              ),
                             ),
                             _buildSubscriptionPromoSection(),
                             _buildAffirmationCard(),

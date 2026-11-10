@@ -22,9 +22,7 @@ class SonnikResults extends StatelessWidget {
       children: [
         Text(
           sonnik.title,
-          style: context.textTheme.inversePlayfairSemiBold24.copyWith(
-            height: 1.05,
-          ),
+          style: context.textTheme.inversePlayfairSemiBold24,
         ),
         const SizedBox(height: 16),
         Text(

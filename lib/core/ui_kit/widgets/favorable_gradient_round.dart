@@ -40,7 +40,7 @@ class FavorableGradientRound extends StatelessWidget {
             // Дата
             Text(
               date,
-              style: context.textTheme.inverseUrbanistSemiBold16,
+              style: AppTypography.h4.copyWith(color: AppColors.textInverse),
               textAlign: TextAlign.center,
             ),
             // Описание

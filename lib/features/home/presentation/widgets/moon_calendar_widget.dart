@@ -134,12 +134,7 @@ class MoonCalendarWidget extends StatelessWidget {
                     child: Text(
                       title,
                       textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        fontFamily: '.SF Pro Text',
-                        fontWeight: FontWeight.w600,
-                        fontSize: 17,
-                        height: 22 / 17,
-                        letterSpacing: -0.408,
+                      style: AppTypography.navTitle.copyWith(
                         color: AppColors.textInverse,
                       ),
                     ),
@@ -201,13 +196,8 @@ class MoonCalendarWidget extends StatelessWidget {
                                 alignment: Alignment.topCenter,
                                 child: Text(
                                   label[0].toUpperCase() + label.substring(1),
-                                  style: const TextStyle(
-                                    fontFamily: '.SF Pro Text',
-                                    fontSize: 13,
-                                    height: 18 / 13,
-                                    fontWeight: FontWeight.w600,
-                                    letterSpacing: -0.078,
-                                    color: Color(0xFFA89CAA),
+                                  style: AppTypography.text2SemiBold.copyWith(
+                                    color: const Color(0xFFA89CAA),
                                   ),
                                 ),
                               );
@@ -612,7 +602,7 @@ class _CalendarDayNumber extends StatelessWidget {
             maxLines: 1,
             softWrap: false,
             style: TextStyle(
-              fontFamily: '.SF Pro Display',
+              fontFamily: AppTypography.bodyFamily,
               fontSize: 20,
               height: 1.25,
               letterSpacing: 0.38,

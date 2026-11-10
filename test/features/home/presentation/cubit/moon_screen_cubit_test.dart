@@ -30,8 +30,8 @@ import 'package:go_router/go_router.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   setUpAll(() async {
-    await (FontLoader('Urbanist')..addFont(
-          rootBundle.load('assets/fonts/urbanist/Urbanist-Regular.ttf'),
+    await (FontLoader('Onest')..addFont(
+          rootBundle.load('assets/fonts/onest/Onest-VariableFont_wght.ttf'),
         ))
         .load();
   });

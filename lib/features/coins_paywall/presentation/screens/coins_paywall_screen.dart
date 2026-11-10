@@ -257,8 +257,7 @@ class _CoinsPaywallAndroidState extends State<_CoinsPaywallAndroid> {
                     const SizedBox(height: 32),
                     Text(
                       context.l10n.choosePackageTitle,
-                      style: context.textTheme.inversePlayfairSemiBold32
-                          .copyWith(height: 1.05),
+                      style: context.textTheme.inversePlayfairSemiBold32,
                     ),
                     const SizedBox(height: 16),
                     _AndroidPaywallContent(
@@ -479,8 +478,7 @@ class _PackageItem extends StatelessWidget {
                             title,
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
-                            style: context.textTheme.inversePlayfairSemiBold24
-                                .copyWith(height: 1.05),
+                            style: context.textTheme.inversePlayfairSemiBold24,
                           ),
                           const SizedBox(height: 6),
                           _PackagePriceRow(
@@ -760,8 +758,7 @@ class _CoinsPaywallIosState extends State<_CoinsPaywallIos> {
                     const SizedBox(height: 32),
                     Text(
                       context.l10n.choosePackageTitle,
-                      style: context.textTheme.inversePlayfairSemiBold32
-                          .copyWith(height: 1.05),
+                      style: context.textTheme.inversePlayfairSemiBold32,
                     ),
                     const SizedBox(height: 16),
                     _IosPaywallContent(
@@ -957,8 +954,7 @@ class _IosPackageTile extends StatelessWidget {
                             ),
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
-                            style: context.textTheme.inversePlayfairSemiBold24
-                                .copyWith(height: 1.05),
+                            style: context.textTheme.inversePlayfairSemiBold24,
                           ),
                           const SizedBox(height: 6),
                           _IosPackagePriceRow(

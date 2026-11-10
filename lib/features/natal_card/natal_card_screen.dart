@@ -1081,22 +1081,14 @@ class _HouseThemeCard extends StatelessWidget {
             ),
             child: Text(
               title,
-              style: context.textTheme.inverseUrbanistSemiBold16.copyWith(
-                fontFamily: 'Onest',
-                height: 1.2,
-                letterSpacing: -0.408,
-              ),
+              style: AppTypography.h4.copyWith(color: Colors.white),
             ),
           ),
           Padding(
             padding: const EdgeInsets.all(8),
             child: Text(
               description,
-              style: context.textTheme.inversePlayfairMedium20.copyWith(
-                fontFamily: 'Lora',
-                letterSpacing: 0,
-                height: 1.1,
-              ),
+              style: AppTypography.text1.copyWith(color: Colors.white),
             ),
           ),
         ],

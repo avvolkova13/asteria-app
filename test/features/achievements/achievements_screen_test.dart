@@ -18,7 +18,6 @@ void main() {
     for (final font in [
       ('Lora', 'assets/fonts/lora/Lora-VariableFont_wght.ttf'),
       ('Onest', 'assets/fonts/onest/Onest-VariableFont_wght.ttf'),
-      ('PlayfairDisplay', 'assets/fonts/playfair/PlayfairDisplay-SemiBold.ttf'),
     ]) {
       await (FontLoader(font.$1)..addFont(rootBundle.load(font.$2))).load();
     }

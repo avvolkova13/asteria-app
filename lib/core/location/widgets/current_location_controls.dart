@@ -279,12 +279,7 @@ class _CityConfirmationSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final style = context.textTheme.inverseUrbanistRegular17.copyWith(
-      fontFamily: 'Onest',
-      height: 1.2,
-      letterSpacing: -0.408,
-      color: AppColors.textInverse,
-    );
+    final style = AppTypography.text1.copyWith(color: AppColors.textInverse);
     return ClipRRect(
       key: const ValueKey('city-confirmation-sheet'),
       borderRadius: BorderRadius.circular(34),
@@ -361,12 +356,7 @@ class _CityConfirmationButton extends StatelessWidget {
         foregroundColor: AppColors.textInverse,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         side: filled ? null : const BorderSide(color: Color(0xFFE9E9EA)),
-        textStyle: const TextStyle(
-          fontFamily: 'Onest',
-          fontSize: 17,
-          height: 1.2,
-          letterSpacing: -0.408,
-        ),
+        textStyle: AppTypography.text1SemiBold,
       ),
       child: Text(text),
     );
@@ -409,10 +399,7 @@ class _LocationSecondaryButton extends StatelessWidget {
               : ClayIcon(icon, color: const Color(0xFFE6994D)),
           label: Text(
             title,
-            style: context.textTheme.inverseUrbanistRegular17.copyWith(
-              color: const Color(0xFFE6994D),
-              fontWeight: FontWeight.w700,
-            ),
+            style: AppTypography.text1SemiBold.copyWith(color: const Color(0xFFE6994D)),
           ),
         ),
       ),
@@ -455,10 +442,7 @@ class _LocationPrimaryButton extends StatelessWidget {
               : ClayIcon(icon, color: AppColors.white),
           label: Text(
             title,
-            style: context.textTheme.inverseUrbanistRegular17.copyWith(
-              color: AppColors.white,
-              fontWeight: FontWeight.w700,
-            ),
+            style: AppTypography.text1SemiBold.copyWith(color: AppColors.white),
           ),
         ),
       ),

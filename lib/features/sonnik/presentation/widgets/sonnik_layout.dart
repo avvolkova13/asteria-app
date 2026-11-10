@@ -154,7 +154,7 @@ class SonnikTopNavBar extends StatelessWidget {
               title,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: context.textTheme.inverseUrbanistSemiBold17,
+              style: AppTypography.navTitle.copyWith(color: SonnikPalette.white),
             ),
           ),
           const SizedBox(width: 8),
@@ -173,7 +173,7 @@ class SonnikTopNavBar extends StatelessWidget {
                     children: [
                       Text(
                         '$balance',
-                        style: context.textTheme.inverseUrbanistSemiBold17,
+                        style: AppTypography.navTitle.copyWith(color: SonnikPalette.white),
                       ),
                       const SizedBox(width: 4),
                       LotusRasterIcon(
@@ -262,7 +262,7 @@ class SonnikTextArea extends StatelessWidget {
         ),
         decoration: InputDecoration(
           hintText: context.l10n.dreamInputHint,
-          hintStyle: context.textTheme.urbanistRegular16.copyWith(
+          hintStyle: AppTypography.placeholder.copyWith(
             color: SonnikPalette.white.withValues(alpha: 0.56),
           ),
           filled: true,
@@ -464,7 +464,7 @@ class SonnikOfferCard extends StatelessWidget {
                         title,
                         maxLines: 3,
                         overflow: TextOverflow.ellipsis,
-                        style: context.textTheme.inversePlayfairMedium20,
+                        style: AppTypography.text1SemiBold.copyWith(color: SonnikPalette.white),
                       ),
                     ),
                     const SizedBox(width: 4),

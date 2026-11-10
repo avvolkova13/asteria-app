@@ -95,8 +95,8 @@ void main() {
       await tester.binding.setSurfaceSize(const Size(390, 350));
       addTearDown(() => tester.binding.setSurfaceSize(null));
       for (final font in {
-        'PlayfairDisplay': 'assets/fonts/playfair/PlayfairDisplay-Regular.ttf',
-        'Urbanist': 'assets/fonts/urbanist/Urbanist-Regular.ttf',
+
+
         'Lora': 'assets/fonts/lora/Lora-VariableFont_wght.ttf',
         'Onest': 'assets/fonts/onest/Onest-VariableFont_wght.ttf',
       }.entries) {

@@ -4,7 +4,6 @@ import 'anakra_glass_surface.dart';
 import 'anakra_layout.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class AnakraComposer extends StatelessWidget {
@@ -23,15 +22,7 @@ class AnakraComposer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final enabled = !busy && hasInput;
-    final style = TextStyle(
-      fontFamily: defaultTargetPlatform == TargetPlatform.iOS
-          ? '.SF Pro Text'
-          : 'Onest',
-      fontSize: 17,
-      height: 22 / 17,
-      letterSpacing: 0,
-      color: const Color(0xFFF5F5F5),
-    );
+    final style = AppTypography.placeholder.copyWith(color: const Color(0xFFF5F5F5));
     return Row(
       children: [
         Expanded(

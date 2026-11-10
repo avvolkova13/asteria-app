@@ -47,7 +47,8 @@ class _ScenarioPickerState extends State<ScenarioPicker> {
         onPressed: () => _choose(() async => scenarioHome(context)),
         child: Text(
           context.l10n.scenarioGoHome,
-          style: context.textTheme.inversePlayfairSemiBold24.copyWith(
+          style: AppTypography.text1SemiBold.copyWith(
+            fontSize: 24,
             color: const Color(0xFFFFD88A),
           ),
         ),

@@ -196,7 +196,7 @@ class _SubscriptionOfferCard extends StatelessWidget {
                     const SizedBox(height: 17),
                     Text(
                       context.l10n.offerIncludesTitle,
-                      style: context.textTheme.inverseUrbanistSemiBold17
+                      style: context.textTheme.inversePlayfairSemiBold17
                           .copyWith(height: 22 / 17, letterSpacing: -0.408),
                     ),
                     const SizedBox(height: 8),
@@ -262,8 +262,7 @@ class _BuyAttemptsCard extends StatelessWidget {
                       fit: BoxFit.scaleDown,
                       child: Text(
                         context.l10n.buyAttempts,
-                        style: context.textTheme.inversePlayfairMedium20
-                            .copyWith(height: 1.1),
+                        style: AppTypography.text1SemiBold.copyWith(color: Colors.white),
                         maxLines: 1,
                       ),
                     ),
@@ -295,10 +294,7 @@ class _OfferHeader extends StatelessWidget {
             fit: BoxFit.scaleDown,
             child: Text(
               title,
-              style: context.textTheme.inversePlayfairMedium20.copyWith(
-                color: _accentColor,
-                height: 1.1,
-              ),
+              style: AppTypography.text1SemiBold.copyWith(color: _accentColor),
               maxLines: 1,
             ),
           ),

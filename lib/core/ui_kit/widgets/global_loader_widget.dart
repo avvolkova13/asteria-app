@@ -152,8 +152,7 @@ class _CompatibilityLoadingOverlayState
                     opacity: _fadeAnimation,
                     child: Text(
                       text,
-                      style: context.textTheme.inversePlayfairSemiBold32
-                          .copyWith(height: 1.18),
+                      style: AppTypography.h1.copyWith(color: AppColors.textInverse),
                       textAlign: TextAlign.center,
                     ),
                   ),
@@ -195,7 +194,7 @@ class _CompatibilityLoaderTopBar extends StatelessWidget {
         Expanded(
           child: Text(
             context.l10n.compatibilityTitle,
-            style: context.textTheme.inverseUrbanistSemiBold17,
+            style: AppTypography.navTitle.copyWith(color: AppColors.textInverse),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),

@@ -28,8 +28,8 @@ void main() {
 
   setUpAll(() async {
     final fonts = {
-      'Urbanist': 'assets/fonts/urbanist/Urbanist-Regular.ttf',
-      'PlayfairDisplay': 'assets/fonts/playfair/PlayfairDisplay-Regular.ttf',
+      'Onest': 'assets/fonts/onest/Onest-VariableFont_wght.ttf',
+      'Lora': 'assets/fonts/lora/Lora-VariableFont_wght.ttf',
     };
     for (final entry in fonts.entries) {
       final loader = FontLoader(entry.key)

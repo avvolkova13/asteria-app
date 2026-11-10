@@ -46,7 +46,7 @@ void main() {
     expect(gradient.stops, const [0, 0.50032, 1]);
 
     final label = tester.widget<Text>(find.text('PRO'));
-    expect(label.style?.fontFamily, 'PlayfairDisplay');
+    expect(label.style?.fontFamily, 'Lora');
     expect(label.style?.fontSize, 17);
     expect(label.style?.fontWeight, FontWeight.w600);
     expect(label.style?.color, Colors.white);

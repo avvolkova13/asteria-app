@@ -181,10 +181,7 @@ class _TarotCardOfTheDayWidgetState extends State<TarotCardOfTheDayWidget>
             button: widget.onCardTap != null,
             label: context.l10n.dailyTarotFlipLabel,
             child: ExcludeSemantics(
-              child: LotusTap(
-                onTap: widget.onCardTap,
-                child: _buildCardBack(),
-              ),
+              child: LotusTap(onTap: widget.onCardTap, child: _buildCardBack()),
             ),
           ),
         ),
@@ -202,14 +199,9 @@ class _TarotCardOfTheDayWidgetState extends State<TarotCardOfTheDayWidget>
         const SizedBox(height: 16),
         Text(
           context.l10n.dailyTarotLoading,
-          style: widget.isDarkLayout
-              ? const TextStyle(
-                  fontSize: 16,
-                  fontFamily: 'Urbanist',
-                  color: Color(0xFFEEEAFD),
-                  height: 1.2,
-                )
-              : const TextStyle(fontSize: 16),
+          style: AppTypography.text1.copyWith(
+            color: widget.isDarkLayout ? const Color(0xFFEEEAFD) : null,
+          ),
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 32),

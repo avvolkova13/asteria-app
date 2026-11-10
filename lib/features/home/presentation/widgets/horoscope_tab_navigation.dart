@@ -69,19 +69,13 @@ class HoroscopeTabNavigation extends StatelessWidget {
               child: Text(
                 title,
                 textAlign: TextAlign.center,
-                style: context.textTheme.urbanistRegular16.copyWith(
-                  fontSize: 13,
-                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-                ),
-
-                // TextStyle(
-                //   fontFamily: 'Urbanist',
-                //   fontSize: 13,
-                //   fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-                //   color: const Color(0xFF140C15),
-                //   height: 1.2,
-                //   letterSpacing: -0.08,
-                // ),
+                style:
+                    (isSelected
+                            ? AppTypography.text2SemiBold
+                            : AppTypography.text2)
+                        .copyWith(
+                          color: context.textTheme.urbanistRegular16.color,
+                        ),
               ),
             ),
             // Разделитель (только для неактивных табов, кроме последнего)

@@ -210,9 +210,7 @@ class _CreateCompatibilityInitialScreenState
         children: [
           Text(
             context.l10n.compatibilityPartnerDetailsTitle,
-            style: context.textTheme.inversePlayfairSemiBold32.copyWith(
-              height: 1.18,
-            ),
+            style: context.textTheme.inversePlayfairSemiBold32,
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 26),
@@ -290,7 +288,9 @@ class _CompatibilityInputField extends StatelessWidget {
         style: context.textTheme.inverseUrbanistRegular16,
         decoration: InputDecoration(
           hintText: hintText,
-          hintStyle: context.textTheme.tertiaryUrbanistRegular16,
+          hintStyle: AppTypography.placeholder.copyWith(
+            color: context.textTheme.tertiaryUrbanistRegular16.color,
+          ),
           border: InputBorder.none,
           enabledBorder: InputBorder.none,
           focusedBorder: InputBorder.none,
@@ -339,7 +339,9 @@ class _CompatibilityDateField extends StatelessWidget {
               text ?? hintText,
               style: text != null
                   ? context.textTheme.inverseUrbanistRegular16
-                  : context.textTheme.tertiaryUrbanistRegular16,
+                  : AppTypography.placeholder.copyWith(
+                      color: context.textTheme.tertiaryUrbanistRegular16.color,
+                    ),
             ),
           ),
         ),

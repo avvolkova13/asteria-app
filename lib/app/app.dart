@@ -381,20 +381,19 @@ class _ErrorScreen extends StatelessWidget {
                 const SizedBox(height: 16),
                 Text(
                   l10n.initializationError,
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
+                  style: AppTypography.h3.copyWith(color: Colors.white),
                 ),
                 const SizedBox(height: 8),
                 Text(
                   error.toString(),
                   textAlign: TextAlign.center,
-                  style: const TextStyle(fontSize: 16, color: Colors.white),
+                  style: AppTypography.text1.copyWith(color: Colors.white),
                 ),
                 const SizedBox(height: 24),
-                LotusButtons.elevated(onPressed: onRetry, child: Text(l10n.retry)),
+                LotusButtons.elevated(
+                  onPressed: onRetry,
+                  child: Text(l10n.retry, style: AppTypography.text1SemiBold),
+                ),
               ],
             ),
           ),

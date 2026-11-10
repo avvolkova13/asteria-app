@@ -71,20 +71,13 @@ class ClosedContentModal extends StatelessWidget {
                   const SizedBox(height: 16),
                   Text(
                     title ?? context.l10n.subscriptionOnlyTitle,
-                    style: context.textTheme.inversePlayfairSemiBold24.copyWith(
-                      height: 1,
-                      fontFamilyFallback: const ['Lora'],
-                    ),
+                    style: AppTypography.h2.copyWith(color: AppColors.textInverse),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 16),
                   Text(
                     description,
-                    style: context.textTheme.inverseUrbanistRegular16.copyWith(
-                      height: 1.2,
-                      fontFamilyFallback: const ['Onest'],
-                      letterSpacing: -0.408,
-                    ),
+                    style: AppTypography.text1.copyWith(color: AppColors.textInverse),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 16),
@@ -178,9 +171,7 @@ class _SubscriptionButton extends StatelessWidget {
                   ),
                   child: Text(
                     label ?? context.l10n.openSubscription,
-                    style: context.textTheme.inverseUrbanistRegular17.copyWith(
-                      fontFamilyFallback: const ['Onest'],
-                    ),
+                    style: AppTypography.text1SemiBold.copyWith(color: AppColors.textInverse),
                     textAlign: TextAlign.center,
                   ),
                 ),

@@ -34,7 +34,7 @@ class PurchaseOfferButton extends StatelessWidget {
           children: [
             LotusRasterIcon('assets/icons/$purchaseIcon.png', height: 24, width: 24),
             const SizedBox(width: 4),
-            Text('$purchaseName $buttonText', style: context.textTheme.urbanistRegular14.copyWith(color: AppColors.primary)),
+            Text('$purchaseName $buttonText', style: AppTypography.label14.copyWith(color: AppColors.primary)),
             const SizedBox(width: 4),
             LotusRasterIcon('assets/icons/star_coin_icon.png', height: 24, width: 24),
           ],

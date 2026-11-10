@@ -154,21 +154,17 @@ class ScenarioTile extends StatelessWidget {
                         children: [
                           Text(
                             title,
-                            style: context.textTheme.inversePlayfairSemiBold18
-                                .copyWith(
-                                  fontFamily: 'Lora',
-                                  color: AppColors.textInverse,
-                                ),
+                            style: AppTypography.text1SemiBold.copyWith(
+                              color: AppColors.textInverse,
+                            ),
                           ),
                           if (subtitle != null) ...[
                             const SizedBox(height: 5),
                             Text(
                               subtitle!,
-                              style: Theme.of(context).textTheme.bodyMedium
-                                  ?.copyWith(
-                                    color: AppColors.cardTinted,
-                                    height: 1.3,
-                                  ),
+                              style: AppTypography.text2.copyWith(
+                                color: AppColors.cardTinted,
+                              ),
                             ),
                           ],
                         ],

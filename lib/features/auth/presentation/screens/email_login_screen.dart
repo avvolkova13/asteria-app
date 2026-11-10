@@ -200,24 +200,24 @@ class _LoginPolicyTextState extends State<_LoginPolicyText> {
 
   @override
   Widget build(BuildContext context) {
-    _agreementRecognizer.onTap = LotusFeedback.action(() => AboutUsRoute.push(
-      context,
-      params: const AboutUsRouteParams(document: LegalDocumentType.agreement),
-    ));
-    _privacyRecognizer.onTap = LotusFeedback.action(() => AboutUsRoute.push(
-      context,
-      params: const AboutUsRouteParams(document: LegalDocumentType.privacy),
-    ));
-
-    final baseStyle = context.textTheme.inverseUrbanistRegular16.copyWith(
-      color: AppColors.white.withValues(alpha: 0.58),
-      fontSize: 12,
-      height: 1.32,
+    _agreementRecognizer.onTap = LotusFeedback.action(
+      () => AboutUsRoute.push(
+        context,
+        params: const AboutUsRouteParams(document: LegalDocumentType.agreement),
+      ),
     );
-    final linkStyle = baseStyle.copyWith(
+    _privacyRecognizer.onTap = LotusFeedback.action(
+      () => AboutUsRoute.push(
+        context,
+        params: const AboutUsRouteParams(document: LegalDocumentType.privacy),
+      ),
+    );
+
+    final baseStyle = AppTypography.subtext.copyWith(
+      color: AppColors.white.withValues(alpha: 0.58),
+    );
+    final linkStyle = AppTypography.link.copyWith(
       color: AppColors.white.withValues(alpha: 0.76),
-      fontWeight: FontWeight.w700,
-      decoration: TextDecoration.underline,
     );
 
     return RichText(

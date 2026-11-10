@@ -201,7 +201,7 @@ class _SonnikProBenefits extends StatelessWidget {
         children: [
           Text(
             context.l10n.subscriptionBenefitsTitle,
-            style: context.textTheme.inverseUrbanistSemiBold17,
+            style: context.textTheme.inversePlayfairSemiBold17,
           ),
           const SizedBox(height: 12),
           for (final benefit in benefits) ...[
@@ -254,9 +254,7 @@ class _OfferTitleRow extends StatelessWidget {
             title,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
-            style: context.textTheme.inversePlayfairMedium20.copyWith(
-              height: 1.12,
-            ),
+            style: AppTypography.text1SemiBold.copyWith(color: Colors.white),
           ),
         ),
         const SizedBox(width: 8),

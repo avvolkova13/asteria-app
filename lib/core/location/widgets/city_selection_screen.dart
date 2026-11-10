@@ -228,11 +228,7 @@ class _CitySelectionScreenState extends State<CitySelectionScreen> {
                     header: true,
                     child: Text(
                       context.l10n.citySelectionTitle,
-                      style: context.textTheme.playfairSemiBold24.copyWith(
-                        fontFamily: 'Lora',
-                        height: 1,
-                        color: AppColors.textInverse,
-                      ),
+                      style: AppTypography.h2.copyWith(color: AppColors.textInverse),
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -268,9 +264,7 @@ class _CitySelectionScreenState extends State<CitySelectionScreen> {
               const SizedBox(height: 18),
               Text(
                 context.l10n.citySelectionTitle,
-                style: context.textTheme.playfairSemiBold24.copyWith(
-                  color: AppColors.textInverse,
-                ),
+                style: AppTypography.h2.copyWith(color: AppColors.textInverse),
               ),
               const SizedBox(height: 10),
               _buildSearchField(context),
@@ -340,7 +334,7 @@ class _CitySelectionScreenState extends State<CitySelectionScreen> {
                   hintText: widget.asSheet
                       ? null
                       : context.l10n.locationManualInputHint,
-                  hintStyle: context.textTheme.inverseUrbanistRegular16
+                  hintStyle: AppTypography.placeholder
                       .copyWith(color: AppColors.white.withValues(alpha: 0.45)),
                   filled: false,
                   fillColor: Colors.transparent,
@@ -490,12 +484,10 @@ class _CitySuggestionTile extends StatelessWidget {
     final match = asSheet && query.isNotEmpty
         ? name.toLowerCase().indexOf(query.toLowerCase())
         : -1;
-    final style = context.textTheme.inverseUrbanistRegular14.copyWith(
-      fontFamily: asSheet ? 'Onest' : null,
-      fontSize: asSheet ? 16 : null,
-      fontWeight: isSelected && asSheet ? FontWeight.w600 : null,
-      height: asSheet ? 1.2 : null,
-      letterSpacing: asSheet ? -0.408 : null,
+    final baseStyle = asSheet
+        ? (isSelected ? AppTypography.text1SemiBold : AppTypography.text1)
+        : AppTypography.body14;
+    final style = baseStyle.copyWith(
       color: AppColors.textInverse.withValues(alpha: 0.9),
     );
     return LotusInkTap(

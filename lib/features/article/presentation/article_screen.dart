@@ -173,11 +173,7 @@ class _ArticleTopBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final navTextStyle = context.textTheme.urbanistSemiBold17.copyWith(
-      color: AppColors.white,
-      height: 1,
-      letterSpacing: 0,
-    );
+    final navTextStyle = AppTypography.navTitle.copyWith(color: AppColors.white);
 
     return ColoredBox(
       color: _ArticlePageColors.background,
@@ -312,40 +308,24 @@ class _ArticleContentCard extends StatelessWidget {
             Center(
               child: Text(
                 article.title,
-                style: context.textTheme.playfairSemiBold32.copyWith(
-                  color: AppColors.white,
-                  height: 1.2,
-                  letterSpacing: 0,
-                ),
+                style: AppTypography.h1.copyWith(color: AppColors.white),
                 textAlign: TextAlign.center,
               ),
             ),
             const SizedBox(height: 16),
             _ArticleParagraphs(
               text: article.intro,
-              style: context.textTheme.urbanistSemiBold16.copyWith(
-                color: AppColors.white,
-                height: 1.2,
-                letterSpacing: 0,
-              ),
+              style: AppTypography.text1SemiBold.copyWith(color: AppColors.white),
             ),
             const SizedBox(height: 8),
             _ArticleParagraphs(
               text: article.text,
-              style: context.textTheme.urbanistRegular16.copyWith(
-                color: AppColors.white,
-                height: 1.2,
-                letterSpacing: 0,
-              ),
+              style: AppTypography.text1.copyWith(color: AppColors.white),
             ),
             const SizedBox(height: 8),
             _ArticleParagraphs(
               text: article.conclusion,
-              style: context.textTheme.urbanistSemiBold16.copyWith(
-                color: AppColors.white,
-                height: 1.2,
-                letterSpacing: 0,
-              ),
+              style: AppTypography.text1SemiBold.copyWith(color: AppColors.white),
             ),
           ],
         ),
@@ -401,11 +381,7 @@ class _ArticleCategoryTag extends StatelessWidget {
       alignment: Alignment.center,
       child: Text(
         text,
-        style: context.textTheme.tertiaryUrbanistMedium14.copyWith(
-          color: AppColors.white,
-          height: 0.9,
-          letterSpacing: 0,
-        ),
+        style: AppTypography.label14.copyWith(color: AppColors.white),
       ),
     );
   }
@@ -428,11 +404,7 @@ class _ArticleTimeTag extends StatelessWidget {
       alignment: Alignment.center,
       child: Text(
         '$timeToRead ${context.l10n.readingTimeMinutes}',
-        style: context.textTheme.tertiaryUrbanistMedium14.copyWith(
-          color: AppColors.white,
-          height: 0.9,
-          letterSpacing: 0,
-        ),
+        style: AppTypography.label14.copyWith(color: AppColors.white),
       ),
     );
   }

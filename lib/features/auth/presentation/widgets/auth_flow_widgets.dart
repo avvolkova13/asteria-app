@@ -364,18 +364,15 @@ class _AuthTextInputState extends State<AuthTextInput> {
                   textCapitalization: TextCapitalization.none,
                   onChanged: widget.onChanged,
                   onSubmitted: widget.onSubmitted,
-                  style: context.textTheme.inverseUrbanistRegular17.copyWith(
+                  style: AppTypography.placeholder.copyWith(
                     color: AppColors.white,
-                    letterSpacing: -0.408,
                   ),
                   cursorColor: AppColors.white,
                   decoration: InputDecoration(
                     hintText: widget.hintText,
-                    hintStyle: context.textTheme.inverseUrbanistRegular17
-                        .copyWith(
-                          color: AppColors.textTertiary,
-                          letterSpacing: -0.408,
-                        ),
+                    hintStyle: AppTypography.placeholder.copyWith(
+                      color: AppColors.textTertiary,
+                    ),
                     border: InputBorder.none,
                     enabledBorder: InputBorder.none,
                     focusedBorder: InputBorder.none,
@@ -463,9 +460,8 @@ class AuthBottomLink extends StatelessWidget {
       child: Text(
         text,
         textAlign: TextAlign.center,
-        style: context.textTheme.inverseUrbanistSemiBold16.copyWith(
+        style: AppTypography.link.copyWith(
           color: AppColors.white.withValues(alpha: 0.82),
-          decoration: TextDecoration.underline,
           decorationColor: AppColors.white.withValues(alpha: 0.66),
           decorationThickness: 1,
         ),
@@ -476,21 +472,21 @@ class AuthBottomLink extends StatelessWidget {
       child: onTap == null
           ? textWidget
           : LotusFeedback(
-            onActivate: onTap,
-            keyboard: true,
-            builder: (activate) => Semantics(
-              button: true,
-              label: text,
-              onTap: activate,
-              child: ExcludeSemantics(
-                child: GestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  onTap: activate,
-                  child: textWidget,
+              onActivate: onTap,
+              keyboard: true,
+              builder: (activate) => Semantics(
+                button: true,
+                label: text,
+                onTap: activate,
+                child: ExcludeSemantics(
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: activate,
+                    child: textWidget,
+                  ),
                 ),
               ),
             ),
-          ),
     );
   }
 }

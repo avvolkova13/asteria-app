@@ -29,13 +29,7 @@ class AnakraChatMessage extends StatelessWidget {
                   padding: const EdgeInsets.only(left: 17),
                   child: Text(
                     context.l10n.anakraName,
-                    style: const TextStyle(
-                      fontFamily: 'Onest',
-                      fontSize: 13,
-                      height: 1.2,
-                      letterSpacing: 0,
-                      color: AnakraPalette.textMuted,
-                    ),
+                    style: AppTypography.text2.copyWith(color: AnakraPalette.textMuted),
                   ),
                 ),
                 const SizedBox(height: 2),
@@ -58,13 +52,7 @@ class AnakraChatMessage extends StatelessWidget {
                   ),
                   child: Text(
                     message.text,
-                    style: const TextStyle(
-                      fontFamily: 'Onest',
-                      fontSize: 17,
-                      height: 1.2,
-                      letterSpacing: 0,
-                      color: Colors.white,
-                    ),
+                    style: AppTypography.text1.copyWith(color: Colors.white),
                   ),
                 ),
               ),

@@ -414,40 +414,16 @@ class _BalanceChangeWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final row = Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            _AmountLabel(label: context.l10n.balanceLabel, amount: balance),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 12),
-              child: _ArrowIcon(),
-            ),
-            _AmountLabel(
-              label: context.l10n.shopAfterPurchase,
-              amount: newBalance,
-            ),
-          ],
-        );
-
-        if (constraints.maxWidth >= 350) return row;
-
-        return Wrap(
-          alignment: WrapAlignment.center,
-          crossAxisAlignment: WrapCrossAlignment.center,
-          spacing: 10,
-          runSpacing: 8,
-          children: [
-            _AmountLabel(label: context.l10n.balanceLabel, amount: balance),
-            const _ArrowIcon(),
-            _AmountLabel(
-              label: context.l10n.shopAfterPurchase,
-              amount: newBalance,
-            ),
-          ],
-        );
-      },
+    return Wrap(
+      alignment: WrapAlignment.center,
+      crossAxisAlignment: WrapCrossAlignment.center,
+      spacing: 12,
+      runSpacing: 8,
+      children: [
+        _AmountLabel(label: context.l10n.balanceLabel, amount: balance),
+        const _ArrowIcon(),
+        _AmountLabel(label: context.l10n.shopAfterPurchase, amount: newBalance),
+      ],
     );
   }
 }
@@ -566,18 +542,20 @@ class _AmountLabel extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text.rich(
-          TextSpan(
-            children: [
-              TextSpan(
-                text: '$label ',
-                style: context.textTheme.inverseUrbanistRegular16,
-              ),
-              TextSpan(
-                text: '$amount',
-                style: context.textTheme.inverseUrbanistSemiBold16,
-              ),
-            ],
+        Flexible(
+          child: Text.rich(
+            TextSpan(
+              children: [
+                TextSpan(
+                  text: '$label ',
+                  style: context.textTheme.inverseUrbanistRegular16,
+                ),
+                TextSpan(
+                  text: '$amount',
+                  style: context.textTheme.inverseUrbanistSemiBold16,
+                ),
+              ],
+            ),
           ),
         ),
         const SizedBox(width: 4),

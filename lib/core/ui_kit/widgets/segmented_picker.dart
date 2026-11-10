@@ -1,6 +1,7 @@
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:flutter/material.dart';
 import '../app_colors/app_colors.dart';
+import '../app_typography.dart';
 
 class SegmentedPicker<T> extends StatelessWidget {
   final List<T> options;
@@ -45,12 +46,8 @@ class SegmentedPicker<T> extends StatelessWidget {
           ),
           child: Text(
             labelBuilder(option),
-            style: TextStyle(
-              fontSize: 13,
-              fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-              letterSpacing: isSelected ? -0.08 : -0.08,
-              color: AppColors.textPrimary,
-            ),
+            style: (isSelected ? AppTypography.text2SemiBold : AppTypography.text2)
+                .copyWith(color: AppColors.textPrimary),
           ),
         ),
       ),

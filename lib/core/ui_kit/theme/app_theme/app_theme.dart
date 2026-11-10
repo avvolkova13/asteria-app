@@ -1,5 +1,8 @@
+import 'package:flutter/cupertino.dart'
+    show CupertinoTextThemeData, NoDefaultCupertinoThemeData;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../../app_typography.dart';
 import '../theme_data/colors_theme_data.dart';
 import '../theme_data/corners_theme_data.dart';
 import '../theme_data/spacing_theme_data.dart';
@@ -22,1564 +25,833 @@ abstract class AppTheme {
 
   /// Предоставляет [SpacingThemeData] для темы
   SpacingThemeData getSpacingThemeData(BuildContext context) {
-    return const SpacingThemeData(extraSmall: 4, small: 8, medium: 16, mediumLarge: 24, large: 32, extraLarge: 64);
+    return const SpacingThemeData(
+      extraSmall: 4,
+      small: 8,
+      medium: 16,
+      mediumLarge: 24,
+      large: 32,
+      extraLarge: 64,
+    );
   }
 
   /// Предоставляет [TextThemeData] для темы
-  TextThemeData getTextTheme(BuildContext context, {required ColorsThemeData colorSchemeData}) {
+  TextThemeData getTextTheme(
+    BuildContext context, {
+    required ColorsThemeData colorSchemeData,
+  }) {
+    // Older screens still address styles by size and contrast. Preserve those
+    // color roles while sourcing type metrics from the same Figma styles.
     return TextThemeData(
-      // headlineLarge: TextStyle(
-      //   fontSize: 34,
-      //   fontWeight: FontWeight.w700,
-      //   fontFamily: 'PlayfairDisplay',
-      //   color: colorSchemeData.textPrimary,
-      //   height: 1.2,
-      // ),
-      // headlineLargeInverse: TextStyle(
-      //   fontSize: 34,
-      //   fontWeight: FontWeight.w700,
-      //   fontFamily: 'PlayfairDisplay',
-      //   color: colorSchemeData.textInverse,
-      //   height: 1.2,
-      // ),
-      // headlineMedium: TextStyle(
-      //   fontSize: 24,
-      //   fontWeight: FontWeight.w600,
-      //   fontFamily: 'PlayfairDisplay',
-      //   color: colorSchemeData.textPrimary,
-      //   height: 1.2,
-      // ),
-      // headlineMediumInverse: TextStyle(
-      //   fontSize: 24,
-      //   fontWeight: FontWeight.w600,
-      //   fontFamily: 'PlayfairDisplay',
-      //   color: colorSchemeData.textInverse,
-      //   height: 1.2,
-      // ),
-      // headlineSmall: TextStyle(
-      //   fontSize: 20,
-      //   fontWeight: FontWeight.w600,
-      //   fontFamily: 'PlayfairDisplay',
-      //   color: colorSchemeData.textPrimary,
-      //   height: 1.2,
-      // ),
-      // titleLarge: TextStyle(
-      //   fontSize: 18,
-      //   fontWeight: FontWeight.w600,
-      //   fontFamily: 'PlayfairDisplay',
-      //   color: colorSchemeData.textPrimary,
-      //   height: 1.2,
-      // ),
-      // titleMedium: TextStyle(
-      //   fontSize: 16,
-      //   fontWeight: FontWeight.w400,
-      //   fontFamily: 'Urbanist',
-      //   color: colorSchemeData.textPrimary,
-      //   height: 1.2,
-      //   letterSpacing: -0.24,
-      // ),
-      // titleSmall: TextStyle(
-      //   fontSize: 14,
-      //   fontWeight: FontWeight.w400,
-      //   fontFamily: 'Urbanist',
-      //   color: colorSchemeData.textSecondary,
-      //   height: 1.2,
-      // ),
-      // bodyLarge: TextStyle(
-      //   fontSize: 16,
-      //   fontWeight: FontWeight.w400,
-      //   fontFamily: 'Urbanist',
-      //   color: colorSchemeData.textInverse,
-      //   height: 1.2,
-      //   letterSpacing: -0.24,
-      // ),
-      // bodyMedium: TextStyle(
-      //   fontSize: 14,
-      //   fontWeight: FontWeight.w400,
-      //   fontFamily: 'Urbanist',
-      //   color: colorSchemeData.textSecondary,
-      //   height: 1.2,
-      // ),
-      // bodySmall: TextStyle(
-      //   fontSize: 12,
-      //   fontWeight: FontWeight.w400,
-      //   fontFamily: 'Urbanist',
-      //   color: colorSchemeData.textTertiary,
-      //   height: 1.2,
-      // ),
-      secondaryUrbanistRegular16: TextStyle(
-        fontSize: 16,
-        fontWeight: FontWeight.w400,
-        fontFamily: 'Urbanist',
+      secondaryUrbanistRegular16: AppTypography.text1.copyWith(
         color: colorSchemeData.textSecondary,
-        height: 1.2,
       ),
-      button: TextStyle(
-        fontSize: 16,
-        fontWeight: FontWeight.w400,
-        fontFamily: 'Urbanist',
+      button: AppTypography.text1SemiBold.copyWith(
         color: colorSchemeData.buttonText,
-        height: 1.2,
       ),
-      buttonOutline: TextStyle(
-        fontSize: 16,
-        fontWeight: FontWeight.w400,
-        fontFamily: 'Urbanist',
+      buttonOutline: AppTypography.text1SemiBold.copyWith(
         color: colorSchemeData.outlinedButtonText,
-        height: 1.2,
       ),
-      appBarTitle: TextStyle(
-        fontSize: 20,
-        fontWeight: FontWeight.w600,
-        fontFamily: 'PlayfairDisplay',
+      appBarTitle: AppTypography.navTitle.copyWith(
         color: colorSchemeData.textPrimary,
-        height: 1.2,
       ),
-      subtitle: TextStyle(
-        fontSize: 17,
-        fontWeight: FontWeight.w400,
-        fontFamily: 'Urbanist',
+      subtitle: AppTypography.text1.copyWith(
         color: colorSchemeData.textPrimary,
-        height: 1.2,
       ),
-      subtitleInverse: TextStyle(
-        fontSize: 17,
-        fontWeight: FontWeight.w400,
-        fontFamily: 'PlayfairDisplay',
+      subtitleInverse: AppTypography.text1.copyWith(
         color: colorSchemeData.textInverse,
-        height: 1.2,
       ),
-      inputHint: TextStyle(
-        fontSize: 17,
-        fontWeight: FontWeight.w400,
-        fontFamily: 'Urbanist',
+      inputHint: AppTypography.placeholder.copyWith(
         color: colorSchemeData.textTertiary,
-        height: 1.2,
       ),
-      inputText: TextStyle(
-        fontSize: 17,
-        fontWeight: FontWeight.w400,
-        fontFamily: 'Urbanist',
+      inputText: AppTypography.placeholder.copyWith(
         color: colorSchemeData.inputText,
-        height: 1.2,
       ),
-      inputErrorText: TextStyle(
-        fontSize: 12,
-        fontWeight: FontWeight.w400,
-        fontFamily: 'Urbanist',
+      inputErrorText: AppTypography.subtext.copyWith(
         color: colorSchemeData.error,
-        height: 1.2,
       ),
-      codeInput: TextStyle(
-        fontSize: 20,
-        fontWeight: FontWeight.w500,
-        fontFamily: 'PlayfairDisplay',
+      codeInput: AppTypography.placeholderSemiBold.copyWith(
         color: colorSchemeData.inputText,
-        height: 1.1,
       ),
-      // PlayfairDisplay Regular (400)
-      playfairRegular12: TextStyle(
+      playfairRegular12: AppTypography.h4.copyWith(
         fontSize: 12,
         fontWeight: FontWeight.w400,
-        fontFamily: 'PlayfairDisplay',
         color: colorSchemeData.textPrimary,
-        height: 1.2,
       ),
-      playfairRegular14: TextStyle(
+      playfairRegular14: AppTypography.h4.copyWith(
         fontSize: 14,
         fontWeight: FontWeight.w400,
-        fontFamily: 'PlayfairDisplay',
         color: colorSchemeData.textPrimary,
-        height: 1.2,
       ),
-      playfairRegular16: TextStyle(
-        fontSize: 16,
+      playfairRegular16: AppTypography.h4.copyWith(
         fontWeight: FontWeight.w400,
-        fontFamily: 'PlayfairDisplay',
         color: colorSchemeData.textPrimary,
-        height: 1.2,
-        letterSpacing: -0.408,
       ),
-      playfairRegular17: TextStyle(
-        fontSize: 17,
+      playfairRegular17: AppTypography.navTitle.copyWith(
         fontWeight: FontWeight.w400,
-        fontFamily: 'PlayfairDisplay',
         color: colorSchemeData.textPrimary,
-        height: 1.2,
-        letterSpacing: -0.408,
       ),
-      playfairRegular18: TextStyle(
+      playfairRegular18: AppTypography.h3.copyWith(
         fontSize: 18,
         fontWeight: FontWeight.w400,
-        fontFamily: 'PlayfairDisplay',
         color: colorSchemeData.textPrimary,
-        height: 1.2,
       ),
-      playfairRegular20: TextStyle(
-        fontSize: 20,
+      playfairRegular20: AppTypography.h3.copyWith(
         fontWeight: FontWeight.w400,
-        fontFamily: 'PlayfairDisplay',
         color: colorSchemeData.textPrimary,
-        height: 1.2,
       ),
-      playfairRegular24: TextStyle(
-        fontSize: 24,
+      playfairRegular24: AppTypography.h2.copyWith(
         fontWeight: FontWeight.w400,
-        fontFamily: 'PlayfairDisplay',
         color: colorSchemeData.textPrimary,
-        height: 1.2,
       ),
-      playfairRegular32: TextStyle(
-        fontSize: 32,
+      playfairRegular32: AppTypography.h1.copyWith(
         fontWeight: FontWeight.w400,
-        fontFamily: 'PlayfairDisplay',
         color: colorSchemeData.textPrimary,
-        height: 1.2,
       ),
-      // PlayfairDisplay Medium (500)
-      playfairMedium12: TextStyle(
+      playfairMedium12: AppTypography.h4.copyWith(
         fontSize: 12,
-        fontWeight: FontWeight.w500,
-        fontFamily: 'PlayfairDisplay',
         color: colorSchemeData.textPrimary,
-        height: 1.2,
       ),
-      playfairMedium14: TextStyle(
+      playfairMedium14: AppTypography.h4.copyWith(
         fontSize: 14,
-        fontWeight: FontWeight.w500,
-        fontFamily: 'PlayfairDisplay',
         color: colorSchemeData.textPrimary,
-        height: 1.2,
       ),
-      playfairMedium16: TextStyle(
-        fontSize: 16,
-        fontWeight: FontWeight.w500,
-        fontFamily: 'PlayfairDisplay',
+      playfairMedium16: AppTypography.h4.copyWith(
         color: colorSchemeData.textPrimary,
-        height: 1.2,
-        letterSpacing: -0.408,
       ),
-      playfairMedium17: TextStyle(
-        fontSize: 17,
+      playfairMedium17: AppTypography.navTitle.copyWith(
         fontWeight: FontWeight.w500,
-        fontFamily: 'PlayfairDisplay',
         color: colorSchemeData.textPrimary,
-        height: 1.2,
-        letterSpacing: -0.408,
       ),
-      playfairMedium18: TextStyle(
+      playfairMedium18: AppTypography.h3.copyWith(
         fontSize: 18,
-        fontWeight: FontWeight.w500,
-        fontFamily: 'PlayfairDisplay',
         color: colorSchemeData.textPrimary,
-        height: 1.2,
       ),
-      playfairMedium20: TextStyle(
-        fontSize: 20,
-        fontWeight: FontWeight.w500,
-        fontFamily: 'PlayfairDisplay',
+      playfairMedium20: AppTypography.h3.copyWith(
         color: colorSchemeData.textPrimary,
-        height: 1.2,
       ),
-      playfairMedium24: TextStyle(
-        fontSize: 24,
+      playfairMedium24: AppTypography.h2.copyWith(
         fontWeight: FontWeight.w500,
-        fontFamily: 'PlayfairDisplay',
         color: colorSchemeData.textPrimary,
-        height: 1.2,
       ),
-      playfairMedium32: TextStyle(
-        fontSize: 32,
+      playfairMedium32: AppTypography.h1.copyWith(
         fontWeight: FontWeight.w500,
-        fontFamily: 'PlayfairDisplay',
         color: colorSchemeData.textPrimary,
-        height: 1.2,
       ),
-      // PlayfairDisplay SemiBold (600)
-      playfairSemiBold12: TextStyle(
+      playfairSemiBold12: AppTypography.h4.copyWith(
         fontSize: 12,
         fontWeight: FontWeight.w600,
-        fontFamily: 'PlayfairDisplay',
         color: colorSchemeData.textPrimary,
-        height: 1.2,
       ),
-      playfairSemiBold14: TextStyle(
+      playfairSemiBold14: AppTypography.h4.copyWith(
         fontSize: 14,
         fontWeight: FontWeight.w600,
-        fontFamily: 'PlayfairDisplay',
         color: colorSchemeData.textPrimary,
-        height: 1.2,
       ),
-      playfairSemiBold16: TextStyle(
-        fontSize: 16,
+      playfairSemiBold16: AppTypography.h4.copyWith(
         fontWeight: FontWeight.w600,
-        fontFamily: 'PlayfairDisplay',
         color: colorSchemeData.textPrimary,
-        height: 1.2,
-        letterSpacing: -0.408,
       ),
-      playfairSemiBold17: TextStyle(
-        fontSize: 17,
-        fontWeight: FontWeight.w600,
-        fontFamily: 'PlayfairDisplay',
+      playfairSemiBold17: AppTypography.navTitle.copyWith(
         color: colorSchemeData.textPrimary,
-        height: 1.2,
-        letterSpacing: -0.408,
       ),
-      playfairSemiBold18: TextStyle(
+      playfairSemiBold18: AppTypography.h3.copyWith(
         fontSize: 18,
         fontWeight: FontWeight.w600,
-        fontFamily: 'PlayfairDisplay',
         color: colorSchemeData.textPrimary,
-        height: 1.2,
       ),
-      playfairSemiBold20: TextStyle(
-        fontSize: 20,
+      playfairSemiBold20: AppTypography.h3.copyWith(
         fontWeight: FontWeight.w600,
-        fontFamily: 'PlayfairDisplay',
         color: colorSchemeData.textPrimary,
-        height: 1.2,
       ),
-      playfairSemiBold24: TextStyle(
-        fontSize: 24,
-        fontWeight: FontWeight.w600,
-        fontFamily: 'PlayfairDisplay',
+      playfairSemiBold24: AppTypography.h2.copyWith(
         color: colorSchemeData.textPrimary,
-        height: 1.2,
       ),
-      playfairSemiBold32: TextStyle(
-        fontSize: 32,
-        fontWeight: FontWeight.w600,
-        fontFamily: 'PlayfairDisplay',
+      playfairSemiBold32: AppTypography.h1.copyWith(
         color: colorSchemeData.textPrimary,
-        height: 1.2,
       ),
-      // PlayfairDisplay Bold (700)
-      playfairBold12: TextStyle(
+      playfairBold12: AppTypography.h4.copyWith(
         fontSize: 12,
         fontWeight: FontWeight.w700,
-        fontFamily: 'PlayfairDisplay',
         color: colorSchemeData.textPrimary,
-        height: 1.2,
       ),
-      playfairBold14: TextStyle(
+      playfairBold14: AppTypography.h4.copyWith(
         fontSize: 14,
         fontWeight: FontWeight.w700,
-        fontFamily: 'PlayfairDisplay',
         color: colorSchemeData.textPrimary,
-        height: 1.2,
       ),
-      playfairBold16: TextStyle(
-        fontSize: 16,
+      playfairBold16: AppTypography.h4.copyWith(
         fontWeight: FontWeight.w700,
-        fontFamily: 'PlayfairDisplay',
         color: colorSchemeData.textPrimary,
-        height: 1.2,
-        letterSpacing: -0.408,
       ),
-      playfairBold17: TextStyle(
-        fontSize: 17,
+      playfairBold17: AppTypography.navTitle.copyWith(
         fontWeight: FontWeight.w700,
-        fontFamily: 'PlayfairDisplay',
         color: colorSchemeData.textPrimary,
-        height: 1.2,
-        letterSpacing: -0.408,
       ),
-      playfairBold18: TextStyle(
+      playfairBold18: AppTypography.h3.copyWith(
         fontSize: 18,
         fontWeight: FontWeight.w700,
-        fontFamily: 'PlayfairDisplay',
         color: colorSchemeData.textPrimary,
-        height: 1.2,
       ),
-      playfairBold20: TextStyle(
+      playfairBold20: AppTypography.h3.copyWith(
+        fontWeight: FontWeight.w700,
+        color: colorSchemeData.textPrimary,
+      ),
+      playfairBold24: AppTypography.h2.copyWith(
+        fontWeight: FontWeight.w700,
+        color: colorSchemeData.textPrimary,
+      ),
+      playfairBold32: AppTypography.h1.copyWith(
+        fontWeight: FontWeight.w700,
+        color: colorSchemeData.textPrimary,
+      ),
+      urbanistRegular12: AppTypography.subtext.copyWith(
+        color: colorSchemeData.textPrimary,
+      ),
+      urbanistRegular14: AppTypography.body14.copyWith(
+        color: colorSchemeData.textPrimary,
+      ),
+      urbanistRegular16: AppTypography.text1.copyWith(
+        color: colorSchemeData.textPrimary,
+      ),
+      urbanistRegular17: AppTypography.placeholder.copyWith(
+        color: colorSchemeData.textPrimary,
+      ),
+      urbanistRegular18: AppTypography.text1.copyWith(
+        fontSize: 18,
+        color: colorSchemeData.textPrimary,
+      ),
+      urbanistRegular20: AppTypography.text1.copyWith(
+        fontSize: 20,
+        color: colorSchemeData.textPrimary,
+      ),
+      urbanistRegular24: AppTypography.text1.copyWith(
+        fontSize: 24,
+        color: colorSchemeData.textPrimary,
+      ),
+      urbanistRegular32: AppTypography.text1.copyWith(
+        fontSize: 32,
+        color: colorSchemeData.textPrimary,
+      ),
+      urbanistMedium12: AppTypography.subtext.copyWith(
+        fontWeight: FontWeight.w500,
+        color: colorSchemeData.textPrimary,
+      ),
+      urbanistMedium14: AppTypography.label14.copyWith(
+        color: colorSchemeData.textPrimary,
+      ),
+      urbanistMedium16: AppTypography.text1.copyWith(
+        fontWeight: FontWeight.w500,
+        color: colorSchemeData.textPrimary,
+      ),
+      urbanistMedium17: AppTypography.placeholder.copyWith(
+        fontWeight: FontWeight.w500,
+        color: colorSchemeData.textPrimary,
+      ),
+      urbanistMedium18: AppTypography.text1.copyWith(
+        fontSize: 18,
+        fontWeight: FontWeight.w500,
+        color: colorSchemeData.textPrimary,
+      ),
+      urbanistMedium20: AppTypography.text1.copyWith(
+        fontSize: 20,
+        fontWeight: FontWeight.w500,
+        color: colorSchemeData.textPrimary,
+      ),
+      urbanistMedium24: AppTypography.text1.copyWith(
+        fontSize: 24,
+        fontWeight: FontWeight.w500,
+        color: colorSchemeData.textPrimary,
+      ),
+      urbanistMedium32: AppTypography.text1.copyWith(
+        fontSize: 32,
+        fontWeight: FontWeight.w500,
+        color: colorSchemeData.textPrimary,
+      ),
+      urbanistSemiBold12: AppTypography.subtextSemiBold.copyWith(
+        color: colorSchemeData.textPrimary,
+      ),
+      urbanistSemiBold14: AppTypography.body14.copyWith(
+        fontWeight: FontWeight.w600,
+        color: colorSchemeData.textPrimary,
+      ),
+      urbanistSemiBold16: AppTypography.text1SemiBold.copyWith(
+        color: colorSchemeData.textPrimary,
+      ),
+      urbanistSemiBold17: AppTypography.placeholderSemiBold.copyWith(
+        color: colorSchemeData.textPrimary,
+      ),
+      urbanistSemiBold18: AppTypography.text1SemiBold.copyWith(
+        fontSize: 18,
+        color: colorSchemeData.textPrimary,
+      ),
+      urbanistSemiBold20: AppTypography.text1SemiBold.copyWith(
+        fontSize: 20,
+        color: colorSchemeData.textPrimary,
+      ),
+      urbanistSemiBold24: AppTypography.text1SemiBold.copyWith(
+        fontSize: 24,
+        color: colorSchemeData.textPrimary,
+      ),
+      urbanistSemiBold32: AppTypography.text1SemiBold.copyWith(
+        fontSize: 32,
+        color: colorSchemeData.textPrimary,
+      ),
+      urbanistBold12: AppTypography.subtext.copyWith(
+        fontWeight: FontWeight.w700,
+        color: colorSchemeData.textPrimary,
+      ),
+      urbanistBold14: AppTypography.body14.copyWith(
+        fontWeight: FontWeight.w700,
+        color: colorSchemeData.textPrimary,
+      ),
+      urbanistBold16: AppTypography.text1.copyWith(
+        fontWeight: FontWeight.w700,
+        color: colorSchemeData.textPrimary,
+      ),
+      urbanistBold17: AppTypography.placeholder.copyWith(
+        fontWeight: FontWeight.w700,
+        color: colorSchemeData.textPrimary,
+      ),
+      urbanistBold18: AppTypography.text1.copyWith(
+        fontSize: 18,
+        fontWeight: FontWeight.w700,
+        color: colorSchemeData.textPrimary,
+      ),
+      urbanistBold20: AppTypography.text1.copyWith(
         fontSize: 20,
         fontWeight: FontWeight.w700,
-        fontFamily: 'PlayfairDisplay',
         color: colorSchemeData.textPrimary,
-        height: 1.2,
       ),
-      playfairBold24: TextStyle(
+      urbanistBold24: AppTypography.text1.copyWith(
         fontSize: 24,
         fontWeight: FontWeight.w700,
-        fontFamily: 'PlayfairDisplay',
         color: colorSchemeData.textPrimary,
-        height: 1.2,
       ),
-      playfairBold32: TextStyle(
+      urbanistBold32: AppTypography.text1.copyWith(
         fontSize: 32,
         fontWeight: FontWeight.w700,
-        fontFamily: 'PlayfairDisplay',
         color: colorSchemeData.textPrimary,
-        height: 1.2,
       ),
-      // Urbanist Regular (400)
-      urbanistRegular12: TextStyle(
+      inversePlayfairRegular12: AppTypography.h4.copyWith(
         fontSize: 12,
         fontWeight: FontWeight.w400,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textPrimary,
-        height: 1.2,
+        color: colorSchemeData.textInverse,
       ),
-      urbanistRegular14: TextStyle(
+      inversePlayfairRegular14: AppTypography.h4.copyWith(
         fontSize: 14,
         fontWeight: FontWeight.w400,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textPrimary,
-        height: 1.2,
+        color: colorSchemeData.textInverse,
       ),
-      urbanistRegular16: TextStyle(
-        fontSize: 16,
+      inversePlayfairRegular16: AppTypography.h4.copyWith(
         fontWeight: FontWeight.w400,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textPrimary,
-        height: 1.2,
-        letterSpacing: -0.408,
+        color: colorSchemeData.textInverse,
       ),
-      urbanistRegular17: TextStyle(
-        fontSize: 17,
+      inversePlayfairRegular17: AppTypography.navTitle.copyWith(
         fontWeight: FontWeight.w400,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textPrimary,
-        height: 1.2,
-        letterSpacing: -0.408,
+        color: colorSchemeData.textInverse,
       ),
-      urbanistRegular18: TextStyle(
+      inversePlayfairRegular18: AppTypography.h3.copyWith(
         fontSize: 18,
         fontWeight: FontWeight.w400,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textPrimary,
-        height: 1.2,
+        color: colorSchemeData.textInverse,
       ),
-      urbanistRegular20: TextStyle(
-        fontSize: 20,
+      inversePlayfairRegular20: AppTypography.h3.copyWith(
         fontWeight: FontWeight.w400,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textPrimary,
-        height: 1.2,
+        color: colorSchemeData.textInverse,
       ),
-      urbanistRegular24: TextStyle(
-        fontSize: 24,
+      inversePlayfairRegular24: AppTypography.h2.copyWith(
         fontWeight: FontWeight.w400,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textPrimary,
-        height: 1.2,
+        color: colorSchemeData.textInverse,
       ),
-      urbanistRegular32: TextStyle(
-        fontSize: 32,
+      inversePlayfairRegular32: AppTypography.h1.copyWith(
         fontWeight: FontWeight.w400,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textPrimary,
-        height: 1.2,
+        color: colorSchemeData.textInverse,
       ),
-      // Urbanist Medium (500)
-      urbanistMedium12: TextStyle(
+      inversePlayfairMedium12: AppTypography.h4.copyWith(
         fontSize: 12,
-        fontWeight: FontWeight.w500,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textPrimary,
-        height: 1.2,
+        color: colorSchemeData.textInverse,
       ),
-      urbanistMedium14: TextStyle(
+      inversePlayfairMedium14: AppTypography.h4.copyWith(
         fontSize: 14,
-        fontWeight: FontWeight.w500,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textPrimary,
-        height: 1.2,
+        color: colorSchemeData.textInverse,
       ),
-      urbanistMedium16: TextStyle(
-        fontSize: 16,
-        fontWeight: FontWeight.w500,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textPrimary,
-        height: 1.2,
-        letterSpacing: -0.408,
+      inversePlayfairMedium16: AppTypography.h4.copyWith(
+        color: colorSchemeData.textInverse,
       ),
-      urbanistMedium17: TextStyle(
-        fontSize: 17,
+      inversePlayfairMedium17: AppTypography.navTitle.copyWith(
         fontWeight: FontWeight.w500,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textPrimary,
-        height: 1.2,
-        letterSpacing: -0.408,
+        color: colorSchemeData.textInverse,
       ),
-      urbanistMedium18: TextStyle(
+      inversePlayfairMedium18: AppTypography.h3.copyWith(
         fontSize: 18,
-        fontWeight: FontWeight.w500,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textPrimary,
-        height: 1.2,
+        color: colorSchemeData.textInverse,
       ),
-      urbanistMedium20: TextStyle(
-        fontSize: 20,
-        fontWeight: FontWeight.w500,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textPrimary,
-        height: 1.2,
+      inversePlayfairMedium20: AppTypography.h3.copyWith(
+        color: colorSchemeData.textInverse,
       ),
-      urbanistMedium24: TextStyle(
-        fontSize: 24,
+      inversePlayfairMedium24: AppTypography.h2.copyWith(
         fontWeight: FontWeight.w500,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textPrimary,
-        height: 1.2,
+        color: colorSchemeData.textInverse,
       ),
-      urbanistMedium32: TextStyle(
-        fontSize: 32,
+      inversePlayfairMedium32: AppTypography.h1.copyWith(
         fontWeight: FontWeight.w500,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textPrimary,
-        height: 1.2,
+        color: colorSchemeData.textInverse,
       ),
-      // Urbanist SemiBold (600)
-      urbanistSemiBold12: TextStyle(
+      inversePlayfairSemiBold12: AppTypography.h4.copyWith(
         fontSize: 12,
         fontWeight: FontWeight.w600,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textPrimary,
-        height: 1.2,
+        color: colorSchemeData.textInverse,
       ),
-      urbanistSemiBold14: TextStyle(
+      inversePlayfairSemiBold14: AppTypography.h4.copyWith(
         fontSize: 14,
         fontWeight: FontWeight.w600,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textPrimary,
-        height: 1.2,
+        color: colorSchemeData.textInverse,
       ),
-      urbanistSemiBold16: TextStyle(
-        fontSize: 16,
+      inversePlayfairSemiBold16: AppTypography.h4.copyWith(
         fontWeight: FontWeight.w600,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textPrimary,
-        height: 1.2,
-        letterSpacing: -0.408,
+        color: colorSchemeData.textInverse,
       ),
-      urbanistSemiBold17: TextStyle(
-        fontSize: 17,
-        fontWeight: FontWeight.w600,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textPrimary,
-        height: 1.2,
-        letterSpacing: -0.408,
+      inversePlayfairSemiBold17: AppTypography.navTitle.copyWith(
+        color: colorSchemeData.textInverse,
       ),
-      urbanistSemiBold18: TextStyle(
+      inversePlayfairSemiBold18: AppTypography.h3.copyWith(
         fontSize: 18,
         fontWeight: FontWeight.w600,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textPrimary,
-        height: 1.2,
+        color: colorSchemeData.textInverse,
       ),
-      urbanistSemiBold20: TextStyle(
-        fontSize: 20,
+      inversePlayfairSemiBold20: AppTypography.h3.copyWith(
         fontWeight: FontWeight.w600,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textPrimary,
-        height: 1.2,
+        color: colorSchemeData.textInverse,
       ),
-      urbanistSemiBold24: TextStyle(
-        fontSize: 24,
-        fontWeight: FontWeight.w600,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textPrimary,
-        height: 1.2,
+      inversePlayfairSemiBold24: AppTypography.h2.copyWith(
+        color: colorSchemeData.textInverse,
       ),
-      urbanistSemiBold32: TextStyle(
-        fontSize: 32,
-        fontWeight: FontWeight.w600,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textPrimary,
-        height: 1.2,
+      inversePlayfairSemiBold32: AppTypography.h1.copyWith(
+        color: colorSchemeData.textInverse,
       ),
-      // Urbanist Bold (700)
-      urbanistBold12: TextStyle(
+      inversePlayfairBold12: AppTypography.h4.copyWith(
         fontSize: 12,
         fontWeight: FontWeight.w700,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textPrimary,
-        height: 1.2,
+        color: colorSchemeData.textInverse,
       ),
-      urbanistBold14: TextStyle(
+      inversePlayfairBold14: AppTypography.h4.copyWith(
         fontSize: 14,
         fontWeight: FontWeight.w700,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textPrimary,
-        height: 1.2,
+        color: colorSchemeData.textInverse,
       ),
-      urbanistBold16: TextStyle(
-        fontSize: 16,
+      inversePlayfairBold16: AppTypography.h4.copyWith(
         fontWeight: FontWeight.w700,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textPrimary,
-        height: 1.2,
-        letterSpacing: -0.408,
+        color: colorSchemeData.textInverse,
       ),
-      urbanistBold17: TextStyle(
-        fontSize: 17,
+      inversePlayfairBold17: AppTypography.navTitle.copyWith(
         fontWeight: FontWeight.w700,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textPrimary,
-        height: 1.2,
-        letterSpacing: -0.408,
+        color: colorSchemeData.textInverse,
       ),
-      urbanistBold18: TextStyle(
+      inversePlayfairBold18: AppTypography.h3.copyWith(
         fontSize: 18,
         fontWeight: FontWeight.w700,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textPrimary,
-        height: 1.2,
+        color: colorSchemeData.textInverse,
       ),
-      urbanistBold20: TextStyle(
+      inversePlayfairBold20: AppTypography.h3.copyWith(
+        fontWeight: FontWeight.w700,
+        color: colorSchemeData.textInverse,
+      ),
+      inversePlayfairBold24: AppTypography.h2.copyWith(
+        fontWeight: FontWeight.w700,
+        color: colorSchemeData.textInverse,
+      ),
+      inversePlayfairBold32: AppTypography.h1.copyWith(
+        fontWeight: FontWeight.w700,
+        color: colorSchemeData.textInverse,
+      ),
+      inverseUrbanistRegular12: AppTypography.subtext.copyWith(
+        color: colorSchemeData.textInverse,
+      ),
+      inverseUrbanistRegular14: AppTypography.body14.copyWith(
+        color: colorSchemeData.textInverse,
+      ),
+      inverseUrbanistRegular16: AppTypography.text1.copyWith(
+        color: colorSchemeData.textInverse,
+      ),
+      inverseUrbanistRegular17: AppTypography.placeholder.copyWith(
+        color: colorSchemeData.textInverse,
+      ),
+      inverseUrbanistRegular18: AppTypography.text1.copyWith(
+        fontSize: 18,
+        color: colorSchemeData.textInverse,
+      ),
+      inverseUrbanistRegular20: AppTypography.text1.copyWith(
+        fontSize: 20,
+        color: colorSchemeData.textInverse,
+      ),
+      inverseUrbanistRegular24: AppTypography.text1.copyWith(
+        fontSize: 24,
+        color: colorSchemeData.textInverse,
+      ),
+      inverseUrbanistRegular32: AppTypography.text1.copyWith(
+        fontSize: 32,
+        color: colorSchemeData.textInverse,
+      ),
+      inverseUrbanistMedium12: AppTypography.subtext.copyWith(
+        fontWeight: FontWeight.w500,
+        color: colorSchemeData.textInverse,
+      ),
+      inverseUrbanistMedium14: AppTypography.label14.copyWith(
+        color: colorSchemeData.textInverse,
+      ),
+      inverseUrbanistMedium16: AppTypography.text1.copyWith(
+        fontWeight: FontWeight.w500,
+        color: colorSchemeData.textInverse,
+      ),
+      inverseUrbanistMedium17: AppTypography.placeholder.copyWith(
+        fontWeight: FontWeight.w500,
+        color: colorSchemeData.textInverse,
+      ),
+      inverseUrbanistMedium18: AppTypography.text1.copyWith(
+        fontSize: 18,
+        fontWeight: FontWeight.w500,
+        color: colorSchemeData.textInverse,
+      ),
+      inverseUrbanistMedium20: AppTypography.text1.copyWith(
+        fontSize: 20,
+        fontWeight: FontWeight.w500,
+        color: colorSchemeData.textInverse,
+      ),
+      inverseUrbanistMedium24: AppTypography.text1.copyWith(
+        fontSize: 24,
+        fontWeight: FontWeight.w500,
+        color: colorSchemeData.textInverse,
+      ),
+      inverseUrbanistMedium32: AppTypography.text1.copyWith(
+        fontSize: 32,
+        fontWeight: FontWeight.w500,
+        color: colorSchemeData.textInverse,
+      ),
+      inverseUrbanistSemiBold12: AppTypography.subtextSemiBold.copyWith(
+        color: colorSchemeData.textInverse,
+      ),
+      inverseUrbanistSemiBold14: AppTypography.body14.copyWith(
+        fontWeight: FontWeight.w600,
+        color: colorSchemeData.textInverse,
+      ),
+      inverseUrbanistSemiBold16: AppTypography.text1SemiBold.copyWith(
+        color: colorSchemeData.textInverse,
+      ),
+      inverseUrbanistSemiBold17: AppTypography.placeholderSemiBold.copyWith(
+        color: colorSchemeData.textInverse,
+      ),
+      inverseUrbanistSemiBold18: AppTypography.text1SemiBold.copyWith(
+        fontSize: 18,
+        color: colorSchemeData.textInverse,
+      ),
+      inverseUrbanistSemiBold20: AppTypography.text1SemiBold.copyWith(
+        fontSize: 20,
+        color: colorSchemeData.textInverse,
+      ),
+      inverseUrbanistSemiBold24: AppTypography.text1SemiBold.copyWith(
+        fontSize: 24,
+        color: colorSchemeData.textInverse,
+      ),
+      inverseUrbanistSemiBold32: AppTypography.text1SemiBold.copyWith(
+        fontSize: 32,
+        color: colorSchemeData.textInverse,
+      ),
+      inverseUrbanistBold12: AppTypography.subtext.copyWith(
+        fontWeight: FontWeight.w700,
+        color: colorSchemeData.textInverse,
+      ),
+      inverseUrbanistBold14: AppTypography.body14.copyWith(
+        fontWeight: FontWeight.w700,
+        color: colorSchemeData.textInverse,
+      ),
+      inverseUrbanistBold16: AppTypography.text1.copyWith(
+        fontWeight: FontWeight.w700,
+        color: colorSchemeData.textInverse,
+      ),
+      inverseUrbanistBold17: AppTypography.placeholder.copyWith(
+        fontWeight: FontWeight.w700,
+        color: colorSchemeData.textInverse,
+      ),
+      inverseUrbanistBold18: AppTypography.text1.copyWith(
+        fontSize: 18,
+        fontWeight: FontWeight.w700,
+        color: colorSchemeData.textInverse,
+      ),
+      inverseUrbanistBold20: AppTypography.text1.copyWith(
         fontSize: 20,
         fontWeight: FontWeight.w700,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textPrimary,
-        height: 1.2,
+        color: colorSchemeData.textInverse,
       ),
-      urbanistBold24: TextStyle(
+      inverseUrbanistBold24: AppTypography.text1.copyWith(
         fontSize: 24,
         fontWeight: FontWeight.w700,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textPrimary,
-        height: 1.2,
+        color: colorSchemeData.textInverse,
       ),
-      urbanistBold32: TextStyle(
+      inverseUrbanistBold32: AppTypography.text1.copyWith(
         fontSize: 32,
         fontWeight: FontWeight.w700,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textPrimary,
-        height: 1.2,
+        color: colorSchemeData.textInverse,
       ),
-      // PlayfairDisplay Inverse variants (textInverse color)
-      inversePlayfairRegular12: TextStyle(
+      tertiaryPlayfairRegular12: AppTypography.h4.copyWith(
         fontSize: 12,
         fontWeight: FontWeight.w400,
-        fontFamily: 'PlayfairDisplay',
-        color: colorSchemeData.textInverse,
-        height: 1.2,
+        color: colorSchemeData.textTertiary,
       ),
-      inversePlayfairRegular14: TextStyle(
+      tertiaryPlayfairRegular14: AppTypography.h4.copyWith(
         fontSize: 14,
         fontWeight: FontWeight.w400,
-        fontFamily: 'PlayfairDisplay',
-        color: colorSchemeData.textInverse,
-        height: 1.2,
+        color: colorSchemeData.textTertiary,
       ),
-      inversePlayfairRegular16: TextStyle(
-        fontSize: 16,
+      tertiaryPlayfairRegular16: AppTypography.h4.copyWith(
         fontWeight: FontWeight.w400,
-        fontFamily: 'PlayfairDisplay',
-        color: colorSchemeData.textInverse,
-        height: 1.2,
-        letterSpacing: -0.408,
+        color: colorSchemeData.textTertiary,
       ),
-      inversePlayfairRegular17: TextStyle(
-        fontSize: 17,
+      tertiaryPlayfairRegular17: AppTypography.navTitle.copyWith(
         fontWeight: FontWeight.w400,
-        fontFamily: 'PlayfairDisplay',
-        color: colorSchemeData.textInverse,
-        height: 1.2,
-        letterSpacing: -0.408,
+        color: colorSchemeData.textTertiary,
       ),
-      inversePlayfairRegular18: TextStyle(
+      tertiaryPlayfairRegular18: AppTypography.h3.copyWith(
         fontSize: 18,
         fontWeight: FontWeight.w400,
-        fontFamily: 'PlayfairDisplay',
-        color: colorSchemeData.textInverse,
-        height: 1.2,
+        color: colorSchemeData.textTertiary,
       ),
-      inversePlayfairRegular20: TextStyle(
-        fontSize: 20,
+      tertiaryPlayfairRegular20: AppTypography.h3.copyWith(
         fontWeight: FontWeight.w400,
-        fontFamily: 'PlayfairDisplay',
-        color: colorSchemeData.textInverse,
-        height: 1.2,
+        color: colorSchemeData.textTertiary,
       ),
-      inversePlayfairRegular24: TextStyle(
-        fontSize: 24,
+      tertiaryPlayfairRegular24: AppTypography.h2.copyWith(
         fontWeight: FontWeight.w400,
-        fontFamily: 'PlayfairDisplay',
-        color: colorSchemeData.textInverse,
-        height: 1.2,
+        color: colorSchemeData.textTertiary,
       ),
-      inversePlayfairRegular32: TextStyle(
-        fontSize: 32,
+      tertiaryPlayfairRegular32: AppTypography.h1.copyWith(
         fontWeight: FontWeight.w400,
-        fontFamily: 'PlayfairDisplay',
-        color: colorSchemeData.textInverse,
-        height: 1.2,
+        color: colorSchemeData.textTertiary,
       ),
-      inversePlayfairMedium12: TextStyle(
+      tertiaryPlayfairMedium12: AppTypography.h4.copyWith(
         fontSize: 12,
-        fontWeight: FontWeight.w500,
-        fontFamily: 'PlayfairDisplay',
-        color: colorSchemeData.textInverse,
-        height: 1.2,
+        color: colorSchemeData.textTertiary,
       ),
-      inversePlayfairMedium14: TextStyle(
+      tertiaryPlayfairMedium14: AppTypography.h4.copyWith(
         fontSize: 14,
-        fontWeight: FontWeight.w500,
-        fontFamily: 'PlayfairDisplay',
-        color: colorSchemeData.textInverse,
-        height: 1.2,
+        color: colorSchemeData.textTertiary,
       ),
-      inversePlayfairMedium16: TextStyle(
-        fontSize: 16,
-        fontWeight: FontWeight.w500,
-        fontFamily: 'PlayfairDisplay',
-        color: colorSchemeData.textInverse,
-        height: 1.2,
-        letterSpacing: -0.408,
+      tertiaryPlayfairMedium16: AppTypography.h4.copyWith(
+        color: colorSchemeData.textTertiary,
       ),
-      inversePlayfairMedium17: TextStyle(
-        fontSize: 17,
+      tertiaryPlayfairMedium17: AppTypography.navTitle.copyWith(
         fontWeight: FontWeight.w500,
-        fontFamily: 'PlayfairDisplay',
-        color: colorSchemeData.textInverse,
-        height: 1.2,
-        letterSpacing: -0.408,
+        color: colorSchemeData.textTertiary,
       ),
-      inversePlayfairMedium18: TextStyle(
+      tertiaryPlayfairMedium18: AppTypography.h3.copyWith(
         fontSize: 18,
-        fontWeight: FontWeight.w500,
-        fontFamily: 'PlayfairDisplay',
-        color: colorSchemeData.textInverse,
-        height: 1.2,
+        color: colorSchemeData.textTertiary,
       ),
-      inversePlayfairMedium20: TextStyle(
-        fontSize: 20,
-        fontWeight: FontWeight.w500,
-        fontFamily: 'PlayfairDisplay',
-        color: colorSchemeData.textInverse,
-        height: 1.2,
+      tertiaryPlayfairMedium20: AppTypography.h3.copyWith(
+        color: colorSchemeData.textTertiary,
       ),
-      inversePlayfairMedium24: TextStyle(
-        fontSize: 24,
+      tertiaryPlayfairMedium24: AppTypography.h2.copyWith(
         fontWeight: FontWeight.w500,
-        fontFamily: 'PlayfairDisplay',
-        color: colorSchemeData.textInverse,
-        height: 1.2,
+        color: colorSchemeData.textTertiary,
       ),
-      inversePlayfairMedium32: TextStyle(
-        fontSize: 32,
+      tertiaryPlayfairMedium32: AppTypography.h1.copyWith(
         fontWeight: FontWeight.w500,
-        fontFamily: 'PlayfairDisplay',
-        color: colorSchemeData.textInverse,
-        height: 1.2,
+        color: colorSchemeData.textTertiary,
       ),
-      inversePlayfairSemiBold12: TextStyle(
+      tertiaryPlayfairSemiBold12: AppTypography.h4.copyWith(
         fontSize: 12,
         fontWeight: FontWeight.w600,
-        fontFamily: 'PlayfairDisplay',
-        color: colorSchemeData.textInverse,
-        height: 1.2,
+        color: colorSchemeData.textTertiary,
       ),
-      inversePlayfairSemiBold14: TextStyle(
+      tertiaryPlayfairSemiBold14: AppTypography.h4.copyWith(
         fontSize: 14,
         fontWeight: FontWeight.w600,
-        fontFamily: 'PlayfairDisplay',
-        color: colorSchemeData.textInverse,
-        height: 1.2,
+        color: colorSchemeData.textTertiary,
       ),
-      inversePlayfairSemiBold16: TextStyle(
-        fontSize: 16,
+      tertiaryPlayfairSemiBold16: AppTypography.h4.copyWith(
         fontWeight: FontWeight.w600,
-        fontFamily: 'PlayfairDisplay',
-        color: colorSchemeData.textInverse,
-        height: 1.2,
-        letterSpacing: -0.408,
+        color: colorSchemeData.textTertiary,
       ),
-      inversePlayfairSemiBold17: TextStyle(
-        fontSize: 17,
-        fontWeight: FontWeight.w600,
-        fontFamily: 'PlayfairDisplay',
-        color: colorSchemeData.textInverse,
-        height: 1.2,
-        letterSpacing: -0.408,
+      tertiaryPlayfairSemiBold17: AppTypography.navTitle.copyWith(
+        color: colorSchemeData.textTertiary,
       ),
-      inversePlayfairSemiBold18: TextStyle(
+      tertiaryPlayfairSemiBold18: AppTypography.h3.copyWith(
         fontSize: 18,
         fontWeight: FontWeight.w600,
-        fontFamily: 'PlayfairDisplay',
-        color: colorSchemeData.textInverse,
-        height: 1.2,
+        color: colorSchemeData.textTertiary,
       ),
-      inversePlayfairSemiBold20: TextStyle(
-        fontSize: 20,
+      tertiaryPlayfairSemiBold20: AppTypography.h3.copyWith(
         fontWeight: FontWeight.w600,
-        fontFamily: 'PlayfairDisplay',
-        color: colorSchemeData.textInverse,
-        height: 1.2,
+        color: colorSchemeData.textTertiary,
       ),
-      inversePlayfairSemiBold24: TextStyle(
-        fontSize: 24,
-        fontWeight: FontWeight.w600,
-        fontFamily: 'PlayfairDisplay',
-        color: colorSchemeData.textInverse,
-        height: 1.2,
+      tertiaryPlayfairSemiBold24: AppTypography.h2.copyWith(
+        color: colorSchemeData.textTertiary,
       ),
-      inversePlayfairSemiBold32: TextStyle(
-        fontSize: 32,
-        fontWeight: FontWeight.w600,
-        fontFamily: 'PlayfairDisplay',
-        color: colorSchemeData.textInverse,
-        height: 1.2,
+      tertiaryPlayfairSemiBold32: AppTypography.h1.copyWith(
+        color: colorSchemeData.textTertiary,
       ),
-      inversePlayfairBold12: TextStyle(
+      tertiaryPlayfairBold12: AppTypography.h4.copyWith(
         fontSize: 12,
         fontWeight: FontWeight.w700,
-        fontFamily: 'PlayfairDisplay',
-        color: colorSchemeData.textInverse,
-        height: 1.2,
+        color: colorSchemeData.textTertiary,
       ),
-      inversePlayfairBold14: TextStyle(
+      tertiaryPlayfairBold14: AppTypography.h4.copyWith(
         fontSize: 14,
         fontWeight: FontWeight.w700,
-        fontFamily: 'PlayfairDisplay',
-        color: colorSchemeData.textInverse,
-        height: 1.2,
+        color: colorSchemeData.textTertiary,
       ),
-      inversePlayfairBold16: TextStyle(
-        fontSize: 16,
+      tertiaryPlayfairBold16: AppTypography.h4.copyWith(
         fontWeight: FontWeight.w700,
-        fontFamily: 'PlayfairDisplay',
-        color: colorSchemeData.textInverse,
-        height: 1.2,
-        letterSpacing: -0.408,
+        color: colorSchemeData.textTertiary,
       ),
-      inversePlayfairBold17: TextStyle(
-        fontSize: 17,
+      tertiaryPlayfairBold17: AppTypography.navTitle.copyWith(
         fontWeight: FontWeight.w700,
-        fontFamily: 'PlayfairDisplay',
-        color: colorSchemeData.textInverse,
-        height: 1.2,
-        letterSpacing: -0.408,
+        color: colorSchemeData.textTertiary,
       ),
-      inversePlayfairBold18: TextStyle(
+      tertiaryPlayfairBold18: AppTypography.h3.copyWith(
         fontSize: 18,
         fontWeight: FontWeight.w700,
-        fontFamily: 'PlayfairDisplay',
-        color: colorSchemeData.textInverse,
-        height: 1.2,
+        color: colorSchemeData.textTertiary,
       ),
-      inversePlayfairBold20: TextStyle(
-        fontSize: 20,
+      tertiaryPlayfairBold20: AppTypography.h3.copyWith(
         fontWeight: FontWeight.w700,
-        fontFamily: 'PlayfairDisplay',
-        color: colorSchemeData.textInverse,
-        height: 1.2,
+        color: colorSchemeData.textTertiary,
       ),
-      inversePlayfairBold24: TextStyle(
-        fontSize: 24,
+      tertiaryPlayfairBold24: AppTypography.h2.copyWith(
         fontWeight: FontWeight.w700,
-        fontFamily: 'PlayfairDisplay',
-        color: colorSchemeData.textInverse,
-        height: 1.2,
+        color: colorSchemeData.textTertiary,
       ),
-      inversePlayfairBold32: TextStyle(
-        fontSize: 32,
+      tertiaryPlayfairBold32: AppTypography.h1.copyWith(
         fontWeight: FontWeight.w700,
-        fontFamily: 'PlayfairDisplay',
-        color: colorSchemeData.textInverse,
-        height: 1.2,
+        color: colorSchemeData.textTertiary,
       ),
-      // Urbanist Inverse variants (textInverse color)
-      inverseUrbanistRegular12: TextStyle(
-        fontSize: 12,
-        fontWeight: FontWeight.w400,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textInverse,
-        height: 1.2,
+      tertiaryUrbanistRegular12: AppTypography.subtext.copyWith(
+        color: colorSchemeData.textTertiary,
       ),
-      inverseUrbanistRegular14: TextStyle(
-        fontSize: 14,
-        fontWeight: FontWeight.w400,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textInverse,
-        height: 1.2,
+      tertiaryUrbanistRegular14: AppTypography.body14.copyWith(
+        color: colorSchemeData.textTertiary,
       ),
-      inverseUrbanistRegular16: TextStyle(
-        fontSize: 16,
-        fontWeight: FontWeight.w400,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textInverse,
-        height: 1.2,
-        letterSpacing: -0.408,
+      tertiaryUrbanistRegular16: AppTypography.text1.copyWith(
+        color: colorSchemeData.textTertiary,
       ),
-      inverseUrbanistRegular17: TextStyle(
-        fontSize: 17,
-        fontWeight: FontWeight.w400,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textInverse,
-        height: 1.2,
-        letterSpacing: -0.408,
+      tertiaryUrbanistRegular17: AppTypography.placeholder.copyWith(
+        color: colorSchemeData.textTertiary,
       ),
-      inverseUrbanistRegular18: TextStyle(
+      tertiaryUrbanistRegular18: AppTypography.text1.copyWith(
         fontSize: 18,
-        fontWeight: FontWeight.w400,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textInverse,
-        height: 1.2,
+        color: colorSchemeData.textTertiary,
       ),
-      inverseUrbanistRegular20: TextStyle(
+      tertiaryUrbanistRegular20: AppTypography.text1.copyWith(
         fontSize: 20,
-        fontWeight: FontWeight.w400,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textInverse,
-        height: 1.2,
+        color: colorSchemeData.textTertiary,
       ),
-      inverseUrbanistRegular24: TextStyle(
+      tertiaryUrbanistRegular24: AppTypography.text1.copyWith(
         fontSize: 24,
-        fontWeight: FontWeight.w400,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textInverse,
-        height: 1.2,
+        color: colorSchemeData.textTertiary,
       ),
-      inverseUrbanistRegular32: TextStyle(
+      tertiaryUrbanistRegular32: AppTypography.text1.copyWith(
         fontSize: 32,
-        fontWeight: FontWeight.w400,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textInverse,
-        height: 1.2,
+        color: colorSchemeData.textTertiary,
       ),
-      inverseUrbanistMedium12: TextStyle(
-        fontSize: 12,
+      tertiaryUrbanistMedium12: AppTypography.subtext.copyWith(
         fontWeight: FontWeight.w500,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textInverse,
-        height: 1.2,
+        color: colorSchemeData.textTertiary,
       ),
-      inverseUrbanistMedium14: TextStyle(
-        fontSize: 14,
+      tertiaryUrbanistMedium14: AppTypography.label14.copyWith(
+        color: colorSchemeData.textTertiary,
+      ),
+      tertiaryUrbanistMedium16: AppTypography.text1.copyWith(
         fontWeight: FontWeight.w500,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textInverse,
-        height: 1.2,
+        color: colorSchemeData.textTertiary,
       ),
-      inverseUrbanistMedium16: TextStyle(
-        fontSize: 16,
+      tertiaryUrbanistMedium17: AppTypography.placeholder.copyWith(
         fontWeight: FontWeight.w500,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textInverse,
-        height: 1.2,
-        letterSpacing: -0.408,
+        color: colorSchemeData.textTertiary,
       ),
-      inverseUrbanistMedium17: TextStyle(
-        fontSize: 17,
-        fontWeight: FontWeight.w500,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textInverse,
-        height: 1.2,
-        letterSpacing: -0.408,
-      ),
-      inverseUrbanistMedium18: TextStyle(
+      tertiaryUrbanistMedium18: AppTypography.text1.copyWith(
         fontSize: 18,
         fontWeight: FontWeight.w500,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textInverse,
-        height: 1.2,
+        color: colorSchemeData.textTertiary,
       ),
-      inverseUrbanistMedium20: TextStyle(
+      tertiaryUrbanistMedium20: AppTypography.text1.copyWith(
         fontSize: 20,
         fontWeight: FontWeight.w500,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textInverse,
-        height: 1.2,
+        color: colorSchemeData.textTertiary,
       ),
-      inverseUrbanistMedium24: TextStyle(
+      tertiaryUrbanistMedium24: AppTypography.text1.copyWith(
         fontSize: 24,
         fontWeight: FontWeight.w500,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textInverse,
-        height: 1.2,
+        color: colorSchemeData.textTertiary,
       ),
-      inverseUrbanistMedium32: TextStyle(
+      tertiaryUrbanistMedium32: AppTypography.text1.copyWith(
         fontSize: 32,
         fontWeight: FontWeight.w500,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textInverse,
-        height: 1.2,
+        color: colorSchemeData.textTertiary,
       ),
-      inverseUrbanistSemiBold12: TextStyle(
-        fontSize: 12,
+      tertiaryUrbanistSemiBold12: AppTypography.subtextSemiBold.copyWith(
+        color: colorSchemeData.textTertiary,
+      ),
+      tertiaryUrbanistSemiBold14: AppTypography.body14.copyWith(
         fontWeight: FontWeight.w600,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textInverse,
-        height: 1.2,
+        color: colorSchemeData.textTertiary,
       ),
-      inverseUrbanistSemiBold14: TextStyle(
-        fontSize: 14,
-        fontWeight: FontWeight.w600,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textInverse,
-        height: 1.2,
+      tertiaryUrbanistSemiBold16: AppTypography.text1SemiBold.copyWith(
+        color: colorSchemeData.textTertiary,
       ),
-      inverseUrbanistSemiBold16: TextStyle(
-        fontSize: 16,
-        fontWeight: FontWeight.w600,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textInverse,
-        height: 1.2,
-        letterSpacing: -0.408,
+      tertiaryUrbanistSemiBold17: AppTypography.placeholderSemiBold.copyWith(
+        color: colorSchemeData.textTertiary,
       ),
-      inverseUrbanistSemiBold17: TextStyle(
-        fontSize: 17,
-        fontWeight: FontWeight.w600,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textInverse,
-        height: 1.2,
-        letterSpacing: -0.408,
-      ),
-      inverseUrbanistSemiBold18: TextStyle(
+      tertiaryUrbanistSemiBold18: AppTypography.text1SemiBold.copyWith(
         fontSize: 18,
-        fontWeight: FontWeight.w600,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textInverse,
-        height: 1.2,
+        color: colorSchemeData.textTertiary,
       ),
-      inverseUrbanistSemiBold20: TextStyle(
+      tertiaryUrbanistSemiBold20: AppTypography.text1SemiBold.copyWith(
         fontSize: 20,
-        fontWeight: FontWeight.w600,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textInverse,
-        height: 1.2,
+        color: colorSchemeData.textTertiary,
       ),
-      inverseUrbanistSemiBold24: TextStyle(
+      tertiaryUrbanistSemiBold24: AppTypography.text1SemiBold.copyWith(
         fontSize: 24,
-        fontWeight: FontWeight.w600,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textInverse,
-        height: 1.2,
+        color: colorSchemeData.textTertiary,
       ),
-      inverseUrbanistSemiBold32: TextStyle(
+      tertiaryUrbanistSemiBold32: AppTypography.text1SemiBold.copyWith(
         fontSize: 32,
-        fontWeight: FontWeight.w600,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textInverse,
-        height: 1.2,
+        color: colorSchemeData.textTertiary,
       ),
-      inverseUrbanistBold12: TextStyle(
-        fontSize: 12,
+      tertiaryUrbanistBold12: AppTypography.subtext.copyWith(
         fontWeight: FontWeight.w700,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textInverse,
-        height: 1.2,
+        color: colorSchemeData.textTertiary,
       ),
-      inverseUrbanistBold14: TextStyle(
-        fontSize: 14,
+      tertiaryUrbanistBold14: AppTypography.body14.copyWith(
         fontWeight: FontWeight.w700,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textInverse,
-        height: 1.2,
+        color: colorSchemeData.textTertiary,
       ),
-      inverseUrbanistBold16: TextStyle(
-        fontSize: 16,
+      tertiaryUrbanistBold16: AppTypography.text1.copyWith(
         fontWeight: FontWeight.w700,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textInverse,
-        height: 1.2,
-        letterSpacing: -0.408,
+        color: colorSchemeData.textTertiary,
       ),
-      inverseUrbanistBold17: TextStyle(
-        fontSize: 17,
+      tertiaryUrbanistBold17: AppTypography.placeholder.copyWith(
         fontWeight: FontWeight.w700,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textInverse,
-        height: 1.2,
-        letterSpacing: -0.408,
+        color: colorSchemeData.textTertiary,
       ),
-      inverseUrbanistBold18: TextStyle(
+      tertiaryUrbanistBold18: AppTypography.text1.copyWith(
         fontSize: 18,
         fontWeight: FontWeight.w700,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textInverse,
-        height: 1.2,
+        color: colorSchemeData.textTertiary,
       ),
-      inverseUrbanistBold20: TextStyle(
+      tertiaryUrbanistBold20: AppTypography.text1.copyWith(
         fontSize: 20,
         fontWeight: FontWeight.w700,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textInverse,
-        height: 1.2,
+        color: colorSchemeData.textTertiary,
       ),
-      inverseUrbanistBold24: TextStyle(
+      tertiaryUrbanistBold24: AppTypography.text1.copyWith(
         fontSize: 24,
         fontWeight: FontWeight.w700,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textInverse,
-        height: 1.2,
+        color: colorSchemeData.textTertiary,
       ),
-      inverseUrbanistBold32: TextStyle(
+      tertiaryUrbanistBold32: AppTypography.text1.copyWith(
         fontSize: 32,
         fontWeight: FontWeight.w700,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textInverse,
-        height: 1.2,
-      ),
-      // PlayfairDisplay Tertiary variants (textTertiary color)
-      tertiaryPlayfairRegular12: TextStyle(
-        fontSize: 12,
-        fontWeight: FontWeight.w400,
-        fontFamily: 'PlayfairDisplay',
         color: colorSchemeData.textTertiary,
-        height: 1.2,
-      ),
-      tertiaryPlayfairRegular14: TextStyle(
-        fontSize: 14,
-        fontWeight: FontWeight.w400,
-        fontFamily: 'PlayfairDisplay',
-        color: colorSchemeData.textTertiary,
-        height: 1.2,
-      ),
-      tertiaryPlayfairRegular16: TextStyle(
-        fontSize: 16,
-        fontWeight: FontWeight.w400,
-        fontFamily: 'PlayfairDisplay',
-        color: colorSchemeData.textTertiary,
-        height: 1.2,
-        letterSpacing: -0.408,
-      ),
-      tertiaryPlayfairRegular17: TextStyle(
-        fontSize: 17,
-        fontWeight: FontWeight.w400,
-        fontFamily: 'PlayfairDisplay',
-        color: colorSchemeData.textTertiary,
-        height: 1.2,
-        letterSpacing: -0.408,
-      ),
-      tertiaryPlayfairRegular18: TextStyle(
-        fontSize: 18,
-        fontWeight: FontWeight.w400,
-        fontFamily: 'PlayfairDisplay',
-        color: colorSchemeData.textTertiary,
-        height: 1.2,
-      ),
-      tertiaryPlayfairRegular20: TextStyle(
-        fontSize: 20,
-        fontWeight: FontWeight.w400,
-        fontFamily: 'PlayfairDisplay',
-        color: colorSchemeData.textTertiary,
-        height: 1.2,
-      ),
-      tertiaryPlayfairRegular24: TextStyle(
-        fontSize: 24,
-        fontWeight: FontWeight.w400,
-        fontFamily: 'PlayfairDisplay',
-        color: colorSchemeData.textTertiary,
-        height: 1.2,
-      ),
-      tertiaryPlayfairRegular32: TextStyle(
-        fontSize: 32,
-        fontWeight: FontWeight.w400,
-        fontFamily: 'PlayfairDisplay',
-        color: colorSchemeData.textTertiary,
-        height: 1.2,
-      ),
-      tertiaryPlayfairMedium12: TextStyle(
-        fontSize: 12,
-        fontWeight: FontWeight.w500,
-        fontFamily: 'PlayfairDisplay',
-        color: colorSchemeData.textTertiary,
-        height: 1.2,
-      ),
-      tertiaryPlayfairMedium14: TextStyle(
-        fontSize: 14,
-        fontWeight: FontWeight.w500,
-        fontFamily: 'PlayfairDisplay',
-        color: colorSchemeData.textTertiary,
-        height: 1.2,
-      ),
-      tertiaryPlayfairMedium16: TextStyle(
-        fontSize: 16,
-        fontWeight: FontWeight.w500,
-        fontFamily: 'PlayfairDisplay',
-        color: colorSchemeData.textTertiary,
-        height: 1.2,
-        letterSpacing: -0.408,
-      ),
-      tertiaryPlayfairMedium17: TextStyle(
-        fontSize: 17,
-        fontWeight: FontWeight.w500,
-        fontFamily: 'PlayfairDisplay',
-        color: colorSchemeData.textTertiary,
-        height: 1.2,
-        letterSpacing: -0.408,
-      ),
-      tertiaryPlayfairMedium18: TextStyle(
-        fontSize: 18,
-        fontWeight: FontWeight.w500,
-        fontFamily: 'PlayfairDisplay',
-        color: colorSchemeData.textTertiary,
-        height: 1.2,
-      ),
-      tertiaryPlayfairMedium20: TextStyle(
-        fontSize: 20,
-        fontWeight: FontWeight.w500,
-        fontFamily: 'PlayfairDisplay',
-        color: colorSchemeData.textTertiary,
-        height: 1.2,
-      ),
-      tertiaryPlayfairMedium24: TextStyle(
-        fontSize: 24,
-        fontWeight: FontWeight.w500,
-        fontFamily: 'PlayfairDisplay',
-        color: colorSchemeData.textTertiary,
-        height: 1.2,
-      ),
-      tertiaryPlayfairMedium32: TextStyle(
-        fontSize: 32,
-        fontWeight: FontWeight.w500,
-        fontFamily: 'PlayfairDisplay',
-        color: colorSchemeData.textTertiary,
-        height: 1.2,
-      ),
-      tertiaryPlayfairSemiBold12: TextStyle(
-        fontSize: 12,
-        fontWeight: FontWeight.w600,
-        fontFamily: 'PlayfairDisplay',
-        color: colorSchemeData.textTertiary,
-        height: 1.2,
-      ),
-      tertiaryPlayfairSemiBold14: TextStyle(
-        fontSize: 14,
-        fontWeight: FontWeight.w600,
-        fontFamily: 'PlayfairDisplay',
-        color: colorSchemeData.textTertiary,
-        height: 1.2,
-      ),
-      tertiaryPlayfairSemiBold16: TextStyle(
-        fontSize: 16,
-        fontWeight: FontWeight.w600,
-        fontFamily: 'PlayfairDisplay',
-        color: colorSchemeData.textTertiary,
-        height: 1.2,
-        letterSpacing: -0.408,
-      ),
-      tertiaryPlayfairSemiBold17: TextStyle(
-        fontSize: 17,
-        fontWeight: FontWeight.w600,
-        fontFamily: 'PlayfairDisplay',
-        color: colorSchemeData.textTertiary,
-        height: 1.2,
-        letterSpacing: -0.408,
-      ),
-      tertiaryPlayfairSemiBold18: TextStyle(
-        fontSize: 18,
-        fontWeight: FontWeight.w600,
-        fontFamily: 'PlayfairDisplay',
-        color: colorSchemeData.textTertiary,
-        height: 1.2,
-      ),
-      tertiaryPlayfairSemiBold20: TextStyle(
-        fontSize: 20,
-        fontWeight: FontWeight.w600,
-        fontFamily: 'PlayfairDisplay',
-        color: colorSchemeData.textTertiary,
-        height: 1.2,
-      ),
-      tertiaryPlayfairSemiBold24: TextStyle(
-        fontSize: 24,
-        fontWeight: FontWeight.w600,
-        fontFamily: 'PlayfairDisplay',
-        color: colorSchemeData.textTertiary,
-        height: 1.2,
-      ),
-      tertiaryPlayfairSemiBold32: TextStyle(
-        fontSize: 32,
-        fontWeight: FontWeight.w600,
-        fontFamily: 'PlayfairDisplay',
-        color: colorSchemeData.textTertiary,
-        height: 1.2,
-      ),
-      tertiaryPlayfairBold12: TextStyle(
-        fontSize: 12,
-        fontWeight: FontWeight.w700,
-        fontFamily: 'PlayfairDisplay',
-        color: colorSchemeData.textTertiary,
-        height: 1.2,
-      ),
-      tertiaryPlayfairBold14: TextStyle(
-        fontSize: 14,
-        fontWeight: FontWeight.w700,
-        fontFamily: 'PlayfairDisplay',
-        color: colorSchemeData.textTertiary,
-        height: 1.2,
-      ),
-      tertiaryPlayfairBold16: TextStyle(
-        fontSize: 16,
-        fontWeight: FontWeight.w700,
-        fontFamily: 'PlayfairDisplay',
-        color: colorSchemeData.textTertiary,
-        height: 1.2,
-        letterSpacing: -0.408,
-      ),
-      tertiaryPlayfairBold17: TextStyle(
-        fontSize: 17,
-        fontWeight: FontWeight.w700,
-        fontFamily: 'PlayfairDisplay',
-        color: colorSchemeData.textTertiary,
-        height: 1.2,
-        letterSpacing: -0.408,
-      ),
-      tertiaryPlayfairBold18: TextStyle(
-        fontSize: 18,
-        fontWeight: FontWeight.w700,
-        fontFamily: 'PlayfairDisplay',
-        color: colorSchemeData.textTertiary,
-        height: 1.2,
-      ),
-      tertiaryPlayfairBold20: TextStyle(
-        fontSize: 20,
-        fontWeight: FontWeight.w700,
-        fontFamily: 'PlayfairDisplay',
-        color: colorSchemeData.textTertiary,
-        height: 1.2,
-      ),
-      tertiaryPlayfairBold24: TextStyle(
-        fontSize: 24,
-        fontWeight: FontWeight.w700,
-        fontFamily: 'PlayfairDisplay',
-        color: colorSchemeData.textTertiary,
-        height: 1.2,
-      ),
-      tertiaryPlayfairBold32: TextStyle(
-        fontSize: 32,
-        fontWeight: FontWeight.w700,
-        fontFamily: 'PlayfairDisplay',
-        color: colorSchemeData.textTertiary,
-        height: 1.2,
-      ),
-      // Urbanist Tertiary variants (textTertiary color)
-      tertiaryUrbanistRegular12: TextStyle(
-        fontSize: 12,
-        fontWeight: FontWeight.w400,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textTertiary,
-        height: 1.2,
-      ),
-      tertiaryUrbanistRegular14: TextStyle(
-        fontSize: 14,
-        fontWeight: FontWeight.w400,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textTertiary,
-        height: 1.2,
-      ),
-      tertiaryUrbanistRegular16: TextStyle(
-        fontSize: 16,
-        fontWeight: FontWeight.w400,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textTertiary,
-        height: 1.2,
-        letterSpacing: -0.408,
-      ),
-      tertiaryUrbanistRegular17: TextStyle(
-        fontSize: 17,
-        fontWeight: FontWeight.w400,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textTertiary,
-        height: 1.2,
-        letterSpacing: -0.408,
-      ),
-      tertiaryUrbanistRegular18: TextStyle(
-        fontSize: 18,
-        fontWeight: FontWeight.w400,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textTertiary,
-        height: 1.2,
-      ),
-      tertiaryUrbanistRegular20: TextStyle(
-        fontSize: 20,
-        fontWeight: FontWeight.w400,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textTertiary,
-        height: 1.2,
-      ),
-      tertiaryUrbanistRegular24: TextStyle(
-        fontSize: 24,
-        fontWeight: FontWeight.w400,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textTertiary,
-        height: 1.2,
-      ),
-      tertiaryUrbanistRegular32: TextStyle(
-        fontSize: 32,
-        fontWeight: FontWeight.w400,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textTertiary,
-        height: 1.2,
-      ),
-      tertiaryUrbanistMedium12: TextStyle(
-        fontSize: 12,
-        fontWeight: FontWeight.w500,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textTertiary,
-        height: 1.2,
-      ),
-      tertiaryUrbanistMedium14: TextStyle(
-        fontSize: 14,
-        fontWeight: FontWeight.w500,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textTertiary,
-        height: 1.2,
-      ),
-      tertiaryUrbanistMedium16: TextStyle(
-        fontSize: 16,
-        fontWeight: FontWeight.w500,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textTertiary,
-        height: 1.2,
-        letterSpacing: -0.408,
-      ),
-      tertiaryUrbanistMedium17: TextStyle(
-        fontSize: 17,
-        fontWeight: FontWeight.w500,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textTertiary,
-        height: 1.2,
-        letterSpacing: -0.408,
-      ),
-      tertiaryUrbanistMedium18: TextStyle(
-        fontSize: 18,
-        fontWeight: FontWeight.w500,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textTertiary,
-        height: 1.2,
-      ),
-      tertiaryUrbanistMedium20: TextStyle(
-        fontSize: 20,
-        fontWeight: FontWeight.w500,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textTertiary,
-        height: 1.2,
-      ),
-      tertiaryUrbanistMedium24: TextStyle(
-        fontSize: 24,
-        fontWeight: FontWeight.w500,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textTertiary,
-        height: 1.2,
-      ),
-      tertiaryUrbanistMedium32: TextStyle(
-        fontSize: 32,
-        fontWeight: FontWeight.w500,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textTertiary,
-        height: 1.2,
-      ),
-      tertiaryUrbanistSemiBold12: TextStyle(
-        fontSize: 12,
-        fontWeight: FontWeight.w600,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textTertiary,
-        height: 1.2,
-      ),
-      tertiaryUrbanistSemiBold14: TextStyle(
-        fontSize: 14,
-        fontWeight: FontWeight.w600,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textTertiary,
-        height: 1.2,
-      ),
-      tertiaryUrbanistSemiBold16: TextStyle(
-        fontSize: 16,
-        fontWeight: FontWeight.w600,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textTertiary,
-        height: 1.2,
-        letterSpacing: -0.408,
-      ),
-      tertiaryUrbanistSemiBold17: TextStyle(
-        fontSize: 17,
-        fontWeight: FontWeight.w600,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textTertiary,
-        height: 1.2,
-        letterSpacing: -0.408,
-      ),
-      tertiaryUrbanistSemiBold18: TextStyle(
-        fontSize: 18,
-        fontWeight: FontWeight.w600,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textTertiary,
-        height: 1.2,
-      ),
-      tertiaryUrbanistSemiBold20: TextStyle(
-        fontSize: 20,
-        fontWeight: FontWeight.w600,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textTertiary,
-        height: 1.2,
-      ),
-      tertiaryUrbanistSemiBold24: TextStyle(
-        fontSize: 24,
-        fontWeight: FontWeight.w600,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textTertiary,
-        height: 1.2,
-      ),
-      tertiaryUrbanistSemiBold32: TextStyle(
-        fontSize: 32,
-        fontWeight: FontWeight.w600,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textTertiary,
-        height: 1.2,
-      ),
-      tertiaryUrbanistBold12: TextStyle(
-        fontSize: 12,
-        fontWeight: FontWeight.w700,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textTertiary,
-        height: 1.2,
-      ),
-      tertiaryUrbanistBold14: TextStyle(
-        fontSize: 14,
-        fontWeight: FontWeight.w700,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textTertiary,
-        height: 1.2,
-      ),
-      tertiaryUrbanistBold16: TextStyle(
-        fontSize: 16,
-        fontWeight: FontWeight.w700,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textTertiary,
-        height: 1.2,
-        letterSpacing: -0.408,
-      ),
-      tertiaryUrbanistBold17: TextStyle(
-        fontSize: 17,
-        fontWeight: FontWeight.w700,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textTertiary,
-        height: 1.2,
-        letterSpacing: -0.408,
-      ),
-      tertiaryUrbanistBold18: TextStyle(
-        fontSize: 18,
-        fontWeight: FontWeight.w700,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textTertiary,
-        height: 1.2,
-      ),
-      tertiaryUrbanistBold20: TextStyle(
-        fontSize: 20,
-        fontWeight: FontWeight.w700,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textTertiary,
-        height: 1.2,
-      ),
-      tertiaryUrbanistBold24: TextStyle(
-        fontSize: 24,
-        fontWeight: FontWeight.w700,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textTertiary,
-        height: 1.2,
-      ),
-      tertiaryUrbanistBold32: TextStyle(
-        fontSize: 32,
-        fontWeight: FontWeight.w700,
-        fontFamily: 'Urbanist',
-        color: colorSchemeData.textTertiary,
-        height: 1.2,
       ),
     );
   }
@@ -1592,12 +864,56 @@ abstract class AppTheme {
     final colorSchemeData = getColorsThemeData(context);
     final cornersThemeData = getCornersThemeData(context);
     final spacingThemeData = getSpacingThemeData(context);
-    final textThemeData = getTextTheme(context, colorSchemeData: colorSchemeData);
+    final textThemeData = getTextTheme(
+      context,
+      colorSchemeData: colorSchemeData,
+    );
 
-    return getBaseThemeData(context).copyWith(
+    final base = getBaseThemeData(context);
+    final cupertino = CupertinoTextThemeData(
+      primaryColor: colorSchemeData.primary,
+    );
+
+    return base.copyWith(
+      textTheme: base.textTheme.merge(AppTypography.material),
+      primaryTextTheme: base.primaryTextTheme.merge(AppTypography.material),
+      cupertinoOverrideTheme: NoDefaultCupertinoThemeData(
+        textTheme: cupertino.copyWith(
+          textStyle: cupertino.textStyle.merge(AppTypography.text1),
+          actionTextStyle: cupertino.actionTextStyle.merge(
+            AppTypography.text1SemiBold,
+          ),
+          actionSmallTextStyle: cupertino.actionSmallTextStyle.merge(
+            AppTypography.text2,
+          ),
+          navTitleTextStyle: cupertino.navTitleTextStyle.merge(
+            AppTypography.navTitle,
+          ),
+          navLargeTitleTextStyle: cupertino.navLargeTitleTextStyle.merge(
+            AppTypography.navLargeTitle,
+          ),
+          navActionTextStyle: cupertino.navActionTextStyle.merge(
+            AppTypography.text1,
+          ),
+          tabLabelTextStyle: cupertino.tabLabelTextStyle.merge(
+            AppTypography.tabBar,
+          ),
+          pickerTextStyle: cupertino.pickerTextStyle.copyWith(
+            fontFamily: AppTypography.bodyFamily,
+          ),
+          dateTimePickerTextStyle: cupertino.dateTimePickerTextStyle.copyWith(
+            fontFamily: AppTypography.bodyFamily,
+          ),
+        ),
+      ),
       canvasColor: colorSchemeData.background,
       scaffoldBackgroundColor: colorSchemeData.background,
-      extensions: [colorSchemeData, cornersThemeData, spacingThemeData, textThemeData],
+      extensions: [
+        colorSchemeData,
+        cornersThemeData,
+        spacingThemeData,
+        textThemeData,
+      ],
       colorScheme: ColorScheme(
         brightness: Theme.of(context).brightness,
         primary: colorSchemeData.primary,
@@ -1611,21 +927,33 @@ abstract class AppTheme {
       ),
       inputDecorationTheme: InputDecorationTheme(
         hintStyle: textThemeData.inputHint,
-        contentPadding: EdgeInsets.symmetric(horizontal: spacingThemeData.medium, vertical: spacingThemeData.medium),
+        contentPadding: EdgeInsets.symmetric(
+          horizontal: spacingThemeData.medium,
+          vertical: spacingThemeData.medium,
+        ),
         hintFadeDuration: Duration.zero,
         isDense: true,
         filled: true,
         border: OutlineInputBorder(
           borderRadius: cornersThemeData.small,
-          borderSide: BorderSide(color: colorSchemeData.textFieldBorderUnselected, width: 1),
+          borderSide: BorderSide(
+            color: colorSchemeData.textFieldBorderUnselected,
+            width: 1,
+          ),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: cornersThemeData.small,
-          borderSide: BorderSide(color: colorSchemeData.textFieldBorderUnselected, width: 1),
+          borderSide: BorderSide(
+            color: colorSchemeData.textFieldBorderUnselected,
+            width: 1,
+          ),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: cornersThemeData.small,
-          borderSide: BorderSide(color: colorSchemeData.textFieldBorderSelected, width: 1),
+          borderSide: BorderSide(
+            color: colorSchemeData.textFieldBorderSelected,
+            width: 1,
+          ),
         ),
         fillColor: colorSchemeData.textFieldBackground,
         prefixIconColor: colorSchemeData.textSecondary,
@@ -1656,17 +984,26 @@ abstract class AppTheme {
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ButtonStyle(
           visualDensity: VisualDensity.compact,
-          shape: WidgetStatePropertyAll(RoundedRectangleBorder(borderRadius: cornersThemeData.large)),
-          padding: WidgetStatePropertyAll(
-            EdgeInsets.symmetric(horizontal: spacingThemeData.medium, vertical: spacingThemeData.medium),
+          shape: WidgetStatePropertyAll(
+            RoundedRectangleBorder(borderRadius: cornersThemeData.large),
           ),
-          backgroundColor: WidgetStateProperty.resolveWith<Color?>((Set<WidgetState> states) {
+          padding: WidgetStatePropertyAll(
+            EdgeInsets.symmetric(
+              horizontal: spacingThemeData.medium,
+              vertical: spacingThemeData.medium,
+            ),
+          ),
+          backgroundColor: WidgetStateProperty.resolveWith<Color?>((
+            Set<WidgetState> states,
+          ) {
             if (states.contains(WidgetState.disabled)) {
               return colorSchemeData.buttonBackgroundDisabled;
             }
             return colorSchemeData.buttonBackground;
           }),
-          overlayColor: WidgetStateProperty.resolveWith<Color?>((Set<WidgetState> states) {
+          overlayColor: WidgetStateProperty.resolveWith<Color?>((
+            Set<WidgetState> states,
+          ) {
             if (states.contains(WidgetState.pressed)) {
               return colorSchemeData.buttonBackgroundPressed;
             }
@@ -1680,18 +1017,29 @@ abstract class AppTheme {
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: ButtonStyle(
           visualDensity: VisualDensity.compact,
-          shape: WidgetStatePropertyAll(RoundedRectangleBorder(borderRadius: cornersThemeData.large)),
-          side: WidgetStatePropertyAll(BorderSide(color: colorSchemeData.containerBorder)),
-          padding: WidgetStatePropertyAll(
-            EdgeInsets.symmetric(horizontal: spacingThemeData.medium, vertical: spacingThemeData.medium),
+          shape: WidgetStatePropertyAll(
+            RoundedRectangleBorder(borderRadius: cornersThemeData.large),
           ),
-          overlayColor: WidgetStateProperty.resolveWith<Color?>((Set<WidgetState> states) {
+          side: WidgetStatePropertyAll(
+            BorderSide(color: colorSchemeData.containerBorder),
+          ),
+          padding: WidgetStatePropertyAll(
+            EdgeInsets.symmetric(
+              horizontal: spacingThemeData.medium,
+              vertical: spacingThemeData.medium,
+            ),
+          ),
+          overlayColor: WidgetStateProperty.resolveWith<Color?>((
+            Set<WidgetState> states,
+          ) {
             if (states.contains(WidgetState.pressed)) {
               return colorSchemeData.outlinedButtonText.withValues(alpha: 0.1);
             }
             return Colors.transparent;
           }),
-          foregroundColor: WidgetStatePropertyAll(colorSchemeData.outlinedButtonText),
+          foregroundColor: WidgetStatePropertyAll(
+            colorSchemeData.outlinedButtonText,
+          ),
           textStyle: WidgetStatePropertyAll(textThemeData.button),
           iconSize: const WidgetStatePropertyAll(20),
         ),
@@ -1702,15 +1050,26 @@ abstract class AppTheme {
         shape: RoundedRectangleBorder(borderRadius: cornersThemeData.medium),
         margin: EdgeInsets.all(spacingThemeData.small),
       ),
-      iconButtonTheme: IconButtonThemeData(style: ButtonStyle(iconColor: WidgetStatePropertyAll(colorSchemeData.textPrimary))),
+      iconButtonTheme: IconButtonThemeData(
+        style: ButtonStyle(
+          iconColor: WidgetStatePropertyAll(colorSchemeData.textPrimary),
+        ),
+      ),
       textButtonTheme: TextButtonThemeData(
         style: ButtonStyle(
           visualDensity: VisualDensity.compact,
-          shape: WidgetStatePropertyAll(RoundedRectangleBorder(borderRadius: cornersThemeData.large)),
-          padding: WidgetStatePropertyAll(
-            EdgeInsets.symmetric(horizontal: spacingThemeData.medium, vertical: spacingThemeData.medium),
+          shape: WidgetStatePropertyAll(
+            RoundedRectangleBorder(borderRadius: cornersThemeData.large),
           ),
-          overlayColor: WidgetStateProperty.resolveWith<Color?>((Set<WidgetState> states) {
+          padding: WidgetStatePropertyAll(
+            EdgeInsets.symmetric(
+              horizontal: spacingThemeData.medium,
+              vertical: spacingThemeData.medium,
+            ),
+          ),
+          overlayColor: WidgetStateProperty.resolveWith<Color?>((
+            Set<WidgetState> states,
+          ) {
             if (states.contains(WidgetState.pressed)) {
               return colorSchemeData.primary.withValues(alpha: 0.1);
             }
@@ -1721,10 +1080,16 @@ abstract class AppTheme {
           iconSize: const WidgetStatePropertyAll(20),
         ),
       ),
-      dividerTheme: DividerThemeData(color: colorSchemeData.divider, thickness: 1, space: spacingThemeData.medium),
+      dividerTheme: DividerThemeData(
+        color: colorSchemeData.divider,
+        thickness: 1,
+        space: spacingThemeData.medium,
+      ),
       snackBarTheme: SnackBarThemeData(
         backgroundColor: colorSchemeData.surface,
-        contentTextStyle: textThemeData.urbanistRegular16.copyWith(color: colorSchemeData.textPrimary),
+        contentTextStyle: textThemeData.urbanistRegular16.copyWith(
+          color: colorSchemeData.textPrimary,
+        ),
         shape: RoundedRectangleBorder(borderRadius: cornersThemeData.small),
       ),
     );

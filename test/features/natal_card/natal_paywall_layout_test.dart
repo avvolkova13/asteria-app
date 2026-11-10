@@ -11,8 +11,8 @@ void main() {
 
   setUpAll(() async {
     for (final font in {
-      'PlayfairDisplay': 'assets/fonts/playfair/PlayfairDisplay-SemiBold.ttf',
-      'Urbanist': 'assets/fonts/urbanist/Urbanist-Regular.ttf',
+
+
       'Lora': 'assets/fonts/lora/Lora-VariableFont_wght.ttf',
       'Onest': 'assets/fonts/onest/Onest-VariableFont_wght.ttf',
     }.entries) {

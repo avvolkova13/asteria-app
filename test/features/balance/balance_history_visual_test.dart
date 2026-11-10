@@ -38,10 +38,6 @@ void main() {
           ('MaterialIcons', 'fonts/MaterialIcons-Regular.otf'),
           ('Onest', 'assets/fonts/onest/Onest-VariableFont_wght.ttf'),
           ('Lora', 'assets/fonts/lora/Lora-VariableFont_wght.ttf'),
-          (
-            'PlayfairDisplay',
-            'assets/fonts/playfair/PlayfairDisplay-SemiBold.ttf',
-          ),
         ]) {
           await (FontLoader(font.$1)..addFont(rootBundle.load(font.$2))).load();
         }

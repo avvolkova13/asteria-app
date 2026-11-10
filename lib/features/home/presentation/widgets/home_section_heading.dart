@@ -12,11 +12,7 @@ class HomeSectionHeading extends StatelessWidget {
       header: true,
       child: Text(
         title,
-        style: context.textTheme.playfairSemiBold32.copyWith(
-          fontFamily: 'Lora',
-          color: AppColors.textInverse,
-          height: 1.2,
-        ),
+        style: AppTypography.h1.copyWith(color: AppColors.textInverse),
       ),
     );
   }

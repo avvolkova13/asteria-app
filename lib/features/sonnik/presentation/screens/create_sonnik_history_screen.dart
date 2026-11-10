@@ -94,7 +94,7 @@ class _SonnikHistoryItem extends StatelessWidget {
                   sonnik.title,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: context.textTheme.inverseUrbanistSemiBold17,
+                  style: AppTypography.h4.copyWith(color: SonnikPalette.white),
                 ),
               ],
             ),

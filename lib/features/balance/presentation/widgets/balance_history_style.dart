@@ -19,7 +19,7 @@ abstract final class BalanceHistoryStyle {
     fontWeight: FontWeight.w400,
     fontSize: 16,
     height: 1.2,
-    letterSpacing: 0,
+    letterSpacing: -0.408,
     color: Colors.white,
   );
   static const title = TextStyle(
@@ -28,7 +28,7 @@ abstract final class BalanceHistoryStyle {
     fontVariations: [ui.FontVariation('wght', 600)],
     fontSize: 17,
     height: 1.2,
-    letterSpacing: 0,
+    letterSpacing: -0.408,
     color: Colors.white,
   );
   static const emptyTitle = TextStyle(

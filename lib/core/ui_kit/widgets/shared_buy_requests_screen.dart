@@ -55,9 +55,7 @@ class _SharedBuyRequestsScreenState extends State<SharedBuyRequestsScreen> {
         Text(
           widget.title,
           textAlign: TextAlign.center,
-          style: context.textTheme.inversePlayfairSemiBold32.copyWith(
-            height: 1,
-          ),
+          style: AppTypography.h1.copyWith(color: AppColors.textInverse),
         ),
         const SizedBox(height: 24),
         ...widget.packages.asMap().entries.map((entry) {
@@ -234,7 +232,7 @@ class _GradientBuyButton extends StatelessWidget {
             ),
             child: Text(
               text,
-              style: context.textTheme.inverseUrbanistRegular16,
+              style: AppTypography.text1SemiBold.copyWith(color: AppColors.textInverse),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),

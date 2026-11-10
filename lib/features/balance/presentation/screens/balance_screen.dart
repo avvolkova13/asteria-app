@@ -83,10 +83,7 @@ class _IntroText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final baseStyle = context.textTheme.inversePlayfairSemiBold24.copyWith(
-      fontSize: 20,
-      height: 1.08,
-    );
+    final baseStyle = context.textTheme.inverseUrbanistRegular16;
 
     return RichText(
       text: TextSpan(
@@ -94,7 +91,7 @@ class _IntroText extends StatelessWidget {
         children: [
           TextSpan(
             text: context.l10n.balanceTitle,
-            style: baseStyle.copyWith(color: ProfileFlowColors.accent),
+            style: AppTypography.h3.copyWith(color: ProfileFlowColors.accent),
           ),
           TextSpan(text: context.l10n.balanceCurrencyDescription),
         ],
@@ -238,9 +235,7 @@ class _WhereToSpend extends StatelessWidget {
         children: [
           Text(
             context.l10n.balanceWhereToSpend,
-            style: context.textTheme.inversePlayfairSemiBold24.copyWith(
-              height: 1.08,
-            ),
+            style: context.textTheme.inversePlayfairSemiBold24,
           ),
           const SizedBox(height: 12),
           for (var index = 0; index < _items(context).length; index++) ...[

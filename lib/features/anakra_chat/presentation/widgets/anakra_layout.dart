@@ -130,7 +130,7 @@ class AnakraTopNavBar extends StatelessWidget {
               context.l10n.anakraTitle,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: context.textTheme.inverseUrbanistSemiBold17,
+              style: AppTypography.navTitle.copyWith(color: Colors.white),
             ),
           ),
           const SizedBox(width: 8),
@@ -149,7 +149,7 @@ class AnakraTopNavBar extends StatelessWidget {
                     children: [
                       Text(
                         '$balance',
-                        style: context.textTheme.inverseUrbanistSemiBold17,
+                        style: AppTypography.navTitle.copyWith(color: Colors.white),
                       ),
                       const SizedBox(width: 4),
                       LotusRasterIcon(AnakraAssets.coin, height: 16),
@@ -187,15 +187,7 @@ class AnakraHeroHeader extends StatelessWidget {
         final isPro = monetizationProvider.effectivePro;
         final isCompact = MediaQuery.sizeOf(context).width < 360;
         final avatarSize = isCompact ? 132.0 : 156.0;
-        const titleStyle = TextStyle(
-          fontFamily: 'Lora',
-          fontWeight: FontWeight.w600,
-          fontVariations: [FontVariation('wght', 600)],
-          fontSize: 24,
-          height: 1,
-          letterSpacing: 0,
-          color: Colors.white,
-        );
+        final titleStyle = AppTypography.h2.copyWith(color: Colors.white);
 
         return Padding(
           padding: const EdgeInsets.fromLTRB(16, 18, 16, 20),
@@ -212,13 +204,7 @@ class AnakraHeroHeader extends StatelessWidget {
                       const SizedBox(height: 12),
                       Text(
                         context.l10n.anakraReady,
-                        style: const TextStyle(
-                          fontFamily: 'Onest',
-                          fontSize: 16,
-                          height: 1.2,
-                          letterSpacing: 0,
-                          color: Colors.white,
-                        ),
+                        style: AppTypography.text1.copyWith(color: Colors.white),
                       ),
                       if (showRequestsBadge && !isPro) ...[
                         const SizedBox(height: 12),

@@ -57,7 +57,7 @@ class FavorableGradientSquare extends StatelessWidget {
           children: [
             Text(
               date,
-              style: context.textTheme.inverseUrbanistSemiBold16,
+              style: AppTypography.h4.copyWith(color: AppColors.textInverse),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),

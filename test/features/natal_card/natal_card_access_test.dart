@@ -26,14 +26,6 @@ import 'package:provider/provider.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   setUpAll(() async {
-    await (FontLoader('PlayfairDisplay')..addFont(
-          rootBundle.load('assets/fonts/playfair/PlayfairDisplay-SemiBold.ttf'),
-        ))
-        .load();
-    await (FontLoader('Urbanist')..addFont(
-          rootBundle.load('assets/fonts/urbanist/Urbanist-Regular.ttf'),
-        ))
-        .load();
     await (FontLoader('Lora')..addFont(
           rootBundle.load('assets/fonts/lora/Lora-VariableFont_wght.ttf'),
         ))

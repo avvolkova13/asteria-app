@@ -434,16 +434,17 @@ class _TabItem extends StatelessWidget {
             child: Text(
               label,
               maxLines: 1,
-              style: context.textTheme.urbanistRegular12.copyWith(
-                color: isActive
-                    ? AppColors.white
-                    : _inactiveItemColor.withValues(alpha: _inactiveOpacity),
-                fontFamily: 'Onest',
-                fontSize: 10,
-                fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
-                height: 1.2,
-                letterSpacing: -0.1,
-              ),
+              style:
+                  (isActive
+                          ? AppTypography.tabBarSemiBold
+                          : AppTypography.tabBar)
+                      .copyWith(
+                        color: isActive
+                            ? AppColors.white
+                            : _inactiveItemColor.withValues(
+                                alpha: _inactiveOpacity,
+                              ),
+                      ),
             ),
           ),
         ),
@@ -482,13 +483,13 @@ class _TabItem extends StatelessWidget {
                     ),
                   SizedBox.expand(
                     child: isActive
-                      ? ShaderMask(
-                          shaderCallback: (bounds) =>
-                              _activeGradient.createShader(bounds),
-                          blendMode: BlendMode.modulate,
-                          child: content,
-                            )
-                          : content,
+                        ? ShaderMask(
+                            shaderCallback: (bounds) =>
+                                _activeGradient.createShader(bounds),
+                            blendMode: BlendMode.modulate,
+                            child: content,
+                          )
+                        : content,
                   ),
                 ],
               ),

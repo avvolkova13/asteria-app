@@ -36,7 +36,7 @@ void main() {
     );
 
     final greetingText = tester.widget<Text>(find.text(greeting));
-    expect(greetingText.style?.fontFamily, 'PlayfairDisplay');
+    expect(greetingText.style?.fontFamily, 'Lora');
     expect(greetingText.style?.fontSize, 17);
     expect(greetingText.style?.fontWeight, FontWeight.w600);
     expect(greetingText.style?.height, 1.2);

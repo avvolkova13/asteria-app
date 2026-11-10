@@ -244,7 +244,7 @@ class TopNavBarDelegate extends SliverPersistentHeaderDelegate {
                     Flexible(
                       child: Text(
                         userName,
-                        style: context.textTheme.inverseUrbanistSemiBold17,
+                        style: AppTypography.navTitle.copyWith(color: AppColors.textInverse),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -400,7 +400,7 @@ class _TopNavBarTitle extends StatelessWidget {
               userName,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: context.textTheme.inversePlayfairSemiBold17,
+              style: AppTypography.navTitle.copyWith(color: AppColors.textInverse),
             ),
           ),
         ],
@@ -583,9 +583,9 @@ class _HomeTopNavBarWidget extends StatelessWidget {
                         ],
                         Text(
                           userName,
-                          style: isTransparent
-                              ? context.textTheme.inversePlayfairSemiBold17
-                              : context.textTheme.inverseUrbanistSemiBold17,
+                          style: AppTypography.navTitle.copyWith(
+                            color: AppColors.textInverse,
+                          ),
                         ),
                       ],
                     ),
@@ -826,7 +826,7 @@ class _ProfileTopNavBarWidget extends StatelessWidget {
                     offset: const Offset(0, -2),
                     child: Text(
                       userName,
-                      style: context.textTheme.inverseUrbanistSemiBold17,
+                      style: AppTypography.navTitle.copyWith(color: AppColors.textInverse),
                     ),
                   ),
                   // Right content (coins and PRO)
@@ -1053,7 +1053,7 @@ class _AppBarButton extends StatelessWidget {
           child: ClayAssetIcon('assets/icons/$icon.svg', width: 24, height: 24),
         ),
         const SizedBox(height: 4),
-        Text(label, style: context.textTheme.inversePlayfairMedium20),
+        Text(label, style: AppTypography.text1SemiBold.copyWith(color: AppColors.textInverse)),
       ],
     );
   }

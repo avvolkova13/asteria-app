@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/app_typography.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:flutter/material.dart';
 
@@ -37,13 +38,7 @@ class AnakraQuickActionButton extends StatelessWidget {
               child: Text(
                 text,
                 textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontFamily: 'Onest',
-                  fontSize: 16,
-                  height: 1.2,
-                  letterSpacing: 0,
-                  color: Colors.white,
-                ),
+                style: AppTypography.text1SemiBold.copyWith(color: Colors.white),
               ),
             ),
           ),

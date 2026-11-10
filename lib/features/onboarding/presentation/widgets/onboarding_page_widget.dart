@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import 'package:asteria_app/core/ui_kit/app_typography.dart';
 import '../../data/models/onboarding_page_model.dart';
 import '../../localization/onboarding_localization_contract.dart';
 import 'visuals/onboarding_daily_visual.dart';
@@ -16,20 +17,10 @@ class OnboardingPageWidget extends StatelessWidget {
     required this.localization,
   });
 
-  static const _titleStyle = TextStyle(
-    fontFamily: 'Lora',
-    fontWeight: FontWeight.w700,
-    fontSize: 34,
-    height: 1.2,
-    letterSpacing: .37,
+  static final _titleStyle = AppTypography.navLargeTitle.copyWith(
     color: Colors.white,
   );
-  static const _descriptionStyle = TextStyle(
-    fontFamily: 'Onest',
-    fontWeight: FontWeight.w400,
-    fontSize: 17,
-    height: 1.2,
-    letterSpacing: -.41,
+  static final _descriptionStyle = AppTypography.text1.copyWith(
     color: Colors.white,
   );
   static const _heroAsset =

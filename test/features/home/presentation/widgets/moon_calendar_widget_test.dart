@@ -23,9 +23,8 @@ void main() {
 
   setUpAll(() async {
     await initializeDateFormatting('ru');
-    final fonts = FontLoader('Urbanist')
-      ..addFont(rootBundle.load('assets/fonts/urbanist/Urbanist-Regular.ttf'))
-      ..addFont(rootBundle.load('assets/fonts/urbanist/Urbanist-SemiBold.ttf'));
+    final fonts = FontLoader('Onest')
+      ..addFont(rootBundle.load('assets/fonts/onest/Onest-VariableFont_wght.ttf'));
     await fonts.load();
   });
 

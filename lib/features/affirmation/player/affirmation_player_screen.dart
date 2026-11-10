@@ -6,7 +6,7 @@ import 'package:asteria_app/core/ui_kit/widgets/lotus_glyph_motion.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
 
 import 'package:asteria_app/core/localization/generated/l10n.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:asteria_app/core/ui_kit/app_typography.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
@@ -201,13 +201,12 @@ class _AffirmationPlayerScreenState extends State<AffirmationPlayerScreen> {
   @override
   Widget build(BuildContext context) {
     final insets = MediaQuery.paddingOf(context);
-    final bodyFont = CupertinoTheme.of(context).textTheme.textStyle.fontFamily;
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle.light,
       child: Scaffold(
         backgroundColor: const Color(0xff130d20),
         body: DefaultTextStyle(
-          style: TextStyle(fontFamily: bodyFont, color: _ink),
+          style: AppTypography.text1.copyWith(color: _ink),
           child: LayoutBuilder(
             builder: (context, bounds) {
               final wide = bounds.maxWidth > 540 && bounds.maxHeight >= 580;
@@ -438,7 +437,7 @@ class _AffirmationPlayerScreenState extends State<AffirmationPlayerScreen> {
                       child: Text(
                         _notice!,
                         textAlign: TextAlign.center,
-                        style: const TextStyle(fontSize: 12),
+                        style: AppTypography.subtext,
                       ),
                     ),
                   ),
@@ -517,10 +516,8 @@ class _AffirmationPlayerScreenState extends State<AffirmationPlayerScreen> {
                 final previous = Duration(
                   milliseconds: (ms - 5000).clamp(0.0, max).round(),
                 );
-                const style = TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600,
-                  fontFeatures: [FontFeature.tabularFigures()],
+                final style = AppTypography.label14.copyWith(
+                  fontFeatures: const [FontFeature.tabularFigures()],
                 );
                 return Row(
                   children: [
@@ -610,7 +607,7 @@ class _AffirmationPlayerScreenState extends State<AffirmationPlayerScreen> {
                     ),
                     child: Text(
                       _transcript[i].$2,
-                      style: TextStyle(
+                      style: AppTypography.text1.copyWith(
                         color:
                             time >= _transcript[i].$1 &&
                                 time <
@@ -620,10 +617,6 @@ class _AffirmationPlayerScreenState extends State<AffirmationPlayerScreen> {
                                               1000)
                             ? const Color(0xffffdfc6)
                             : const Color(0xfffff8fb),
-                        fontSize: 18,
-                        height: 1.48,
-                        letterSpacing: -.252,
-                        fontWeight: FontWeight.w500,
                         shadows: const [
                           Shadow(
                             offset: Offset(0, 1),
@@ -656,10 +649,6 @@ class _PlayerHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final strings = AppLocalizations.of(context);
-    final titleSize = (MediaQuery.sizeOf(context).width * .085).clamp(
-      31.0,
-      39.0,
-    );
     const shadow = [
       Shadow(offset: Offset(0, 1), blurRadius: 8, color: Color(0x54382039)),
     ];
@@ -682,14 +671,7 @@ class _PlayerHeader extends StatelessWidget {
                         child: Text(
                           strings.affirmationCategoryCalm.toUpperCase(),
                           textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            color: _headerInk,
-                            fontSize: 11,
-                            height: 1.3,
-                            letterSpacing: 1.43,
-                            fontWeight: FontWeight.w600,
-                            shadows: shadow,
-                          ),
+                          style: AppTypography.h4.copyWith(color: _headerInk, shadows: shadow),
                         ),
                       ),
                     ],
@@ -705,27 +687,14 @@ class _PlayerHeader extends StatelessWidget {
                     child: Text(
                       _recordingTitle,
                       textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontFamily: 'Georgia',
-                        fontFamilyFallback: const ['Lora', 'serif'],
-                        fontWeight: FontWeight.w400,
-                        fontSize: titleSize,
-                        letterSpacing: -.045 * titleSize,
-                        height: 1.12,
-                        shadows: shadow,
-                      ),
+                      style: AppTypography.h1.copyWith(shadows: shadow),
                     ),
                   ),
                 ),
                 Text(
                   strings.playerMetadata,
                   textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    color: _headerInk,
-                    fontSize: 13,
-                    height: 1.5,
-                    shadows: shadow,
-                  ),
+                  style: AppTypography.text2.copyWith(color: _headerInk, shadows: shadow),
                 ),
               ],
             ),

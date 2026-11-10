@@ -28,9 +28,7 @@ class CompatibilityHistoryScreen extends StatelessWidget {
       children: [
         Text(
           context.l10n.compatibilityHistoryTitle,
-          style: context.textTheme.inversePlayfairSemiBold32.copyWith(
-            height: 1.18,
-          ),
+          style: context.textTheme.inversePlayfairSemiBold32,
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 22),

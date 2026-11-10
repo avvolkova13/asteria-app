@@ -484,10 +484,8 @@ class _AuthCheckbox extends StatelessWidget {
                   Expanded(
                     child: Text(
                       label,
-                      style: context.textTheme.inverseUrbanistRegular16.copyWith(
-                        height: 1.2,
-                        letterSpacing: -0.408,
-                      ),
+                      style: context.textTheme.inverseUrbanistRegular16
+                          .copyWith(height: 1.2, letterSpacing: -0.408),
                     ),
                   ),
                 ],
@@ -501,11 +499,7 @@ class _AuthCheckbox extends StatelessWidget {
 }
 
 TextStyle _inputTextStyle(BuildContext context) {
-  return context.textTheme.inverseUrbanistRegular17.copyWith(
-    color: AppColors.white,
-    height: 1.2,
-    letterSpacing: -0.408,
-  );
+  return AppTypography.placeholder.copyWith(color: AppColors.white);
 }
 
 const _transparentBorder = OutlineInputBorder(

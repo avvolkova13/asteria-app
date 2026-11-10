@@ -497,8 +497,8 @@ class _LinkedText extends StatelessWidget {
       children.add(
         TextSpan(
           text: link.text,
-          style: style.copyWith(
-            decoration: TextDecoration.underline,
+          style: AppTypography.link.copyWith(
+            color: style.color,
             decorationColor: AppColors.white.withValues(alpha: 0.85),
           ),
           recognizer: TapGestureRecognizer()

@@ -80,17 +80,10 @@ class ScenarioCard extends StatelessWidget {
   static const _inset = 16.0;
   static const _gap = 8.0;
   static const _radius = BorderRadius.all(Radius.circular(30));
-  TextStyle _title(BuildContext context) =>
-      context.textTheme.inversePlayfairSemiBold18.copyWith(
-        fontFamily: 'Lora',
-        fontSize: 19,
-        height: 1.13,
-        color: AppColors.textInverse,
-      );
-  TextStyle _caption(BuildContext context) => Theme.of(context)
-      .textTheme
-      .bodyMedium!
-      .copyWith(fontSize: 13, height: 1.28, color: AppColors.cardTinted);
+  static final _title = AppTypography.h3.copyWith(color: AppColors.textInverse);
+  static final _caption = AppTypography.text2.copyWith(
+    color: AppColors.cardTinted,
+  );
 
   @override
   Widget build(BuildContext context) => Semantics(
@@ -116,7 +109,8 @@ class ScenarioCard extends StatelessWidget {
                       width: 126,
                       height: switch (mood) {
                         ScenarioMood.calendar || ScenarioMood.strength => 110,
-                        ScenarioMood.practice || ScenarioMood.relationships => 64,
+                        ScenarioMood.practice ||
+                        ScenarioMood.relationships => 64,
                       },
                       fit: BoxFit.contain,
                       excludeFromSemantics: true,
@@ -127,9 +121,9 @@ class ScenarioCard extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(title, style: _title(context)),
+                        Text(title, style: _title),
                         const SizedBox(height: 6),
-                        Text(subtitle, style: _caption(context)),
+                        Text(subtitle, style: _caption),
                       ],
                     ),
                   ),

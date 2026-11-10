@@ -484,42 +484,14 @@ class _HoroscopeDesign {
     colors: [accentPurple, accentPurpleEnd],
   );
 
-  static TextStyle h1(BuildContext context) {
-    return context.textTheme.inversePlayfairSemiBold32.copyWith(
-      height: 1,
-      letterSpacing: 0,
-    );
-  }
+  static TextStyle h1(BuildContext context) =>
+      context.textTheme.inversePlayfairSemiBold32;
 
-  static TextStyle h2(BuildContext context) {
-    return context.textTheme.inversePlayfairSemiBold24.copyWith(
-      fontFamily: 'Lora',
-      fontSize: 24,
-      fontWeight: FontWeight.w600,
-      height: 1,
-      letterSpacing: 0,
-    );
-  }
+  static TextStyle h2(BuildContext context) =>
+      context.textTheme.inversePlayfairSemiBold24;
 
-  static TextStyle h3(BuildContext context) {
-    return context.textTheme.inversePlayfairMedium20.copyWith(
-      fontFamily: 'Lora',
-      fontSize: 20,
-      fontWeight: FontWeight.w500,
-      height: 1.1,
-      letterSpacing: 0,
-    );
-  }
-
-  static TextStyle body(BuildContext context) {
-    return context.textTheme.inverseUrbanistRegular16.copyWith(
-      fontFamily: 'Onest',
-      fontSize: 16,
-      fontWeight: FontWeight.w400,
-      height: 1.2,
-      letterSpacing: -0.41,
-    );
-  }
+  static TextStyle body(BuildContext context) =>
+      context.textTheme.inverseUrbanistRegular16;
 }
 
 class _HoroscopeBackground extends StatelessWidget {
@@ -1127,18 +1099,12 @@ class _LabeledCard extends StatelessWidget {
               title,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: context.textTheme.inverseUrbanistSemiBold16.copyWith(
-                fontFamily: 'Onest',
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                height: 1.2,
-                letterSpacing: -0.41,
-              ),
+              style: AppTypography.h4.copyWith(color: AppColors.textInverse),
             ),
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(8, 8, 12, 16),
-            child: Text(description, style: _HoroscopeDesign.h3(context)),
+            child: Text(description, style: _HoroscopeDesign.body(context)),
           ),
         ],
       ),
