@@ -48,7 +48,7 @@ class _ScenarioPickerState extends State<ScenarioPicker> {
         child: Text(
           context.l10n.scenarioGoHome,
           style: context.textTheme.inversePlayfairSemiBold16.copyWith(
-            color: AppColors.cardTinted,
+            color: const Color(0xFFFFD88A),
           ),
         ),
       ),
