@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/app/data/models/user/user_model.dart';
 import 'package:asteria_app/core/extensions/enum_extensions.dart';
 import 'package:asteria_app/core/ui_kit/theme/theme.dart';
@@ -73,28 +74,32 @@ class _AuthRadioButton extends StatelessWidget {
       ),
     );
 
-    return Semantics(
-      button: true,
-      checked: isSelected,
-      enabled: isEnabled,
-      label: optionLabel,
-      onTap: isEnabled ? () => onChanged(option) : null,
-      child: Semantics(
-        excludeSemantics: true,
-        child: GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          onTap: isEnabled ? () => onChanged(option) : null,
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(minHeight: 44),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  _RadioMark(isSelected: isSelected),
-                  const SizedBox(width: 8),
-                  label,
-                ],
+    return LotusFeedback(
+      onActivate: isEnabled ? () => onChanged(option) : null,
+      keyboard: true,
+      builder: (activate) => Semantics(
+        button: true,
+        checked: isSelected,
+        enabled: isEnabled,
+        label: optionLabel,
+        onTap: activate,
+        child: Semantics(
+          excludeSemantics: true,
+          child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: activate,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(minHeight: 44),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _RadioMark(isSelected: isSelected),
+                    const SizedBox(width: 8),
+                    label,
+                  ],
+                ),
               ),
             ),
           ),

@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/app/data/models/user/user_model.dart';
 import 'package:asteria_app/app/data/repositories/user/user_repository.dart';
 import 'package:asteria_app/app/providers/user_provider.dart';
@@ -93,14 +94,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
           title: Text(context.l10n.profileDeleteAccount),
           content: Text(context.l10n.profileDeleteAccountQuestion),
           actions: [
-            TextButton(
+            LotusButtons.text(
               onPressed: () => Navigator.of(dialogContext).pop(false),
               child: Text(
                 context.l10n.commonNo,
                 style: context.textTheme.urbanistBold16,
               ),
             ),
-            TextButton(
+            LotusButtons.text(
               onPressed: () => Navigator.of(dialogContext).pop(true),
               child: Text(
                 context.l10n.commonYes,
@@ -174,14 +175,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
           title: Text(context.l10n.profileLogoutTitle),
           content: Text(context.l10n.profileLogoutQuestion),
           actions: [
-            TextButton(
+            LotusButtons.text(
               onPressed: () => Navigator.of(context).pop(),
               child: Text(
                 context.l10n.commonCancel,
                 style: context.textTheme.urbanistBold16,
               ),
             ),
-            TextButton(
+            LotusButtons.text(
               onPressed: () async {
                 await di.get<ProductAnalyticsService>().trackAccountLogout();
                 await di.get<UserProvider>().clearUser();
@@ -469,28 +470,32 @@ class _LogoutButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Semantics(
-        button: true,
-        label: context.l10n.logoutButton,
-        onTap: onTap,
-        child: ExcludeSemantics(
-          child: GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onTap: onTap,
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const ProfileIconBox(
-                  iconAsset: 'assets/icons/exit_icon.svg',
-                  size: 34,
-                  iconSize: 22,
-                ),
-                const SizedBox(width: 10),
-                Text(
-                  context.l10n.logoutButton,
-                  style: context.textTheme.inverseUrbanistRegular17,
-                ),
-              ],
+      child: LotusFeedback(
+        onActivate: onTap,
+        keyboard: true,
+        builder: (activate) => Semantics(
+          button: true,
+          label: context.l10n.logoutButton,
+          onTap: activate,
+          child: ExcludeSemantics(
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: activate,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const ProfileIconBox(
+                    iconAsset: 'assets/icons/exit_icon.svg',
+                    size: 34,
+                    iconSize: 22,
+                  ),
+                  const SizedBox(width: 10),
+                  Text(
+                    context.l10n.logoutButton,
+                    style: context.textTheme.inverseUrbanistRegular17,
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -507,21 +512,25 @@ class _DeleteAccountButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Semantics(
-        button: true,
-        label: context.l10n.profileDeleteAccount,
-        onTap: onTap,
-        child: ExcludeSemantics(
-          child: GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onTap: onTap,
-            child: Text(
-              context.l10n.profileDeleteAccount,
-              style: context.textTheme.inverseUrbanistRegular14.copyWith(
-                color: AppColors.white.withValues(alpha: 0.42),
-                decoration: TextDecoration.underline,
-                decorationColor: AppColors.white.withValues(alpha: 0.32),
-                decorationThickness: 0.8,
+      child: LotusFeedback(
+        onActivate: onTap,
+        keyboard: true,
+        builder: (activate) => Semantics(
+          button: true,
+          label: context.l10n.profileDeleteAccount,
+          onTap: activate,
+          child: ExcludeSemantics(
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: activate,
+              child: Text(
+                context.l10n.profileDeleteAccount,
+                style: context.textTheme.inverseUrbanistRegular14.copyWith(
+                  color: AppColors.white.withValues(alpha: 0.42),
+                  decoration: TextDecoration.underline,
+                  decorationColor: AppColors.white.withValues(alpha: 0.32),
+                  decorationThickness: 0.8,
+                ),
               ),
             ),
           ),

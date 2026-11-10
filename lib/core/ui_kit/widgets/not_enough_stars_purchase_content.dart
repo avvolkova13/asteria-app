@@ -1,3 +1,5 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
+import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
 import 'package:asteria_app/core/extensions/build_context_extensions.dart';
 import 'package:asteria_app/core/ui_kit/app_colors/app_colors.dart';
 import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
@@ -210,7 +212,7 @@ class _AmountLabel extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 4),
-        Image.asset(
+        LotusRasterIcon(
           'assets/icons/star_coin_icon.png',
           width: 19,
           height: 29,
@@ -226,7 +228,7 @@ class _ArrowIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Image.asset(
+    return LotusRasterIcon(
       'assets/icons/right_long_arrow.png',
       width: 24,
       height: 24,
@@ -308,7 +310,7 @@ class _PurchaseActionButton extends StatelessWidget {
                     ? null
                     : Border.all(color: _notEnoughStarsPrimary),
               ),
-              child: InkWell(
+              child: LotusInkTap(
                 onTap: onPressed,
                 borderRadius: borderRadius,
                 child: Padding(

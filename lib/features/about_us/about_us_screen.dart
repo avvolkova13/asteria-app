@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/core/localization/localization.dart';
 import 'package:asteria_app/features/profile_flow/profile_flow_ui.dart';
@@ -501,10 +502,10 @@ class _LinkedText extends StatelessWidget {
             decorationColor: AppColors.white.withValues(alpha: 0.85),
           ),
           recognizer: TapGestureRecognizer()
-            ..onTap = () => launchUrl(
+            ..onTap = LotusFeedback.action(() => launchUrl(
               Uri.parse(link.url),
               mode: LaunchMode.externalApplication,
-            ),
+            )),
         ),
       );
       remainingText = parts.length > 1 ? parts.sublist(1).join(link.text) : '';

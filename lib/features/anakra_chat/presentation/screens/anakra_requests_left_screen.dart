@@ -1,3 +1,5 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
+import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 import 'package:asteria_app/features/anakra_chat/presentation/widgets/anakra_layout.dart';
@@ -24,7 +26,7 @@ class AnakraRequestsLeftScreen extends StatelessWidget {
             context.l10n.unlimited,
             style: context.textTheme.inversePlayfairSemiBold24,
           ),
-          TextButton(
+          LotusButtons.text(
             onPressed: () => Navigator.of(context).pop(),
             child: Text(context.l10n.commonBack),
           ),
@@ -338,7 +340,7 @@ class _CoinPill extends StatelessWidget {
                 height: 1,
               ),
             ),
-            Image.asset(AnakraAssets.coin, height: 14),
+            LotusRasterIcon(AnakraAssets.coin, height: 14),
           ],
         ),
       ),

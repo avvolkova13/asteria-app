@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/extensions/datetime_extensions.dart';
 import 'package:asteria_app/core/extensions/string_extensions.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
@@ -27,7 +28,7 @@ class CompatibilityWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return LotusTap(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.all(16),

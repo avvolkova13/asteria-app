@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/features/auth/presentation/widgets/auth_flow_widgets.dart';
 import 'package:flutter/cupertino.dart';
@@ -259,7 +260,7 @@ class _SheetOutlineButton extends StatelessWidget {
         ),
         child: Material(
           color: Colors.transparent,
-          child: InkWell(
+          child: LotusInkTap(
             borderRadius: BorderRadius.circular(16),
             onTap: onPressed,
             child: Center(

@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
 import 'dart:async';
 import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 
@@ -110,7 +111,7 @@ class _NatalCardLoadingOverlayState extends State<NatalCardLoadingOverlay> {
                                     ),
                               ),
                               const SizedBox(width: 2),
-                              Image.asset(
+                              LotusRasterIcon(
                                 'assets/icons/star_coin_icon.png',
                                 height: 14,
                               ),

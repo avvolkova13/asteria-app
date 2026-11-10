@@ -1,4 +1,7 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
+import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
 import 'dart:async';
+import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 
 import 'package:asteria_app/app/data/models/article/article_model.dart';
@@ -189,15 +192,18 @@ class _ArticleTopBar extends StatelessWidget {
                   offset: const Offset(0, -2),
                   child: Row(
                     children: [
-                      GestureDetector(
+                      LotusTap(
                         behavior: HitTestBehavior.opaque,
                         onTap: () => Navigator.of(context).pop(),
                         child: Padding(
                           padding: const EdgeInsets.only(right: 8),
-                          child: ClayAssetIcon(
-                            'assets/icons/back_icon.svg',
-                            tint: AppColors.textSecondary,
-                            height: 24,
+                          child: LotusIconSurface(
+                            diameter: 27,
+                            child: ClayAssetIcon(
+                              'assets/icons/back_icon.svg',
+                              tint: AppColors.textSecondary,
+                              height: 24,
+                            ),
                           ),
                         ),
                       ),
@@ -213,7 +219,7 @@ class _ArticleTopBar extends StatelessWidget {
                   ),
                 ),
               ),
-              GestureDetector(
+              LotusTap(
                 behavior: HitTestBehavior.opaque,
                 onTap: () => BalanceRoute.push(context),
                 child: Row(
@@ -232,7 +238,7 @@ class _ArticleTopBar extends StatelessWidget {
                     ),
                     Padding(
                       padding: const EdgeInsets.only(bottom: 4),
-                      child: Image.asset(
+                      child: LotusRasterIcon(
                         'assets/icons/star_coin_icon.png',
                         height: 16,
                       ),

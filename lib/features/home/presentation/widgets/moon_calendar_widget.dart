@@ -1,3 +1,6 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
+import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
+import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/features/home/presentation/cubit/moon_screen_cubit.dart';
 import 'package:asteria_app/features/home/presentation/cubit/moon_screen_state.dart';
@@ -8,7 +11,6 @@ import 'package:asteria_app/features/home/presentation/widgets/moon_phase_marker
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class MoonCalendarWidget extends StatelessWidget {
@@ -351,6 +353,7 @@ class MoonCalendarWidget extends StatelessWidget {
     DateTime focusedDay,
   ) {
     if (!_isEnabled(selectedDay)) return;
+    LotusFeedback.selection();
     if (onPlanDay != null) {
       if (!_isSameMonth(selectedDay, state.focusedDay)) {
         _loadMonth(context, focusedDay);
@@ -646,22 +649,22 @@ class _MonthArrow extends StatelessWidget {
         : context.l10n.calendarNextMonth;
     return SizedBox.square(
       dimension: 44,
-      child: IconButton(
+      child: LotusButtons.icon(
         tooltip: label,
         onPressed: onTap,
         padding: EdgeInsets.zero,
         icon: Opacity(
           opacity: onTap == null ? 0.3 : 1,
-          child: SvgPicture.asset(
-            previous
-                ? 'assets/icons/moon_calendar_previous.svg'
-                : 'assets/icons/moon_calendar_next.svg',
-            width: 10,
-            height: 18,
-            excludeFromSemantics: true,
-            colorFilter: const ColorFilter.mode(
-              MoonDesignTokens.chipOrange,
-              BlendMode.srcIn,
+          child: LotusIconSurface(
+            diameter: 30,
+            child: ClayAssetIcon(
+              previous
+                  ? 'assets/icons/moon_calendar_previous.svg'
+                  : 'assets/icons/moon_calendar_next.svg',
+              width: 10,
+              height: 18,
+              excludeFromSemantics: true,
+              tint: MoonDesignTokens.chipOrange,
             ),
           ),
         ),

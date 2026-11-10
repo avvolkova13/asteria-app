@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/app/data/models/user/user_model.dart';
 import 'package:asteria_app/core/di/di.dart';
 import 'package:asteria_app/core/environment/environment.dart';
@@ -225,7 +226,7 @@ class _InputsSectionWidgetState extends State<InputsSectionWidget> {
           filled: false,
           fillColor: Colors.transparent,
           suffixIcon: widget.placeController.text.isNotEmpty
-              ? IconButton(
+              ? LotusButtons.icon(
                   onPressed: () {
                     widget.placeController.clear();
                     context.read<AuthCubit>().updateUserBirthPlace('');
@@ -351,7 +352,7 @@ class _AuthTextInput extends StatelessWidget {
             ),
           ),
           if (controller.text.isNotEmpty)
-            IconButton(
+            LotusButtons.icon(
               onPressed: () {
                 controller.clear();
                 onChanged('');
@@ -387,7 +388,7 @@ class _AuthDateTimeField extends StatelessWidget {
   Widget build(BuildContext context) {
     final hasValue = text != null;
 
-    return GestureDetector(
+    return LotusTap(
       behavior: HitTestBehavior.opaque,
       onTap: isEnabled ? onTap : null,
       child: Semantics(
@@ -431,62 +432,66 @@ class _AuthCheckbox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Semantics(
-      button: true,
-      checked: value,
-      enabled: true,
-      label: label,
-      onTap: () => onChanged(!value),
-      child: Semantics(
-        excludeSemantics: true,
-        child: GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          onTap: () => onChanged(!value),
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(minHeight: 44),
-            child: Row(
-              children: [
-                Container(
-                  width: 23,
-                  height: 23,
-                  padding: const EdgeInsets.all(1),
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [_authPurpleStart, _authPurpleEnd],
-                    ),
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                  child: DecoratedBox(
+    return LotusFeedback(
+      onActivate: () => onChanged(!value),
+      keyboard: true,
+      builder: (activate) => Semantics(
+        button: true,
+        checked: value,
+        enabled: true,
+        label: label,
+        onTap: activate,
+        child: Semantics(
+          excludeSemantics: true,
+          child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: activate,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(minHeight: 44),
+              child: Row(
+                children: [
+                  Container(
+                    width: 23,
+                    height: 23,
+                    padding: const EdgeInsets.all(1),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF0F0A1A),
-                      borderRadius: BorderRadius.circular(1),
+                      gradient: const LinearGradient(
+                        colors: [_authPurpleStart, _authPurpleEnd],
+                      ),
+                      borderRadius: BorderRadius.circular(2),
                     ),
-                    child: value
-                        ? ShaderMask(
-                            blendMode: BlendMode.srcIn,
-                            shaderCallback: (bounds) => const LinearGradient(
-                              colors: [_authPurpleStart, _authPurpleEnd],
-                            ).createShader(bounds),
-                            child: const ClayIcon(
-                              Icons.check,
-                              color: AppColors.white,
-                              size: 18,
-                            ),
-                          )
-                        : null,
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Text(
-                    label,
-                    style: context.textTheme.inverseUrbanistRegular16.copyWith(
-                      height: 1.2,
-                      letterSpacing: -0.408,
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF0F0A1A),
+                        borderRadius: BorderRadius.circular(1),
+                      ),
+                      child: value
+                          ? ShaderMask(
+                              blendMode: BlendMode.srcIn,
+                              shaderCallback: (bounds) => const LinearGradient(
+                                colors: [_authPurpleStart, _authPurpleEnd],
+                              ).createShader(bounds),
+                              child: const ClayIcon(
+                                Icons.check,
+                                color: AppColors.white,
+                                size: 18,
+                              ),
+                            )
+                          : null,
                     ),
                   ),
-                ),
-              ],
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      label,
+                      style: context.textTheme.inverseUrbanistRegular16.copyWith(
+                        height: 1.2,
+                        letterSpacing: -0.408,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),

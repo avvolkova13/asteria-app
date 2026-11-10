@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'dart:math' as math;
 import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 
@@ -283,49 +284,53 @@ class _SegmentedOption extends StatelessWidget {
               color: isSelected ? Colors.white : AppColors.textTertiary,
             );
 
-    return Semantics(
-      button: true,
-      selected: isSelected,
-      label: text,
-      onTap: onTap,
-      child: ExcludeSemantics(
-        child: GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          onTap: onTap,
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 180),
-            height: 28,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: isSelected
-                  ? _DailySymbolOfTheDayWidgetState._selectedBackground
-                  : Colors.transparent,
-              borderRadius: BorderRadius.circular(8),
-              border: isSelected
-                  ? Border.all(color: const Color(0xFF302654), width: 0.5)
-                  : null,
-              boxShadow: isSelected
-                  ? [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.12),
-                        blurRadius: 4,
-                        offset: const Offset(0, 3),
-                      ),
-                    ]
-                  : null,
+    return LotusFeedback(
+      onActivate: onTap,
+      keyboard: true,
+      builder: (activate) => Semantics(
+        button: true,
+        selected: isSelected,
+        label: text,
+        onTap: activate,
+        child: ExcludeSemantics(
+          child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: activate,
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 180),
+              height: 28,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: isSelected
+                    ? _DailySymbolOfTheDayWidgetState._selectedBackground
+                    : Colors.transparent,
+                borderRadius: BorderRadius.circular(8),
+                border: isSelected
+                    ? Border.all(color: const Color(0xFF302654), width: 0.5)
+                    : null,
+                boxShadow: isSelected
+                    ? [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.12),
+                          blurRadius: 4,
+                          offset: const Offset(0, 3),
+                        ),
+                      ]
+                    : null,
+              ),
+              child: isSelected
+                  ? _GradientText(
+                      text: text,
+                      gradient: orangeGradient,
+                      style: style,
+                    )
+                  : Text(
+                      text,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: style,
+                    ),
             ),
-            child: isSelected
-                ? _GradientText(
-                    text: text,
-                    gradient: orangeGradient,
-                    style: style,
-                  )
-                : Text(
-                    text,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: style,
-                  ),
           ),
         ),
       ),
@@ -380,23 +385,27 @@ class _TarotSymbolContent extends StatelessWidget {
     return Column(
       children: [
         Center(
-          child: Semantics(
-            button: symbol != null && onCardTap != null,
-            onTap: symbol == null ? null : onCardTap,
-            label: symbol == null
-                ? context.l10n.commonUnavailable
-                : context.l10n.dailyTarotOpenedLabel(symbol.title),
-            child: ExcludeSemantics(
-              child: GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                onTap: symbol == null ? null : onCardTap,
-                child: symbol == null
-                    ? const _TarotCardBack()
-                    : _FlipContent(
-                        animation: flipAnimation,
-                        back: const _TarotCardBack(),
-                        front: _TarotCardFront(tarotCard: symbol),
-                      ),
+          child: LotusFeedback(
+            onActivate: symbol == null ? null : onCardTap,
+            keyboard: true,
+            builder: (activate) => Semantics(
+              button: symbol != null && onCardTap != null,
+              onTap: activate,
+              label: symbol == null
+                  ? context.l10n.commonUnavailable
+                  : context.l10n.dailyTarotOpenedLabel(symbol.title),
+              child: ExcludeSemantics(
+                child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: activate,
+                  child: symbol == null
+                      ? const _TarotCardBack()
+                      : _FlipContent(
+                          animation: flipAnimation,
+                          back: const _TarotCardBack(),
+                          front: _TarotCardFront(tarotCard: symbol),
+                        ),
+                ),
               ),
             ),
           ),
@@ -479,23 +488,27 @@ class _RuneSymbolContent extends StatelessWidget {
     return Column(
       children: [
         Center(
-          child: Semantics(
-            button: symbol != null && onRuneTap != null,
-            onTap: symbol == null ? null : onRuneTap,
-            label: symbol == null
-                ? context.l10n.commonUnavailable
-                : context.l10n.dailyRuneOpenedLabel(symbol.title),
-            child: ExcludeSemantics(
-              child: GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                onTap: symbol == null ? null : onRuneTap,
-                child: symbol == null
-                    ? const _RuneBack()
-                    : _FlipContent(
-                        animation: flipAnimation,
-                        back: const _RuneBack(),
-                        front: _RuneFront(rune: symbol),
-                      ),
+          child: LotusFeedback(
+            onActivate: symbol == null ? null : onRuneTap,
+            keyboard: true,
+            builder: (activate) => Semantics(
+              button: symbol != null && onRuneTap != null,
+              onTap: activate,
+              label: symbol == null
+                  ? context.l10n.commonUnavailable
+                  : context.l10n.dailyRuneOpenedLabel(symbol.title),
+              child: ExcludeSemantics(
+                child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: activate,
+                  child: symbol == null
+                      ? const _RuneBack()
+                      : _FlipContent(
+                          animation: flipAnimation,
+                          back: const _RuneBack(),
+                          front: _RuneFront(rune: symbol),
+                        ),
+                ),
               ),
             ),
           ),
@@ -561,7 +574,7 @@ class _SectionTitleRow extends StatelessWidget {
         Semantics(
           button: true,
           label: refreshSemanticLabel,
-          child: GestureDetector(
+          child: LotusTap(
             behavior: HitTestBehavior.opaque,
             onTap: onRefresh,
             child: SizedBox(
@@ -861,24 +874,28 @@ class _GradientActionText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Semantics(
-      button: true,
-      label: text,
-      onTap: onTap,
-      child: ExcludeSemantics(
-        child: GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          onTap: onTap,
-          child: SizedBox(
-            height: 32,
-            child: Center(
-              child: _GradientText(
-                text: text,
-                gradient: gradient,
-                style: context.textTheme.inverseUrbanistSemiBold16.copyWith(
-                  fontFamily: 'Onest',
-                  height: 1.2,
-                  letterSpacing: -0.408,
+    return LotusFeedback(
+      onActivate: onTap,
+      keyboard: true,
+      builder: (activate) => Semantics(
+        button: true,
+        label: text,
+        onTap: activate,
+        child: ExcludeSemantics(
+          child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: activate,
+            child: SizedBox(
+              height: 32,
+              child: Center(
+                child: _GradientText(
+                  text: text,
+                  gradient: gradient,
+                  style: context.textTheme.inverseUrbanistSemiBold16.copyWith(
+                    fontFamily: 'Onest',
+                    height: 1.2,
+                    letterSpacing: -0.408,
+                  ),
                 ),
               ),
             ),

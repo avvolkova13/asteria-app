@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/app/providers/content_provider.dart';
 import 'package:asteria_app/core/di/di.dart';
 import 'package:asteria_app/core/routing/app_route.dart';
@@ -84,7 +85,7 @@ class _ArticlesSectionWidgetState extends State<ArticlesSectionWidget> {
               Semantics(
                 button: true,
                 label: context.l10n.articlesScrollLabel,
-                child: GestureDetector(
+                child: LotusTap(
                   behavior: HitTestBehavior.opaque,
                   onTap: _scrollArticlesForward,
                   child: SizedBox(
@@ -114,7 +115,7 @@ class _ArticlesSectionWidgetState extends State<ArticlesSectionWidget> {
                   Semantics(
                     button: true,
                     label: context.l10n.openArticleLabel(articles[index].title),
-                    child: GestureDetector(
+                    child: LotusTap(
                       onTap: () => _onArticleTap(context, articles[index].id),
                       child: _ArticleCard(
                         title: articles[index].title,

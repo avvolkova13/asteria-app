@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/app/providers/content_provider.dart';
 import 'package:asteria_app/app/providers/user_provider.dart';
 import 'package:asteria_app/core/analytics/analytics_events.dart';
@@ -322,7 +323,7 @@ class _LoveDeckHeader extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 8),
-          GestureDetector(
+          LotusTap(
             behavior: HitTestBehavior.opaque,
             onTap: onRefresh,
             child: SizedBox(
@@ -361,7 +362,7 @@ class _GradientUnderlineButton extends StatelessWidget {
       decorationThickness: 1,
     );
 
-    return GestureDetector(
+    return LotusTap(
       behavior: HitTestBehavior.opaque,
       onTap: onPressed,
       child: Padding(

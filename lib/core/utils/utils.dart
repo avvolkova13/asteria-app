@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/features/auth/presentation/widgets/date_time_picker_widget.dart';
 import 'package:asteria_app/core/localization/locale_formatters.dart';
 import 'package:flutter/material.dart';
@@ -29,7 +30,7 @@ Widget buildDateTimeField({
   required Key key,
   bool isEnabled = true,
 }) {
-  return GestureDetector(
+  return LotusTap(
     onTap: isEnabled ? onTap : null,
     child: DateTimePickerWidget(key: key, text: text, hintText: hintText),
   );

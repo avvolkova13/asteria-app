@@ -1,3 +1,5 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
+import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:flutter/material.dart';
 
@@ -16,7 +18,7 @@ class PurchaseOfferButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return LotusTap(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
@@ -30,11 +32,11 @@ class PurchaseOfferButton extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.asset('assets/icons/$purchaseIcon.png', height: 24, width: 24),
+            LotusRasterIcon('assets/icons/$purchaseIcon.png', height: 24, width: 24),
             const SizedBox(width: 4),
             Text('$purchaseName $buttonText', style: context.textTheme.urbanistRegular14.copyWith(color: AppColors.primary)),
             const SizedBox(width: 4),
-            Image.asset('assets/icons/star_coin_icon.png', height: 24, width: 24),
+            LotusRasterIcon('assets/icons/star_coin_icon.png', height: 24, width: 24),
           ],
         ),
       ),

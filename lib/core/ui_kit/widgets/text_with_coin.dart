@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:flutter/material.dart';
 
@@ -45,7 +46,7 @@ class TextWithCoin extends StatelessWidget {
                   Text(price!, style: style),
                   Padding(
                     padding: const EdgeInsets.only(left: 2, top: 8),
-                    child: Image.asset('assets/icons/star_coin_icon.png', height: iconSize),
+                    child: LotusRasterIcon('assets/icons/star_coin_icon.png', height: iconSize),
                   ),
                 ],
               ),
@@ -60,7 +61,7 @@ class TextWithCoin extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(text!, style: style),
-        Image.asset('assets/icons/star_coin_icon.png', height: iconSize),
+        LotusRasterIcon('assets/icons/star_coin_icon.png', height: iconSize),
       ],
     );
   }

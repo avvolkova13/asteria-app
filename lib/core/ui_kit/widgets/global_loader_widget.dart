@@ -1,3 +1,5 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
+import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
 import 'dart:async';
 import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 
@@ -198,7 +200,7 @@ class _CompatibilityLoaderTopBar extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
           ),
         ),
-        GestureDetector(
+        LotusTap(
           onTap: () => BalanceRoute.push(context),
           child: Row(
             children: [
@@ -211,7 +213,7 @@ class _CompatibilityLoaderTopBar extends StatelessWidget {
                 },
               ),
               const SizedBox(width: 2),
-              Image.asset('assets/icons/star_coin_icon.png', height: 14),
+              LotusRasterIcon('assets/icons/star_coin_icon.png', height: 14),
             ],
           ),
         ),

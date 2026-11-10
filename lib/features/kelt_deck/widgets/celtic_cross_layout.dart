@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/app/data/models/tarot_card/tarot_card_model.dart';
 import 'package:asteria_app/app/providers/content_provider.dart';
 import 'package:asteria_app/app/providers/user_provider.dart';
@@ -311,7 +312,7 @@ class _CelticCrossLayoutState extends State<CelticCrossLayout>
       label: '${context.l10n.cardNumberLabel} $cardNumber',
       child: IgnorePointer(
         ignoring: !isEnabled,
-        child: GestureDetector(
+        child: LotusTap(
           behavior: HitTestBehavior.opaque,
           onTap: () =>
               _onCardTap(cardNumber, cardId, userProvider, contentProvider),

@@ -1,4 +1,7 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
+import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
 import 'dart:ui';
+import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 
 import 'package:asteria_app/app/providers/user_provider.dart';
@@ -128,15 +131,18 @@ class SonnikTopNavBar extends StatelessWidget {
             width: 36,
             height: 36,
             child: canPop
-                ? IconButton(
+                ? LotusButtons.icon(
                     onPressed: () => Navigator.of(context).pop(),
                     tooltip: MaterialLocalizations.of(
                       context,
                     ).backButtonTooltip,
-                    icon: const ClayIcon(
-                      Icons.arrow_back_ios_new_rounded,
-                      color: SonnikPalette.white,
-                      size: 20,
+                    icon: const LotusIconSurface(
+                      diameter: 32,
+                      child: ClayIcon(
+                        Icons.arrow_back_ios_new_rounded,
+                        color: SonnikPalette.white,
+                        size: 20,
+                      ),
                     ),
                     padding: EdgeInsets.zero,
                   )
@@ -159,7 +165,7 @@ class SonnikTopNavBar extends StatelessWidget {
                 button: true,
                 label: '${context.l10n.balanceTitle}: $balance',
                 excludeSemantics: true,
-                child: GestureDetector(
+                child: LotusTap(
                   onTap: () => BalanceRoute.push(context),
                   behavior: HitTestBehavior.opaque,
                   child: Row(
@@ -170,7 +176,7 @@ class SonnikTopNavBar extends StatelessWidget {
                         style: context.textTheme.inverseUrbanistSemiBold17,
                       ),
                       const SizedBox(width: 4),
-                      Image.asset(
+                      LotusRasterIcon(
                         'assets/icons/star_coin_icon.png',
                         height: 16,
                       ),
@@ -300,7 +306,7 @@ class SonnikGradientButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final isEnabled = onPressed != null;
 
-    return GestureDetector(
+    return LotusTap(
       onTap: onPressed,
       behavior: HitTestBehavior.opaque,
       child: Opacity(
@@ -373,7 +379,7 @@ class SonnikGlassPanel extends StatelessWidget {
 
     if (onTap == null) return content;
 
-    return GestureDetector(
+    return LotusTap(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
       child: content,
@@ -441,7 +447,7 @@ class SonnikOfferCard extends StatelessWidget {
                 Positioned(
                   right: 8,
                   bottom: 12,
-                  child: Image.asset(
+                  child: LotusRasterIcon(
                     'assets/icons/star_coin_icon.png',
                     width: 42,
                   ),

@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'dart:async';
 import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 
@@ -427,7 +428,7 @@ class _RuneLayoutTabState extends State<_RuneLayoutTab> {
                 enabled: !widget.isRefreshingDeck,
                 label: context.l10n.refreshRuneSpreadLabel,
                 child: ExcludeSemantics(
-                  child: GestureDetector(
+                  child: LotusTap(
                     behavior: HitTestBehavior.opaque,
                     onTap: widget.isRefreshingDeck
                         ? null
@@ -656,7 +657,7 @@ class _GradientUnderlineButton extends StatelessWidget {
       button: true,
       label: text,
       child: ExcludeSemantics(
-        child: GestureDetector(
+        child: LotusTap(
           behavior: HitTestBehavior.opaque,
           onTap: onPressed,
           child: Padding(
@@ -770,7 +771,7 @@ class _RunesSegmentedTab extends StatelessWidget {
       selected: _isSelected,
       label: title,
       child: ExcludeSemantics(
-        child: GestureDetector(
+        child: LotusTap(
           behavior: HitTestBehavior.opaque,
           onTap: onTap,
           child: Stack(

@@ -1,6 +1,6 @@
+import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 import 'package:asteria_app/features/home/presentation/widgets/moon_design_tokens.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 class MoonPhaseMarker extends StatelessWidget {
   const MoonPhaseMarker({
@@ -14,11 +14,11 @@ class MoonPhaseMarker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SvgPicture.asset(
+    return ClayAssetIcon(
       'assets/icons/nav_bar/tab_star_icon.svg',
       width: size,
       height: size,
-      colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
+      tint: color,
       excludeFromSemantics: true,
     );
   }

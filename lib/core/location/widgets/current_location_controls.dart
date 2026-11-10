@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'dart:ui' as ui;
 import 'package:asteria_app/app/data/models/user/user_model.dart';
 import 'package:asteria_app/app/providers/content_provider.dart';
@@ -216,7 +217,7 @@ class _CurrentLocationControlsState extends State<CurrentLocationControls> {
     if (widget.cityLabel case final label?) {
       return Semantics(
         button: true,
-        child: InkWell(
+        child: LotusInkTap(
           onTap: _isSavingManual ? null : _openCitySelection,
           borderRadius: BorderRadius.circular(8),
           child: SizedBox(height: 44, child: label),
@@ -350,7 +351,7 @@ class _CityConfirmationButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TextButton(
+    return LotusButtons.text(
       onPressed: onPressed,
       style: TextButton.styleFrom(
         visualDensity: VisualDensity.standard,
@@ -397,7 +398,7 @@ class _LocationSecondaryButton extends StatelessWidget {
             color: const Color(0xFFE6994D).withValues(alpha: 0.78),
           ),
         ),
-        child: TextButton.icon(
+        child: LotusButtons.textIcon(
           onPressed: isLoading ? null : onPressed,
           icon: isLoading
               ? const SizedBox(
@@ -443,7 +444,7 @@ class _LocationPrimaryButton extends StatelessWidget {
           ),
           borderRadius: BorderRadius.circular(16),
         ),
-        child: TextButton.icon(
+        child: LotusButtons.textIcon(
           onPressed: isLoading ? null : onPressed,
           icon: isLoading
               ? const SizedBox(

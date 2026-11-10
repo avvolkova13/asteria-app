@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import '../app_colors/app_colors.dart';
 import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 import 'package:flutter/material.dart';
@@ -18,8 +19,8 @@ class CustomCheckbox extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        GestureDetector(
-          onTap: () => onChanged?.call(!value),
+        LotusTap(
+          onTap: onChanged == null ? null : () => onChanged!(!value),
           child: Container(
             width: 23,
             height: 23,

@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/app/providers/content_provider.dart';
 import 'package:asteria_app/core/analytics/analytics_events.dart';
 import 'package:asteria_app/core/analytics/analytics_facade.dart';
@@ -189,7 +190,7 @@ class _CreateSonnikInitialScreenState extends State<CreateSonnikInitialScreen> {
                   const SizedBox(height: 18),
                   Row(
                     children: [
-                      TextButton(
+                      LotusButtons.text(
                         onPressed: () =>
                             CreateSonnikHistoryRoute.pushReplacement(context),
                         style: TextButton.styleFrom(

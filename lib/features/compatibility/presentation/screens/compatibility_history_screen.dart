@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/app/data/models/saved_compatibility/saved_compatibility_model.dart';
 import 'package:asteria_app/app/data/models/user/user_model.dart';
 import 'package:asteria_app/core/extensions/datetime_extensions.dart';
@@ -82,7 +83,7 @@ class _CompatibilityHistoryItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final locale = Localizations.localeOf(context);
-    return GestureDetector(
+    return LotusTap(
       onTap: onTap,
       child: CompatibilityGlassCard(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),

@@ -1,3 +1,5 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
+import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 import 'package:flutter/material.dart';
@@ -125,7 +127,7 @@ class _BuyRequestsSubtitle extends StatelessWidget {
             '${context.l10n.questionCoinPrice(10)} ',
             style: context.textTheme.inverseUrbanistRegular16,
           ),
-          Image.asset('assets/icons/star_coin_icon.png', height: 14),
+          LotusRasterIcon('assets/icons/star_coin_icon.png', height: 14),
         ],
       ),
     );
@@ -148,7 +150,7 @@ class _PurchaseBlock extends StatelessWidget {
     return Semantics(
       button: true,
       label: title,
-      child: GestureDetector(
+      child: LotusTap(
         onTap: onPressed,
         child: Container(
           padding: const EdgeInsets.all(8),

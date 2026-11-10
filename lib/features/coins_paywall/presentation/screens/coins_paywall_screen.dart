@@ -1,3 +1,5 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
+import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
 import 'dart:io' show Platform;
 import 'dart:ui' as ui;
 import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
@@ -334,7 +336,7 @@ class _AndroidPaywallContent extends StatelessWidget {
               style: context.textTheme.inverseUrbanistRegular16,
             ),
             const SizedBox(height: 16),
-            TextButton(
+            LotusButtons.text(
               onPressed: onRetry,
               child: Text(
                 context.l10n.commonRetry,
@@ -447,7 +449,7 @@ class _PackageItem extends StatelessWidget {
         filter: ui.ImageFilter.blur(sigmaX: 8, sigmaY: 8),
         child: Material(
           color: Colors.transparent,
-          child: InkWell(
+          child: LotusInkTap(
             onTap: onTap,
             borderRadius: radius,
             child: ConstrainedBox(
@@ -534,9 +536,9 @@ class _PackagePriceRow extends StatelessWidget {
       children: [
         Text('$coins', style: amountStyle),
         const SizedBox(width: 6),
-        Image.asset('assets/icons/star_coin_icon.png', width: 17, height: 17),
+        LotusRasterIcon('assets/icons/star_coin_icon.png', width: 17, height: 17),
         const SizedBox(width: 10),
-        Image.asset('assets/icons/right_long_arrow.png', width: 18, height: 10),
+        LotusRasterIcon('assets/icons/right_long_arrow.png', width: 18, height: 10),
         const SizedBox(width: 10),
         Text(
           '$priceRubles ₽',
@@ -729,8 +731,8 @@ class _CoinsPaywallIosState extends State<_CoinsPaywallIos> {
                 action: state is PaywallAppleStatus
                     ? SnackBarAction(
                         label: context.l10n.applePurchaseCheckStatus,
-                        onPressed: () =>
-                            context.read<PaywallCubit>().refreshAppleStatus(),
+                        onPressed: LotusFeedback.action(() =>
+                            context.read<PaywallCubit>().refreshAppleStatus()),
                       )
                     : null,
               ),
@@ -889,7 +891,7 @@ class _IosPaywallContent extends StatelessWidget {
 
     return _AndroidPaywallStateCard(
       child: Center(
-        child: TextButton(
+        child: LotusButtons.text(
           onPressed: onRetry,
           child: Text(
             context.l10n.coinPackagesLoad,
@@ -925,7 +927,7 @@ class _IosPackageTile extends StatelessWidget {
         filter: ui.ImageFilter.blur(sigmaX: 8, sigmaY: 8),
         child: Material(
           color: Colors.transparent,
-          child: InkWell(
+          child: LotusInkTap(
             onTap: onTap,
             borderRadius: radius,
             child: ConstrainedBox(
@@ -1017,9 +1019,9 @@ class _IosPackagePriceRow extends StatelessWidget {
         if (stars != null) ...[
           Text('${stars!}', style: amountStyle),
           const SizedBox(width: 6),
-          Image.asset('assets/icons/star_coin_icon.png', width: 17, height: 17),
+          LotusRasterIcon('assets/icons/star_coin_icon.png', width: 17, height: 17),
           const SizedBox(width: 10),
-          Image.asset(
+          LotusRasterIcon(
             'assets/icons/right_long_arrow.png',
             width: 18,
             height: 10,

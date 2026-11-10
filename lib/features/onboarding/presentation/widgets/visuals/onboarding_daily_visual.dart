@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
 import 'package:asteria_app/core/localization/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -138,7 +139,7 @@ class _PreviewCalendar extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Image.asset(
+                  LotusRasterIcon(
                     'assets/icons/day_status_${statuses[index]}_star.png',
                     width: selected ? 22 : 14,
                     height: selected ? 22 : 14,

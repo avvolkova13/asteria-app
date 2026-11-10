@@ -1,3 +1,6 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
+import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
+import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
 import 'package:asteria_app/core/routing/app_route.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
@@ -104,15 +107,18 @@ class AnakraTopNavBar extends StatelessWidget {
             width: 36,
             height: 36,
             child: canPop
-                ? IconButton(
+                ? LotusButtons.icon(
                     onPressed: () => Navigator.of(context).pop(),
                     tooltip: MaterialLocalizations.of(
                       context,
                     ).backButtonTooltip,
-                    icon: const ClayIcon(
-                      Icons.arrow_back_ios_new_rounded,
-                      color: AnakraPalette.white,
-                      size: 20,
+                    icon: const LotusIconSurface(
+                      diameter: 32,
+                      child: ClayIcon(
+                        Icons.arrow_back_ios_new_rounded,
+                        color: AnakraPalette.white,
+                        size: 20,
+                      ),
                     ),
                     padding: EdgeInsets.zero,
                   )
@@ -135,7 +141,7 @@ class AnakraTopNavBar extends StatelessWidget {
                 button: true,
                 label: '${context.l10n.balanceTitle}: $balance',
                 excludeSemantics: true,
-                child: GestureDetector(
+                child: LotusTap(
                   onTap: () => BalanceRoute.push(context),
                   behavior: HitTestBehavior.opaque,
                   child: Row(
@@ -146,7 +152,7 @@ class AnakraTopNavBar extends StatelessWidget {
                         style: context.textTheme.inverseUrbanistSemiBold17,
                       ),
                       const SizedBox(width: 4),
-                      Image.asset(AnakraAssets.coin, height: 16),
+                      LotusRasterIcon(AnakraAssets.coin, height: 16),
                     ],
                   ),
                 ),
@@ -219,7 +225,7 @@ class AnakraHeroHeader extends StatelessWidget {
                         Semantics(
                           button: onRequestsTap != null,
                           label: context.l10n.anakraRequestsLeftLabel,
-                          child: GestureDetector(
+                          child: LotusTap(
                             onTap: onRequestsTap,
                             behavior: HitTestBehavior.opaque,
                             child: AnakraRequestsPill(
@@ -345,7 +351,7 @@ class AnakraGlassCard extends StatelessWidget {
     return Semantics(
       button: true,
       label: semanticLabel,
-      child: GestureDetector(
+      child: LotusTap(
         onTap: onTap,
         behavior: HitTestBehavior.opaque,
         child: content,
@@ -374,7 +380,7 @@ class AnakraGradientButton extends StatelessWidget {
       button: true,
       enabled: enabled,
       label: text,
-      child: GestureDetector(
+      child: LotusTap(
         onTap: enabled ? onPressed : null,
         child: AnimatedOpacity(
           duration: const Duration(milliseconds: 150),

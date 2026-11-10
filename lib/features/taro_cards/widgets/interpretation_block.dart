@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/app/data/models/user/tarot_deck_model.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
@@ -75,7 +76,7 @@ class _InterpretationBlockState extends State<InterpretationBlock> {
           runSpacing: 8,
           children: TarotLayoutSphere.values.map((sphere) {
             final isSelected = _selectedSphere == sphere;
-            return GestureDetector(
+            return LotusTap(
               onTap: () {
                 setState(() {
                   _selectedSphere = sphere;

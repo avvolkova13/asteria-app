@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_glyph_motion.dart';
 import 'package:asteria_app/features/home/presentation/models/day_status.dart';
 import 'package:asteria_app/features/home/presentation/models/day_status_assets.dart';
 import 'package:flutter/material.dart';
@@ -32,7 +33,9 @@ class DayStatusIcon extends StatelessWidget {
     return SizedBox(
       width: size,
       height: size,
-      child: excludeFromSemantics ? ExcludeSemantics(child: image) : image,
+      child: LotusGlyphMotion(
+        child: excludeFromSemantics ? ExcludeSemantics(child: image) : image,
+      ),
     );
   }
 }

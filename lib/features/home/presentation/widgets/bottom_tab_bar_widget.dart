@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 import 'package:asteria_app/features/home/presentation/widgets/home_glass_surface.dart';
@@ -143,7 +144,7 @@ class BottomTabBarWidget extends StatelessWidget {
                       Semantics(
                         button: true,
                         label: context.l10n.anakraTitle,
-                        child: GestureDetector(
+                        child: LotusTap(
                           onTap: onAiAstrologerPressed,
                           behavior: HitTestBehavior.opaque,
                           child: _AiAstrologerButton(
@@ -450,45 +451,47 @@ class _TabItem extends StatelessWidget {
     );
 
     return Expanded(
-      child: Semantics(
-        button: true,
-        selected: isActive,
-        label: label,
-        onTap: onPressed,
-        child: ExcludeSemantics(
-          child: GestureDetector(
-            onTap: onPressed,
-            behavior: HitTestBehavior.opaque,
-            child: Stack(
-              alignment: Alignment.center,
-              clipBehavior: Clip.none,
-              children: [
-                if (isActive)
-                  const Positioned(
-                    left: -6,
-                    right: -6,
-                    top: 0,
-                    bottom: 0,
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(
-                        color: _activePillColor,
-                        borderRadius: BorderRadius.all(Radius.circular(100)),
+      child: LotusFeedback(
+        onActivate: onPressed,
+        keyboard: true,
+        builder: (activate) => Semantics(
+          button: true,
+          selected: isActive,
+          label: label,
+          onTap: activate,
+          child: ExcludeSemantics(
+            child: GestureDetector(
+              onTap: activate,
+              behavior: HitTestBehavior.opaque,
+              child: Stack(
+                alignment: Alignment.center,
+                clipBehavior: Clip.none,
+                children: [
+                  if (isActive)
+                    const Positioned(
+                      left: -6,
+                      right: -6,
+                      top: 0,
+                      bottom: 0,
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          color: _activePillColor,
+                          borderRadius: BorderRadius.all(Radius.circular(100)),
+                        ),
                       ),
                     ),
-                  ),
-                SizedBox.expand(
-                  child: ClayPressFeedback(
+                  SizedBox.expand(
                     child: isActive
-                        ? ShaderMask(
-                            shaderCallback: (bounds) =>
-                                _activeGradient.createShader(bounds),
-                            blendMode: BlendMode.modulate,
-                            child: content,
-                          )
-                        : content,
+                      ? ShaderMask(
+                          shaderCallback: (bounds) =>
+                              _activeGradient.createShader(bounds),
+                          blendMode: BlendMode.modulate,
+                          child: content,
+                            )
+                          : content,
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

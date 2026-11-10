@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/app/data/models/lunar_calendar/lunar_recommendation_models.dart';
 import 'package:asteria_app/app/data/models/lunar_calendar/personalized_lunar_month_model.dart';
 import 'package:asteria_app/app/data/models/moon_phase/moon_phase_day_image.dart';
@@ -256,6 +257,8 @@ class _MoonPhaseWidgetState extends State<MoonPhaseWidget> {
     MoonPhaseModel moonPhase,
   ) {
     final velocity = details.primaryVelocity ?? 0;
+    if (_isLoading || velocity.abs() <= _minSwipeVelocity) return;
+    LotusFeedback.selection();
     if (velocity < -_minSwipeVelocity) {
       _changeDate(moonPhase, isNextDay: true);
     } else if (velocity > _minSwipeVelocity) {
@@ -482,7 +485,9 @@ class _MoonPhaseWidgetState extends State<MoonPhaseWidget> {
                     ),
                   ),
                   isSelected: offset == 0,
-                  onTap: () => _changeDateByOffset(moonPhase, offset),
+                  onTap: _isLoading || offset == 0
+                      ? null
+                      : () => _changeDateByOffset(moonPhase, offset),
                 ),
               );
             }),
@@ -677,7 +682,7 @@ class _MoonDayTile extends StatelessWidget {
   final bool hasPrimaryPhase;
   final DayStatus? status;
   final bool isSelected;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -687,123 +692,127 @@ class _MoonDayTile extends StatelessWidget {
     final weekdayOpacity = isSelected ? 0.8 : 0.5;
     final locale = Localizations.localeOf(context);
 
-    return Semantics(
-      button: true,
-      selected: isSelected,
-      label: [
-        _formatWeekday(date, locale),
-        _formatDayMonth(date, locale),
-        if (status != null) status!.title(context).replaceAll('\n', ' '),
-        if (hasPrimaryPhase) context.l10n.moonPhaseChange,
-      ].join(', '),
-      onTap: onTap,
-      child: ExcludeSemantics(
-        child: GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          onTap: onTap,
-          child: Container(
-            width: _MoonPhaseWidgetState._dayTileWidth,
-            height: _MoonPhaseWidgetState._dayTileHeight,
-            padding: const EdgeInsets.all(4),
-            decoration: BoxDecoration(
-              gradient: isSelected
-                  ? _MoonPhaseWidgetState._orangeGradient
-                  : const LinearGradient(
-                      colors: [
-                        Color(0xFF0B0616),
-                        Color(0xFF0F0A1A),
-                        Color(0xFF0F0A1A),
-                        Color(0xFF181224),
-                      ],
-                      stops: [0, 0.22, 0.7, 1],
-                    ),
-              borderRadius: BorderRadius.circular(24),
-              boxShadow: const [
-                BoxShadow(
-                  color: Color(0x33000000),
-                  blurRadius: 4,
-                  offset: Offset(0, 4),
-                ),
-              ],
-            ),
-            foregroundDecoration: isSelected
-                ? null
-                : BoxDecoration(
-                    borderRadius: BorderRadius.circular(24),
-                    border: Border.all(color: const Color(0xFF19132A)),
-                  ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                SizedBox(
-                  height: 14,
-                  child: Center(
-                    child: status != null
-                        ? DayStatusIcon(
-                            status: status!,
-                            size: 14,
-                            excludeFromSemantics: true,
-                          )
-                        : hasPrimaryPhase
-                        ? Container(
-                            width: 5,
-                            height: 5,
-                            decoration: BoxDecoration(
-                              color: isSelected
-                                  ? AppColors.textPrimary
-                                  : _MoonPhaseWidgetState._accentOrangeLight,
-                              shape: BoxShape.circle,
-                            ),
-                          )
-                        : null,
-                  ),
-                ),
-                SizedBox(
-                  height: 14,
-                  child: Center(
-                    child: Text(
-                      _formatWeekday(date, locale),
-                      style: context.textTheme.urbanistRegular12.copyWith(
-                        color: textColor.withValues(alpha: weekdayOpacity),
-                        fontFamily: 'Onest',
-                        height: 1,
-                        letterSpacing: -0.41,
+    return LotusFeedback(
+      onActivate: onTap,
+      keyboard: true,
+      builder: (activate) => Semantics(
+        button: true,
+        selected: isSelected,
+        label: [
+          _formatWeekday(date, locale),
+          _formatDayMonth(date, locale),
+          if (status != null) status!.title(context).replaceAll('\n', ' '),
+          if (hasPrimaryPhase) context.l10n.moonPhaseChange,
+        ].join(', '),
+        onTap: activate,
+        child: ExcludeSemantics(
+          child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: activate,
+            child: Container(
+              width: _MoonPhaseWidgetState._dayTileWidth,
+              height: _MoonPhaseWidgetState._dayTileHeight,
+              padding: const EdgeInsets.all(4),
+              decoration: BoxDecoration(
+                gradient: isSelected
+                    ? _MoonPhaseWidgetState._orangeGradient
+                    : const LinearGradient(
+                        colors: [
+                          Color(0xFF0B0616),
+                          Color(0xFF0F0A1A),
+                          Color(0xFF0F0A1A),
+                          Color(0xFF181224),
+                        ],
+                        stops: [0, 0.22, 0.7, 1],
                       ),
-                      textAlign: TextAlign.center,
+                borderRadius: BorderRadius.circular(24),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Color(0x33000000),
+                    blurRadius: 4,
+                    offset: Offset(0, 4),
+                  ),
+                ],
+              ),
+              foregroundDecoration: isSelected
+                  ? null
+                  : BoxDecoration(
+                      borderRadius: BorderRadius.circular(24),
+                      border: Border.all(color: const Color(0xFF19132A)),
+                    ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  SizedBox(
+                    height: 14,
+                    child: Center(
+                      child: status != null
+                          ? DayStatusIcon(
+                              status: status!,
+                              size: 14,
+                              excludeFromSemantics: true,
+                            )
+                          : hasPrimaryPhase
+                          ? Container(
+                              width: 5,
+                              height: 5,
+                              decoration: BoxDecoration(
+                                color: isSelected
+                                    ? AppColors.textPrimary
+                                    : _MoonPhaseWidgetState._accentOrangeLight,
+                                shape: BoxShape.circle,
+                              ),
+                            )
+                          : null,
                     ),
                   ),
-                ),
-                SizedBox(
-                  height: 14,
-                  child: Center(
-                    child: FittedBox(
-                      fit: BoxFit.scaleDown,
+                  SizedBox(
+                    height: 14,
+                    child: Center(
                       child: Text(
-                        _formatDayMonth(date, locale),
-                        maxLines: 1,
-                        style:
-                            (isSelected
-                                    ? context.textTheme.urbanistSemiBold12
-                                    : context.textTheme.urbanistRegular12)
-                                .copyWith(
-                                  color: textColor,
-                                  fontFamily: 'Onest',
-                                  height: 1,
-                                  letterSpacing: -0.41,
-                                ),
+                        _formatWeekday(date, locale),
+                        style: context.textTheme.urbanistRegular12.copyWith(
+                          color: textColor.withValues(alpha: weekdayOpacity),
+                          fontFamily: 'Onest',
+                          height: 1,
+                          letterSpacing: -0.41,
+                        ),
                         textAlign: TextAlign.center,
                       ),
                     ),
                   ),
-                ),
-                _TintedMoonImage(
-                  imagePath: phaseImagePath,
-                  size: 37,
-                  shadowBlur: 4,
-                  shadowColor: const Color(0x40000000),
-                ),
-              ],
+                  SizedBox(
+                    height: 14,
+                    child: Center(
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(
+                          _formatDayMonth(date, locale),
+                          maxLines: 1,
+                          style:
+                              (isSelected
+                                      ? context.textTheme.urbanistSemiBold12
+                                      : context.textTheme.urbanistRegular12)
+                                  .copyWith(
+                                    color: textColor,
+                                    fontFamily: 'Onest',
+                                    height: 1,
+                                    letterSpacing: -0.41,
+                                  ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                  ),
+                  _TintedMoonImage(
+                    imagePath: phaseImagePath,
+                    size: 37,
+                    shadowBlur: 4,
+                    shadowColor: const Color(0x40000000),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -1179,25 +1188,28 @@ class _MoonCalendarButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Semantics(
-      button: true,
-      label: context.l10n.openLunarCalendarLabel,
-      onTap: onPressed,
-      child: ExcludeSemantics(
-        child: TextButton(
-          onPressed: onPressed,
-          style: TextButton.styleFrom(
-            padding: const EdgeInsets.symmetric(vertical: 6),
-            minimumSize: const Size(44, 44),
-            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-          ),
-          child: _GradientText(
-            text: context.l10n.homeOpenCalendar,
-            gradient: _MoonPhaseWidgetState._orangeGradient,
-            style: context.textTheme.urbanistSemiBold16.copyWith(
-              fontFamily: 'Onest',
-              height: 1.2,
-              letterSpacing: -0.41,
+    return LotusFeedback(
+      onActivate: onPressed,
+      builder: (activate) => Semantics(
+        button: true,
+        label: context.l10n.openLunarCalendarLabel,
+        onTap: activate,
+        child: ExcludeSemantics(
+          child: TextButton(
+            onPressed: activate,
+            style: TextButton.styleFrom(
+              padding: const EdgeInsets.symmetric(vertical: 6),
+              minimumSize: const Size(44, 44),
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            ),
+            child: _GradientText(
+              text: context.l10n.homeOpenCalendar,
+              gradient: _MoonPhaseWidgetState._orangeGradient,
+              style: context.textTheme.urbanistSemiBold16.copyWith(
+                fontFamily: 'Onest',
+                height: 1.2,
+                letterSpacing: -0.41,
+              ),
             ),
           ),
         ),

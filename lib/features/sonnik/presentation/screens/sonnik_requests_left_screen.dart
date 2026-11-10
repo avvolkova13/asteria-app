@@ -1,3 +1,5 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
+import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 import 'package:asteria_app/features/monetization/presentation/monetization_provider.dart';
@@ -24,7 +26,7 @@ class SonnikRequestsLeftScreen extends StatelessWidget {
             context.l10n.unlimited,
             style: context.textTheme.inversePlayfairSemiBold24,
           ),
-          TextButton(
+          LotusButtons.text(
             onPressed: () => Navigator.of(context).pop(),
             child: Text(context.l10n.commonBack),
           ),
@@ -160,7 +162,7 @@ class _SonnikBuyAttemptsCard extends StatelessWidget {
                         style: context.textTheme.inverseUrbanistSemiBold17
                             .copyWith(fontSize: 14),
                       ),
-                      Image.asset(
+                      LotusRasterIcon(
                         'assets/icons/star_coin_icon.png',
                         height: 14,
                       ),
@@ -171,7 +173,7 @@ class _SonnikBuyAttemptsCard extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 12),
-          Image.asset('assets/icons/star_coin_icon.png', width: 42),
+          LotusRasterIcon('assets/icons/star_coin_icon.png', width: 42),
         ],
       ),
     );

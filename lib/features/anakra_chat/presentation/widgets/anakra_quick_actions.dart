@@ -26,19 +26,19 @@ class AnakraQuickActions extends StatelessWidget {
         children: [
           AnakraQuickActionButton(
             text: context.l10n.anakraQuickDrawCard,
-            onPressed: onDrawCard ?? () {},
+            onPressed: onDrawCard,
           ),
           AnakraQuickActionButton(
             text: context.l10n.anakraQuickCompatibility,
-            onPressed: onCompatibility ?? () {},
+            onPressed: onCompatibility,
           ),
           AnakraQuickActionButton(
             text: context.l10n.anakraQuickNatalChart,
-            onPressed: onNatalChart ?? () {},
+            onPressed: onNatalChart,
           ),
           AnakraQuickActionButton(
             text: context.l10n.anakraQuickPowerDay,
-            onPressed: onPowerDay ?? () {},
+            onPressed: onPowerDay,
           ),
         ],
       ),

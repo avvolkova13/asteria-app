@@ -1,3 +1,5 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 import 'package:flutter/material.dart';
 
@@ -69,7 +71,7 @@ class CustomButton extends StatelessWidget {
   }
 
   Widget _buildPrimaryButton(BuildContext context) {
-    return ElevatedButton(
+    return LotusButtons.elevated(
       onPressed: isLoading ? null : onPressed,
       style: ElevatedButton.styleFrom(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
@@ -84,7 +86,7 @@ class CustomButton extends StatelessWidget {
   }
 
   Widget _buildSecondaryButton(BuildContext context) {
-    return ElevatedButton(
+    return LotusButtons.elevated(
       onPressed: isLoading ? null : onPressed,
       style: ElevatedButton.styleFrom(
         backgroundColor: context.colors.surface,
@@ -99,7 +101,7 @@ class CustomButton extends StatelessWidget {
   }
 
   Widget _buildOutlineButton(BuildContext context) {
-    return OutlinedButton(
+    return LotusButtons.outlined(
       onPressed: isLoading ? null : onPressed,
       style: OutlinedButton.styleFrom(
         foregroundColor: context.colors.customButtonOutlineText,
@@ -117,7 +119,7 @@ class CustomButton extends StatelessWidget {
   }
 
   Widget _buildTextButton(BuildContext context) {
-    return TextButton(
+    return LotusButtons.text(
       onPressed: isLoading ? null : onPressed,
       style: TextButton.styleFrom(
         foregroundColor: context.colors.customButtonOutlineText,
@@ -130,7 +132,7 @@ class CustomButton extends StatelessWidget {
   }
 
   Widget _buildDeepPurpleButton(BuildContext context) {
-    return ElevatedButton(
+    return LotusButtons.elevated(
       onPressed: isLoading ? null : onPressed,
       style: ElevatedButton.styleFrom(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
@@ -181,7 +183,7 @@ class CustomButton extends StatelessWidget {
             style: buttonTextStyle.copyWith(fontWeight: fontWeight, color: textColor ?? buttonTextStyle.color),
           ),
           const SizedBox(width: 10),
-          Image.asset(imageAsset!, width: width, height: height, fit: BoxFit.contain),
+          LotusRasterIcon(imageAsset!, width: width, height: height, fit: BoxFit.contain),
         ],
       );
     }
@@ -191,10 +193,7 @@ class CustomButton extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          ClayPressFeedback(
-            enabled: onPressed != null && !isLoading,
-            child: ClayIcon(icon, size: defaultIconSize),
-          ),
+          ClayIcon(icon, size: defaultIconSize),
           const SizedBox(width: 10),
           Text(
             text,

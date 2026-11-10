@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/app/data/models/prompt_response.dart';
 import 'package:asteria_app/core/extensions/datetime_extensions.dart';
 import 'package:asteria_app/core/extensions/string_extensions.dart';
@@ -74,7 +75,7 @@ class CompabilityResults extends StatelessWidget {
           },
         ),
         const SizedBox(height: 14),
-        TextButton(
+        LotusButtons.text(
           onPressed: onHistoryPressed,
           child: Text(
             context.l10n.viewHistory,

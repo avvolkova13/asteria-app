@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/routing/app_route.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:flutter/material.dart';
@@ -176,41 +177,44 @@ class _AdvertisingCtaButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Semantics(
-      button: true,
-      enabled: true,
-      label: context.l10n.adDecode,
-      onTap: onTap,
-      child: SizedBox(
-        height: 44,
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            gradient: AdvertisingBlockWidget._orangeGradient,
-            boxShadow: const [
-              BoxShadow(color: Color(0x0D6E4BFF), blurRadius: 30),
-            ],
-          ),
-          child: Material(
-            color: Colors.transparent,
-            borderRadius: BorderRadius.circular(16),
-            child: InkWell(
+    return LotusFeedback(
+      onActivate: onTap,
+      builder: (activate) => Semantics(
+        button: true,
+        enabled: true,
+        label: context.l10n.adDecode,
+        onTap: activate,
+        child: SizedBox(
+          height: 44,
+          child: DecoratedBox(
+            decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16),
-              onTap: onTap,
-              child: Center(
-                child: ExcludeSemantics(
-                  child: FittedBox(
-                    fit: BoxFit.scaleDown,
-                    child: Text(
-                      context.l10n.adDecode,
-                      maxLines: 1,
-                      style: context.textTheme.inverseUrbanistRegular17
-                          .copyWith(
-                            fontFamily: 'Onest',
-                            color: AppColors.textPrimary,
-                            height: 1.2,
-                            letterSpacing: -0.408,
-                          ),
+              gradient: AdvertisingBlockWidget._orangeGradient,
+              boxShadow: const [
+                BoxShadow(color: Color(0x0D6E4BFF), blurRadius: 30),
+              ],
+            ),
+            child: Material(
+              color: Colors.transparent,
+              borderRadius: BorderRadius.circular(16),
+              child: InkWell(
+                borderRadius: BorderRadius.circular(16),
+                onTap: activate,
+                child: Center(
+                  child: ExcludeSemantics(
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text(
+                        context.l10n.adDecode,
+                        maxLines: 1,
+                        style: context.textTheme.inverseUrbanistRegular17
+                            .copyWith(
+                              fontFamily: 'Onest',
+                              color: AppColors.textPrimary,
+                              height: 1.2,
+                              letterSpacing: -0.408,
+                            ),
+                      ),
                     ),
                   ),
                 ),

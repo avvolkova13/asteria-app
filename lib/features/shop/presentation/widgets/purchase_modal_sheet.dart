@@ -1,3 +1,5 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
+import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
 import 'package:asteria_app/app/data/models/shop_item/shop_item_model.dart';
 import 'package:asteria_app/core/analytics/dictionaries/offer_type.dart';
 import 'package:asteria_app/core/analytics/product_analytics_service.dart';
@@ -370,7 +372,7 @@ class _PurchaseSuccessScreen extends StatelessWidget {
             ),
             Padding(
               padding: const EdgeInsets.only(bottom: 3, left: 4),
-              child: Image.asset('assets/icons/star_coin_icon.png', width: 20),
+              child: LotusRasterIcon('assets/icons/star_coin_icon.png', width: 20),
             ),
           ],
         ),
@@ -471,7 +473,7 @@ class _CoinAmountLabel extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 4),
-        Image.asset(
+        LotusRasterIcon(
           'assets/icons/star_coin_icon.png',
           width: 16,
           height: 16,
@@ -487,7 +489,7 @@ class _PurchaseArrowIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Image.asset(
+    return LotusRasterIcon(
       'assets/icons/right_long_arrow.png',
       width: 24,
       height: 24,
@@ -523,20 +525,24 @@ class _QuantitySelector extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Row(
             children: [
-              Semantics(
-                button: true,
-                enabled: quantity > 1,
-                label: context.l10n.shopDecreaseQuantity,
-                onTap: quantity > 1 ? onDecrement : null,
-                child: ExcludeSemantics(
-                  child: GestureDetector(
-                    onTap: quantity > 1 ? onDecrement : null,
-                    child: ClayAssetIcon(
-                      'assets/icons/minus_circle_icon.svg',
-                      height: 22,
-                      tint: quantity > 1
-                            ? _purchaseModalPurple
-                            : _purchaseModalPurple.withValues(alpha: 0.62),
+              LotusFeedback(
+                onActivate: quantity > 1 ? onDecrement : null,
+                keyboard: true,
+                builder: (activate) => Semantics(
+                  button: true,
+                  enabled: quantity > 1,
+                  label: context.l10n.shopDecreaseQuantity,
+                  onTap: activate,
+                  child: ExcludeSemantics(
+                    child: GestureDetector(
+                      onTap: activate,
+                      child: ClayAssetIcon(
+                        'assets/icons/minus_circle_icon.svg',
+                        height: 22,
+                        tint: quantity > 1
+                              ? _purchaseModalPurple
+                              : _purchaseModalPurple.withValues(alpha: 0.62),
+                      ),
                     ),
                   ),
                 ),
@@ -550,17 +556,21 @@ class _QuantitySelector extends StatelessWidget {
                 ),
               ),
               const Spacer(),
-              Semantics(
-                button: true,
-                label: context.l10n.shopIncreaseQuantity,
-                onTap: onIncrement,
-                child: ExcludeSemantics(
-                  child: GestureDetector(
-                    onTap: onIncrement,
-                    child: ClayAssetIcon(
-                      'assets/icons/plus_circle_icon.svg',
-                      height: 22,
-                      tint: _purchaseModalGold,
+              LotusFeedback(
+                onActivate: onIncrement,
+                keyboard: true,
+                builder: (activate) => Semantics(
+                  button: true,
+                  label: context.l10n.shopIncreaseQuantity,
+                  onTap: activate,
+                  child: ExcludeSemantics(
+                    child: GestureDetector(
+                      onTap: activate,
+                      child: ClayAssetIcon(
+                        'assets/icons/plus_circle_icon.svg',
+                        height: 22,
+                        tint: _purchaseModalGold,
+                      ),
                     ),
                   ),
                 ),
@@ -618,7 +628,7 @@ class _PurchaseModalActionButton extends StatelessWidget {
                     ? null
                     : Border.all(color: _purchaseModalPurple),
               ),
-              child: InkWell(
+              child: LotusInkTap(
                 onTap: onPressed,
                 borderRadius: borderRadius,
                 child: Center(

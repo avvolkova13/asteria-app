@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/app/providers/content_provider.dart';
 import 'package:asteria_app/app/providers/user_provider.dart';
 import 'package:asteria_app/app/data/models/natal_card/natal_card_model.dart';
@@ -362,7 +363,7 @@ class _NatalCardScreenState extends State<NatalCardScreen> {
                             : context.l10n.natalLoadError,
                         style: context.textTheme.inverseUrbanistRegular16,
                       ),
-                      TextButton(
+                      LotusButtons.text(
                         onPressed: _loadNatalCard,
                         child: Text(context.l10n.retry),
                       ),
@@ -764,7 +765,7 @@ class _NatalCardSegment extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return LotusTap(
       behavior: HitTestBehavior.opaque,
       onTap: onTap,
       child: Container(

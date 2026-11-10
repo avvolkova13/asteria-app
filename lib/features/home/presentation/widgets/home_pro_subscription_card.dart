@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/features/home/presentation/widgets/card_advertisement_widget.dart';
 import 'package:asteria_app/features/home/presentation/widgets/home_glass_surface.dart';
@@ -103,7 +104,7 @@ class _CompactHomePromo extends StatelessWidget {
                   ),
                   Padding(
                     padding: const EdgeInsets.only(right: 8),
-                    child: TextButton(
+                    child: LotusButtons.text(
                       onPressed: onPressed,
                       style: TextButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 6),

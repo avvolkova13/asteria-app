@@ -1,11 +1,13 @@
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 
 import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
+import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
+import 'package:asteria_app/core/ui_kit/widgets/lotus_glyph_motion.dart';
 
-import 'player_artwork.dart';
+import 'package:asteria_app/core/ui_kit/widgets/lotus_sprite.dart';
 
 enum ClayGlyph {
   play,
@@ -30,27 +32,7 @@ class PlayerClayGlyph extends StatelessWidget {
     if (glyph == ClayGlyph.share) {
       return ClayIcon(Icons.ios_share, size: size, color: Colors.white);
     }
-    return SizedBox.square(
-      dimension: size,
-      child: ClipRect(
-        child: Stack(
-          clipBehavior: Clip.none,
-          children: [
-            Positioned(
-              left: -size * frame,
-              top: -size * glyph.index,
-              width: size * 16,
-              height: size * 9,
-              child: Image.asset(
-                '$playerArtDirectory/iconity-clay.webp',
-                fit: BoxFit.fill,
-                excludeFromSemantics: true,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+    return LotusSprite(LotusPose.values[glyph.index], size: size, frame: frame);
   }
 }
 
@@ -79,13 +61,13 @@ class _PlayerPebbleState extends State<PlayerPebble>
     with SingleTickerProviderStateMixin {
   late final _animation = AnimationController(
     vsync: this,
-    duration: const Duration(milliseconds: 400),
+    duration: LotusMotionScope.duration,
   );
   bool _pressed = false;
   bool _focused = false;
 
   void _activate() {
-    HapticFeedback.selectionClick();
+    LotusFeedback.selection();
     if (!MediaQuery.disableAnimationsOf(context)) _animation.forward(from: 0);
     widget.onTap();
   }
@@ -163,9 +145,11 @@ class _PlayerPebbleState extends State<PlayerPebble>
             height: height,
             child: AnimatedScale(
               scale: _pressed && !MediaQuery.disableAnimationsOf(context)
-                  ? .96
+                  ? LotusMotionScope.pressedScale
                   : 1,
-              duration: const Duration(milliseconds: 90),
+              duration: MediaQuery.disableAnimationsOf(context)
+                  ? Duration.zero
+                  : LotusMotionScope.pressDuration,
               child: Stack(
                 alignment: Alignment.center,
                 children: [
@@ -189,7 +173,7 @@ class _PlayerPebbleState extends State<PlayerPebble>
                           child: BackdropFilter(
                             filter: ui.ImageFilter.blur(sigmaX: 12, sigmaY: 12),
                             child: CustomPaint(
-                              painter: _PebbleSurface(
+                              painter: LotusSurfacePainter(
                                 shape,
                                 _pressed || widget.value == true,
                                 _focused,
@@ -203,13 +187,16 @@ class _PlayerPebbleState extends State<PlayerPebble>
                   AnimatedBuilder(
                     animation: _animation,
                     builder: (_, _) {
-                      final icon = PlayerClayGlyph(
+                      final glyphArt = PlayerClayGlyph(
                         glyph,
                         glyphSize,
                         frame: _animation.isAnimating
                             ? (_animation.value * 15).floor()
                             : 0,
                       );
+                      final icon = glyph == ClayGlyph.share
+                          ? LotusMotionScope(pulse: _animation, child: glyphArt)
+                          : glyphArt;
                       return Stack(
                         alignment: Alignment.center,
                         children: [
@@ -242,93 +229,4 @@ class _PlayerPebbleState extends State<PlayerPebble>
       ),
     );
   }
-}
-
-class _PebbleSurface extends CustomPainter {
-  const _PebbleSurface(this.radius, this.active, this.focused);
-  final BorderRadius radius;
-  final bool active;
-  final bool focused;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final rect = Offset.zero & size;
-    final shape = radius.toRRect(rect);
-    void fill(Gradient gradient) =>
-        canvas.drawRRect(shape, Paint()..shader = gradient.createShader(rect));
-    fill(
-      const LinearGradient(
-        begin: Alignment(-.5, -1),
-        end: Alignment(.5, 1),
-        colors: [Color(0x25fbdeef), Color(0x0cfae3ec), Color(0x26c4b4dd)],
-      ),
-    );
-    fill(
-      const RadialGradient(
-        center: Alignment(-.5, -.84),
-        radius: .73,
-        colors: [Color(0x34fff5f5), Color(0x00fff5f5)],
-      ),
-    );
-    fill(
-      const RadialGradient(
-        center: Alignment(.66, .8),
-        radius: .76,
-        colors: [Color(0x34cbbde7), Color(0x00cbbde7)],
-      ),
-    );
-    if (active) {
-      fill(
-        const RadialGradient(
-          center: Alignment(-.18, -.12),
-          radius: .72,
-          colors: [Color(0x66fff5ee), Color(0x20f4d8ec), Color(0x00f4d8ec)],
-          stops: [0, .6, 1],
-        ),
-      );
-    }
-    final stroke = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 2
-      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 1.1);
-    canvas.drawRRect(
-      shape.shift(const Offset(0, .75)),
-      stroke
-        ..color = const Color(0x5efff8f5)
-        ..shader = const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Color(0x9afff8f5), Color(0x30f9e0f1), Color(0x335e4766)],
-        ).createShader(rect),
-    );
-    // A narrow directional rim follows the upper edge of the clay surface.
-    final rim = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = .85
-      ..shader = const LinearGradient(
-        begin: Alignment(-.55, -1),
-        end: Alignment(.4, 1),
-        colors: [
-          Color(0xa8fff8f5),
-          Color(0x48f9e0f1),
-          Color(0x115e4766),
-          Color(0x355e4766),
-        ],
-        stops: [0, .32, .72, 1],
-      ).createShader(rect);
-    canvas.drawRRect(shape.deflate(.45), rim);
-    if (focused) {
-      canvas.drawRRect(
-        shape.deflate(1),
-        Paint()
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = 2
-          ..color = const Color(0xfff3cbab),
-      );
-    }
-  }
-
-  @override
-  bool shouldRepaint(_PebbleSurface old) =>
-      radius != old.radius || active != old.active || focused != old.focused;
 }

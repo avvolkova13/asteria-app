@@ -1,3 +1,7 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
+import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
+import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
+import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 import 'package:asteria_app/core/routing/app_route.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/features/auth/presentation/widgets/auth_flow_widgets.dart';
@@ -54,7 +58,19 @@ class ScenarioPage extends StatelessWidget {
                 if (back)
                   Align(
                     alignment: Alignment.centerLeft,
-                    child: BackButton(color: AppColors.textInverse),
+                    child: LotusButtons.icon(
+                      tooltip: MaterialLocalizations.of(
+                        context,
+                      ).backButtonTooltip,
+                      onPressed: () => Navigator.maybePop(context),
+                      icon: const LotusIconSurface(
+                        child: ClayIcon(
+                          Icons.arrow_back_ios_new_rounded,
+                          size: 24,
+                          color: AppColors.textInverse,
+                        ),
+                      ),
+                    ),
                   ),
                 if (!back) const SizedBox(height: 24),
                 Expanded(
@@ -112,7 +128,7 @@ class ScenarioTile extends StatelessWidget {
         child: HomeGlassSurface(
           child: Material(
             color: Colors.transparent,
-            child: InkWell(
+            child: LotusInkTap(
               onTap: onTap,
               child: Padding(
                 padding: const EdgeInsets.symmetric(
@@ -123,7 +139,7 @@ class ScenarioTile extends StatelessWidget {
                   children: [
                     if (art != null) ...[
                       ExcludeSemantics(
-                        child: Image.asset(
+                        child: LotusRasterIcon(
                           art!,
                           width: 50,
                           height: 56,
@@ -159,7 +175,7 @@ class ScenarioTile extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 8),
-                    const Icon(
+                    const ClayIcon(
                       Icons.chevron_right,
                       size: 20,
                       color: AppColors.cardTinted,

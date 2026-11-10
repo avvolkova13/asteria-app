@@ -1,4 +1,6 @@
 import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
+import 'package:asteria_app/core/ui_kit/widgets/lotus_glyph_motion.dart';
+import 'package:asteria_app/core/ui_kit/widgets/lotus_sprite.dart';
 import 'package:flutter/cupertino.dart' show CupertinoIcons;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -45,6 +47,43 @@ void main() {
     expect(image.color, Colors.white54);
     expect(find.bySemanticsLabel('Back'), findsOneWidget);
   });
+  testWidgets(
+    'navigation uses the player atlas and keeps its direction during a pulse',
+    (tester) async {
+      final timeline = AnimationController(vsync: tester);
+      addTearDown(timeline.dispose);
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Center(
+            child: LotusMotionScope(
+              pulse: timeline,
+              child: const ClayIcon(
+                Icons.arrow_back_ios_new_rounded,
+                size: 22,
+                semanticLabel: 'Back',
+              ),
+            ),
+          ),
+        ),
+      );
+      final glyph = find.byType(LotusSprite);
+      expect(tester.getSize(glyph), const Size.square(22));
+      expect(tester.widget<LotusSprite>(glyph).pose, LotusPose.chevron);
+      expect(tester.widget<LotusSprite>(glyph).flip, isTrue);
+      expect(tester.widget<LotusSprite>(glyph).frame, 0);
+      timeline.value = .5;
+      await tester.pump();
+      expect(tester.widget<LotusSprite>(glyph).frame, 8);
+      expect(tester.widget<LotusSprite>(glyph).flip, isTrue);
+      expect(find.bySemanticsLabel('Back'), findsOneWidget);
+      final image = tester.widget<Image>(find.byType(Image));
+      expect(
+        (image.image as AssetImage).assetName,
+        'assets/images/affirmation/iconity-clay.webp',
+      );
+    },
+  );
+
   testWidgets(
     'press feedback leaves the tap with its parent and respects reduced motion',
     (tester) async {

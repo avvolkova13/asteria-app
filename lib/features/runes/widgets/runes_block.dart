@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/app/data/models/rune_of_day/rune_of_day_model.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
@@ -247,38 +248,42 @@ class _RunesBlockState extends State<RunesBlock> with TickerProviderStateMixin {
   }) {
     final onTap = isOpened ? onTapOpened : onTapClosed;
 
-    return Semantics(
-      button: true,
-      enabled: onTap != null,
-      label: isOpened ? openedSemanticLabel.trim() : closedSemanticLabel,
-      onTap: onTap,
-      child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onTap: onTap,
-        child: AnimatedBuilder(
-          animation: animation,
-          builder: (context, child) {
-            final showBack = animation.value < 0.5;
-            return Transform(
-              alignment: Alignment.center,
-              transform: Matrix4.identity()
-                ..setEntry(3, 2, 0.001)
-                ..rotateY(animation.value * 3.14159),
-              child: showBack
-                  ? _buildRuneBack(positionIndex, width, height)
-                  : Transform(
-                      alignment: Alignment.center,
-                      transform: Matrix4.identity()..rotateY(3.14159),
-                      child: _buildRuneFront(
-                        context,
-                        rune,
-                        width,
-                        height,
-                        positionIndex,
+    return LotusFeedback(
+      onActivate: onTap,
+      keyboard: true,
+      builder: (activate) => Semantics(
+        button: true,
+        enabled: onTap != null,
+        label: isOpened ? openedSemanticLabel.trim() : closedSemanticLabel,
+        onTap: activate,
+        child: GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: activate,
+          child: AnimatedBuilder(
+            animation: animation,
+            builder: (context, child) {
+              final showBack = animation.value < 0.5;
+              return Transform(
+                alignment: Alignment.center,
+                transform: Matrix4.identity()
+                  ..setEntry(3, 2, 0.001)
+                  ..rotateY(animation.value * 3.14159),
+                child: showBack
+                    ? _buildRuneBack(positionIndex, width, height)
+                    : Transform(
+                        alignment: Alignment.center,
+                        transform: Matrix4.identity()..rotateY(3.14159),
+                        child: _buildRuneFront(
+                          context,
+                          rune,
+                          width,
+                          height,
+                          positionIndex,
+                        ),
                       ),
-                    ),
-            );
-          },
+              );
+            },
+          ),
         ),
       ),
     );

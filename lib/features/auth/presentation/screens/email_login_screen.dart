@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/analytics/analytics_events.dart';
 import 'package:asteria_app/core/analytics/analytics_facade.dart';
 import 'package:asteria_app/core/di/di.dart';
@@ -199,14 +200,14 @@ class _LoginPolicyTextState extends State<_LoginPolicyText> {
 
   @override
   Widget build(BuildContext context) {
-    _agreementRecognizer.onTap = () => AboutUsRoute.push(
+    _agreementRecognizer.onTap = LotusFeedback.action(() => AboutUsRoute.push(
       context,
       params: const AboutUsRouteParams(document: LegalDocumentType.agreement),
-    );
-    _privacyRecognizer.onTap = () => AboutUsRoute.push(
+    ));
+    _privacyRecognizer.onTap = LotusFeedback.action(() => AboutUsRoute.push(
       context,
       params: const AboutUsRouteParams(document: LegalDocumentType.privacy),
-    );
+    ));
 
     final baseStyle = context.textTheme.inverseUrbanistRegular16.copyWith(
       color: AppColors.white.withValues(alpha: 0.58),

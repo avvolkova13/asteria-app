@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/core/ui_kit/widgets/top_nav_bar.dart';
 import 'package:asteria_app/features/monetization/presentation/monetization_provider.dart';
@@ -207,7 +208,7 @@ class CompatibilityGradientButton extends StatelessWidget {
       enabled: enabled,
       label: text,
       child: ExcludeSemantics(
-        child: GestureDetector(
+        child: LotusTap(
           onTap: enabled ? onPressed : null,
           child: AnimatedOpacity(
             duration: const Duration(milliseconds: 150),

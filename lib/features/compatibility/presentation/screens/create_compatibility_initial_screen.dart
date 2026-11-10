@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/app/providers/content_provider.dart';
 import 'package:asteria_app/app/providers/user_provider.dart';
 import 'package:asteria_app/core/analytics/analytics_events.dart';
@@ -244,7 +245,7 @@ class _CreateCompatibilityInitialScreenState
           ),
           const SizedBox(height: 14),
           if (!widget.returnCreatedPair)
-            TextButton(
+            LotusButtons.text(
               onPressed: () => CreateCompatibilityHistoryRoute.push(context),
               child: Text(
                 context.l10n.viewHistory,
@@ -319,7 +320,7 @@ class _CompatibilityDateField extends StatelessWidget {
     return Semantics(
       button: true,
       label: text ?? hintText,
-      child: GestureDetector(
+      child: LotusTap(
         behavior: HitTestBehavior.opaque,
         onTap: onTap,
         child: ExcludeSemantics(

@@ -1,3 +1,5 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
+import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
 import 'package:asteria_app/core/const/purchase_products_const.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:flutter/material.dart';
@@ -75,7 +77,7 @@ class _SpecialDeckItem extends StatelessWidget {
       button: true,
       label: context.l10n.buySpecialReadingLabel(title, price.toString()),
       child: ExcludeSemantics(
-        child: GestureDetector(
+        child: LotusTap(
           behavior: HitTestBehavior.opaque,
           onTap: onPressed,
           child: SizedBox(
@@ -209,7 +211,7 @@ class _SpecialDeckDetails extends StatelessWidget {
             const SizedBox(width: 4),
             Padding(
               padding: const EdgeInsets.only(top: 2),
-              child: Image.asset(
+              child: LotusRasterIcon(
                 'assets/icons/star_coin_icon.png',
                 height: 14,
                 width: 14,

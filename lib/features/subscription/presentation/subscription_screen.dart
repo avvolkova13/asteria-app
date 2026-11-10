@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/app/providers/user_provider.dart';
 import 'package:asteria_app/core/analytics/analytics_events.dart';
 import 'package:asteria_app/core/analytics/analytics_facade.dart';
@@ -159,8 +160,8 @@ class _SubscriptionScreenContentState extends State<_SubscriptionScreenContent>
             action: state is PaywallAppleStatus
                 ? SnackBarAction(
                     label: context.l10n.applePurchaseCheckStatus,
-                    onPressed: () =>
-                        context.read<PaywallCubit>().refreshAppleStatus(),
+                    onPressed: LotusFeedback.action(() =>
+                        context.read<PaywallCubit>().refreshAppleStatus()),
                   )
                 : null,
           ),
@@ -659,7 +660,7 @@ class _ArcPaySubscriptionPlansState extends State<_ArcPaySubscriptionPlans> {
                   ),
                   if (subscription.checkoutUrl != null) ...[
                     const SizedBox(height: 12),
-                    TextButton(
+                    LotusButtons.text(
                       onPressed: () => _open(subscription.checkoutUrl),
                       child: Text(context.l10n.subscriptionOpenPaymentAgain),
                     ),
@@ -746,7 +747,7 @@ class _ReloadProducts extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: TextButton(
+      child: LotusButtons.text(
         onPressed: onPressed,
         child: Text(
           context.l10n.subscriptionLoadPlans,
@@ -1162,7 +1163,7 @@ class _CancelSubscriptionButton extends StatelessWidget {
               child: Row(
                 children: [
                   Expanded(
-                    child: TextButton(
+                    child: LotusButtons.text(
                       onPressed: () => Navigator.of(dialogContext).pop(false),
                       child: Text(
                         context.l10n.cancel,
@@ -1179,7 +1180,7 @@ class _CancelSubscriptionButton extends StatelessWidget {
                     ),
                   ),
                   Expanded(
-                    child: TextButton(
+                    child: LotusButtons.text(
                       onPressed: () => Navigator.of(dialogContext).pop(true),
                       child: Text(
                         context.l10n.subscriptionDisable,

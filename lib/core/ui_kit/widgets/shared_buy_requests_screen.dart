@@ -1,3 +1,5 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
+import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
 import 'package:asteria_app/core/analytics/dictionaries/offer_type.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
@@ -144,7 +146,7 @@ class _PackageItem extends StatelessWidget {
       selected: isSelected,
       label: context.l10n.requestPackageForCoins(requestQuantity, price),
       child: ExcludeSemantics(
-        child: GestureDetector(
+        child: LotusTap(
           onTap: onTap,
           child: Container(
             height: 61,
@@ -163,9 +165,9 @@ class _PackageItem extends StatelessWidget {
                   style: context.textTheme.inverseUrbanistSemiBold24,
                 ),
                 const SizedBox(width: 5),
-                Image.asset('assets/icons/star_coin_icon.png', height: 20),
+                LotusRasterIcon('assets/icons/star_coin_icon.png', height: 20),
                 const SizedBox(width: 12),
-                Image.asset(
+                LotusRasterIcon(
                   'assets/icons/right_long_arrow.png',
                   height: 18,
                   color: AppColors.white.withValues(alpha: 0.74),
@@ -213,7 +215,7 @@ class _GradientBuyButton extends StatelessWidget {
       button: true,
       enabled: enabled,
       label: text,
-      child: GestureDetector(
+      child: LotusTap(
         onTap: enabled ? onPressed : null,
         child: AnimatedOpacity(
           duration: const Duration(milliseconds: 150),

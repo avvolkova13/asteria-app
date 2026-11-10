@@ -1,4 +1,5 @@
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
+import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
 import 'dart:async';
 import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 
@@ -307,14 +308,11 @@ class _CitySelectionScreenState extends State<CitySelectionScreen> {
         children: [
           SizedBox(width: widget.asSheet ? 16 : 12),
           if (widget.asSheet)
-            SvgPicture.asset(
+            ClayAssetIcon(
               'assets/icons/city_search.svg',
               width: 22.5,
               height: 22.5,
-              colorFilter: const ColorFilter.mode(
-                AppColors.textInverse,
-                BlendMode.srcIn,
-              ),
+              tint: AppColors.textInverse,
               excludeFromSemantics: true,
             )
           else
@@ -359,21 +357,18 @@ class _CitySelectionScreenState extends State<CitySelectionScreen> {
             ),
           ),
           if (_controller.text.isNotEmpty)
-            IconButton(
+            LotusButtons.icon(
               onPressed: () {
                 _controller.clear();
                 _onQueryChanged('');
               },
               tooltip: MaterialLocalizations.of(context).deleteButtonTooltip,
               icon: widget.asSheet
-                  ? SvgPicture.asset(
+                  ? ClayAssetIcon(
                       'assets/icons/city_clear.svg',
                       width: 20,
                       height: 20,
-                      colorFilter: ColorFilter.mode(
-                        AppColors.white.withValues(alpha: 0.55),
-                        BlendMode.srcIn,
-                      ),
+                      tint: AppColors.white.withValues(alpha: 0.55),
                     )
                   : ClayIcon(
                       CupertinoIcons.xmark_circle,
@@ -460,9 +455,13 @@ class _CitySelectionHeader extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 4),
-        Image.asset('assets/icons/star_coin_icon.png', width: 14, height: 14),
+        LotusRasterIcon(
+          'assets/icons/star_coin_icon.png',
+          width: 14,
+          height: 14,
+        ),
         const SizedBox(width: 10),
-        Image.asset(proIconPath, height: 30),
+        LotusRasterIcon(proIconPath, height: 30),
       ],
     );
   }
@@ -499,7 +498,7 @@ class _CitySuggestionTile extends StatelessWidget {
       letterSpacing: asSheet ? -0.408 : null,
       color: AppColors.textInverse.withValues(alpha: 0.9),
     );
-    return InkWell(
+    return LotusInkTap(
       onTap: isEnabled ? onTap : null,
       borderRadius: BorderRadius.circular(8),
       child: ConstrainedBox(
@@ -537,55 +536,21 @@ class _CitySuggestionTile extends StatelessWidget {
             const SizedBox(width: 10),
             Semantics(
               selected: isSelected,
-              child: asSheet
-                  ? SvgPicture.asset(
-                      isSelected
-                          ? 'assets/icons/city_selected.svg'
-                          : 'assets/icons/city_unselected.svg',
-                      width: 20,
-                      height: 20,
-                      excludeFromSemantics: true,
-                    )
-                  : _CityRadio(isSelected: isSelected),
+              child: ClayAssetIcon(
+                isSelected
+                    ? 'assets/icons/city_selected.svg'
+                    : 'assets/icons/city_unselected.svg',
+                width: asSheet ? 20 : 16,
+                height: asSheet ? 20 : 16,
+                tint: isSelected
+                    ? null
+                    : (asSheet ? AppColors.textTertiary : Colors.white54),
+                excludeFromSemantics: true,
+              ),
             ),
           ],
         ),
       ),
-    );
-  }
-}
-
-class _CityRadio extends StatelessWidget {
-  const _CityRadio({required this.isSelected});
-
-  final bool isSelected;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 16,
-      height: 16,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        border: Border.all(
-          color: isSelected
-              ? const Color(0xFFE6994D)
-              : AppColors.white.withValues(alpha: 0.24),
-          width: 1.2,
-        ),
-      ),
-      child: isSelected
-          ? Center(
-              child: Container(
-                width: 7,
-                height: 7,
-                decoration: const BoxDecoration(
-                  color: Color(0xFFE6994D),
-                  shape: BoxShape.circle,
-                ),
-              ),
-            )
-          : null,
     );
   }
 }

@@ -1,3 +1,6 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
+import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
+import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
 import 'package:asteria_app/app/data/models/user/user_model.dart';
 import 'package:asteria_app/app/providers/user_provider.dart';
 import 'package:asteria_app/core/extensions/datetime_extensions.dart';
@@ -227,10 +230,13 @@ class TopNavBarDelegate extends SliverPersistentHeaderDelegate {
                         onTap: () => Navigator.of(context).pop(),
                         child: Padding(
                           padding: const EdgeInsets.only(right: 8),
-                          child: ClayAssetIcon(
-                            'assets/icons/back_icon.svg',
-                            tint: AppColors.textSecondary,
-                            height: 24,
+                          child: LotusIconSurface(
+                            diameter: 27,
+                            child: ClayAssetIcon(
+                              'assets/icons/back_icon.svg',
+                              tint: AppColors.textSecondary,
+                              height: 24,
+                            ),
                           ),
                         ),
                       ),
@@ -250,7 +256,7 @@ class TopNavBarDelegate extends SliverPersistentHeaderDelegate {
             const SizedBox(width: 8),
             Row(
               children: [
-                GestureDetector(
+                LotusTap(
                   onTap: () => BalanceRoute.push(context),
                   child: Row(
                     children: [
@@ -268,7 +274,7 @@ class TopNavBarDelegate extends SliverPersistentHeaderDelegate {
                       ),
                       Padding(
                         padding: const EdgeInsets.only(bottom: 4),
-                        child: Image.asset(
+                        child: LotusRasterIcon(
                           'assets/icons/star_coin_icon.png',
                           height: 16,
                         ),
@@ -379,10 +385,13 @@ class _TopNavBarTitle extends StatelessWidget {
               onTap: () => Navigator.of(context).pop(),
               child: Padding(
                 padding: const EdgeInsets.only(right: 8),
-                child: ClayAssetIcon(
-                  'assets/icons/back_icon.svg',
-                  tint: AppColors.textSecondary,
-                  height: 24,
+                child: LotusIconSurface(
+                  diameter: 27,
+                  child: ClayAssetIcon(
+                    'assets/icons/back_icon.svg',
+                    tint: AppColors.textSecondary,
+                    height: 24,
+                  ),
                 ),
               ),
             ),
@@ -425,14 +434,12 @@ class HomeAccountBar extends StatelessWidget {
           children: [
             SizedBox.square(
               dimension: 44,
-              child: IconButton(
+              child: LotusButtons.icon(
                 tooltip: context.l10n.navProfile,
                 alignment: Alignment.centerLeft,
                 padding: EdgeInsets.zero,
                 onPressed: () => HomeProfileRoute.push(context),
-                icon: ClayPressFeedback(
-                  child: ProfileAvatar(size: 36, gender: gender),
-                ),
+                icon: ProfileAvatar(size: 36, gender: gender),
               ),
             ),
             if (showAccountActions) ...[
@@ -459,7 +466,7 @@ class _MoonTopNavBarActions extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        GestureDetector(
+        LotusTap(
           onTap: () => BalanceRoute.push(context),
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -479,7 +486,7 @@ class _MoonTopNavBarActions extends StatelessWidget {
               ),
               Padding(
                 padding: const EdgeInsets.only(bottom: 4),
-                child: Image.asset(
+                child: LotusRasterIcon(
                   'assets/icons/star_coin_icon.png',
                   height: 14,
                 ),
@@ -563,10 +570,13 @@ class _HomeTopNavBarWidget extends StatelessWidget {
                             onTap: () => Navigator.of(context).pop(),
                             child: Padding(
                               padding: const EdgeInsets.only(right: 8),
-                              child: ClayAssetIcon(
-                                'assets/icons/back_icon.svg',
-                                tint: AppColors.textSecondary,
-                                height: 24,
+                              child: LotusIconSurface(
+                                diameter: 27,
+                                child: ClayAssetIcon(
+                                  'assets/icons/back_icon.svg',
+                                  tint: AppColors.textSecondary,
+                                  height: 24,
+                                ),
                               ),
                             ),
                           ),
@@ -585,7 +595,7 @@ class _HomeTopNavBarWidget extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       // Coins
-                      GestureDetector(
+                      LotusTap(
                         onTap: () => BalanceRoute.push(context),
                         child: Row(
                           children: [
@@ -604,7 +614,7 @@ class _HomeTopNavBarWidget extends StatelessWidget {
                             ),
                             Padding(
                               padding: const EdgeInsets.only(bottom: 4),
-                              child: Image.asset(
+                              child: LotusRasterIcon(
                                 'assets/icons/star_coin_icon.png',
                                 height: 16,
                               ),
@@ -724,7 +734,7 @@ class _ProfileTopNavBarWidget extends StatelessWidget {
                     top: 147,
                     left: 0,
                     bottom: 0,
-                    child: GestureDetector(
+                    child: LotusTap(
                       onTap: () {
                         SettingsRoute.push(context);
                       },
@@ -762,7 +772,7 @@ class _ProfileTopNavBarWidget extends StatelessWidget {
                     top: 147,
                     right: 0,
                     bottom: 0,
-                    child: GestureDetector(
+                    child: LotusTap(
                       onTap: () {
                         PaymentsSettingsRoute.push(context);
                       },
@@ -824,7 +834,7 @@ class _ProfileTopNavBarWidget extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       // Coins
-                      GestureDetector(
+                      LotusTap(
                         onTap: () => BalanceRoute.push(context),
                         child: Row(
                           children: [
@@ -840,7 +850,7 @@ class _ProfileTopNavBarWidget extends StatelessWidget {
                             ),
                             Padding(
                               padding: const EdgeInsets.only(bottom: 2),
-                              child: Image.asset(
+                              child: LotusRasterIcon(
                                 'assets/icons/star_coin_icon.png',
                                 height: 16,
                               ),
@@ -937,10 +947,13 @@ class _TransparentTopNavBar extends StatelessWidget {
                             onTap: () => Navigator.of(context).pop(),
                             child: Padding(
                               padding: const EdgeInsets.only(right: 8),
-                              child: ClayAssetIcon(
-                                'assets/icons/back_icon.svg',
-                                tint: AppColors.textSecondary,
-                                height: 24,
+                              child: LotusIconSurface(
+                                diameter: 27,
+                                child: ClayAssetIcon(
+                                  'assets/icons/back_icon.svg',
+                                  tint: AppColors.textSecondary,
+                                  height: 24,
+                                ),
                               ),
                             ),
                           ),
@@ -957,7 +970,7 @@ class _TransparentTopNavBar extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       // Coins
-                      GestureDetector(
+                      LotusTap(
                         onTap: () => BalanceRoute.push(context),
                         child: Row(
                           children: [
@@ -976,7 +989,7 @@ class _TransparentTopNavBar extends StatelessWidget {
                             ),
                             Padding(
                               padding: const EdgeInsets.only(bottom: 4),
-                              child: Image.asset(
+                              child: LotusRasterIcon(
                                 'assets/icons/star_coin_icon.png',
                                 height: 16,
                               ),
@@ -1010,10 +1023,10 @@ class _TopNavBackButton extends StatelessWidget {
     return Semantics(
       button: true,
       label: MaterialLocalizations.of(context).backButtonTooltip,
-      child: GestureDetector(
+      child: LotusTap(
         behavior: HitTestBehavior.opaque,
         onTap: onTap,
-        child: ClayPressFeedback(child: child),
+        child: child,
       ),
     );
   }

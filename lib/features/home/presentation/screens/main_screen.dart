@@ -1,3 +1,5 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
+import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 import 'package:asteria_app/features/scenarios/first_session.dart';
 import 'package:go_router/go_router.dart';
 import 'package:asteria_app/features/scenarios/calendar_scenario.dart';
@@ -180,9 +182,9 @@ class _MainScreenState extends State<MainScreen> {
                             const MoonPhaseWidget(),
                             const CalendarPlanHomeEntry(),
                             const SizedBox(height: 24),
-                            TextButton.icon(
+                            LotusButtons.textIcon(
                               onPressed: () => context.push(FirstSession.path),
-                              icon: const Icon(Icons.auto_awesome_outlined, size: 18, color: AppColors.cardTinted),
+                              icon: const ClayIcon(Icons.auto_awesome_outlined, size: 18, color: AppColors.cardTinted),
                               label: Text(context.l10n.scenarioStartTitle, style:context.textTheme.inversePlayfairSemiBold16),
                             ),
                             _buildSubscriptionPromoSection(),

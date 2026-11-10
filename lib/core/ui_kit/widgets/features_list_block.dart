@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:flutter/material.dart';
 
@@ -43,7 +44,7 @@ class FeaturesListBlock extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(headerText, style: context.textTheme.playfairMedium20),
-              Image.asset('assets/icons/circular_icons.png', height: 32),
+              LotusRasterIcon('assets/icons/circular_icons.png', height: 32),
             ],
           ),
           const SizedBox(height: 16),

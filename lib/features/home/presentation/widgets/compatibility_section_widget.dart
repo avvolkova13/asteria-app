@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'dart:math' as math;
 import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 
@@ -43,7 +44,7 @@ class CompatibilitySectionWidget extends StatelessWidget {
                         Semantics(
                           button: true,
                           label: context.l10n.openCompatibilityLabel,
-                          child: GestureDetector(
+                          child: LotusTap(
                             behavior: HitTestBehavior.opaque,
                             onTap: onPressed,
                             child: ClayAssetIcon(
@@ -173,7 +174,7 @@ class _CompatibilityHistoryWidget extends StatelessWidget {
     return Semantics(
       button: true,
       label: context.l10n.compatibilityDetailsLabel,
-      child: GestureDetector(
+      child: LotusTap(
         behavior: HitTestBehavior.opaque,
         onTap: onPressed,
         child: SizedBox(

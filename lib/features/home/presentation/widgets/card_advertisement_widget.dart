@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'dart:async';
 import 'dart:math' as math;
 import 'dart:ui' as ui;
@@ -272,7 +273,7 @@ class _NatalCardButton extends StatelessWidget {
       height: 44,
       child: Material(
         color: Colors.transparent,
-        child: InkWell(
+        child: LotusInkTap(
           onTap: onPressed,
           borderRadius: BorderRadius.circular(16),
           child: Ink(
@@ -524,7 +525,7 @@ class _BalanceSubscriptionButtonState extends State<_BalanceSubscriptionButton>
       height: 42,
       child: Material(
         color: Colors.transparent,
-        child: InkWell(
+        child: LotusInkTap(
           onTap: widget.onPressed,
           borderRadius: BorderRadius.circular(21),
           child: Ink(

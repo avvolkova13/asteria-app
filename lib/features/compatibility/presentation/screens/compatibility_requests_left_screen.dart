@@ -1,3 +1,5 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
+import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 import 'package:asteria_app/features/compatibility/presentation/widgets/compatibility_layout.dart';
@@ -29,7 +31,7 @@ class CompatibilityRequestsLeftScreen extends StatelessWidget {
             context.l10n.unlimited,
             style: context.textTheme.inversePlayfairSemiBold24,
           ),
-          TextButton(
+          LotusButtons.text(
             onPressed: () => Navigator.of(context).pop(),
             child: Text(context.l10n.commonBack),
           ),
@@ -176,7 +178,7 @@ class _SubscriptionOfferCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return LotusTap(
       onTap: onTap,
       child: CompatibilityGlassCard(
         padding: const EdgeInsets.all(16),
@@ -234,7 +236,7 @@ class _BuyAttemptsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return LotusTap(
       onTap: onTap,
       child: SizedBox(
         height: 93,
@@ -352,7 +354,7 @@ class _CoinPill extends StatelessWidget {
               height: 1,
             ),
           ),
-          Image.asset('assets/icons/star_coin_icon.png', height: 14),
+          LotusRasterIcon('assets/icons/star_coin_icon.png', height: 14),
         ],
       ),
     );

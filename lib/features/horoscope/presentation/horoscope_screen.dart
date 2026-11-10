@@ -1,4 +1,7 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
+import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
 import 'dart:math' as math;
+import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 
 import 'package:asteria_app/app/data/models/horoscope/horoscope_year_model.dart';
@@ -572,22 +575,29 @@ class _HoroscopeTopBar extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(
               children: [
-                Semantics(
-                  button: true,
-                  label: context.l10n.commonBack,
-                  onTap: () => Navigator.of(context).pop(),
-                  child: GestureDetector(
-                    behavior: HitTestBehavior.opaque,
-                    onTap: () => Navigator.of(context).pop(),
-                    child: SizedBox(
-                      width: 44,
-                      height: 44,
-                      child: Align(
-                        alignment: Alignment.centerLeft,
-                        child: ClayAssetIcon(
-                          'assets/icons/back_icon.svg',
-                          height: 24,
-                          tint: AppColors.textSecondary,
+                LotusFeedback(
+                  onActivate: () => Navigator.of(context).pop(),
+                  keyboard: true,
+                  builder: (activate) => Semantics(
+                    button: true,
+                    label: context.l10n.commonBack,
+                    onTap: activate,
+                    child: GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTap: activate,
+                      child: SizedBox(
+                        width: 44,
+                        height: 44,
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: LotusIconSurface(
+                            diameter: 27,
+                            child: ClayAssetIcon(
+                              'assets/icons/back_icon.svg',
+                              height: 24,
+                              tint: AppColors.textSecondary,
+                            ),
+                          ),
                         ),
                       ),
                     ),
@@ -598,34 +608,38 @@ class _HoroscopeTopBar extends StatelessWidget {
                   style: context.textTheme.inversePlayfairSemiBold17,
                 ),
                 const Spacer(),
-                Semantics(
-                  button: true,
-                  label: context.l10n.balanceLabel,
-                  onTap: () => BalanceRoute.push(context),
-                  child: GestureDetector(
-                    behavior: HitTestBehavior.opaque,
-                    onTap: () => BalanceRoute.push(context),
-                    child: SizedBox(
-                      height: 44,
-                      child: Center(
-                        child: Consumer<UserProvider>(
-                          builder: (context, userProvider, child) {
-                            return Row(
-                              children: [
-                                Text(
-                                  '${MonetizationProvider.maybeOf(context)?.balance ?? 0} ',
-                                  style: context
-                                      .textTheme
-                                      .inverseUrbanistSemiBold17,
-                                ),
-                                Image.asset(
-                                  'assets/icons/star_coin_icon.png',
-                                  width: 16,
-                                  height: 16,
-                                ),
-                              ],
-                            );
-                          },
+                LotusFeedback(
+                  onActivate: () => BalanceRoute.push(context),
+                  keyboard: true,
+                  builder: (activate) => Semantics(
+                    button: true,
+                    label: context.l10n.balanceLabel,
+                    onTap: activate,
+                    child: GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTap: activate,
+                      child: SizedBox(
+                        height: 44,
+                        child: Center(
+                          child: Consumer<UserProvider>(
+                            builder: (context, userProvider, child) {
+                              return Row(
+                                children: [
+                                  Text(
+                                    '${MonetizationProvider.maybeOf(context)?.balance ?? 0} ',
+                                    style: context
+                                        .textTheme
+                                        .inverseUrbanistSemiBold17,
+                                  ),
+                                  LotusRasterIcon(
+                                    'assets/icons/star_coin_icon.png',
+                                    width: 16,
+                                    height: 16,
+                                  ),
+                                ],
+                              );
+                            },
+                          ),
                         ),
                       ),
                     ),
@@ -716,74 +730,78 @@ class _SegmentedTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Semantics(
-      button: true,
-      selected: isSelected,
-      label: title,
-      onTap: onTap,
-      child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onTap: onTap,
-        child: Container(
-          height: double.infinity,
-          decoration: BoxDecoration(
-            color: isSelected
-                ? _HoroscopeDesign.cardAlt.withValues(alpha: 0.42)
-                : Colors.transparent,
-            borderRadius: BorderRadius.circular(8),
-            border: isSelected
-                ? Border.all(
-                    color: AppColors.uiDisabled.withValues(alpha: 0.24),
-                    width: 0.5,
-                  )
-                : null,
-          ),
-          child: Stack(
-            children: [
-              Center(
-                child: isSelected
-                    ? ShaderMask(
-                        shaderCallback: (bounds) => _HoroscopeDesign
-                            .orangeGradient
-                            .createShader(bounds),
-                        child: Text(
+    return LotusFeedback(
+      onActivate: onTap,
+      keyboard: true,
+      builder: (activate) => Semantics(
+        button: true,
+        selected: isSelected,
+        label: title,
+        onTap: activate,
+        child: GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: activate,
+          child: Container(
+            height: double.infinity,
+            decoration: BoxDecoration(
+              color: isSelected
+                  ? _HoroscopeDesign.cardAlt.withValues(alpha: 0.42)
+                  : Colors.transparent,
+              borderRadius: BorderRadius.circular(8),
+              border: isSelected
+                  ? Border.all(
+                      color: AppColors.uiDisabled.withValues(alpha: 0.24),
+                      width: 0.5,
+                    )
+                  : null,
+            ),
+            child: Stack(
+              children: [
+                Center(
+                  child: isSelected
+                      ? ShaderMask(
+                          shaderCallback: (bounds) => _HoroscopeDesign
+                              .orangeGradient
+                              .createShader(bounds),
+                          child: Text(
+                            title,
+                            textAlign: TextAlign.center,
+                            style: context.textTheme.inverseUrbanistSemiBold14
+                                .copyWith(
+                                  fontSize: 13,
+                                  height: 1.2,
+                                  color: Colors.white,
+                                  letterSpacing: -0.08,
+                                ),
+                          ),
+                        )
+                      : Text(
                           title,
                           textAlign: TextAlign.center,
-                          style: context.textTheme.inverseUrbanistSemiBold14
+                          style: context.textTheme.inverseUrbanistRegular14
                               .copyWith(
                                 fontSize: 13,
                                 height: 1.2,
-                                color: Colors.white,
+                                color: _HoroscopeDesign.mutedText,
                                 letterSpacing: -0.08,
                               ),
                         ),
-                      )
-                    : Text(
-                        title,
-                        textAlign: TextAlign.center,
-                        style: context.textTheme.inverseUrbanistRegular14
-                            .copyWith(
-                              fontSize: 13,
-                              height: 1.2,
-                              color: _HoroscopeDesign.mutedText,
-                              letterSpacing: -0.08,
-                            ),
+                ),
+                if (showSeparator)
+                  Positioned(
+                    right: 0,
+                    top: 6,
+                    bottom: 6,
+                    child: Container(
+                      width: 0.7,
+                      decoration: BoxDecoration(
+                        color: AppColors.uiDisabled.withValues(alpha: 0.35),
+                        borderRadius: BorderRadius.circular(4),
                       ),
-              ),
-              if (showSeparator)
-                Positioned(
-                  right: 0,
-                  top: 6,
-                  bottom: 6,
-                  child: Container(
-                    width: 0.7,
-                    decoration: BoxDecoration(
-                      color: AppColors.uiDisabled.withValues(alpha: 0.35),
-                      borderRadius: BorderRadius.circular(4),
                     ),
                   ),
-                ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

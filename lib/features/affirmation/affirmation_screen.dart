@@ -1,3 +1,6 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
+import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
+import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
 import 'package:asteria_app/app/providers/content_provider.dart';
 import 'package:asteria_app/app/providers/user_provider.dart';
 import 'package:asteria_app/core/analytics/dictionaries/entry_surface.dart';
@@ -138,16 +141,19 @@ class _AffirmationTopNavBar extends StatelessWidget {
                   Semantics(
                     button: true,
                     label: context.l10n.commonBack,
-                    child: GestureDetector(
+                    child: LotusTap(
                       behavior: HitTestBehavior.opaque,
                       onTap: () => Navigator.of(context).pop(),
                       child: Padding(
                         padding: const EdgeInsets.only(right: 8),
-                        child: ClayAssetIcon(
-                          'assets/icons/back_icon.svg',
-                          width: 18,
-                          height: 24,
-                          tint: AppColors.textInverse,
+                        child: LotusIconSurface(
+                          diameter: 27,
+                          child: ClayAssetIcon(
+                            'assets/icons/back_icon.svg',
+                            width: 18,
+                            height: 24,
+                            tint: AppColors.textInverse,
+                          ),
                         ),
                       ),
                     ),
@@ -180,7 +186,7 @@ class _AffirmationTopNavBar extends StatelessWidget {
                     Semantics(
                       button: true,
                       label: context.l10n.balanceStarsLabel(balance),
-                      child: GestureDetector(
+                      child: LotusTap(
                         behavior: HitTestBehavior.opaque,
                         onTap: () => BalanceRoute.push(context),
                         child: Padding(
@@ -198,7 +204,7 @@ class _AffirmationTopNavBar extends StatelessWidget {
                                       letterSpacing: -0.408,
                                     ),
                               ),
-                              Image.asset(
+                              LotusRasterIcon(
                                 'assets/icons/star_coin_icon.png',
                                 width: 14,
                                 height: 14,
@@ -246,7 +252,7 @@ class _AffirmationProBadge extends StatelessWidget {
                 )
               : null,
         ),
-        child: GestureDetector(
+        child: LotusTap(
           behavior: HitTestBehavior.opaque,
           onTap: isActive ? null : () => _openSubscriptionFromProBadge(context),
           child: Row(

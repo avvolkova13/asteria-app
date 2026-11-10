@@ -1,4 +1,7 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
+import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
 import 'dart:ui' as ui;
+import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 
 import 'package:asteria_app/app/data/models/shop_item/shop_item_model.dart';
@@ -151,7 +154,7 @@ class _ShopScreenState extends State<ShopScreen> {
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 16),
-            ElevatedButton(
+            LotusButtons.elevated(
               onPressed: () =>
                   context.read<ShopBloc>().add(const ShopLoadProducts()),
               child: Text(context.l10n.commonRetry),
@@ -247,96 +250,100 @@ class _ShopListItem extends StatelessWidget {
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 14),
-      child: Semantics(
-        button: true,
-        label:
-            '${product.title}\n'
-            '${context.l10n.shopUnitPriceValue(product.price)}\n'
-            '${product.description}\n'
-            '${context.l10n.shopItemsLeft} '
-            '${context.l10n.shopItemCount(quantity)}',
-        onTap: onTap,
-        child: ExcludeSemantics(
-          child: GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onTap: onTap,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(16),
-              child: BackdropFilter(
-                filter: ui.ImageFilter.blur(sigmaX: 8, sigmaY: 8),
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    color: _ShopColors.card,
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(
-                      color: _ShopColors.cardBorder,
-                      width: 0.6,
+      child: LotusFeedback(
+        onActivate: onTap,
+        keyboard: true,
+        builder: (activate) => Semantics(
+          button: true,
+          label:
+              '${product.title}\n'
+              '${context.l10n.shopUnitPriceValue(product.price)}\n'
+              '${product.description}\n'
+              '${context.l10n.shopItemsLeft} '
+              '${context.l10n.shopItemCount(quantity)}',
+          onTap: activate,
+          child: ExcludeSemantics(
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: activate,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: BackdropFilter(
+                  filter: ui.ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: _ShopColors.card,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: _ShopColors.cardBorder,
+                        width: 0.6,
+                      ),
                     ),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(8),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _ShopItemImage(visual: visual, isLocked: isEmpty),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: SizedBox(
-                            height: 74,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Expanded(
-                                      child: Text(
-                                        product.title,
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _ShopItemImage(visual: visual, isLocked: isEmpty),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: SizedBox(
+                              height: 74,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Expanded(
+                                        child: Text(
+                                          product.title,
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: context
+                                              .textTheme
+                                              .inversePlayfairMedium20
+                                              .copyWith(height: 1.1),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      _ShopPrice(price: product.price),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    product.description,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: context
+                                        .textTheme
+                                        .inverseUrbanistRegular12
+                                        .copyWith(
+                                          color: _ShopColors.textSecondary,
+                                          height: 1.2,
+                                        ),
+                                  ),
+                                  const Spacer(),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        context.l10n.shopItemsLeft,
                                         style: context
                                             .textTheme
-                                            .inversePlayfairMedium20
-                                            .copyWith(height: 1.1),
+                                            .inverseUrbanistSemiBold12
+                                            .copyWith(height: 1.2),
                                       ),
-                                    ),
-                                    const SizedBox(width: 8),
-                                    _ShopPrice(price: product.price),
-                                  ],
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  product.description,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: context
-                                      .textTheme
-                                      .inverseUrbanistRegular12
-                                      .copyWith(
-                                        color: _ShopColors.textSecondary,
-                                        height: 1.2,
-                                      ),
-                                ),
-                                const Spacer(),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      context.l10n.shopItemsLeft,
-                                      style: context
-                                          .textTheme
-                                          .inverseUrbanistSemiBold12
-                                          .copyWith(height: 1.2),
-                                    ),
-                                    _ShopQuantity(quantity: quantity),
-                                  ],
-                                ),
-                              ],
+                                      _ShopQuantity(quantity: quantity),
+                                    ],
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -425,23 +432,30 @@ class _ShopHeader extends StatelessWidget {
             Expanded(
               child: Row(
                 children: [
-                  Semantics(
-                    button: true,
-                    label: MaterialLocalizations.of(context).backButtonTooltip,
-                    onTap: () => Navigator.of(context).pop(),
-                    child: ExcludeSemantics(
-                      child: GestureDetector(
-                        behavior: HitTestBehavior.opaque,
-                        onTap: () => Navigator.of(context).pop(),
-                        child: SizedBox(
-                          width: 44,
-                          height: 44,
-                          child: Align(
-                            alignment: Alignment.centerLeft,
-                            child: ClayAssetIcon(
-                              'assets/icons/back_icon.svg',
-                              height: 24,
-                              tint: _ShopColors.navMuted,
+                  LotusFeedback(
+                    onActivate: () => Navigator.of(context).pop(),
+                    keyboard: true,
+                    builder: (activate) => Semantics(
+                      button: true,
+                      label: MaterialLocalizations.of(context).backButtonTooltip,
+                      onTap: activate,
+                      child: ExcludeSemantics(
+                        child: GestureDetector(
+                          behavior: HitTestBehavior.opaque,
+                          onTap: activate,
+                          child: SizedBox(
+                            width: 44,
+                            height: 44,
+                            child: Align(
+                              alignment: Alignment.centerLeft,
+                              child: LotusIconSurface(
+                                diameter: 27,
+                                child: ClayAssetIcon(
+                                  'assets/icons/back_icon.svg',
+                                  height: 24,
+                                  tint: _ShopColors.navMuted,
+                                ),
+                              ),
                             ),
                           ),
                         ),
@@ -460,34 +474,38 @@ class _ShopHeader extends StatelessWidget {
                 ],
               ),
             ),
-            Semantics(
-              button: true,
-              label: context.l10n.balanceStarsLabel(balance),
-              onTap: () => BalanceRoute.push(context),
-              child: ExcludeSemantics(
-                child: GestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  onTap: () => BalanceRoute.push(context),
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(
-                      minWidth: 44,
-                      minHeight: 44,
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Text(
-                          '$balance ',
-                          style: context.textTheme.inversePlayfairSemiBold17
-                              .copyWith(height: 1.2),
-                        ),
-                        Image.asset(
-                          'assets/icons/star_coin_icon.png',
-                          width: 14,
-                          height: 14,
-                        ),
-                      ],
+            LotusFeedback(
+              onActivate: () => BalanceRoute.push(context),
+              keyboard: true,
+              builder: (activate) => Semantics(
+                button: true,
+                label: context.l10n.balanceStarsLabel(balance),
+                onTap: activate,
+                child: ExcludeSemantics(
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: activate,
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(
+                        minWidth: 44,
+                        minHeight: 44,
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Text(
+                            '$balance ',
+                            style: context.textTheme.inversePlayfairSemiBold17
+                                .copyWith(height: 1.2),
+                          ),
+                          LotusRasterIcon(
+                            'assets/icons/star_coin_icon.png',
+                            width: 14,
+                            height: 14,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -575,7 +593,7 @@ class _ShopPrice extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 2),
-        Image.asset('assets/icons/star_coin_icon.png', width: 17, height: 17),
+        LotusRasterIcon('assets/icons/star_coin_icon.png', width: 17, height: 17),
       ],
     );
   }

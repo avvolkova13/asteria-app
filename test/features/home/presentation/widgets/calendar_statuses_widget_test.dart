@@ -60,7 +60,10 @@ void main() {
       ),
     );
 
-    expect(find.byType(Image), findsNothing);
+    final phaseIcon = tester.widget<Image>(find.byType(Image));
+    expect(_assetName(phaseIcon), 'assets/icons/clay/tab_star_icon.webp');
+    expect(phaseIcon.width, 16);
+    expect(phaseIcon.height, 16);
     expect(find.textContaining('день'), findsNothing);
     expect(find.byType(MoonPhaseMarker), findsOneWidget);
     expect(find.text('смена фазы Луны'), findsOneWidget);

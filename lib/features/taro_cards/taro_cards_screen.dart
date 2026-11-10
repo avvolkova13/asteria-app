@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/features/love_deck/love_deck_access.dart';
 import 'package:asteria_app/app/data/models/user/tarot_deck_model.dart';
 import 'package:asteria_app/app/providers/content_provider.dart';
@@ -479,7 +480,7 @@ class _TaroCardsContentState extends State<_TaroCardsContent> {
                       enabled: !_isRefreshingDeck,
                       label: context.l10n.refreshTarotSpreadLabel,
                       child: ExcludeSemantics(
-                        child: GestureDetector(
+                        child: LotusTap(
                           behavior: HitTestBehavior.opaque,
                           onTap: _isRefreshingDeck
                               ? null
@@ -626,7 +627,7 @@ class _GradientUnderlineButton extends StatelessWidget {
       button: true,
       label: text,
       child: ExcludeSemantics(
-        child: GestureDetector(
+        child: LotusTap(
           behavior: HitTestBehavior.opaque,
           onTap: onPressed,
           child: Padding(
@@ -759,7 +760,7 @@ class _TarotInsightSphereChip extends StatelessWidget {
 
     return Opacity(
       opacity: isSelected ? 1 : 0.62,
-      child: GestureDetector(
+      child: LotusTap(
         behavior: HitTestBehavior.opaque,
         onTap: onTap,
         child: Container(
@@ -898,7 +899,7 @@ class _TaroCardsSegmentedTab extends StatelessWidget {
       selected: _isSelected,
       label: title,
       child: ExcludeSemantics(
-        child: GestureDetector(
+        child: LotusTap(
           behavior: HitTestBehavior.opaque,
           onTap: onTap,
           child: Stack(

@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:flutter/material.dart';
 
@@ -36,7 +37,7 @@ class HoroscopeTabNavigation extends StatelessWidget {
     final isSelected = selectedIndex == index;
     final isLast = index == 2;
 
-    return GestureDetector(
+    return LotusTap(
       onTap: () => onTabSelected(index),
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),

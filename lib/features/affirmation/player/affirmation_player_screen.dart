@@ -1,6 +1,10 @@
 import 'dart:async';
 import 'dart:math' as math;
 
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
+import 'package:asteria_app/core/ui_kit/widgets/lotus_glyph_motion.dart';
+import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
+
 import 'package:asteria_app/core/localization/generated/l10n.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -356,7 +360,7 @@ class _AffirmationPlayerScreenState extends State<AffirmationPlayerScreen> {
                               valueListenable: _readingProgress,
                               builder: (_, progress, _) {
                                 final end = progress >= .997;
-                                return IconButton(
+                                return LotusButtons.icon(
                                   constraints: const BoxConstraints.tightFor(
                                     width: 44,
                                     height: 44,
@@ -366,11 +370,22 @@ class _AffirmationPlayerScreenState extends State<AffirmationPlayerScreen> {
                                       ? strings.playerHideTranscript
                                       : strings.playerShowTranscript,
                                   onPressed: _toggleReading,
-                                  icon: RotatedBox(
-                                    quarterTurns: end ? 1 : 3,
-                                    child: const PlayerClayGlyph(
-                                      ClayGlyph.chevron,
-                                      17,
+                                  icon: LotusIconSurface(
+                                    diameter: 32,
+                                    child: RotatedBox(
+                                      quarterTurns: end ? 1 : 3,
+                                      child: LotusGlyphMotion(
+                                        child: const PlayerClayGlyph(
+                                          ClayGlyph.chevron,
+                                          17,
+                                        ),
+                                        frameBuilder: (frame) =>
+                                            PlayerClayGlyph(
+                                              ClayGlyph.chevron,
+                                              17,
+                                              frame: frame,
+                                            ),
+                                      ),
                                     ),
                                   ),
                                 );

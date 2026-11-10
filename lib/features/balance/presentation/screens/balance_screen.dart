@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
 import 'package:asteria_app/core/const/pricing_catalog.dart';
 import 'package:asteria_app/core/routing/app_route.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
@@ -280,7 +281,7 @@ class _PricePill extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 3),
-          Image.asset('assets/icons/star_coin_icon.png', width: 12, height: 12),
+          LotusRasterIcon('assets/icons/star_coin_icon.png', width: 12, height: 12),
         ],
       ),
     );

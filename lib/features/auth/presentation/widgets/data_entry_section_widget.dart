@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/app/data/models/user/user_model.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/features/auth/localization/auth_localization_contract.dart';
@@ -182,7 +183,7 @@ class _AuthGenderHitTarget extends StatelessWidget {
       button: true,
       selected: isSelected,
       label: label,
-      child: GestureDetector(
+      child: LotusTap(
         behavior: HitTestBehavior.opaque,
         onTap: onTap,
         child: const SizedBox.expand(),

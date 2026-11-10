@@ -1,8 +1,8 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/app/providers/user_provider.dart';
 import 'package:asteria_app/core/di/di.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'calendar_scenario.dart';
 import 'first_session.dart';
 import 'practice_scenario.dart';
@@ -42,7 +42,7 @@ class _ScenarioPickerState extends State<ScenarioPicker> {
     return ScenarioPage(
       title: context.l10n.scenarioStartTitle,
       showBack: false,
-      footer: TextButton(
+      footer: LotusButtons.text(
         onPressed: () => _choose(() async => scenarioHome(context)),
         child: Text(
           context.l10n.scenarioGoHome,
@@ -62,7 +62,7 @@ class _ScenarioPickerState extends State<ScenarioPicker> {
           ScenarioTile(
             title: context.l10n.scenarioPracticeTitle,
             subtitle: context.l10n.scenarioPracticeSubtitle,
-            art: 'assets/images/home/affirmation_flower_figma.webp',
+            art: 'assets/images/affirmation/lavender-clay-lotus.webp',
             onTap: () => _choose(() => openPracticeScenario(context)),
           ),
           ScenarioTile(
@@ -75,7 +75,7 @@ class _ScenarioPickerState extends State<ScenarioPicker> {
           ScenarioTile(
             title: context.l10n.scenarioStrengthTitle,
             subtitle: context.l10n.scenarioStrengthSubtitle,
-            art: 'assets/images/home/natal_card_banner_wheel.webp',
+            art: 'assets/icons/clay/natal_wheel.webp',
             onTap: () => _choose(() => _screen(const StrengthScenarioScreen())),
           ),
         ],

@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/app/data/models/tarot_card/tarot_card_model.dart';
 import 'package:asteria_app/core/localization/tarot_card_asset_resolver.dart';
 import 'package:asteria_app/core/routing/app_route.dart';
@@ -103,7 +104,7 @@ class _TarotCardOfTheDayWidgetState extends State<TarotCardOfTheDayWidget>
           button: true,
           label: context.l10n.refreshDailyTarotLabel,
           child: ExcludeSemantics(
-            child: GestureDetector(
+            child: LotusTap(
               onTap: widget.onRefresh,
               child: RepeatButtonWidget(),
             ),
@@ -133,7 +134,7 @@ class _TarotCardOfTheDayWidgetState extends State<TarotCardOfTheDayWidget>
             button: true,
             label: context.l10n.refreshDailyTarotLabel,
             child: ExcludeSemantics(
-              child: GestureDetector(
+              child: LotusTap(
                 behavior: HitTestBehavior.opaque,
                 onTap: widget.onRefresh,
                 child: SizedBox(
@@ -180,7 +181,7 @@ class _TarotCardOfTheDayWidgetState extends State<TarotCardOfTheDayWidget>
             button: widget.onCardTap != null,
             label: context.l10n.dailyTarotFlipLabel,
             child: ExcludeSemantics(
-              child: GestureDetector(
+              child: LotusTap(
                 onTap: widget.onCardTap,
                 child: _buildCardBack(),
               ),
@@ -227,7 +228,7 @@ class _TarotCardOfTheDayWidgetState extends State<TarotCardOfTheDayWidget>
                 ? context.l10n.dailyTarotOpenedLabel(tarotCard.title)
                 : context.l10n.dailyTarotFlipLabel,
             child: ExcludeSemantics(
-              child: GestureDetector(
+              child: LotusTap(
                 onTap: widget.isOpened ? null : widget.onCardTap,
                 child: AnimatedBuilder(
                   animation: _flipAnimation,

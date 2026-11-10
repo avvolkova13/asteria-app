@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/app/data/models/rune_of_day/rune_of_day_model.dart';
 import 'package:asteria_app/app/providers/content_provider.dart';
 import 'package:asteria_app/app/providers/user_provider.dart';
@@ -108,72 +109,76 @@ class _RuneGridItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Semantics(
-      button: !isLocked,
-      enabled: !isLocked,
-      label: isLocked
-          ? context.l10n.runeLockedLabel(rune.title)
-          : context.l10n.runeOpenLabel(rune.title),
-      onTap: onTap,
-      child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onTap: onTap,
-        child: Column(
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(24),
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  Image.asset(
-                    'assets/images/runes/${rune.imageName}.webp',
-                    width: width,
-                    height: height,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Container(
-                        width: width,
-                        height: height,
-                        color: AppColors.uiSecondary,
-                        child: const ClayIcon(
-                          Icons.image_not_supported,
-                          size: 32,
-                          color: AppColors.textSecondary,
-                        ),
-                      );
-                    },
-                  ),
-                  if (isLocked) ...[
-                    Positioned.fill(
-                      child: DecoratedBox(
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF0F0A1A).withValues(alpha: 0.5),
+    return LotusFeedback(
+      onActivate: onTap,
+      keyboard: true,
+      builder: (activate) => Semantics(
+        button: !isLocked,
+        enabled: !isLocked,
+        label: isLocked
+            ? context.l10n.runeLockedLabel(rune.title)
+            : context.l10n.runeOpenLabel(rune.title),
+        onTap: activate,
+        child: GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: activate,
+          child: Column(
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(24),
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Image.asset(
+                      'assets/images/runes/${rune.imageName}.webp',
+                      width: width,
+                      height: height,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          width: width,
+                          height: height,
+                          color: AppColors.uiSecondary,
+                          child: const ClayIcon(
+                            Icons.image_not_supported,
+                            size: 32,
+                            color: AppColors.textSecondary,
+                          ),
+                        );
+                      },
+                    ),
+                    if (isLocked) ...[
+                      Positioned.fill(
+                        child: DecoratedBox(
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF0F0A1A).withValues(alpha: 0.5),
+                          ),
                         ),
                       ),
-                    ),
-                    ClayAssetIcon(
-                      'assets/icons/white_lock_icon.svg',
-                      width: 24,
-                      height: 24,
-                      tint: _AllRunesColors.gold,
-                    ),
+                      ClayAssetIcon(
+                        'assets/icons/white_lock_icon.svg',
+                        width: 24,
+                        height: 24,
+                        tint: _AllRunesColors.gold,
+                      ),
+                    ],
                   ],
-                ],
+                ),
               ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              rune.title,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: context.textTheme.urbanistRegular12.copyWith(
-                color: AppColors.white,
-                height: 1.2,
-                letterSpacing: -0.408,
+              const SizedBox(height: 4),
+              Text(
+                rune.title,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: context.textTheme.urbanistRegular12.copyWith(
+                  color: AppColors.white,
+                  height: 1.2,
+                  letterSpacing: -0.408,
+                ),
+                textAlign: TextAlign.center,
               ),
-              textAlign: TextAlign.center,
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

@@ -1,3 +1,6 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
+import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
+import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
 import 'package:asteria_app/app/providers/user_provider.dart';
 import 'package:asteria_app/core/di/di.dart';
 import 'package:asteria_app/core/localization/locale_formatters.dart';
@@ -284,7 +287,7 @@ class _HistoryHeader extends StatelessWidget {
                 alignment: PlaceholderAlignment.middle,
                 child: Padding(
                   padding: const EdgeInsets.only(left: 3),
-                  child: Image.asset(
+                  child: LotusRasterIcon(
                     'assets/icons/star_coin_icon.png',
                     width: 13,
                     height: 13,
@@ -310,13 +313,15 @@ class _HistoryHeader extends StatelessWidget {
               SizedBox(
                 width: 44,
                 height: 44,
-                child: IconButton(
+                child: LotusButtons.icon(
                   onPressed: onBack,
                   tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-                  icon: const ClayIcon(
-                    Icons.chevron_left,
-                    size: 28,
-                    color: BalanceHistoryStyle.muted,
+                  icon: const LotusIconSurface(
+                    child: ClayIcon(
+                      Icons.chevron_left,
+                      size: 28,
+                      color: BalanceHistoryStyle.muted,
+                    ),
                   ),
                   constraints: const BoxConstraints(
                     minWidth: 44,
@@ -515,7 +520,7 @@ class _FilterTabs extends StatelessWidget {
                               selectedFilter == WalletHistoryFilter.values[i],
                           child: Material(
                             color: Colors.transparent,
-                            child: InkWell(
+                            child: LotusInkTap(
                               borderRadius: BorderRadius.circular(8),
                               onTap: () => onFilterChanged(
                                 WalletHistoryFilter.values[i],
@@ -663,7 +668,7 @@ class _HistoryError extends StatelessWidget {
           textAlign: TextAlign.center,
           style: BalanceHistoryStyle.body,
         ),
-        TextButton.icon(
+        LotusButtons.textIcon(
           onPressed: onRetry,
           icon: const ClayIcon(Icons.refresh),
           style: TextButton.styleFrom(foregroundColor: const Color(0xFFF3B76A)),

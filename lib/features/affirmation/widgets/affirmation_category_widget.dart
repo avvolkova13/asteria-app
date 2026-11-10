@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/routing/app_route.dart';
 import 'package:asteria_app/app/data/models/affirmation/affirmation_model.dart';
 import 'package:asteria_app/core/analytics/dictionaries/offer_type.dart';
@@ -57,7 +58,7 @@ class AffirmationCategoryWidget extends StatelessWidget {
           label: isLocked
               ? context.l10n.affirmationCategoryLocked(categoryName)
               : categoryName,
-          child: GestureDetector(
+          child: LotusTap(
             behavior: HitTestBehavior.opaque,
             onTap: () {
               if (isLocked) {
@@ -308,6 +309,7 @@ class _AffirmationCardStackState extends State<AffirmationCardStack> {
       return;
     }
 
+    LotusFeedback.selection();
     final contentId = widget.affirmations[_frontIndex].id;
 
     di.get<ProductAnalyticsService>().trackAffirmationEngagement(
@@ -365,53 +367,57 @@ class _AffirmationCardStackState extends State<AffirmationCardStack> {
 
         return Align(
           alignment: Alignment.center,
-          child: Semantics(
-            button: widget.affirmations.isNotEmpty,
-            excludeSemantics: true,
-            onTap: widget.affirmations.isEmpty ? null : _openPlayer,
-            onTapHint: widget.affirmations.isEmpty
-                ? null
-                : context.l10n.affirmationOpenPlayer,
-            label: _semanticLabel(context),
-            hint: widget.affirmations.length > 1
-                ? context.l10n.affirmationSwipeHint
-                : null,
-            onIncrease: widget.affirmations.length > 1
-                ? () {
-                    _animateSwipe(-1, _lastStackWidth);
-                  }
-                : null,
-            onDecrease: widget.affirmations.length > 1
-                ? () {
-                    _animateSwipe(1, _lastStackWidth);
-                  }
-                : null,
-            child: GestureDetector(
-              behavior: HitTestBehavior.opaque,
-              onTap: widget.affirmations.isEmpty ? null : _openPlayer,
-              onHorizontalDragUpdate: _handleDragUpdate,
-              onHorizontalDragEnd: (details) =>
-                  _handleDragEnd(details, stackWidth),
-              child: SizedBox(
-                width: stackWidth,
-                height: _stackHeight * scale,
-                child: Stack(
-                  clipBehavior: Clip.none,
-                  children: [
-                    ..._buildLayerCards(context, scale),
-                    if (_showHint && widget.affirmations.length > 1)
-                      Positioned(
-                        left: 0,
-                        right: 0,
-                        top: 210 * scale,
-                        child: IgnorePointer(
-                          child: SizedBox(
-                            height: 32 * scale,
-                            child: Center(child: _SwipeHintIcon(scale: scale)),
+          child: LotusFeedback(
+            onActivate: widget.affirmations.isEmpty ? null : _openPlayer,
+            keyboard: true,
+            builder: (activate) => Semantics(
+              button: widget.affirmations.isNotEmpty,
+              excludeSemantics: true,
+              onTap: activate,
+              onTapHint: widget.affirmations.isEmpty
+                  ? null
+                  : context.l10n.affirmationOpenPlayer,
+              label: _semanticLabel(context),
+              hint: widget.affirmations.length > 1
+                  ? context.l10n.affirmationSwipeHint
+                  : null,
+              onIncrease: widget.affirmations.length > 1
+                  ? () {
+                      _animateSwipe(-1, _lastStackWidth);
+                    }
+                  : null,
+              onDecrease: widget.affirmations.length > 1
+                  ? () {
+                      _animateSwipe(1, _lastStackWidth);
+                    }
+                  : null,
+              child: GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: activate,
+                onHorizontalDragUpdate: _handleDragUpdate,
+                onHorizontalDragEnd: (details) =>
+                    _handleDragEnd(details, stackWidth),
+                child: SizedBox(
+                  width: stackWidth,
+                  height: _stackHeight * scale,
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      ..._buildLayerCards(context, scale),
+                      if (_showHint && widget.affirmations.length > 1)
+                        Positioned(
+                          left: 0,
+                          right: 0,
+                          top: 210 * scale,
+                          child: IgnorePointer(
+                            child: SizedBox(
+                              height: 32 * scale,
+                              child: Center(child: _SwipeHintIcon(scale: scale)),
+                            ),
                           ),
                         ),
-                      ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),

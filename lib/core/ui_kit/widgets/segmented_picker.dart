@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:flutter/material.dart';
 import '../app_colors/app_colors.dart';
 
@@ -33,7 +34,7 @@ class SegmentedPicker<T> extends StatelessWidget {
 
   Widget _buildOption(T option, bool isSelected) {
     return Expanded(
-      child: GestureDetector(
+      child: LotusTap(
         onTap: () => onChanged(option),
         child: Container(
           height: 28,

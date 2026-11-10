@@ -1,3 +1,5 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
+import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 import 'package:flutter/cupertino.dart';
@@ -89,15 +91,17 @@ class AuthFlowScaffold extends StatelessWidget {
                   padding: const EdgeInsets.only(left: 4, top: 4),
                   child: Align(
                     alignment: Alignment.topLeft,
-                    child: IconButton(
+                    child: LotusButtons.icon(
                       onPressed: () => Navigator.pop(context),
                       tooltip: MaterialLocalizations.of(
                         context,
                       ).backButtonTooltip,
-                      icon: const ClayIcon(
-                        CupertinoIcons.chevron_left,
-                        color: AppColors.white,
-                        size: 28,
+                      icon: const LotusIconSurface(
+                        child: ClayIcon(
+                          CupertinoIcons.chevron_left,
+                          color: AppColors.white,
+                          size: 28,
+                        ),
                       ),
                     ),
                   ),
@@ -178,83 +182,86 @@ class AuthGradientButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final borderRadius = BorderRadius.circular(16);
 
-    return Semantics(
-      button: true,
-      container: true,
-      enabled: _isEnabled,
-      label: text,
-      onTap: _isEnabled ? onPressed : null,
-      child: ExcludeSemantics(
-        child: SizedBox(
-          width: double.infinity,
-          height: 50,
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              color: _isEnabled ? null : _authDisabledButtonFill,
-              gradient: _isEnabled
-                  ? const LinearGradient(
-                      begin: Alignment.centerLeft,
-                      end: Alignment.centerRight,
-                      colors: [_authButtonStart, _authButtonEnd],
-                    )
-                  : null,
-              borderRadius: borderRadius,
-              boxShadow: _isEnabled
-                  ? [
-                      BoxShadow(
-                        color: _authButtonEnd.withValues(alpha: 0.26),
-                        blurRadius: 20,
-                        offset: const Offset(0, 8),
-                      ),
-                    ]
-                  : null,
-            ),
-            child: ClipRRect(
-              borderRadius: borderRadius,
-              child: Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  onTap: _isEnabled ? onPressed : null,
-                  child: Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      if (_isEnabled)
-                        const DecoratedBox(
-                          decoration: BoxDecoration(
-                            gradient: RadialGradient(
-                              center: Alignment(0, -0.65),
-                              radius: 1.8,
-                              colors: [
-                                _authButtonHighlight,
-                                Colors.transparent,
-                              ],
+    return LotusFeedback(
+      onActivate: _isEnabled ? onPressed : null,
+      builder: (activate) => Semantics(
+        button: true,
+        container: true,
+        enabled: _isEnabled,
+        label: text,
+        onTap: activate,
+        child: ExcludeSemantics(
+          child: SizedBox(
+            width: double.infinity,
+            height: 50,
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                color: _isEnabled ? null : _authDisabledButtonFill,
+                gradient: _isEnabled
+                    ? const LinearGradient(
+                        begin: Alignment.centerLeft,
+                        end: Alignment.centerRight,
+                        colors: [_authButtonStart, _authButtonEnd],
+                      )
+                    : null,
+                borderRadius: borderRadius,
+                boxShadow: _isEnabled
+                    ? [
+                        BoxShadow(
+                          color: _authButtonEnd.withValues(alpha: 0.26),
+                          blurRadius: 20,
+                          offset: const Offset(0, 8),
+                        ),
+                      ]
+                    : null,
+              ),
+              child: ClipRRect(
+                borderRadius: borderRadius,
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: activate,
+                    child: Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        if (_isEnabled)
+                          const DecoratedBox(
+                            decoration: BoxDecoration(
+                              gradient: RadialGradient(
+                                center: Alignment(0, -0.65),
+                                radius: 1.8,
+                                colors: [
+                                  _authButtonHighlight,
+                                  Colors.transparent,
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                      Center(
-                        child: isLoading
-                            ? const SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  color: AppColors.white,
+                        Center(
+                          child: isLoading
+                              ? const SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: AppColors.white,
+                                  ),
+                                )
+                              : Text(
+                                  text,
+                                  textAlign: TextAlign.center,
+                                  style: context
+                                      .textTheme
+                                      .inverseUrbanistSemiBold16
+                                      .copyWith(
+                                        color: _isEnabled
+                                            ? AppColors.white
+                                            : AppColors.uiDisabledText,
+                                      ),
                                 ),
-                              )
-                            : Text(
-                                text,
-                                textAlign: TextAlign.center,
-                                style: context
-                                    .textTheme
-                                    .inverseUrbanistSemiBold16
-                                    .copyWith(
-                                      color: _isEnabled
-                                          ? AppColors.white
-                                          : AppColors.uiDisabledText,
-                                    ),
-                              ),
-                      ),
-                    ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -383,7 +390,7 @@ class _AuthTextInputState extends State<AuthTextInput> {
                 ),
               ),
               if (widget.controller.text.isNotEmpty && !widget.readOnly)
-                IconButton(
+                LotusButtons.icon(
                   onPressed: () {
                     widget.controller.clear();
                     widget.onChanged('');
@@ -468,18 +475,22 @@ class AuthBottomLink extends StatelessWidget {
     return Center(
       child: onTap == null
           ? textWidget
-          : Semantics(
+          : LotusFeedback(
+            onActivate: onTap,
+            keyboard: true,
+            builder: (activate) => Semantics(
               button: true,
               label: text,
-              onTap: onTap,
+              onTap: activate,
               child: ExcludeSemantics(
                 child: GestureDetector(
                   behavior: HitTestBehavior.opaque,
-                  onTap: onTap,
+                  onTap: activate,
                   child: textWidget,
                 ),
               ),
             ),
+          ),
     );
   }
 }

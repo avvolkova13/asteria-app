@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/app/data/models/saved_compatibility/saved_compatibility_model.dart';
 import 'package:asteria_app/app/providers/user_provider.dart';
 import 'package:asteria_app/core/di/di.dart';
@@ -257,7 +258,7 @@ class RelationshipPairResult extends StatelessWidget {
               onPressed: () => _share(buttonContext, question),
             ),
           ),
-          TextButton(
+          LotusButtons.text(
             onPressed: () => _open<void>(
               context,
               CompatibilityLayout(
@@ -272,7 +273,7 @@ class RelationshipPairResult extends StatelessWidget {
             ),
             child: Text(context.l10n.scenarioRelationshipFullReading),
           ),
-          TextButton(
+          LotusButtons.text(
             onPressed: () => scenarioHome(context),
             child: Text(context.l10n.scenarioGoHome),
           ),
@@ -305,7 +306,7 @@ class _Reflection extends StatelessWidget {
           ],
         ),
       ),
-      TextButton(
+      LotusButtons.text(
         onPressed: () => scenarioHome(context),
         child: Text(context.l10n.scenarioGoHome),
       ),

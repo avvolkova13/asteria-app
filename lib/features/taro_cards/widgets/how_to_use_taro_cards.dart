@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:flutter/material.dart';
 
@@ -53,7 +54,7 @@ class HowToUseTaroCards extends StatelessWidget {
                 children: [
                   Padding(
                     padding: const EdgeInsets.only(top: 2),
-                    child: Image.asset(
+                    child: LotusRasterIcon(
                       'assets/icons/magic_wand.png',
                       height: 20,
                     ),

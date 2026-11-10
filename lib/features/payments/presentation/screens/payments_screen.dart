@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'dart:async';
 
 import 'package:asteria_app/core/analytics/analytics_events.dart';
@@ -318,7 +319,7 @@ class _PaymentsScreenState extends State<PaymentsScreen>
                 isFullWidth: true,
               ),
             const SizedBox(height: 12),
-            TextButton(
+            LotusButtons.text(
               onPressed: _confirmAbandon,
               child: Text(context.l10n.paymentLeaveAttempt),
             ),
@@ -432,11 +433,11 @@ class _PaymentsScreenState extends State<PaymentsScreen>
         title: Text(context.l10n.paymentLeaveQuestion),
         content: Text(context.l10n.paymentLeaveDescription),
         actions: [
-          TextButton(
+          LotusButtons.text(
             onPressed: () => Navigator.of(dialogContext).pop(false),
             child: Text(context.l10n.paymentContinue),
           ),
-          TextButton(
+          LotusButtons.text(
             onPressed: () => Navigator.of(dialogContext).pop(true),
             child: Text(context.l10n.paymentLeaveAttempt),
           ),

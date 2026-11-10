@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:flutter/material.dart';
 
 const _accent = LinearGradient(
@@ -14,17 +15,18 @@ class AnakraQuickActionButton extends StatelessWidget {
     required this.onPressed,
   });
   final String text;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
 
   @override
   Widget build(BuildContext context) => Semantics(
     button: true,
+    enabled: onPressed != null,
     label: text,
     child: CustomPaint(
       painter: const _OutlinePainter(),
       child: Material(
         color: Colors.transparent,
-        child: InkWell(
+        child: LotusInkTap(
           onTap: onPressed,
           borderRadius: BorderRadius.circular(4),
           child: Padding(

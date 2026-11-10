@@ -3,6 +3,9 @@ import 'package:flutter/gestures.dart' show kTouchSlop;
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import 'lotus_glyph_motion.dart';
+import 'lotus_sprite.dart';
+
 const _artDirectory = 'assets/icons/clay/';
 
 /// A familiar platform glyph with the rounded lighting of the practice player.
@@ -27,17 +30,34 @@ class ClayIcon extends Icon {
         : baseSize;
     final ink = color ?? theme.color ?? Colors.white;
     final opacity = theme.opacity ?? 1;
+    final tint = opacity == 1 ? ink : ink.withValues(alpha: ink.a * opacity);
+    final directional = icon?.matchTextDirection ?? false;
+    final pose = _poses[icon];
+    final mirrorForDirection =
+        directional && Directionality.of(context) == TextDirection.rtl;
+    Widget frame(int index) => LotusSprite(
+      pose!.pose,
+      size: dimension,
+      frame: index,
+      tint: tint,
+      flip: pose.left != mirrorForDirection,
+    );
     return Semantics(
       label: semanticLabel,
-      child: Image.asset(
-        '$_artDirectory$name.webp',
-        width: dimension,
-        height: dimension,
-        color: opacity == 1 ? ink : ink.withValues(alpha: ink.a * opacity),
-        colorBlendMode: BlendMode.modulate,
-        matchTextDirection: icon?.matchTextDirection ?? false,
-        filterQuality: FilterQuality.medium,
-        excludeFromSemantics: true,
+      child: LotusGlyphMotion(
+        frameBuilder: pose == null ? null : frame,
+        child: pose != null
+            ? frame(0)
+            : Image.asset(
+                '$_artDirectory$name.webp',
+                width: dimension,
+                height: dimension,
+                color: tint,
+                colorBlendMode: BlendMode.modulate,
+                matchTextDirection: directional,
+                filterQuality: FilterQuality.medium,
+                excludeFromSemantics: true,
+              ),
       ),
     );
   }
@@ -69,23 +89,56 @@ class ClayAssetIcon extends SvgPicture {
   @override
   Widget build(BuildContext context) {
     final nativeSize = _vectorSizes[assetName];
-    if (nativeSize == null) return super.build(context);
+    if (nativeSize == null) {
+      return LotusGlyphMotion(child: super.build(context));
+    }
     final name = assetName.substring(
       assetName.lastIndexOf('/') + 1,
       assetName.length - 4,
     );
     final ratio = nativeSize.aspectRatio;
-    return Image.asset(
-      '$_artDirectory$name.webp',
-      width: width ?? (height == null ? nativeSize.width : height! * ratio),
-      height: height ?? (width == null ? nativeSize.height : width! / ratio),
-      color: tint,
-      colorBlendMode: BlendMode.modulate,
-      fit: fit,
-      alignment: alignment,
-      semanticLabel: semanticsLabel,
-      excludeFromSemantics: excludeFromSemantics,
-      filterQuality: FilterQuality.medium,
+    final artWidth =
+        width ?? (height == null ? nativeSize.width : height! * ratio);
+    final artHeight =
+        height ?? (width == null ? nativeSize.height : width! / ratio);
+    final pose = switch (name) {
+      'repeat_icon' => LotusPose.repeat,
+      'close_icon' || 'city_clear' => LotusPose.close,
+      _ => null,
+    };
+    if (pose != null) {
+      Widget frame(int index) => SizedBox(
+        width: artWidth,
+        height: artHeight,
+        child: FittedBox(
+          fit: fit,
+          alignment: alignment,
+          child: LotusSprite(
+            pose,
+            size: nativeSize.width,
+            frame: index,
+            tint: tint,
+          ),
+        ),
+      );
+      return Semantics(
+        label: excludeFromSemantics ? null : semanticsLabel,
+        child: LotusGlyphMotion(frameBuilder: frame, child: frame(0)),
+      );
+    }
+    return LotusGlyphMotion(
+      child: Image.asset(
+        '$_artDirectory$name.webp',
+        width: artWidth,
+        height: artHeight,
+        color: tint,
+        colorBlendMode: BlendMode.modulate,
+        fit: fit,
+        alignment: alignment,
+        semanticLabel: semanticsLabel,
+        excludeFromSemantics: excludeFromSemantics,
+        filterQuality: FilterQuality.medium,
+      ),
     );
   }
 }
@@ -161,6 +214,23 @@ class _ClayPressFeedbackState extends State<ClayPressFeedback> {
   }
 }
 
+const _chevron = (pose: LotusPose.chevron, left: false);
+const _backChevron = (pose: LotusPose.chevron, left: true);
+final _poses = {
+  Icons.cancel: (pose: LotusPose.close, left: false),
+  CupertinoIcons.clear_circled_solid: (pose: LotusPose.close, left: false),
+  CupertinoIcons.xmark_circle: (pose: LotusPose.close, left: false),
+  Icons.play_arrow: (pose: LotusPose.play, left: false),
+  Icons.auto_awesome: (pose: LotusPose.spark, left: false),
+  Icons.auto_awesome_outlined: (pose: LotusPose.spark, left: false),
+  CupertinoIcons.chevron_left: _backChevron,
+  Icons.arrow_back_ios_new_rounded: _backChevron,
+  Icons.arrow_forward_ios_rounded: _chevron,
+  Icons.chevron_left: _backChevron,
+  Icons.chevron_right: _chevron,
+  Icons.chevron_right_rounded: _chevron,
+};
+
 final _glyphNames = <IconData, String>{
   CupertinoIcons.chevron_left: 'ios_chevron_left',
   CupertinoIcons.clear_circled_solid: 'ios_clear_circled_solid',
@@ -172,6 +242,7 @@ final _glyphNames = <IconData, String>{
   Icons.arrow_forward_ios_rounded: 'md_arrow_forward_ios_rounded',
   Icons.arrow_forward_rounded: 'md_arrow_forward_rounded',
   Icons.auto_awesome: 'md_auto_awesome',
+  Icons.auto_awesome_outlined: 'md_auto_awesome',
   Icons.calendar_month_outlined: 'md_calendar_month_outlined',
   Icons.cancel: 'md_cancel',
   Icons.check: 'md_check',
@@ -184,6 +255,7 @@ final _glyphNames = <IconData, String>{
   Icons.image_not_supported: 'md_image_not_supported',
   Icons.ios_share: 'md_ios_share',
   Icons.lock_outline: 'md_lock_outline',
+  Icons.lock_rounded: 'md_lock_outline',
   Icons.menu_book_outlined: 'md_menu_book_outlined',
   Icons.person_outline_rounded: 'md_person_outline_rounded',
   Icons.play_arrow: 'md_play_arrow',
@@ -196,6 +268,17 @@ final _glyphNames = <IconData, String>{
 
 const _vectorSizes = <String, Size>{
   'assets/icons/affirmation_arrow_figma.svg': Size.square(19.8446),
+  'assets/icons/city_clear.svg': Size.square(19.5),
+  'assets/icons/city_search.svg': Size.square(22.5),
+  'assets/icons/city_selected.svg': Size.square(20),
+  'assets/icons/city_unselected.svg': Size.square(20),
+  'assets/icons/moon_calendar_next.svg': Size(9.9707, 17.3242),
+  'assets/icons/moon_calendar_previous.svg': Size(9.9707, 17.3242),
+  'assets/icons/sphere_icon/calendar_beauty.svg': Size(16.7463, 20.4971),
+  'assets/icons/sphere_icon/calendar_garden.svg': Size.square(19.5),
+  'assets/icons/sphere_icon/calendar_health.svg': Size(20.8262, 17.5),
+  'assets/icons/sphere_icon/calendar_relationships.svg': Size(21.4997, 19.5),
+  'assets/icons/sphere_icon/calendar_work.svg': Size(18.5812, 23.5002),
   'assets/icons/back_icon.svg': Size(18, 24),
   'assets/icons/checbox_round_selected.svg': Size.square(29),
   'assets/icons/close_icon.svg': Size.square(20),

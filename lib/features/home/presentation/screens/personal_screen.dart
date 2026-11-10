@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'dart:math' as math;
 import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 
@@ -911,7 +912,7 @@ class _SegmentedOption extends StatelessWidget {
       button: true,
       selected: isSelected,
       label: label,
-      child: GestureDetector(
+      child: LotusTap(
         onTap: onTap,
         behavior: HitTestBehavior.opaque,
         child: AnimatedContainer(
@@ -1349,32 +1350,35 @@ class _PersonalGradientButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Semantics(
-      button: true,
-      label: text,
-      onTap: onPressed,
-      child: SizedBox(
-        width: double.infinity,
-        height: 50,
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            gradient: _buttonGradient,
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: Material(
-            color: Colors.transparent,
-            child: InkWell(
-              onTap: onPressed,
+    return LotusFeedback(
+      onActivate: onPressed,
+      builder: (activate) => Semantics(
+        button: true,
+        label: text,
+        onTap: activate,
+        child: SizedBox(
+          width: double.infinity,
+          height: 50,
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: _buttonGradient,
               borderRadius: BorderRadius.circular(16),
-              child: Center(
-                child: Text(
-                  text,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  textAlign: TextAlign.center,
-                  style: context.textTheme.inverseUrbanistRegular16.copyWith(
-                    height: 1.2,
-                    letterSpacing: -0.408,
+            ),
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: activate,
+                borderRadius: BorderRadius.circular(16),
+                child: Center(
+                  child: Text(
+                    text,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.center,
+                    style: context.textTheme.inverseUrbanistRegular16.copyWith(
+                      height: 1.2,
+                      letterSpacing: -0.408,
+                    ),
                   ),
                 ),
               ),
@@ -1939,7 +1943,7 @@ class _ForecastUnlockButton extends StatelessWidget {
       height: 44,
       child: Material(
         color: Colors.transparent,
-        child: InkWell(
+        child: LotusInkTap(
           onTap: onPressed,
           borderRadius: BorderRadius.circular(16),
           child: Ink(
@@ -2054,7 +2058,7 @@ class _PersonalCompatibilitySection extends StatelessWidget {
                     ),
                   ),
                 ),
-                GestureDetector(
+                LotusTap(
                   behavior: HitTestBehavior.opaque,
                   onTap: () async {
                     try {
@@ -2124,7 +2128,7 @@ class _EmptyCompatibilityCard extends StatelessWidget {
         color: const Color(0xFF1B1433),
         borderRadius: BorderRadius.circular(16),
         clipBehavior: Clip.antiAlias,
-        child: InkWell(
+        child: LotusInkTap(
           onTap: onPressed,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -2214,7 +2218,7 @@ class _CompatibilityHistoryCard extends StatelessWidget {
       key: const ValueKey('personal-compatibility-card'),
       button: true,
       label: context.l10n.compatibilityDetailsLabel,
-      child: GestureDetector(
+      child: LotusTap(
         behavior: HitTestBehavior.opaque,
         onTap: onPressed,
         child: SizedBox(

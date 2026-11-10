@@ -1,4 +1,7 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
+import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
 import 'dart:ui' as ui;
+import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
@@ -98,7 +101,7 @@ class ProfileFlowHeader extends StatelessWidget {
                       label: MaterialLocalizations.of(
                         context,
                       ).backButtonTooltip,
-                      child: GestureDetector(
+                      child: LotusTap(
                         behavior: HitTestBehavior.opaque,
                         onTap: () => Navigator.of(context).pop(),
                         child: const SizedBox(
@@ -106,10 +109,18 @@ class ProfileFlowHeader extends StatelessWidget {
                           height: 36,
                           child: Align(
                             alignment: Alignment.centerLeft,
-                            child: ClayIcon(
-                              Icons.chevron_left,
-                              color: Color(0xB8FFFFFF),
-                              size: 32,
+                            child: LotusIconSurface(
+                              diameter: 28,
+                              child: SizedBox.square(
+                                dimension: 32,
+                                child: Center(
+                                  child: ClayIcon(
+                                    Icons.chevron_left,
+                                    color: Color(0xB8FFFFFF),
+                                    size: 20,
+                                  ),
+                                ),
+                              ),
                             ),
                           ),
                         ),
@@ -219,7 +230,7 @@ class ProfileGlassCard extends StatelessWidget {
           ),
           child: Material(
             color: Colors.transparent,
-            child: InkWell(
+            child: LotusInkTap(
               onTap: onTap,
               borderRadius: radius,
               child: Padding(padding: padding, child: child),
@@ -313,7 +324,7 @@ class ProfilePrimaryButton extends StatelessWidget {
             ),
           ],
         ),
-        child: ElevatedButton(
+        child: LotusButtons.elevated(
           onPressed: isLoading ? null : onPressed,
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.transparent,
@@ -403,7 +414,7 @@ class _BalancePill extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 3),
-        Image.asset('assets/icons/star_coin_icon.png', width: 13, height: 13),
+        LotusRasterIcon('assets/icons/star_coin_icon.png', width: 13, height: 13),
       ],
     );
   }

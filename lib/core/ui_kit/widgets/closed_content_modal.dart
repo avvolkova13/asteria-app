@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/features/monetization/presentation/contextual_purchase_page.dart';
 import 'package:asteria_app/features/monetization/presentation/monetization_provider.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
@@ -167,7 +168,7 @@ class _SubscriptionButton extends StatelessWidget {
             child: Semantics(
               button: true,
               enabled: onPressed != null,
-              child: InkWell(
+              child: LotusInkTap(
                 borderRadius: BorderRadius.circular(16),
                 onTap: onPressed,
                 child: Padding(

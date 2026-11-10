@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/app/data/models/rune_of_day/rune_of_day_model.dart';
 import 'package:asteria_app/core/routing/app_route.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
@@ -94,7 +95,7 @@ class _RuneOfTheDayWidgetState extends State<RuneOfTheDayWidget>
               ),
               const SizedBox(width: 8),
               // Refresh icon
-              GestureDetector(
+              LotusTap(
                 behavior: HitTestBehavior.opaque,
                 onTap: widget.onRefresh,
                 child: widget.isDarkLayout
@@ -142,7 +143,7 @@ class _RuneOfTheDayWidgetState extends State<RuneOfTheDayWidget>
       children: [
         // Показываем закрытую карту
         Center(
-          child: GestureDetector(
+          child: LotusTap(
             onTap: widget.onRuneTap,
             child: _buildRuneBack(),
           ),
@@ -179,7 +180,7 @@ class _RuneOfTheDayWidgetState extends State<RuneOfTheDayWidget>
       children: [
         // Animated rune
         Center(
-          child: GestureDetector(
+          child: LotusTap(
             onTap: widget.isOpened
                 ? null
                 : widget.onRuneTap, // Блокируем нажатие если руна уже открыта

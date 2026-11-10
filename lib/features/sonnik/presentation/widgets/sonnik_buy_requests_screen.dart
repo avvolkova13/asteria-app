@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
 import 'package:asteria_app/core/analytics/dictionaries/offer_type.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
@@ -133,7 +134,7 @@ class _SonnikPackageItem extends StatelessWidget {
                   style: context.textTheme.inverseUrbanistSemiBold24,
                 ),
                 const SizedBox(width: 5),
-                Image.asset('assets/icons/star_coin_icon.png', height: 20),
+                LotusRasterIcon('assets/icons/star_coin_icon.png', height: 20),
                 const SizedBox(width: 12),
                 ClayIcon(
                   Icons.arrow_forward_rounded,

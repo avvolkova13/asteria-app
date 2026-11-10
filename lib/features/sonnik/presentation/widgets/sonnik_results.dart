@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/app/data/models/sonnik/sonnik_model.dart';
 import 'package:asteria_app/core/routing/app_route.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
@@ -39,7 +40,7 @@ class SonnikResults extends StatelessWidget {
           onPressed: onDecodeAgainPressed,
         ),
         const SizedBox(height: 18),
-        TextButton(
+        LotusButtons.text(
           onPressed: () {
             CreateSonnikHistoryRoute.pushReplacement(context);
           },

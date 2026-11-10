@@ -1,3 +1,5 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
+import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 import 'package:asteria_app/app/providers/user_provider.dart';
 import 'package:asteria_app/core/extensions/build_context_extensions.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
@@ -8,7 +10,6 @@ import 'package:asteria_app/features/home/presentation/widgets/moon_design_token
 import 'package:asteria_app/features/monetization/presentation/monetization_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 enum Sphere {
   beauty('beauty', 'ic_beauty'),
@@ -101,21 +102,24 @@ class _SphereSelectionWidgetState extends State<SphereSelectionWidget> {
                   }
                 }
 
-                return Semantics(
-                  button: true,
-                  selected: isSelected,
-                  label: isDisabled
-                      ? '$label, ${context.l10n.subscriptionOnlyTitle}'
-                      : label,
-                  onTap: handleTap,
-                  child: ExcludeSemantics(
-                    child: InkWell(
-                      onTap: handleTap,
-                      borderRadius: BorderRadius.circular(8),
-                      child: _SphereSelectionItem(
-                        sphere: sphere,
-                        isSelected: isSelected,
-                        isDisabled: isDisabled,
+                return LotusFeedback(
+                  onActivate: handleTap,
+                  builder: (activate) => Semantics(
+                    button: true,
+                    selected: isSelected,
+                    label: isDisabled
+                        ? '$label, ${context.l10n.subscriptionOnlyTitle}'
+                        : label,
+                    onTap: activate,
+                    child: ExcludeSemantics(
+                      child: InkWell(
+                        onTap: activate,
+                        borderRadius: BorderRadius.circular(8),
+                        child: _SphereSelectionItem(
+                          sphere: sphere,
+                          isSelected: isSelected,
+                          isDisabled: isDisabled,
+                        ),
                       ),
                     ),
                   ),
@@ -154,9 +158,9 @@ class _SphereSelectionItem extends StatelessWidget {
           Positioned(
             left: left,
             top: top,
-            child: SvgPicture.asset(
+            child: ClayAssetIcon(
               'assets/icons/sphere_icon/calendar_$asset.svg',
-              colorFilter: ColorFilter.mode(foreground, BlendMode.srcIn),
+              tint: foreground,
               excludeFromSemantics: true,
             ),
           ),
@@ -207,7 +211,7 @@ class _SphereSelectionItem extends StatelessWidget {
             ),
             if (isDisabled) ...[
               const SizedBox(width: 6),
-              const Icon(
+              const ClayIcon(
                 Icons.lock_rounded,
                 size: 16,
                 color: MoonDesignTokens.chipOrangeLight,

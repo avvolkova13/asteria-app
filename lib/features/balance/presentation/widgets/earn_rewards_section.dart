@@ -1,3 +1,5 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
+import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 import 'package:asteria_app/features/balance/domain/reward_models.dart';
@@ -47,7 +49,7 @@ class EarnRewardsSection extends StatelessWidget {
                         style: context.textTheme.inverseUrbanistRegular14,
                       ),
                     ),
-                    TextButton(
+                    LotusButtons.text(
                       onPressed: provider.load,
                       child: Text(context.l10n.balanceRewardRetry),
                     ),
@@ -322,7 +324,7 @@ class _RewardAmount extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 3),
-        Image.asset('assets/icons/star_coin_icon.png', width: 16, height: 16),
+        LotusRasterIcon('assets/icons/star_coin_icon.png', width: 16, height: 16),
       ],
     );
   }

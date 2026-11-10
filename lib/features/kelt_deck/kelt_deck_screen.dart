@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/app/providers/content_provider.dart';
 import 'package:asteria_app/app/providers/user_provider.dart';
 import 'package:asteria_app/core/analytics/analytics_events.dart';
@@ -296,7 +297,7 @@ class _KeltDeckTitle extends StatelessWidget {
         Semantics(
           button: true,
           label: context.l10n.refreshReadingLabel,
-          child: GestureDetector(
+          child: LotusTap(
             behavior: HitTestBehavior.opaque,
             onTap: onRefresh,
             child: SizedBox(
@@ -361,7 +362,7 @@ class _GradientLink extends StatelessWidget {
     return Semantics(
       button: true,
       label: text,
-      child: GestureDetector(
+      child: LotusTap(
         behavior: HitTestBehavior.opaque,
         onTap: onTap,
         child: SizedBox(

@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/core/utils/enums.dart';
 import 'package:flutter/material.dart';
@@ -408,7 +409,7 @@ class _BuyButton extends StatelessWidget {
           label: context.l10n.buyYearHoroscopeLabel(
             HoroscopeTypeEnum.year.price,
           ),
-          child: TextButton(
+          child: LotusButtons.text(
             onPressed: onPressed,
             style: TextButton.styleFrom(
               foregroundColor: AppColors.white,

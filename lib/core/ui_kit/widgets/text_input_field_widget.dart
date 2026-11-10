@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 import 'package:flutter/material.dart';
@@ -131,7 +132,7 @@ class _TextInputFieldWidgetState extends State<TextInputFieldWidget> {
                 ),
               ),
               if (widget.showToggleButton) ...[
-                GestureDetector(
+                LotusTap(
                   onTap: widget.onToggle,
                   child: Container(
                     width: 51,
@@ -174,7 +175,7 @@ class _TextInputFieldWidgetState extends State<TextInputFieldWidget> {
                 ),
               ] else if (widget.showClearButton &&
                   _controller.text.isNotEmpty) ...[
-                GestureDetector(
+                LotusTap(
                   onTap: () {
                     _controller.clear();
                     widget.onClear?.call();

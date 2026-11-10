@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'dart:async';
 import 'dart:io' show Platform;
 import 'package:asteria_app/core/payments/apple/apple_purchase_coordinator.dart';
@@ -393,7 +394,7 @@ class _ErrorScreen extends StatelessWidget {
                   style: const TextStyle(fontSize: 16, color: Colors.white),
                 ),
                 const SizedBox(height: 24),
-                ElevatedButton(onPressed: onRetry, child: Text(l10n.retry)),
+                LotusButtons.elevated(onPressed: onRetry, child: Text(l10n.retry)),
               ],
             ),
           ),

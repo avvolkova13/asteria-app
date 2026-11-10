@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/routing/app_route.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
@@ -32,7 +33,7 @@ class AffirmationOfTheDayWidget extends StatelessWidget {
     return Semantics(
       button: true,
       label: context.l10n.affirmationOfDay,
-      child: GestureDetector(
+      child: LotusTap(
         onTap: () => AffirmationRoute.push(context),
         child: Container(
           height: _cardHeight,
@@ -181,7 +182,7 @@ class AffirmationUnavailableWidget extends StatelessWidget {
                   Semantics(
                     button: true,
                     label: context.l10n.affirmationRetryLabel,
-                    child: TextButton(
+                    child: LotusButtons.text(
                       onPressed: onRetry,
                       style: TextButton.styleFrom(
                         padding: EdgeInsets.zero,

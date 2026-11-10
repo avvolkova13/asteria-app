@@ -1,3 +1,5 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
+import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
 import 'package:asteria_app/core/analytics/analytics_events.dart';
 import 'package:asteria_app/core/analytics/analytics_facade.dart';
 import 'package:asteria_app/core/analytics/dictionaries/offer_type.dart';
@@ -201,7 +203,7 @@ class _PackageCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return LotusTap(
       onTap: onTap,
       child: CompatibilityGlassCard(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 16),
@@ -218,7 +220,7 @@ class _PackageCard extends StatelessWidget {
               style: context.textTheme.inverseUrbanistSemiBold24,
             ),
             const SizedBox(width: 4),
-            Image.asset('assets/icons/star_coin_icon.png', height: 18),
+            LotusRasterIcon('assets/icons/star_coin_icon.png', height: 18),
             const SizedBox(width: 10),
             const ClayIcon(
               Icons.arrow_forward_rounded,

@@ -1,4 +1,7 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
+import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
 import 'dart:ui' as ui;
+import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
 import 'package:asteria_app/app/data/models/user/user_model.dart';
 import 'package:asteria_app/app/providers/user_provider.dart';
 import 'package:asteria_app/core/di/di.dart';
@@ -105,7 +108,7 @@ class _AchievementsHeader extends StatelessWidget {
       children: [
         Text('$balance', style: style),
         const SizedBox(width: 3),
-        Image.asset('assets/icons/star_coin_icon.png', width: 13, height: 13),
+        LotusRasterIcon('assets/icons/star_coin_icon.png', width: 13, height: 13),
         const SizedBox(width: 10),
         ProfileProPill(isActive: hasPro),
       ],
@@ -124,16 +127,24 @@ class _AchievementsHeader extends StatelessWidget {
                 SizedBox(
                   width: 28,
                   height: 44,
-                  child: IconButton(
+                  child: LotusButtons.icon(
                     onPressed: () => Navigator.of(context).pop(),
                     tooltip: MaterialLocalizations.of(
                       context,
                     ).backButtonTooltip,
                     padding: EdgeInsets.zero,
-                    icon: const ClayIcon(
-                      Icons.chevron_left,
-                      size: 28,
-                      color: Color(0xFFB5AAB8),
+                    icon: const LotusIconSurface(
+                      diameter: 28,
+                      child: SizedBox.square(
+                        dimension: 28,
+                        child: Center(
+                          child: ClayIcon(
+                            Icons.chevron_left,
+                            size: 20,
+                            color: Color(0xFFB5AAB8),
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                 ),

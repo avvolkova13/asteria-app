@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -151,53 +152,56 @@ class _OnboardingCtaButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final isEnabled = onPressed != null;
 
-    return Semantics(
-      button: true,
-      enabled: isEnabled,
-      label: text,
-      onTap: onPressed,
-      child: ExcludeSemantics(
-        child: Opacity(
-          opacity: isEnabled ? 1 : 0.58,
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              gradient: _gradient,
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: const Color(0xFF6E4BFF).withValues(alpha: 0.05),
-                  blurRadius: 30,
-                  offset: Offset.zero,
-                ),
-              ],
-            ),
+    return LotusFeedback(
+      onActivate: onPressed,
+      builder: (activate) => Semantics(
+        button: true,
+        enabled: isEnabled,
+        label: text,
+        onTap: activate,
+        child: ExcludeSemantics(
+          child: Opacity(
+            opacity: isEnabled ? 1 : 0.58,
             child: DecoratedBox(
               decoration: BoxDecoration(
+                gradient: _gradient,
                 borderRadius: BorderRadius.circular(16),
-                gradient: const RadialGradient(
-                  center: Alignment.topCenter,
-                  radius: 2,
-                  colors: [Color(0x40F1ECFF), Color(0x00F1ECFF)],
-                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF6E4BFF).withValues(alpha: 0.05),
+                    blurRadius: 30,
+                    offset: Offset.zero,
+                  ),
+                ],
               ),
-              child: Material(
-                color: Colors.transparent,
-                borderRadius: BorderRadius.circular(16),
-                child: InkWell(
-                  onTap: onPressed,
+              child: DecoratedBox(
+                decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(16),
-                  child: SizedBox(
-                    height: 50,
-                    child: Center(
-                      child: Text(
-                        text,
-                        style: const TextStyle(
-                          fontFamily: 'Onest',
-                          fontSize: 17,
-                          fontWeight: FontWeight.w400,
-                          height: 1.2,
-                          letterSpacing: -.41,
-                          color: Colors.white,
+                  gradient: const RadialGradient(
+                    center: Alignment.topCenter,
+                    radius: 2,
+                    colors: [Color(0x40F1ECFF), Color(0x00F1ECFF)],
+                  ),
+                ),
+                child: Material(
+                  color: Colors.transparent,
+                  borderRadius: BorderRadius.circular(16),
+                  child: InkWell(
+                    onTap: activate,
+                    borderRadius: BorderRadius.circular(16),
+                    child: SizedBox(
+                      height: 50,
+                      child: Center(
+                        child: Text(
+                          text,
+                          style: const TextStyle(
+                            fontFamily: 'Onest',
+                            fontSize: 17,
+                            fontWeight: FontWeight.w400,
+                            height: 1.2,
+                            letterSpacing: -.41,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
                     ),
