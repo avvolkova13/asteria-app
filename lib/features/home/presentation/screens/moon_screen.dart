@@ -1,3 +1,4 @@
+import 'package:asteria_app/features/scenarios/calendar_scenario.dart';
 import 'package:asteria_app/app/data/models/lunar_calendar/lunar_recommendation_models.dart';
 import 'package:asteria_app/app/providers/content_provider.dart';
 import 'package:asteria_app/core/analytics/analytics_events.dart';
@@ -194,6 +195,7 @@ class _MoonScreenState extends State<MoonScreen> {
                               const SphereSelectionWidget(),
                               const SizedBox(height: 24),
                               const MoonCalendarWidget(),
+                              const CalendarPlansButton(),
                               const SizedBox(height: 16),
                               CalendarStatusesWidget(
                                 visible: state.selectedSphere != null,

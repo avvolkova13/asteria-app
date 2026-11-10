@@ -45,6 +45,21 @@ private final class StorefrontUpdatesHandler: NSObject, FlutterStreamHandler {
     GeneratedPluginRegistrant.register(with: engineBridge.pluginRegistry)
     let messenger = engineBridge.applicationRegistrar.messenger()
     practiceAudio = PracticeAudioBridge(messenger: messenger)
+    let calendar = FlutterMethodChannel(name: "asteria/calendar", binaryMessenger: messenger)
+    calendar.setMethodCallHandler { call, result in
+      guard call.method == "today" else { result(FlutterMethodNotImplemented); return }
+      guard let identifier = call.arguments as? String,
+            let zone = TimeZone(identifier: identifier) else {
+        result(FlutterError(code: "unknown_timezone", message: nil, details: nil))
+        return
+      }
+      let formatter = DateFormatter()
+      formatter.locale = Locale(identifier: "en_US_POSIX")
+      formatter.calendar = Calendar(identifier: .gregorian)
+      formatter.timeZone = zone
+      formatter.dateFormat = "yyyy-MM-dd"
+      result(formatter.string(from: Date()))
+    }
     if #available(iOS 15.0, *) {
       let bridge = AppleTransactionsBridge()
       bridge.register(messenger: messenger)

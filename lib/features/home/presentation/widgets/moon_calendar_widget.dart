@@ -12,211 +12,231 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class MoonCalendarWidget extends StatelessWidget {
-  const MoonCalendarWidget({super.key});
+  const MoonCalendarWidget({super.key})
+    : planningState = null,
+      planningSelection = const {},
+      firstSelectableDay = null,
+      onPlanDay = null,
+      onPlanMonth = null;
+
+  const MoonCalendarWidget.planning({
+    super.key,
+    required this.planningState,
+    required this.planningSelection,
+    required this.firstSelectableDay,
+    required this.onPlanDay,
+    required this.onPlanMonth,
+  });
+
+  final MoonScreenState? planningState;
+  final Set<DateTime> planningSelection;
+  final DateTime? firstSelectableDay;
+  final ValueChanged<DateTime>? onPlanDay;
+  final ValueChanged<DateTime>? onPlanMonth;
+
+  bool _isSelected(MoonScreenState state, DateTime day) => planningState == null
+      ? isSameDay(state.selectedDate, day)
+      : planningSelection.contains(DateTime.utc(day.year, day.month, day.day));
+
+  bool _isEnabled(DateTime day) =>
+      firstSelectableDay == null ||
+      !DateTime.utc(day.year, day.month, day.day).isBefore(firstSelectableDay!);
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<MoonScreenCubit, MoonScreenState>(
-      builder: (context, state) {
-        final localeTag = Localizations.localeOf(context).toLanguageTag();
-        final textScaler = MediaQuery.textScalerOf(context);
-        final dayHeight = (textScaler.scale(20) * 1.25 + 32).clamp(
-          57.0,
-          double.infinity,
-        );
-        final rowHeight = dayHeight + 16;
-        final weekdayHeight = textScaler.scale(13) * 18 / 13 + 8;
-        final monthLabel = DateFormat(
-          'LLLL y',
-          localeTag,
-        ).format(state.focusedDay);
-        final title = monthLabel[0].toUpperCase() + monthLabel.substring(1);
-        Widget dayCell(
-          DateTime day, {
-          bool selected = false,
-          bool outside = false,
-        }) {
-          final status = outside ? null : _getDayStatus(day, state.dayStatuses);
-          final primaryPhase =
-              !outside &&
-              state.selectedSphere == null &&
-              _hasPrimaryPhase(day, state.primaryPhaseDates);
-          return Center(
-            child: Opacity(
-              opacity: outside ? 0.4 : 1,
-              child: selected
-                  ? _buildSelectedDayCell(
-                      context,
-                      day,
-                      status,
-                      primaryPhase,
-                      state.selectedSphere != null ||
-                          state.dayStatuses.isNotEmpty,
-                      dayHeight,
-                    )
-                  : _buildDayCell(
-                      context,
-                      day,
-                      status,
-                      primaryPhase,
-                      state.selectedSphere != null ||
-                          state.dayStatuses.isNotEmpty,
-                      dayHeight,
-                    ),
-            ),
-          );
-        }
+    final plan = planningState;
+    if (plan != null) return _calendar(context, plan);
+    return BlocBuilder<MoonScreenCubit, MoonScreenState>(builder: _calendar);
+  }
 
-        return DecoratedBox(
-          decoration: BoxDecoration(
-            color: MoonDesignTokens.calendarSurface,
-            borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: AppColors.white.withValues(alpha: 0.1)),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.1),
-                blurRadius: 30,
-                offset: const Offset(0, 10),
-                blurStyle: BlurStyle.outer,
-              ),
-            ],
-          ),
-          child: Padding(
-            padding: const EdgeInsets.only(top: 16, bottom: 8),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    _MonthArrow(
-                      previous: true,
-                      onTap:
-                          (state.focusedDay.year > 2000 ||
-                              state.focusedDay.month > 1)
-                          ? () => _changeMonth(context, state.focusedDay, -1)
-                          : null,
-                    ),
-                    const SizedBox(width: 15),
-                    Flexible(
-                      child: Semantics(
-                        header: true,
-                        child: Text(
-                          title,
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            fontFamily: '.SF Pro Text',
-                            fontWeight: FontWeight.w600,
-                            fontSize: 17,
-                            height: 22 / 17,
-                            letterSpacing: -0.408,
-                            color: AppColors.textInverse,
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 15),
-                    _MonthArrow(
-                      previous: false,
-                      onTap:
-                          (state.focusedDay.year < 2050 ||
-                              state.focusedDay.month < 12)
-                          ? () => _changeMonth(context, state.focusedDay, 1)
-                          : null,
-                    ),
-                  ],
+  Widget _calendar(BuildContext context, MoonScreenState state) {
+    final localeTag = Localizations.localeOf(context).toLanguageTag();
+    final textScaler = MediaQuery.textScalerOf(context);
+    final dayHeight = (textScaler.scale(20) * 1.25 + 32).clamp(
+      57.0,
+      double.infinity,
+    );
+    final rowHeight = dayHeight + 16;
+    final weekdayHeight = textScaler.scale(13) * 18 / 13 + 8;
+    final monthLabel = DateFormat('LLLL y', localeTag).format(state.focusedDay);
+    final title = monthLabel[0].toUpperCase() + monthLabel.substring(1);
+    Widget dayCell(
+      DateTime day, {
+      bool selected = false,
+      bool outside = false,
+    }) {
+      final status = outside ? null : _getDayStatus(day, state.dayStatuses);
+      final primaryPhase =
+          !outside &&
+          state.selectedSphere == null &&
+          _hasPrimaryPhase(day, state.primaryPhaseDates);
+      return Center(
+        child: Opacity(
+          opacity: outside || !_isEnabled(day) ? 0.4 : 1,
+          child: selected
+              ? _buildSelectedDayCell(
+                  context,
+                  day,
+                  status,
+                  primaryPhase,
+                  state.selectedSphere != null || state.dayStatuses.isNotEmpty,
+                  dayHeight,
+                )
+              : _buildDayCell(
+                  context,
+                  day,
+                  status,
+                  primaryPhase,
+                  state.selectedSphere != null || state.dayStatuses.isNotEmpty,
+                  dayHeight,
                 ),
-                const SizedBox(height: 16),
-                LayoutBuilder(
-                  builder: (context, constraints) {
-                    // Figma aligns the first and last 32-point digits 16 points from the card edges.
-                    final inset = ((448 - constraints.maxWidth) / 12).clamp(
-                      0.0,
-                      16.0,
-                    );
-                    return Padding(
-                      padding: EdgeInsets.symmetric(horizontal: inset),
-                      child: Stack(
-                        children: [
-                          ExcludeSemantics(
-                            child: TableCalendar<DayStatus>(
-                              firstDay: DateTime.utc(2000, 1, 1),
-                              lastDay: DateTime.utc(2050, 12, 31),
-                              startingDayOfWeek: StartingDayOfWeek.monday,
-                              availableGestures:
-                                  AvailableGestures.horizontalSwipe,
-                              headerVisible: false,
-                              locale: localeTag,
-                              focusedDay: state.focusedDay,
-                              selectedDayPredicate: (day) =>
-                                  isSameDay(state.selectedDate, day),
-                              onDaySelected: (selectedDay, focusedDay) =>
-                                  _selectDay(
-                                    context,
-                                    state,
-                                    selectedDay,
-                                    focusedDay,
-                                  ),
-                              onPageChanged: (focusedDay) {
-                                if (!_isSameMonth(
-                                  focusedDay,
-                                  state.focusedDay,
-                                )) {
-                                  context
-                                      .read<MoonScreenCubit>()
-                                      .loadDayStatuses(focusedDay);
-                                }
-                              },
-                              rowHeight: rowHeight,
-                              daysOfWeekHeight: weekdayHeight,
-                              calendarBuilders: CalendarBuilders(
-                                dowBuilder: (context, day) {
-                                  final label = DateFormat.E(
-                                    localeTag,
-                                  ).format(day);
-                                  return Align(
-                                    alignment: Alignment.topCenter,
-                                    child: Text(
-                                      label[0].toUpperCase() +
-                                          label.substring(1),
-                                      style: const TextStyle(
-                                        fontFamily: '.SF Pro Text',
-                                        fontSize: 13,
-                                        height: 18 / 13,
-                                        fontWeight: FontWeight.w600,
-                                        letterSpacing: -0.078,
-                                        color: Color(0xFFA89CAA),
-                                      ),
-                                    ),
-                                  );
-                                },
-                                defaultBuilder: (_, day, _) => dayCell(day),
-                                todayBuilder: (_, day, _) => dayCell(day),
-                                outsideBuilder: (_, day, _) =>
-                                    dayCell(day, outside: true),
-                                selectedBuilder: (_, day, _) =>
-                                    dayCell(day, selected: true),
-                              ),
-                            ),
-                          ),
-                          Positioned.fill(
-                            child: _buildCalendarSemanticsOverlay(
-                              context,
-                              state,
-                              rowHeight,
-                              weekdayHeight,
-                            ),
-                          ),
-                        ],
+        ),
+      );
+    }
+
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: MoonDesignTokens.calendarSurface,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: AppColors.white.withValues(alpha: 0.1)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.1),
+            blurRadius: 30,
+            offset: const Offset(0, 10),
+            blurStyle: BlurStyle.outer,
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.only(top: 16, bottom: 8),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                _MonthArrow(
+                  previous: true,
+                  onTap:
+                      state.focusedDay.year * 12 + state.focusedDay.month >
+                          (firstSelectableDay?.year ?? 2000) * 12 +
+                              (firstSelectableDay?.month ?? 1)
+                      ? () => _changeMonth(context, state.focusedDay, -1)
+                      : null,
+                ),
+                const SizedBox(width: 15),
+                Flexible(
+                  child: Semantics(
+                    header: true,
+                    child: Text(
+                      title,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontFamily: '.SF Pro Text',
+                        fontWeight: FontWeight.w600,
+                        fontSize: 17,
+                        height: 22 / 17,
+                        letterSpacing: -0.408,
+                        color: AppColors.textInverse,
                       ),
-                    );
-                  },
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 15),
+                _MonthArrow(
+                  previous: false,
+                  onTap:
+                      (state.focusedDay.year < 2050 ||
+                          state.focusedDay.month < 12)
+                      ? () => _changeMonth(context, state.focusedDay, 1)
+                      : null,
                 ),
               ],
             ),
-          ),
-        );
-      },
+            const SizedBox(height: 16),
+            LayoutBuilder(
+              builder: (context, constraints) {
+                // Figma aligns the first and last 32-point digits 16 points from the card edges.
+                final inset = ((448 - constraints.maxWidth) / 12).clamp(
+                  0.0,
+                  16.0,
+                );
+                return Padding(
+                  padding: EdgeInsets.symmetric(horizontal: inset),
+                  child: Stack(
+                    children: [
+                      ExcludeSemantics(
+                        child: TableCalendar<DayStatus>(
+                          firstDay:
+                              firstSelectableDay ?? DateTime.utc(2000, 1, 1),
+                          lastDay: DateTime.utc(2050, 12, 31),
+                          startingDayOfWeek: StartingDayOfWeek.monday,
+                          availableGestures: AvailableGestures.horizontalSwipe,
+                          headerVisible: false,
+                          locale: localeTag,
+                          focusedDay: state.focusedDay,
+                          selectedDayPredicate: (day) =>
+                              _isSelected(state, day),
+                          onDaySelected: (selectedDay, focusedDay) =>
+                              _selectDay(
+                                context,
+                                state,
+                                selectedDay,
+                                focusedDay,
+                              ),
+                          onPageChanged: (focusedDay) {
+                            if (!_isSameMonth(focusedDay, state.focusedDay)) {
+                              _loadMonth(context, focusedDay);
+                            }
+                          },
+                          rowHeight: rowHeight,
+                          daysOfWeekHeight: weekdayHeight,
+                          calendarBuilders: CalendarBuilders(
+                            dowBuilder: (context, day) {
+                              final label = DateFormat.E(localeTag).format(day);
+                              return Align(
+                                alignment: Alignment.topCenter,
+                                child: Text(
+                                  label[0].toUpperCase() + label.substring(1),
+                                  style: const TextStyle(
+                                    fontFamily: '.SF Pro Text',
+                                    fontSize: 13,
+                                    height: 18 / 13,
+                                    fontWeight: FontWeight.w600,
+                                    letterSpacing: -0.078,
+                                    color: Color(0xFFA89CAA),
+                                  ),
+                                ),
+                              );
+                            },
+                            defaultBuilder: (_, day, _) => dayCell(day),
+                            todayBuilder: (_, day, _) => dayCell(day),
+                            outsideBuilder: (_, day, _) =>
+                                dayCell(day, outside: true),
+                            disabledBuilder: (_, day, _) =>
+                                dayCell(day, outside: true),
+                            selectedBuilder: (_, day, _) =>
+                                dayCell(day, selected: true),
+                          ),
+                        ),
+                      ),
+                      Positioned.fill(
+                        child: _buildCalendarSemanticsOverlay(
+                          context,
+                          state,
+                          rowHeight,
+                          weekdayHeight,
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -282,14 +302,17 @@ class MoonCalendarWidget extends StatelessWidget {
                           state.primaryPhaseDates.contains(normalizedDay);
                       return Semantics(
                         button: true,
-                        selected: isSameDay(state.selectedDate, day),
+                        selected: _isSelected(state, day),
                         label: [
                           dayLabel,
                           if (phaseChange) context.l10n.moonPhaseChange,
                           if (status != null)
                             _statusSemanticsLabel(context, status),
                         ].join(', '),
-                        onTap: () => _selectDay(context, state, day, day),
+                        enabled: _isEnabled(day),
+                        onTap: _isEnabled(day)
+                            ? () => _selectDay(context, state, day, day)
+                            : null,
                         child: const SizedBox.expand(),
                       );
                     },
@@ -307,9 +330,18 @@ class MoonCalendarWidget extends StatelessWidget {
     DateTime focusedMonth,
     int monthDelta,
   ) {
-    context.read<MoonScreenCubit>().loadDayStatuses(
+    _loadMonth(
+      context,
       DateTime.utc(focusedMonth.year, focusedMonth.month + monthDelta),
     );
+  }
+
+  void _loadMonth(BuildContext context, DateTime month) {
+    if (onPlanMonth != null) {
+      onPlanMonth!(month);
+    } else {
+      context.read<MoonScreenCubit>().loadDayStatuses(month);
+    }
   }
 
   void _selectDay(
@@ -318,6 +350,14 @@ class MoonCalendarWidget extends StatelessWidget {
     DateTime selectedDay,
     DateTime focusedDay,
   ) {
+    if (!_isEnabled(selectedDay)) return;
+    if (onPlanDay != null) {
+      if (!_isSameMonth(selectedDay, state.focusedDay)) {
+        _loadMonth(context, focusedDay);
+      }
+      onPlanDay!(selectedDay);
+      return;
+    }
     final cubit = context.read<MoonScreenCubit>();
     final isOutsideFocusedMonth =
         selectedDay.month != state.focusedDay.month ||

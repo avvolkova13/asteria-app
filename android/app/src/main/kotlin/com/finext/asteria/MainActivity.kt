@@ -17,6 +17,21 @@ class MainActivity : FlutterActivity() {
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "asteria/calendar")
+            .setMethodCallHandler { call, result ->
+                if (call.method != "today") {
+                    result.notImplemented()
+                } else {
+                    val identifier = call.arguments as? String
+                    if (identifier == null || identifier !in java.util.TimeZone.getAvailableIDs()) {
+                        result.error("unknown_timezone", null, null)
+                    } else {
+                        val formatter = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.US)
+                        formatter.timeZone = java.util.TimeZone.getTimeZone(identifier)
+                        result.success(formatter.format(java.util.Date()))
+                    }
+                }
+            }
         practiceAudio = PracticeAudioBridge(this, flutterEngine.dartExecutor.binaryMessenger)
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "asteria/analytics-device")
             .setMethodCallHandler { call, result ->
