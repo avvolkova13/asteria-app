@@ -58,6 +58,8 @@ Asteria — готовое работающее приложение. При к�
 
 ## UI
 
+Перед изменением iOS-интерфейса прочитай [руководство Asteria для iOS](docs/ios-interface-guidelines.md). Для навигации, жестов и доступности используй проектный навык `mobile-ios-design`, для адаптивной вёрстки — `flutter-build-responsive-layout`, для проверки поведения виджета — `flutter-add-widget-test`. Выбирай навыки по задаче из `.agents/skills/` и проверяй затронутый сценарий по руководству.
+
 - Используй `lib/core/ui_kit/`, `AppColors`, app theme и существующие shared widgets.
 - Не добавляй случайные hardcoded HEX colors, если есть theme tokens или похожий локальный паттерн.
 - Проверяй layout на overflow, длинный русский текст, компактные экраны и disabled/loading/error states.

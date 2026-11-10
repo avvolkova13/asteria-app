@@ -2,6 +2,8 @@
 
 Asteria App
 
+Дизайн, навыки проекта и проверка экранов на iPhone — [руководство Asteria для iOS](docs/ios-interface-guidelines.md).
+
 ## Getting Started
 
 ```sh
