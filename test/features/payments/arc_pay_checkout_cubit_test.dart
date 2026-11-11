@@ -19,6 +19,24 @@ void main() {
     currency: 'RUB',
   );
 
+  for (final fails in [false, true]) {
+    test(
+      'leaving while the catalog loads ignores late response (error: $fails)',
+      () async {
+        final request = Completer<List<ArcPayProduct>>();
+        final cubit = _cubit(api: _FakeApi()..catalogRequest = request);
+        final loading = cubit.loadProducts();
+        await cubit.close();
+        if (fails) {
+          request.completeError(StateError('offline'));
+        } else {
+          request.complete(const [product]);
+        }
+        await expectLater(loading, completes);
+      },
+    );
+  }
+
   test('loads server catalog', () async {
     final api = _FakeApi()..products = const [product];
     final cubit = _cubit(api: api);
@@ -347,6 +365,7 @@ class _FakeApi extends ArcPayPaymentsApi {
   _FakeApi() : super.forDio(Dio(), _FakeSession());
 
   List<ArcPayProduct> products = const [];
+  Completer<List<ArcPayProduct>>? catalogRequest;
   int createCalls = 0;
   final List<String> createdProductIds = [];
   Completer<ArcPayCheckout>? checkoutCompleter;
@@ -355,7 +374,8 @@ class _FakeApi extends ArcPayPaymentsApi {
   bool abandonError = false;
 
   @override
-  Future<List<ArcPayProduct>> getProducts() async => products;
+  Future<List<ArcPayProduct>> getProducts() async =>
+      catalogRequest?.future ?? products;
 
   @override
   Future<ArcPayCheckout> createCheckout({

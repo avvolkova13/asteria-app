@@ -44,8 +44,11 @@ class ArcPayCheckoutCubit extends Cubit<ArcPayCheckoutState> {
   Future<void> loadProducts() async {
     emit(const ArcPayProductsLoading());
     try {
-      emit(ArcPayProductsLoaded(await _api.getProducts()));
+      final products = await _api.getProducts();
+      if (isClosed) return;
+      emit(ArcPayProductsLoaded(products));
     } catch (_) {
+      if (isClosed) return;
       emit(
         const ArcPayCheckoutFailure(
           ArcPayCheckoutErrorCode.productsUnavailable,
