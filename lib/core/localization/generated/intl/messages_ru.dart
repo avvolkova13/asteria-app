@@ -231,7 +231,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Эта аффирмация доступна в рамках подписки. Получите доступ ко всем аффирмациям, включая закрытые категории, а также другим эксклюзивным функциям.",
     ),
     "affirmationSwipeHint": MessageLookupByLibrary.simpleMessage(
-      "Смахните влево или вправо, чтобы переключить аффирмацию",
+      "Смахните иллюстрацию вверх или вниз, чтобы сменить аффирмацию",
     ),
     "affirmationUnavailableLabel": MessageLookupByLibrary.simpleMessage(
       "Аффирмация дня недоступна",

@@ -9,12 +9,22 @@ class AffirmationCardWidget extends StatelessWidget {
   final AffirmationModel affirmation;
   final int imageIndex;
   final double borderOpacity;
+  final bool isFront;
+  final bool showSwipeHint;
+  final GestureDragUpdateCallback? onSwipe;
+  final GestureDragEndCallback? onSwipeEnd;
+  final VoidCallback? onSwipeCancel;
 
   const AffirmationCardWidget({
     super.key,
     required this.affirmation,
     required this.imageIndex,
     this.borderOpacity = 0.1,
+    this.isFront = true,
+    this.showSwipeHint = false,
+    this.onSwipe,
+    this.onSwipeEnd,
+    this.onSwipeCancel,
   });
 
   String _getImageName() {
@@ -57,71 +67,76 @@ class AffirmationCardWidget extends StatelessWidget {
             color: AppColors.white.withValues(alpha: borderOpacity),
           ),
         ),
-        child: Stack(
-          fit: StackFit.expand,
+        color: AppColorsDark.modal,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisSize: MainAxisSize.min,
           children: [
-            // Reuse the portrait scene's ambient colours outside its frame.
-            Image.asset(
-              imageAssetPath,
-              fit: BoxFit.fill,
-              cacheWidth: 3,
-              excludeFromSemantics: true,
-            ),
-            LayoutBuilder(
-              builder: (_, bounds) => Center(
-                child: SizedBox(
-                  width: bounds.maxHeight * 450 / 560,
-                  height: bounds.maxHeight,
-                  child: ShaderMask(
-                    blendMode: BlendMode.dstIn,
-                    shaderCallback: const LinearGradient(
-                      colors: [
-                        Colors.transparent,
-                        Colors.white,
-                        Colors.white,
-                        Colors.transparent,
-                      ],
-                      stops: [0, .09, .91, 1],
-                    ).createShader,
-                    child: Image.asset(
+            GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onVerticalDragUpdate: onSwipe,
+              onVerticalDragEnd: onSwipeEnd,
+              onVerticalDragCancel: onSwipeCancel,
+              child: SizedBox(
+                height: 216,
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    Image.asset(
                       imageAssetPath,
-                      fit: BoxFit.cover,
-                      alignment: Alignment.topCenter,
+                      fit: BoxFit.fill,
+                      cacheWidth: 3,
                       excludeFromSemantics: true,
                     ),
+                    Center(
+                      child: AspectRatio(
+                        aspectRatio: 2 / 3,
+                        child: ShaderMask(
+                          blendMode: BlendMode.dstIn,
+                          shaderCallback: const LinearGradient(
+                            colors: [
+                              Colors.transparent,
+                              Colors.white,
+                              Colors.white,
+                              Colors.transparent,
+                            ],
+                            stops: [0, .1, .9, 1],
+                          ).createShader,
+                          child: Image.asset(
+                            imageAssetPath,
+                            fit: BoxFit.contain,
+                            excludeFromSemantics: true,
+                          ),
+                        ),
+                      ),
+                    ),
+                    if (isFront)
+                      const Positioned(
+                        top: 12,
+                        right: 14,
+                        child: _CardIconButton(icon: Icons.play_arrow),
+                      ),
+                    if (isFront && showSwipeHint)
+                      const Positioned(
+                        bottom: 12,
+                        right: 14,
+                        child: _CardIconButton(icon: Icons.swap_vert_rounded),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+            if (isFront)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 14, 16, 18),
+                child: Text(
+                  affirmation.text,
+                  style: context.textTheme.inverseUrbanistRegular16.copyWith(
+                    height: 1.3,
                   ),
+                  textAlign: TextAlign.start,
                 ),
               ),
-            ),
-            const DecoratedBox(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [Color(0x00151028), Color(0xFF151028)],
-                ),
-              ),
-            ),
-            Positioned(
-              top: 16,
-              right: 16,
-              child: const _CardIconButton(icon: Icons.play_arrow),
-            ),
-            Positioned(
-              left: 16,
-              right: 16,
-              bottom: 16,
-              child: Text(
-                affirmation.text,
-                style: context.textTheme.inverseUrbanistRegular16.copyWith(
-                  height: 1.2,
-                  letterSpacing: -0.408,
-                ),
-                textAlign: TextAlign.left,
-                maxLines: 8,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
           ],
         ),
       ),

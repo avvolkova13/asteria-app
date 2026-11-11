@@ -638,7 +638,7 @@
   "@affirmationCategoryLocked": {"placeholders": {"category": {"type": "String"}}},
   "affirmationSubscriptionRequired": "Эта аффирмация доступна в рамках подписки. Получите доступ ко всем аффирмациям, включая закрытые категории, а также другим эксклюзивным функциям.",
   "affirmationOpenPlayer": "Открыть аудиоплеер",
-  "affirmationSwipeHint": "Смахните влево или вправо, чтобы переключить аффирмацию",
+  "affirmationSwipeHint": "Смахните иллюстрацию вверх или вниз, чтобы сменить аффирмацию",
   "affirmationSemantics": "Аффирмация: {text}",
   "@affirmationSemantics": {"placeholders": {"text": {"type": "String"}}},
   "tarotTabDay": "Карта дня",

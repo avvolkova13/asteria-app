@@ -5586,10 +5586,10 @@ class AppLocalizations {
     );
   }
 
-  /// `Swipe left or right to change the affirmation`
+  /// `Swipe the illustration up or down to change the affirmation`
   String get affirmationSwipeHint {
     return Intl.message(
-      'Swipe left or right to change the affirmation',
+      'Swipe the illustration up or down to change the affirmation',
       name: 'affirmationSwipeHint',
       desc: '',
       args: [],

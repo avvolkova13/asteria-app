@@ -178,7 +178,7 @@ void main() {
       expect(find.text('Закрыть плеер'), findsOneWidget);
       await tester.tap(find.text('Закрыть плеер'));
       await tester.pumpAndSettle();
-      await tester.drag(stack, const Offset(-145, 0));
+      await tester.drag(stack, const Offset(0, -145));
       await tester.pumpAndSettle();
       expect(_frontImageAssetPath(tester), endsWith('category_love_2.webp'));
       await tester.tap(stack);
@@ -230,16 +230,75 @@ void main() {
         );
         await tester.pumpAndSettle();
         final stack = find.byType(AffirmationCardStack);
-        await tester.drag(stack, const Offset(-145, 0));
+        await tester.drag(stack, const Offset(0, -145));
         deck.value = [_affirmation(id: 'new-a'), _affirmation(id: 'new-b')];
         await tester.pump();
         await tester.pump(const Duration(milliseconds: 250));
         expect(_frontImageAssetPath(tester), endsWith('category_love.webp'));
         reduced.value = true;
         await tester.pump();
-        await tester.drag(stack, const Offset(-145, 0));
+        await tester.drag(stack, const Offset(0, -145));
         await tester.pump();
         expect(_frontImageAssetPath(tester), endsWith('category_love_2.webp'));
+      },
+    );
+
+    testWidgets(
+      'art swipes change the card and caption swipes scroll categories',
+      (tester) async {
+        final scroll = ScrollController();
+        addTearDown(scroll.dispose);
+        await tester.pumpWidget(
+          MaterialApp(
+            locale: const Locale('ru'),
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              ...GlobalMaterialLocalizations.delegates,
+            ],
+            supportedLocales: AppLocaleService.supportedLocales,
+            home: Builder(
+              builder: (context) => Theme(
+                data: AppThemeDark.instance.getThemeData(context),
+                child: Scaffold(
+                  body: ListView(
+                    controller: scroll,
+                    children: [
+                      AffirmationCardStack(
+                        affirmations: [
+                          _affirmation(id: 'one', text: 'Первая'),
+                          _affirmation(id: 'two', text: 'Вторая'),
+                        ],
+                      ),
+                      const SizedBox(height: 900),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+        final artwork = find.byWidgetPredicate(
+          (widget) =>
+              widget is GestureDetector && widget.onVerticalDragEnd != null,
+        );
+        final firstCaption = find.text('Первая');
+        final imageGesture = find.descendant(
+          of: find.byType(AffirmationCardStack),
+          matching: artwork,
+        );
+        expect(
+          tester.getBottomLeft(imageGesture).dy,
+          lessThanOrEqualTo(tester.getTopLeft(firstCaption).dy),
+        );
+        await tester.drag(imageGesture, const Offset(0, -135));
+        await tester.pumpAndSettle();
+        expect(find.text('Первая'), findsNothing);
+        expect(find.text('Вторая'), findsOneWidget);
+        expect(scroll.offset, 0);
+        await tester.drag(find.text('Вторая'), const Offset(0, -160));
+        await tester.pumpAndSettle();
+        expect(scroll.offset, greaterThan(0));
       },
     );
 
@@ -282,28 +341,25 @@ void main() {
 
         final swipeDetector = find.byWidgetPredicate(
           (widget) =>
-              widget is GestureDetector && widget.onHorizontalDragEnd != null,
+              widget is GestureDetector && widget.onVerticalDragEnd != null,
         );
         final visibleBehindBeforeLeftSwipe = _visibleBehindImageAssetPath(
           tester,
         );
-        await tester.drag(swipeDetector, const Offset(-120, 0));
+        await tester.drag(swipeDetector, const Offset(0, -120));
         await tester.pumpAndSettle();
 
         _expectThreeUniqueLoveImages(tester);
         expect(_frontImageAssetPath(tester), visibleBehindBeforeLeftSwipe);
 
-        final visibleBehindBeforeRightSwipe = _visibleBehindImageAssetPath(
-          tester,
-        );
-        await tester.drag(swipeDetector, const Offset(120, 0));
+        await tester.drag(swipeDetector, const Offset(0, 120));
         await tester.pumpAndSettle();
 
         _expectThreeUniqueLoveImages(tester);
-        expect(_frontImageAssetPath(tester), visibleBehindBeforeRightSwipe);
+        expect(_frontImageAssetPath(tester), endsWith('category_love.webp'));
         expect(find.text('Первая'), findsOneWidget);
-        expect(find.text('Вторая'), findsOneWidget);
-        expect(find.text('Третья'), findsOneWidget);
+        expect(find.text('Вторая'), findsNothing);
+        expect(find.text('Третья'), findsNothing);
         expect(tester.takeException(), isNull);
       },
     );

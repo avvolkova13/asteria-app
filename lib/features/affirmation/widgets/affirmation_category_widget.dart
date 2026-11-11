@@ -61,21 +61,27 @@ class AffirmationCategoryWidget extends StatelessWidget {
               : categoryName,
           child: LotusTap(
             behavior: HitTestBehavior.opaque,
-            onTap: !isLocked ? null : () {
-              di.get<ProductAnalyticsService>().trackAffirmationLockedView(
-                originSurface: 'affirmation_category_$category',
-                offerType: OfferType.subscription,
-              );
-              di.get<ProductAnalyticsService>().trackAffirmationPaywallView(
-                originSurface: 'affirmation_category_$category',
-                offerType: OfferType.subscription,
-                paywallVariant: 'category_lock',
-              );
-              ClosedContentModal.show(
-                context,
-                description: context.l10n.affirmationSubscriptionRequired,
-              );
-            },
+            onTap: !isLocked
+                ? null
+                : () {
+                    di
+                        .get<ProductAnalyticsService>()
+                        .trackAffirmationLockedView(
+                          originSurface: 'affirmation_category_$category',
+                          offerType: OfferType.subscription,
+                        );
+                    di
+                        .get<ProductAnalyticsService>()
+                        .trackAffirmationPaywallView(
+                          originSurface: 'affirmation_category_$category',
+                          offerType: OfferType.subscription,
+                          paywallVariant: 'category_lock',
+                        );
+                    ClosedContentModal.show(
+                      context,
+                      description: context.l10n.affirmationSubscriptionRequired,
+                    );
+                  },
             child: SizedBox(
               height: 24,
               child: Row(
@@ -190,8 +196,6 @@ class AffirmationCardStack extends StatefulWidget {
 
 class _AffirmationCardStackState extends State<AffirmationCardStack> {
   static const double _designWidth = 358;
-  static const double _stackHeight = 389;
-  static const double _cardHeight = 325;
   static const double _swipeThreshold = 80;
   static const double _velocityThreshold = 400;
   static const Duration _animationDuration = Duration(milliseconds: 220);
@@ -202,7 +206,7 @@ class _AffirmationCardStackState extends State<AffirmationCardStack> {
   double _exitOffset = 0;
   bool _isAnimatingOut = false;
   bool _showHint = false;
-  double _lastStackWidth = _designWidth;
+  int _transitionDirection = -1;
   String? _trackedContentId;
 
   @override
@@ -266,13 +270,13 @@ class _AffirmationCardStackState extends State<AffirmationCardStack> {
 
     setState(() {
       _showHint = false;
-      _dragOffset = (_dragOffset + details.delta.dx)
+      _dragOffset = (_dragOffset + details.delta.dy)
           .clamp(-140.0, 140.0)
           .toDouble();
     });
   }
 
-  void _handleDragEnd(DragEndDetails details, double stackWidth) {
+  void _handleDragEnd(DragEndDetails details) {
     if (_isAnimatingOut || widget.affirmations.length < 2) {
       _resetDrag();
       return;
@@ -291,7 +295,7 @@ class _AffirmationCardStackState extends State<AffirmationCardStack> {
     final direction = _dragOffset == 0
         ? (velocity < 0 ? -1 : 1)
         : (_dragOffset < 0 ? -1 : 1);
-    _animateSwipe(direction, stackWidth);
+    _animateSwipe(direction);
   }
 
   void _resetDrag() {
@@ -302,7 +306,7 @@ class _AffirmationCardStackState extends State<AffirmationCardStack> {
     setState(() => _dragOffset = 0);
   }
 
-  Future<void> _animateSwipe(int direction, double stackWidth) async {
+  Future<void> _animateSwipe(int direction) async {
     if (_isAnimatingOut || widget.affirmations.length < 2) {
       return;
     }
@@ -319,7 +323,8 @@ class _AffirmationCardStackState extends State<AffirmationCardStack> {
       final revision = _deckRevision;
       setState(() {
         _isAnimatingOut = true;
-        _exitOffset = direction * stackWidth;
+        _transitionDirection = direction;
+        _exitOffset = direction * 58;
         _dragOffset = 0;
         _showHint = false;
       });
@@ -329,7 +334,7 @@ class _AffirmationCardStackState extends State<AffirmationCardStack> {
 
     setState(() {
       _showHint = false;
-      _frontIndex = _wrapIndex(_frontIndex + 1);
+      _frontIndex = _wrapIndex(_frontIndex - direction);
       _isAnimatingOut = false;
       _exitOffset = 0;
     });
@@ -361,7 +366,6 @@ class _AffirmationCardStackState extends State<AffirmationCardStack> {
             .clamp(0.0, _designWidth)
             .toDouble();
         final scale = stackWidth / _designWidth;
-        _lastStackWidth = stackWidth;
 
         return Align(
           alignment: Alignment.center,
@@ -381,40 +385,28 @@ class _AffirmationCardStackState extends State<AffirmationCardStack> {
                   : null,
               onIncrease: widget.affirmations.length > 1
                   ? () {
-                      _animateSwipe(-1, _lastStackWidth);
+                      _animateSwipe(-1);
                     }
                   : null,
               onDecrease: widget.affirmations.length > 1
                   ? () {
-                      _animateSwipe(1, _lastStackWidth);
+                      _animateSwipe(1);
                     }
                   : null,
               child: GestureDetector(
                 behavior: HitTestBehavior.opaque,
                 onTap: activate,
-                onHorizontalDragUpdate: _handleDragUpdate,
-                onHorizontalDragEnd: (details) =>
-                    _handleDragEnd(details, stackWidth),
                 child: SizedBox(
                   width: stackWidth,
-                  height: _stackHeight * scale,
-                  child: Stack(
-                    clipBehavior: Clip.none,
-                    children: [
-                      ..._buildLayerCards(context, scale),
-                      if (_showHint && widget.affirmations.length > 1)
-                        Positioned(
-                          left: 0,
-                          right: 0,
-                          top: 210 * scale,
-                          child: IgnorePointer(
-                            child: SizedBox(
-                              height: 32 * scale,
-                              child: Center(child: _SwipeHintIcon(scale: scale)),
-                            ),
-                          ),
-                        ),
-                    ],
+                  child: ClipRect(
+                    child: AnimatedSize(
+                      duration: MediaQuery.disableAnimationsOf(context)
+                          ? Duration.zero
+                          : _animationDuration,
+                      curve: Curves.easeOutCubic,
+                      alignment: Alignment.topCenter,
+                      child: Stack(children: _buildLayerCards(context, scale)),
+                    ),
                   ),
                 ),
               ),
@@ -439,139 +431,70 @@ class _AffirmationCardStackState extends State<AffirmationCardStack> {
       return const [];
     }
 
+    final count = widget.affirmations.length.clamp(1, 3);
+    final step = 9.0 * scale;
+    final hasChoices = widget.affirmations.length > 1;
+    final reduced = MediaQuery.disableAnimationsOf(context);
+    final direction = _isAnimatingOut
+        ? _transitionDirection
+        : (_dragOffset > 0 ? 1 : -1);
     final cards = <Widget>[];
-    final length = widget.affirmations.length;
-
-    if (length >= 3) {
-      final affirmationIndex = _wrapIndex(_frontIndex + 2);
+    for (var depth = count - 1; depth > 0; depth--) {
+      final index = _wrapIndex(_frontIndex - direction * depth);
       cards.add(
-        _buildCardLayer(
-          affirmation: widget.affirmations[affirmationIndex],
-          imageIndex: affirmationIndex,
-          metrics: _CardLayerMetrics.back,
-          scale: scale,
+        Positioned(
+          top: (count - depth - 1) * step,
+          left: depth * step,
+          right: depth * step,
+          child: IgnorePointer(
+            child: AffirmationCardWidget(
+              affirmation: widget.affirmations[index],
+              imageIndex: index,
+              isFront: false,
+            ),
+          ),
         ),
       );
     }
-
-    if (length >= 2) {
-      final affirmationIndex = _wrapIndex(_frontIndex + 1);
-      cards.add(
-        _buildCardLayer(
-          affirmation: widget.affirmations[affirmationIndex],
-          imageIndex: affirmationIndex,
-          metrics: _CardLayerMetrics.middle,
-          scale: scale,
-        ),
-      );
-    }
-
+    final duration = reduced || (_dragOffset != 0 && !_isAnimatingOut)
+        ? Duration.zero
+        : _animationDuration;
     cards.add(
-      _buildCardLayer(
-        affirmation: widget.affirmations[_frontIndex],
-        imageIndex: _frontIndex,
-        metrics: _CardLayerMetrics.front,
-        scale: scale,
-        isFront: true,
-      ),
-    );
-
-    return cards;
-  }
-
-  Widget _buildCardLayer({
-    required AffirmationModel affirmation,
-    required int imageIndex,
-    required _CardLayerMetrics metrics,
-    required double scale,
-    bool isFront = false,
-  }) {
-    final double offset = isFront
-        ? (_isAnimatingOut ? _exitOffset : _dragOffset)
-        : 0;
-    final duration =
-        !MediaQuery.disableAnimationsOf(context) &&
-            isFront &&
-            (_isAnimatingOut || _dragOffset == 0)
-        ? _animationDuration
-        : Duration.zero;
-
-    return Positioned(
-      left: metrics.left * scale,
-      top: metrics.top * scale,
-      width: metrics.width * scale,
-      height: _cardHeight * scale,
-      child: AnimatedOpacity(
-        duration: duration,
-        curve: Curves.easeOutCubic,
-        opacity: isFront && _isAnimatingOut ? 0 : 1,
-        child: AnimatedContainer(
-          duration: duration,
+      Padding(
+        padding: EdgeInsets.only(top: (count - 1) * step),
+        child: TweenAnimationBuilder<double>(
+          key: ValueKey(widget.affirmations[_frontIndex].id),
+          tween: Tween(begin: reduced ? 1.0 : 0.0, end: 1.0),
+          duration: reduced ? Duration.zero : _animationDuration,
           curve: Curves.easeOutCubic,
-          transform: Matrix4.translationValues(offset, 0, 0),
-          child: AffirmationCardWidget(
-            affirmation: affirmation,
-            imageIndex: imageIndex,
-            borderOpacity: metrics.borderOpacity,
+          builder: (_, progress, child) => Transform.translate(
+            offset: Offset(0, -_transitionDirection * 12 * (1 - progress)),
+            child: child,
+          ),
+          child: AnimatedContainer(
+            duration: duration,
+            curve: Curves.easeOutCubic,
+            transform: Matrix4.translationValues(
+              0,
+              reduced ? 0 : (_isAnimatingOut ? _exitOffset : _dragOffset * .28),
+              0,
+            ),
+            child: AnimatedOpacity(
+              duration: duration,
+              opacity: _isAnimatingOut ? 0 : 1,
+              child: AffirmationCardWidget(
+                affirmation: widget.affirmations[_frontIndex],
+                imageIndex: _frontIndex,
+                showSwipeHint: hasChoices && _showHint,
+                onSwipe: hasChoices ? _handleDragUpdate : null,
+                onSwipeEnd: hasChoices ? _handleDragEnd : null,
+                onSwipeCancel: hasChoices ? _resetDrag : null,
+              ),
+            ),
           ),
         ),
       ),
     );
+    return cards;
   }
-}
-
-class _SwipeHintIcon extends StatelessWidget {
-  final double scale;
-
-  const _SwipeHintIcon({required this.scale});
-
-  @override
-  Widget build(BuildContext context) {
-    final size = 32 * scale;
-
-    return SizedBox.square(
-      dimension: size,
-      child: ClayAssetIcon(
-        'assets/icons/swipe_hand.svg',
-        width: size,
-        height: size,
-        tint: AppColors.white.withValues(alpha: 0.72),
-      ),
-    );
-  }
-}
-
-class _CardLayerMetrics {
-  final double left;
-  final double top;
-  final double width;
-  final double borderOpacity;
-
-  const _CardLayerMetrics({
-    required this.left,
-    required this.top,
-    required this.width,
-    required this.borderOpacity,
-  });
-
-  static const back = _CardLayerMetrics(
-    left: 64,
-    top: 0,
-    width: 230,
-    borderOpacity: 0.35,
-  );
-
-  static const middle = _CardLayerMetrics(
-    left: 32,
-    top: 32,
-    width: 294,
-    borderOpacity: 0.35,
-  );
-
-  static const front = _CardLayerMetrics(
-    left: 0,
-    top: 64,
-    width: 358,
-    borderOpacity: 0.1,
-  );
 }

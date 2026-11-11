@@ -638,7 +638,7 @@
   "@affirmationCategoryLocked": {"placeholders": {"category": {"type": "String"}}},
   "affirmationSubscriptionRequired": "This affirmation is included with a subscription. Get access to every affirmation, including locked categories, and other exclusive features.",
   "affirmationOpenPlayer": "Open the audio player",
-  "affirmationSwipeHint": "Swipe left or right to change the affirmation",
+  "affirmationSwipeHint": "Swipe the illustration up or down to change the affirmation",
   "affirmationSemantics": "Affirmation: {text}",
   "@affirmationSemantics": {"placeholders": {"text": {"type": "String"}}},
   "tarotTabDay": "Card of the day",

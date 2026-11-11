@@ -237,7 +237,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "This affirmation is included with a subscription. Get access to every affirmation, including locked categories, and other exclusive features.",
     ),
     "affirmationSwipeHint": MessageLookupByLibrary.simpleMessage(
-      "Swipe left or right to change the affirmation",
+      "Swipe the illustration up or down to change the affirmation",
     ),
     "affirmationUnavailableLabel": MessageLookupByLibrary.simpleMessage(
       "Affirmation of the day unavailable",
