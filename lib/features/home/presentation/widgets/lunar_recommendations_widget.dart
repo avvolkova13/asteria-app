@@ -27,22 +27,24 @@ class LunarRecommendationsWidget extends StatelessWidget {
     return SingleChildScrollView(
       clipBehavior: Clip.none,
       scrollDirection: Axis.horizontal,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          for (final task in tasks) ...[
-            if (task.key != tasks.first.key) const SizedBox(width: 16),
-            AsteriaEntrance(
-              key: ValueKey(task.key),
-              replayKey: task.value,
-              child: _LunarRecommendationCard(
-                title: _taskTitle(context, task.key),
-                assetName: LunarCardAsset.forTaskKey(task.key),
-                recommendation: task.value,
+      child: IntrinsicHeight(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            for (final task in tasks) ...[
+              if (task.key != tasks.first.key) const SizedBox(width: 16),
+              AsteriaEntrance(
+                key: ValueKey(task.key),
+                replayKey: task.value,
+                child: _LunarRecommendationCard(
+                  title: _taskTitle(context, task.key),
+                  assetName: LunarCardAsset.forTaskKey(task.key),
+                  recommendation: task.value,
+                ),
               ),
-            ),
+            ],
           ],
-        ],
+        ),
       ),
     );
   }

@@ -31,6 +31,16 @@ void main() {
       ),
     );
 
+    final plantCard = find.byKey(const ValueKey('houseplants'));
+    final wateringCard = find.byKey(const ValueKey('watering_fertilizing'));
+    expect(
+      tester.getSize(plantCard).height,
+      closeTo(tester.getSize(wateringCard).height, 0.1),
+    );
+    expect(
+      tester.getTopLeft(plantCard).dy,
+      closeTo(tester.getTopLeft(wateringCard).dy, 0.1),
+    );
     expect(find.text('Комнатные растения'), findsOneWidget);
     expect(find.text('Полив и подкормка'), findsOneWidget);
     expect(find.text('Можно пересаживать комнатные растения.'), findsOneWidget);
