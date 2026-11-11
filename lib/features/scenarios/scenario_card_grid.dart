@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:math' as math;
+
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
@@ -14,54 +17,128 @@ enum ScenarioMood {
   final Color ground, rim, mist;
 }
 
-class ScenarioCardGrid extends StatelessWidget {
+class ScenarioCardGrid extends StatefulWidget {
   const ScenarioCardGrid({super.key, required this.cards})
     : assert(cards.length == 4);
   final List<ScenarioCard> cards;
 
   @override
-  Widget build(BuildContext context) => LayoutBuilder(
-    builder: (context, bounds) {
-      const gap = 10.0;
-      final wideText = MediaQuery.textScalerOf(context).scale(16) > 20;
-      if (wideText || bounds.maxWidth < 315) {
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            for (final card in cards)
-              Padding(
-                padding: const EdgeInsets.only(bottom: gap),
-                child: card,
-              ),
-          ],
-        );
-      }
-      final width = (bounds.maxWidth - gap) / 2;
-      Widget column(int top, int bottom, int topFlex) => Expanded(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Expanded(flex: topFlex, child: cards[top]),
-            const SizedBox(height: gap),
-            Expanded(flex: 5 - topFlex, child: cards[bottom]),
-          ],
-        ),
-      );
-      return ConstrainedBox(
-        constraints: BoxConstraints(minHeight: width * 2.86 + gap),
-        child: IntrinsicHeight(
-          child: Row(
+  State<ScenarioCardGrid> createState() => _ScenarioCardGridState();
+}
+
+class _ScenarioCardGridState extends State<ScenarioCardGrid>
+    with SingleTickerProviderStateMixin {
+  late final _pass = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 2800),
+  )..addStatusListener(_onStatus);
+  Timer? _pause;
+  bool _enabled = false;
+  int _next = 0;
+  ScenarioMood? _lit;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final reducedMotion = MediaQuery.disableAnimationsOf(context);
+    final visible = ModalRoute.isCurrentOf(context) ?? true;
+    final enabled =
+        TickerMode.valuesOf(context).enabled && visible && !reducedMotion;
+    if (enabled == _enabled) return;
+    _enabled = enabled;
+    if (enabled) {
+      _schedule();
+    } else {
+      _pause?.cancel();
+      _pass.stop();
+      _lit = null;
+      _next = 0;
+    }
+  }
+
+  void _schedule() {
+    _pause = Timer(const Duration(milliseconds: 1100), () {
+      setState(() => _lit = widget.cards[_next].mood);
+      _next = (_next + 1) % widget.cards.length;
+      _pass.forward(from: 0);
+    });
+  }
+
+  void _onStatus(AnimationStatus status) {
+    if (status == AnimationStatus.completed && _enabled) {
+      setState(() => _lit = null);
+      _schedule();
+    }
+  }
+
+  @override
+  void dispose() {
+    _pause?.cancel();
+    _pass.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => _RimPhase(
+    mood: _lit,
+    progress: _pass,
+    child: LayoutBuilder(
+      builder: (context, bounds) {
+        const gap = 10.0;
+        final wideText = MediaQuery.textScalerOf(context).scale(16) > 20;
+        if (wideText || bounds.maxWidth < 315) {
+          return Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              column(0, 2, 3),
-              const SizedBox(width: gap),
-              column(1, 3, 2),
+              for (final card in widget.cards)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: gap),
+                  child: card,
+                ),
+            ],
+          );
+        }
+        final width = (bounds.maxWidth - gap) / 2;
+        Widget column(int top, int bottom, int topFlex) => Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Expanded(flex: topFlex, child: widget.cards[top]),
+              const SizedBox(height: gap),
+              Expanded(flex: 5 - topFlex, child: widget.cards[bottom]),
             ],
           ),
-        ),
-      );
-    },
+        );
+        return ConstrainedBox(
+          constraints: BoxConstraints(minHeight: width * 2.86 + gap),
+          child: IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                column(0, 2, 3),
+                const SizedBox(width: gap),
+                column(1, 3, 2),
+              ],
+            ),
+          ),
+        );
+      },
+    ),
   );
+}
+
+class _RimPhase extends InheritedWidget {
+  const _RimPhase({
+    required this.mood,
+    required this.progress,
+    required super.child,
+  });
+
+  final ScenarioMood? mood;
+  final Animation<double> progress;
+
+  @override
+  bool updateShouldNotify(_RimPhase oldWidget) => oldWidget.mood != mood;
 }
 
 class ScenarioCard extends StatelessWidget {
@@ -86,55 +163,114 @@ class ScenarioCard extends StatelessWidget {
   );
 
   @override
-  Widget build(BuildContext context) => Semantics(
-    button: true,
-    sortKey: OrdinalSortKey(mood.index.toDouble()),
-    child: Material(
-      color: Colors.transparent,
-      child: LotusInkTap(
-        onTap: onTap,
-        borderRadius: _radius,
-        child: RepaintBoundary(
+  Widget build(BuildContext context) {
+    final phase = context.dependOnInheritedWidgetOfExactType<_RimPhase>();
+    return Semantics(
+      button: true,
+      sortKey: OrdinalSortKey(mood.index.toDouble()),
+      child: Material(
+        color: Colors.transparent,
+        child: LotusInkTap(
+          onTap: onTap,
+          borderRadius: _radius,
           child: CustomPaint(
-            painter: _GlassArtwork(mood),
-            child: Padding(
-              padding: const EdgeInsets.all(_inset),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Center(
-                    child: LotusRasterIcon(
-                      art,
-                      width: 126,
-                      height: switch (mood) {
-                        ScenarioMood.calendar || ScenarioMood.strength => 110,
-                        ScenarioMood.practice ||
-                        ScenarioMood.relationships => 64,
-                      },
-                      fit: BoxFit.contain,
-                      excludeFromSemantics: true,
-                    ),
+            foregroundPainter: phase != null && phase.mood == mood
+                ? _RimHighlight(mood.rim, phase.progress)
+                : null,
+            child: RepaintBoundary(
+              child: CustomPaint(
+                painter: _GlassArtwork(mood),
+                child: Padding(
+                  padding: const EdgeInsets.all(_inset),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Center(
+                        child: LotusRasterIcon(
+                          art,
+                          width: 126,
+                          height: switch (mood) {
+                            ScenarioMood.calendar ||
+                            ScenarioMood.strength => 110,
+                            ScenarioMood.practice ||
+                            ScenarioMood.relationships => 64,
+                          },
+                          fit: BoxFit.contain,
+                          excludeFromSemantics: true,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: _gap),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(title, style: _title),
+                            const SizedBox(height: 6),
+                            Text(subtitle, style: _caption),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: _gap),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(title, style: _title),
-                        const SizedBox(height: 6),
-                        Text(subtitle, style: _caption),
-                      ],
-                    ),
-                  ),
-                ],
+                ),
               ),
             ),
           ),
         ),
       ),
-    ),
-  );
+    );
+  }
+}
+
+class _RimHighlight extends CustomPainter {
+  _RimHighlight(this.tint, this.progress) : super(repaint: progress);
+
+  final Color tint;
+  final Animation<double> progress;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final t = progress.value;
+    if (t <= 0 || t >= 1 || size.isEmpty) return;
+    final rect = Offset.zero & size;
+    final rim = ScenarioCard._radius.toRRect(rect).deflate(1.3);
+    final envelope = math.sin(math.pi * t);
+    final pearl = Color.lerp(tint, AppColors.white, .80)!;
+    final clear = pearl.withValues(alpha: 0);
+    final shader = SweepGradient(
+      transform: GradientRotation(math.pi * (.73 + 1.14 * t)),
+      colors: [
+        clear,
+        pearl.withValues(alpha: .56 * envelope),
+        clear,
+        clear,
+      ],
+      stops: const [0, .075, .17, 1],
+    ).createShader(rect);
+    final stroke = Paint()
+      ..style = PaintingStyle.stroke
+      ..shader = shader;
+    canvas.save();
+    canvas.clipRRect(rim.inflate(1.2));
+    canvas.drawRRect(
+      rim,
+      stroke
+        ..strokeWidth = 3
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 2.3),
+    );
+    canvas.drawRRect(
+      rim,
+      stroke
+        ..strokeWidth = 1.35
+        ..maskFilter = null,
+    );
+    canvas.restore();
+  }
+
+  @override
+  bool shouldRepaint(_RimHighlight oldDelegate) =>
+      oldDelegate.tint != tint || oldDelegate.progress != progress;
 }
 
 // Paint the mist, bevel and directional reflections inside the same contour.

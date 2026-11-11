@@ -1824,11 +1824,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "View this day",
     ),
     "scenarioCalendarSubtitle": MessageLookupByLibrary.simpleMessage(
-      "Compare two dates in the lunar calendar and save your plan.",
+      "Compare dates that work for you in the lunar calendar and save your plan.",
     ),
-    "scenarioCalendarTitle": MessageLookupByLibrary.simpleMessage(
-      "Find a day for a plan",
-    ),
+    "scenarioCalendarTitle": MessageLookupByLibrary.simpleMessage("Pick a day"),
     "scenarioGoHome": MessageLookupByLibrary.simpleMessage("Go home"),
     "scenarioPracticeChooseMood": MessageLookupByLibrary.simpleMessage(
       "What do you need right now?",
@@ -1838,7 +1836,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Slow down",
     ),
     "scenarioPracticeSubtitle": MessageLookupByLibrary.simpleMessage(
-      "Slow down with a short audio practice, “I Have Time”.",
+      "Affirmations to match your mood.",
     ),
     "scenarioPracticeTitle": MessageLookupByLibrary.simpleMessage(
       "Take a minute for yourself",
@@ -1945,10 +1943,10 @@ class MessageLookup extends MessageLookupByLibrary {
       "My saved tips",
     ),
     "scenarioStrengthSubtitle": MessageLookupByLibrary.simpleMessage(
-      "Choose a situation and find a strength you can draw on today.",
+      "What’s ahead? Get a first step to try.",
     ),
     "scenarioStrengthTitle": MessageLookupByLibrary.simpleMessage(
-      "Find a personal strength",
+      "What’s my strength?",
     ),
     "scenarioStrengthTry": MessageLookupByLibrary.simpleMessage("Try this"),
     "scenarioStrengthTryToday": MessageLookupByLibrary.simpleMessage(

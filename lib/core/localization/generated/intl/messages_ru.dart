@@ -1864,10 +1864,10 @@ class MessageLookup extends MessageLookupByLibrary {
       "Посмотреть этот день",
     ),
     "scenarioCalendarSubtitle": MessageLookupByLibrary.simpleMessage(
-      "Сравните две удобные даты по лунному календарю и сохраните свой план.",
+      "Сравните удобные даты по лунному календарю и сохраните план.",
     ),
     "scenarioCalendarTitle": MessageLookupByLibrary.simpleMessage(
-      "Подобрать день для дела",
+      "Подобрать день",
     ),
     "scenarioGoHome": MessageLookupByLibrary.simpleMessage("На главную"),
     "scenarioPracticeChooseMood": MessageLookupByLibrary.simpleMessage(
@@ -1878,7 +1878,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Успокоиться",
     ),
     "scenarioPracticeSubtitle": MessageLookupByLibrary.simpleMessage(
-      "Послушайте «У меня есть время» — короткую практику, чтобы замедлиться.",
+      "Аффирмации под ваше настроение.",
     ),
     "scenarioPracticeTitle": MessageLookupByLibrary.simpleMessage(
       "Взять минуту для себя",
@@ -1989,10 +1989,10 @@ class MessageLookup extends MessageLookupByLibrary {
       "Мои подсказки",
     ),
     "scenarioStrengthSubtitle": MessageLookupByLibrary.simpleMessage(
-      "Выберите ситуацию и узнайте, на какое своё качество можно опереться сегодня.",
+      "Что вам предстоит? Подскажем первый шаг.",
     ),
     "scenarioStrengthTitle": MessageLookupByLibrary.simpleMessage(
-      "Найти свою сильную сторону",
+      "В чём моя сила?",
     ),
     "scenarioStrengthTry": MessageLookupByLibrary.simpleMessage("Попробуйте"),
     "scenarioStrengthTryToday": MessageLookupByLibrary.simpleMessage(

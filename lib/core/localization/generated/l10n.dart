@@ -8415,20 +8415,20 @@ class AppLocalizations {
     );
   }
 
-  /// `Find a day for a plan`
+  /// `Pick a day`
   String get scenarioCalendarTitle {
     return Intl.message(
-      'Find a day for a plan',
+      'Pick a day',
       name: 'scenarioCalendarTitle',
       desc: '',
       args: [],
     );
   }
 
-  /// `Compare two dates in the lunar calendar and save your plan.`
+  /// `Compare dates that work for you in the lunar calendar and save your plan.`
   String get scenarioCalendarSubtitle {
     return Intl.message(
-      'Compare two dates in the lunar calendar and save your plan.',
+      'Compare dates that work for you in the lunar calendar and save your plan.',
       name: 'scenarioCalendarSubtitle',
       desc: '',
       args: [],
@@ -8445,10 +8445,10 @@ class AppLocalizations {
     );
   }
 
-  /// `Slow down with a short audio practice, “I Have Time”.`
+  /// `Affirmations to match your mood.`
   String get scenarioPracticeSubtitle {
     return Intl.message(
-      'Slow down with a short audio practice, “I Have Time”.',
+      'Affirmations to match your mood.',
       name: 'scenarioPracticeSubtitle',
       desc: '',
       args: [],
@@ -8475,20 +8475,20 @@ class AppLocalizations {
     );
   }
 
-  /// `Find a personal strength`
+  /// `What’s my strength?`
   String get scenarioStrengthTitle {
     return Intl.message(
-      'Find a personal strength',
+      'What’s my strength?',
       name: 'scenarioStrengthTitle',
       desc: '',
       args: [],
     );
   }
 
-  /// `Choose a situation and find a strength you can draw on today.`
+  /// `What’s ahead? Get a first step to try.`
   String get scenarioStrengthSubtitle {
     return Intl.message(
-      'Choose a situation and find a strength you can draw on today.',
+      'What’s ahead? Get a first step to try.',
       name: 'scenarioStrengthSubtitle',
       desc: '',
       args: [],
