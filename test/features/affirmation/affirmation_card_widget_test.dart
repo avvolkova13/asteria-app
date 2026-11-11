@@ -246,6 +246,10 @@ void main() {
     testWidgets(
       'art swipes change the card and caption swipes scroll categories',
       (tester) async {
+        final longCaption = List.filled(
+          4,
+          'Сегодня я могу замедлиться.',
+        ).join(' ');
         final scroll = ScrollController();
         addTearDown(scroll.dispose);
         await tester.pumpWidget(
@@ -266,7 +270,7 @@ void main() {
                       AffirmationCardStack(
                         affirmations: [
                           _affirmation(id: 'one', text: 'Первая'),
-                          _affirmation(id: 'two', text: 'Вторая'),
+                          _affirmation(id: 'two', text: longCaption),
                         ],
                       ),
                       const SizedBox(height: 900),
@@ -291,12 +295,20 @@ void main() {
           tester.getBottomLeft(imageGesture).dy,
           lessThanOrEqualTo(tester.getTopLeft(firstCaption).dy),
         );
+        final deckHeight = tester
+            .getSize(find.byType(AffirmationCardStack))
+            .height;
         await tester.drag(imageGesture, const Offset(0, -135));
         await tester.pumpAndSettle();
         expect(find.text('Первая'), findsNothing);
-        expect(find.text('Вторая'), findsOneWidget);
+        expect(find.text(longCaption), findsOneWidget);
+        expect(
+          tester.getSize(find.byType(AffirmationCardStack)).height,
+          deckHeight,
+        );
+        expect(tester.getSize(find.text(longCaption)).height, greaterThan(30));
         expect(scroll.offset, 0);
-        await tester.drag(find.text('Вторая'), const Offset(0, -160));
+        await tester.drag(find.text(longCaption), const Offset(0, -160));
         await tester.pumpAndSettle();
         expect(scroll.offset, greaterThan(0));
       },

@@ -1386,14 +1386,16 @@ class _WeeklyAreaCardsRail extends StatelessWidget {
           scrollDirection: Axis.horizontal,
           clipBehavior: Clip.none,
           physics: const BouncingScrollPhysics(),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              for (var index = 0; index < cards.length; index++) ...[
-                _WeeklyAreaCard(data: cards[index], width: cardWidth),
-                if (index != cards.length - 1) const SizedBox(width: 8),
+          child: IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                for (var index = 0; index < cards.length; index++) ...[
+                  _WeeklyAreaCard(data: cards[index], width: cardWidth),
+                  if (index != cards.length - 1) const SizedBox(width: 8),
+                ],
               ],
-            ],
+            ),
           ),
         );
       },
@@ -1403,7 +1405,6 @@ class _WeeklyAreaCardsRail extends StatelessWidget {
 
 class _WeeklyAreaCard extends StatelessWidget {
   static const double _imageWidth = 72;
-  static const double _horizontalPadding = 32;
   static const double _titleMaxWidth = 213;
 
   final _WeeklyAreaCardData data;
@@ -1413,11 +1414,6 @@ class _WeeklyAreaCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final titleWidth = math.min(
-      _titleMaxWidth,
-      math.max(0.0, width - _horizontalPadding - _imageWidth),
-    );
-
     return Container(
       width: width,
       padding: const EdgeInsets.all(16),
@@ -1435,17 +1431,19 @@ class _WeeklyAreaCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              SizedBox(
-                width: titleWidth,
-                height: 72,
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    data.title,
-                    maxLines: 3,
-                    overflow: TextOverflow.ellipsis,
-                    style: context.textTheme.inversePlayfairSemiBold24.copyWith(
-                      height: 1,
+              Flexible(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(
+                    maxWidth: _titleMaxWidth,
+                    minHeight: 72,
+                  ),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      data.title,
+                      style: context.textTheme.inversePlayfairSemiBold24.copyWith(
+                        height: 1,
+                      ),
                     ),
                   ),
                 ),

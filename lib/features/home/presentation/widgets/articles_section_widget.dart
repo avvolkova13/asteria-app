@@ -78,14 +78,15 @@ class _ArticlesSectionWidgetState extends State<ArticlesSectionWidget> {
         children: [
           Row(
             children: [
-              Text(
-                sectionTitle,
-                style: context.textTheme.playfairSemiBold24.copyWith(
-                  color: AppColors.white,
-                  height: 1,
+              Expanded(
+                child: Text(
+                  sectionTitle,
+                  style: context.textTheme.playfairSemiBold24.copyWith(
+                    color: AppColors.white,
+                    height: 1,
+                  ),
                 ),
               ),
-              const Spacer(),
               Semantics(
                 button: true,
                 label: context.l10n.articlesScrollLabel,
@@ -108,27 +109,32 @@ class _ArticlesSectionWidgetState extends State<ArticlesSectionWidget> {
           SingleChildScrollView(
             controller: _articlesScrollController,
             scrollDirection: Axis.horizontal,
-            child: Row(
-              children: [
-                for (var index = 0; index < articles.length; index++) ...[
-                  Semantics(
-                    button: true,
-                    label: context.l10n.openArticleLabel(articles[index].title),
-                    child: LotusTap(
-                      onTap: () => _onArticleTap(context, articles[index].id),
-                      child: _ArticleCard(
-                        title: articles[index].title,
-                        category: articles[index].category,
-                        timeToRead: articles[index].timeToRead,
-                        imageName: articles[index].id,
-                        isRedesigned: isMainSection,
-                        isDarkSection: isDarkSection,
+            child: IntrinsicHeight(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  for (var index = 0; index < articles.length; index++) ...[
+                    Semantics(
+                      button: true,
+                      label: context.l10n.openArticleLabel(
+                        articles[index].title,
+                      ),
+                      child: LotusTap(
+                        onTap: () => _onArticleTap(context, articles[index].id),
+                        child: _ArticleCard(
+                          title: articles[index].title,
+                          category: articles[index].category,
+                          timeToRead: articles[index].timeToRead,
+                          imageName: articles[index].id,
+                          isRedesigned: isMainSection,
+                          isDarkSection: isDarkSection,
+                        ),
                       ),
                     ),
-                  ),
-                  if (index != articles.length - 1) const SizedBox(width: 16),
+                    if (index != articles.length - 1) const SizedBox(width: 16),
+                  ],
                 ],
-              ],
+              ),
             ),
           ),
         ],
@@ -159,7 +165,7 @@ class _ArticleCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: 201,
-      height: 252,
+      constraints: const BoxConstraints(minHeight: 252),
       foregroundDecoration: CardLensDecoration(
         borderRadius: BorderRadius.circular(AsteriaCardRadii.tile),
       ),
@@ -170,48 +176,40 @@ class _ArticleCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(AsteriaCardRadii.tile),
       ),
       clipBehavior: Clip.antiAlias,
-      child: SizedBox(
-        width: 201,
-        height: 252,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ClipRRect(
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(AsteriaCardRadii.tile),
-                topRight: Radius.circular(AsteriaCardRadii.tile),
-              ),
-              child: Image.asset(
-                'assets/images/articles/$imageName.webp',
-                width: 201,
-                height: 167,
-                fit: BoxFit.cover,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ClipRRect(
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(AsteriaCardRadii.tile),
+              topRight: Radius.circular(AsteriaCardRadii.tile),
+            ),
+            child: Image.asset(
+              'assets/images/articles/$imageName.webp',
+              width: 201,
+              height: 167,
+              fit: BoxFit.cover,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: Text(
+              title,
+              style: context.textTheme.playfairMedium20.copyWith(
+                color: isRedesigned || isDarkSection
+                    ? AppColors.white
+                    : AppColors.textPrimary,
+                height: 1.1,
               ),
             ),
-            const SizedBox(height: 8),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: context.textTheme.playfairMedium20.copyWith(
-                      color: isRedesigned || isDarkSection
-                          ? AppColors.white
-                          : AppColors.textPrimary,
-                      height: 1.1,
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 2,
-                  ),
-                  const SizedBox(height: 8),
-                  _ArticleMetadata(category: category, timeToRead: timeToRead),
-                ],
-              ),
-            ),
-          ],
-        ),
+          ),
+          const Spacer(),
+          Padding(
+            padding: const EdgeInsets.all(8),
+            child: _ArticleMetadata(category: category, timeToRead: timeToRead),
+          ),
+        ],
       ),
     );
   }

@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 class AffirmationCardWidget extends StatelessWidget {
   final AffirmationModel affirmation;
   final int imageIndex;
+  final List<AffirmationModel>? deck;
   final double borderOpacity;
   final bool isFront;
   final bool showSwipeHint;
@@ -19,6 +20,7 @@ class AffirmationCardWidget extends StatelessWidget {
     super.key,
     required this.affirmation,
     required this.imageIndex,
+    this.deck,
     this.borderOpacity = 0.1,
     this.isFront = true,
     this.showSwipeHint = false,
@@ -129,12 +131,17 @@ class AffirmationCardWidget extends StatelessWidget {
             if (isFront)
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 14, 16, 18),
-                child: Text(
-                  affirmation.text,
-                  style: context.textTheme.inverseUrbanistRegular16.copyWith(
-                    height: 1.3,
-                  ),
-                  textAlign: TextAlign.start,
+                child: IndexedStack(
+                  index: deck == null ? 0 : imageIndex,
+                  children: [
+                    for (final card in deck ?? [affirmation])
+                      Text(
+                        card.text,
+                        style: context.textTheme.inverseUrbanistRegular16
+                            .copyWith(height: 1.3),
+                        textAlign: TextAlign.start,
+                      ),
+                  ],
                 ),
               ),
           ],

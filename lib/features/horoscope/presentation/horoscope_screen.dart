@@ -5,7 +5,6 @@ import 'package:asteria_app/core/ui_kit/card_radii.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
-import 'dart:math' as math;
 import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
 
 import 'package:asteria_app/app/data/models/horoscope/horoscope_year_model.dart';
@@ -670,21 +669,23 @@ class _CoreDescriptionCards extends StatelessWidget {
       scrollDirection: Axis.horizontal,
       clipBehavior: Clip.none,
       physics: const BouncingScrollPhysics(),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          for (final item in items) ...[
-            ConstrainedBox(
-              constraints: const BoxConstraints(
-                minWidth: 325,
-                maxWidth: 325,
-                minHeight: 252,
+      child: IntrinsicHeight(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            for (final item in items) ...[
+              ConstrainedBox(
+                constraints: const BoxConstraints(
+                  minWidth: 325,
+                  maxWidth: 325,
+                  minHeight: 252,
+                ),
+                child: _IllustratedCard(data: item),
               ),
-              child: _IllustratedCard(data: item),
-            ),
-            const SizedBox(width: 8),
+              const SizedBox(width: 8),
+            ],
           ],
-        ],
+        ),
       ),
     );
   }
@@ -742,54 +743,33 @@ class HoroscopeCorePositionCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return _GlassCard(
       containerKey: const ValueKey('horoscope-core-card'),
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final textWidth = math
-              .max(0, constraints.maxWidth - _horizontalPadding - _imageReserve)
-              .toDouble();
-
-          return ConstrainedBox(
-            constraints: const BoxConstraints(minHeight: 252),
-            child: Stack(
-              clipBehavior: Clip.none,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(
-                    _horizontalPadding,
-                    _topPadding,
-                    _horizontalPadding,
-                    _bottomPadding,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(
-                        width: textWidth,
-                        child: Text(title, style: _HoroscopeDesign.h2(context)),
-                      ),
-                      const SizedBox(height: 8),
-                      SizedBox(
-                        width: textWidth,
-                        child: Text(
-                          description,
-                          style: _HoroscopeDesign.body(context),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Positioned(
-                  right: _imageRight,
-                  top: _imageTop,
-                  child: _CorePositionImage(
-                    imagePath: imagePath,
-                    size: _imageSize,
-                  ),
-                ),
-              ],
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(minHeight: 252),
+        child: Stack(
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(
+                _horizontalPadding,
+                _topPadding,
+                _imageReserve,
+                _bottomPadding,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(title, style: _HoroscopeDesign.h2(context)),
+                  const SizedBox(height: 8),
+                  Text(description, style: _HoroscopeDesign.body(context)),
+                ],
+              ),
             ),
-          );
-        },
+            Positioned(
+              right: _imageRight,
+              top: _imageTop,
+              child: _CorePositionImage(imagePath: imagePath, size: _imageSize),
+            ),
+          ],
+        ),
       ),
     );
   }

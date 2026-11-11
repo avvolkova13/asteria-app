@@ -485,6 +485,7 @@ class _AffirmationCardStackState extends State<AffirmationCardStack> {
               child: AffirmationCardWidget(
                 affirmation: widget.affirmations[_frontIndex],
                 imageIndex: _frontIndex,
+                deck: widget.affirmations,
                 showSwipeHint: hasChoices && _showHint,
                 onSwipe: hasChoices ? _handleDragUpdate : null,
                 onSwipeEnd: hasChoices ? _handleDragEnd : null,
