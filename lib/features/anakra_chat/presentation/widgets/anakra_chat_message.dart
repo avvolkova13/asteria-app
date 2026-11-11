@@ -48,9 +48,7 @@ class AnakraChatMessage extends StatelessWidget {
                   child: Text(
                     message.text,
                     style: AppTypography.text1.copyWith(
-                      color: isUser
-                          ? Colors.white
-                          : AnakraPalette.backgroundDeep,
+                      color: AppColors.textInverse,
                     ),
                   ),
                 ),
@@ -75,38 +73,79 @@ class _MessageSurface extends CustomPainter {
       isUser ? AnakraBubbleSide.outgoing : AnakraBubbleSide.incoming,
       21,
     );
-    final base = isUser ? AnakraPalette.purpleDark : const Color(0xFFE7DDEE);
+    final tint = isUser
+        ? Color.lerp(AnakraPalette.purple, Colors.white, .42)!
+        : Colors.white;
     canvas.drawShadow(
       shape,
-      AnakraPalette.backgroundDeep.withValues(alpha: .38),
-      2,
+      AnakraPalette.backgroundDeep.withValues(alpha: .28),
+      3,
       false,
     );
     canvas.save();
     canvas.clipPath(shape);
-    final paint = Paint()
+    void fill(Gradient gradient) =>
+        canvas.drawPath(shape, Paint()..shader = gradient.createShader(rect));
+    fill(
+      LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [
+          tint.withValues(alpha: isUser ? .48 : .25),
+          tint.withValues(alpha: isUser ? .31 : .13),
+          tint.withValues(alpha: isUser ? .39 : .20),
+        ],
+        stops: const [0, .55, 1],
+      ),
+    );
+    fill(
+      RadialGradient(
+        center: const Alignment(-.8, -1),
+        radius: 1.2,
+        colors: [
+          Colors.white.withValues(alpha: .18),
+          Colors.white.withValues(alpha: 0),
+        ],
+      ),
+    );
+    fill(
+      RadialGradient(
+        center: const Alignment(.85, 1),
+        radius: .9,
+        colors: [tint.withValues(alpha: .15), tint.withValues(alpha: 0)],
+      ),
+    );
+    // A broad inner lip gives the translucent body a softly rounded edge.
+    final rim = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 4
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 1.8)
       ..shader = LinearGradient(
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
         colors: [
-          Color.lerp(base, Colors.white, isUser ? .13 : .4)!,
-          base,
-          Color.lerp(base, AnakraPalette.backgroundDeep, isUser ? .19 : .12)!,
+          Colors.white.withValues(alpha: .56),
+          tint.withValues(alpha: .08),
+          tint.withValues(alpha: .34),
         ],
-        stops: const [0, .50, 1],
+        stops: const [0, .55, 1],
       ).createShader(rect);
-    canvas.drawPath(shape, paint);
-    // A soft highlight follows the silhouette, keeping the reading area quiet.
-    paint
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 3
-      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 2)
-      ..shader = const LinearGradient(
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-        colors: [Color(0x99FFFFFF), Color(0x11FFFFFF), Color(0x337F6294)],
-      ).createShader(rect);
-    canvas.drawPath(shape, paint);
+    canvas.drawPath(shape, rim);
+    canvas.drawPath(
+      shape,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = .75
+        ..shader = LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Colors.white.withValues(alpha: .52),
+            Colors.white.withValues(alpha: .07),
+            Colors.white.withValues(alpha: .27),
+          ],
+        ).createShader(rect),
+    );
     canvas.restore();
   }
 
