@@ -993,5 +993,14 @@
   "avatarAstrologerWoman": "Астролог, женщина",
   "subscriptionPlanWeek": "Неделя",
   "subscriptionPlanMonth": "Месяц",
-  "subscriptionPlanYear": "Год"
+  "subscriptionPlanYear": "Год",
+  "sonnikLoadingLiveya": "Ливея заглядывает в мир снов…",
+  "sonnikLoadingImages": "У каждого образа своя история…",
+  "sonnikLoadingDetails": "Детали складываются в узор…",
+  "sonnikLoadingMeaning": "Ищем подсказку в вашем сне…",
+  "insightLoadingTitle": "Ваша подсказка",
+  "insightLoadingSymbols": "Прислушиваемся к символам…",
+  "insightLoadingPerspective": "Взглянем на ситуацию иначе…",
+  "insightLoadingAngle": "Ищем новый ракурс…",
+  "insightLoadingTogether": "Собираем подсказку для вас…"
 }

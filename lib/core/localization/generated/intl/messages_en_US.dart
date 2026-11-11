@@ -58,6 +58,31 @@ class MessageLookup extends MessageLookupByLibrary {
     "googleSubscriptionPerYear": m21,
     "googleSubscriptionRecurringTerms": m22,
     "googleSubscriptionTrialTerms": m23,
+    "insightLoadingAngle": MessageLookupByLibrary.simpleMessage(
+      "Looking for a fresh perspective…",
+    ),
+    "insightLoadingPerspective": MessageLookupByLibrary.simpleMessage(
+      "Seeing the situation differently…",
+    ),
+    "insightLoadingSymbols": MessageLookupByLibrary.simpleMessage(
+      "Listening to the symbols…",
+    ),
+    "insightLoadingTitle": MessageLookupByLibrary.simpleMessage("Your insight"),
+    "insightLoadingTogether": MessageLookupByLibrary.simpleMessage(
+      "Bringing your insight together…",
+    ),
+    "sonnikLoadingDetails": MessageLookupByLibrary.simpleMessage(
+      "The details form a pattern…",
+    ),
+    "sonnikLoadingImages": MessageLookupByLibrary.simpleMessage(
+      "Every image has a story…",
+    ),
+    "sonnikLoadingLiveya": MessageLookupByLibrary.simpleMessage(
+      "Liveya steps into the world of dreams…",
+    ),
+    "sonnikLoadingMeaning": MessageLookupByLibrary.simpleMessage(
+      "Looking for a clue in your dream…",
+    ),
     "subscriptionPlanMonth": MessageLookupByLibrary.simpleMessage("Month"),
     "subscriptionPlanWeek": MessageLookupByLibrary.simpleMessage("Week"),
     "subscriptionPlanYear": MessageLookupByLibrary.simpleMessage("Year"),

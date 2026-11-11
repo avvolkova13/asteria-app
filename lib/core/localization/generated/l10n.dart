@@ -8749,6 +8749,96 @@ class AppLocalizations {
       args: [],
     );
   }
+
+  /// `Liveya steps into the world of dreams…`
+  String get sonnikLoadingLiveya {
+    return Intl.message(
+      'Liveya steps into the world of dreams…',
+      name: 'sonnikLoadingLiveya',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Every image has a story…`
+  String get sonnikLoadingImages {
+    return Intl.message(
+      'Every image has a story…',
+      name: 'sonnikLoadingImages',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The details form a pattern…`
+  String get sonnikLoadingDetails {
+    return Intl.message(
+      'The details form a pattern…',
+      name: 'sonnikLoadingDetails',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Looking for a clue in your dream…`
+  String get sonnikLoadingMeaning {
+    return Intl.message(
+      'Looking for a clue in your dream…',
+      name: 'sonnikLoadingMeaning',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Your insight`
+  String get insightLoadingTitle {
+    return Intl.message(
+      'Your insight',
+      name: 'insightLoadingTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Listening to the symbols…`
+  String get insightLoadingSymbols {
+    return Intl.message(
+      'Listening to the symbols…',
+      name: 'insightLoadingSymbols',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Seeing the situation differently…`
+  String get insightLoadingPerspective {
+    return Intl.message(
+      'Seeing the situation differently…',
+      name: 'insightLoadingPerspective',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Looking for a fresh perspective…`
+  String get insightLoadingAngle {
+    return Intl.message(
+      'Looking for a fresh perspective…',
+      name: 'insightLoadingAngle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Bringing your insight together…`
+  String get insightLoadingTogether {
+    return Intl.message(
+      'Bringing your insight together…',
+      name: 'insightLoadingTogether',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<AppLocalizations> {

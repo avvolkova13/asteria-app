@@ -1,7 +1,7 @@
 import 'package:asteria_app/core/config/app_feature_visibility.dart';
 import 'package:flutter/foundation.dart';
 
-enum GlobalLoaderType { compatibility, horoscope, natalCard }
+enum GlobalLoaderType { compatibility, horoscope, natalCard, sonnik, insight }
 
 class GlobalLoaderService extends ChangeNotifier {
   bool _isLoading = false;

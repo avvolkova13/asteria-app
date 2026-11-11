@@ -91,7 +91,8 @@ class _CreateSonnikInitialScreenState extends State<CreateSonnikInitialScreen> {
       AnalyticsEvents.calculationStarted,
       params: _featureParam,
     );
-    _loaderService.show();
+    FocusManager.instance.primaryFocus?.unfocus();
+    _loaderService.showWithSpheres(GlobalLoaderType.sonnik);
     final stopwatch = Stopwatch()..start();
     try {
       final sonnik = await _contentProvider.createSonnik(_textController.text);

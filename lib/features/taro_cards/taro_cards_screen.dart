@@ -236,6 +236,7 @@ class _TaroCardsContentState extends State<_TaroCardsContent> {
         backgroundColor: Colors.transparent,
         builder: (modalContext) => SharedPurchaseModal(
           featureKey: 'tarot_spread',
+          loaderType: GlobalLoaderType.insight,
           purchaseTitle: context.l10n.keltDeckTitle,
           price: PurchaseProductsConst.keltDeck.price,
           originSurface: 'tarot',
@@ -330,7 +331,7 @@ class _TaroCardsContentState extends State<_TaroCardsContent> {
     }
 
     try {
-      di.get<GlobalLoaderService>().show();
+      di.get<GlobalLoaderService>().showWithSpheres(GlobalLoaderType.insight);
       await facade.runFeatureAction(
         'tarot',
         _contentProvider.getTarotDeckLayoutInsight,

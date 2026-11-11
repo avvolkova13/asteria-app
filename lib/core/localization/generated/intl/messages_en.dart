@@ -862,6 +862,19 @@ class MessageLookup extends MessageLookupByLibrary {
     "insightLoadError": MessageLookupByLibrary.simpleMessage(
       "Unable to get your insight. Try again later.",
     ),
+    "insightLoadingAngle": MessageLookupByLibrary.simpleMessage(
+      "Looking for a fresh perspective…",
+    ),
+    "insightLoadingPerspective": MessageLookupByLibrary.simpleMessage(
+      "Seeing the situation differently…",
+    ),
+    "insightLoadingSymbols": MessageLookupByLibrary.simpleMessage(
+      "Listening to the symbols…",
+    ),
+    "insightLoadingTitle": MessageLookupByLibrary.simpleMessage("Your insight"),
+    "insightLoadingTogether": MessageLookupByLibrary.simpleMessage(
+      "Bringing your insight together…",
+    ),
     "keltCardPositionTitle": m24,
     "keltDeckCompletedDescription": MessageLookupByLibrary.simpleMessage(
       "You\'ve opened all 10 cards of the Celtic Cross. This spread offers a complete view of the situation: from roots in the past to future trends, and from inner motives to outside influences.\n✨ Reflect on the question you brought. What resonates most now? Did one card stand out?\nTo explore the spread more deeply:\n• Return to key positions 1, 4, and 6\n• Notice what repeats\n• Consider the guidance in position 10",
@@ -2046,6 +2059,18 @@ class MessageLookup extends MessageLookupByLibrary {
     "shopTitle": MessageLookupByLibrary.simpleMessage("Shop"),
     "shopUnitPrice": MessageLookupByLibrary.simpleMessage("price per item"),
     "shopUnitPriceValue": m61,
+    "sonnikLoadingDetails": MessageLookupByLibrary.simpleMessage(
+      "The details form a pattern…",
+    ),
+    "sonnikLoadingImages": MessageLookupByLibrary.simpleMessage(
+      "Every image has a story…",
+    ),
+    "sonnikLoadingLiveya": MessageLookupByLibrary.simpleMessage(
+      "Liveya steps into the world of dreams…",
+    ),
+    "sonnikLoadingMeaning": MessageLookupByLibrary.simpleMessage(
+      "Looking for a clue in your dream…",
+    ),
     "specialReadingsTitle": MessageLookupByLibrary.simpleMessage(
       "Special readings",
     ),

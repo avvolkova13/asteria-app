@@ -78,6 +78,7 @@ class _KeltDeckScreenState extends State<KeltDeckScreen> {
       backgroundColor: Colors.transparent,
       builder: (context) => SharedPurchaseModal(
         featureKey: 'tarot_spread',
+        loaderType: GlobalLoaderType.insight,
         purchaseTitle: context.l10n.keltDeckTitle,
         price: PurchaseProductsConst.keltDeck.price,
         originSurface: 'tarot',
@@ -200,7 +201,7 @@ class _KeltDeckContent extends StatelessWidget {
     final userProvider = di.get<UserProvider>();
     if (userProvider.isAllCardsOpened('kelt_deck')) {
       try {
-        di.get<GlobalLoaderService>().show();
+        di.get<GlobalLoaderService>().showWithSpheres(GlobalLoaderType.insight);
         await di.get<ContentProvider>().getDeckInsight('kelt_deck');
       } catch (e) {
         debugPrint('[KeltDeck] Failed to load deck insight: $e');

@@ -58,6 +58,7 @@ Future<void> openLoveDeck(
       backgroundColor: Colors.transparent,
       builder: (modalContext) => SharedPurchaseModal(
         featureKey: 'tarot_spread',
+        loaderType: GlobalLoaderType.insight,
         purchaseTitle: context.l10n.loveDeckTitle,
         price: PurchaseProductsConst.loveDeck.price,
         originSurface: 'tarot',

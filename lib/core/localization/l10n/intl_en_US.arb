@@ -26,5 +26,14 @@
   "avatarAstrologerWoman": "Astrologer, woman",
   "subscriptionPlanWeek": "Week",
   "subscriptionPlanMonth": "Month",
-  "subscriptionPlanYear": "Year"
+  "subscriptionPlanYear": "Year",
+  "sonnikLoadingLiveya": "Liveya steps into the world of dreams…",
+  "sonnikLoadingImages": "Every image has a story…",
+  "sonnikLoadingDetails": "The details form a pattern…",
+  "sonnikLoadingMeaning": "Looking for a clue in your dream…",
+  "insightLoadingTitle": "Your insight",
+  "insightLoadingSymbols": "Listening to the symbols…",
+  "insightLoadingPerspective": "Seeing the situation differently…",
+  "insightLoadingAngle": "Looking for a fresh perspective…",
+  "insightLoadingTogether": "Bringing your insight together…"
 }

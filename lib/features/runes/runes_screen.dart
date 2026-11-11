@@ -211,7 +211,7 @@ class _RunesContentState extends State<_RunesContent> {
     }
 
     try {
-      di.get<GlobalLoaderService>().show();
+      di.get<GlobalLoaderService>().showWithSpheres(GlobalLoaderType.insight);
       await facade.runFeatureAction(
         'runes',
         _contentProvider.getRuneDeckLayoutInsight,

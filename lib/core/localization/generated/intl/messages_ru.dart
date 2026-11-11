@@ -870,6 +870,21 @@ class MessageLookup extends MessageLookupByLibrary {
     "insightLoadError": MessageLookupByLibrary.simpleMessage(
       "Ошибка получения инсайта. Попробуйте позже.",
     ),
+    "insightLoadingAngle": MessageLookupByLibrary.simpleMessage(
+      "Ищем новый ракурс…",
+    ),
+    "insightLoadingPerspective": MessageLookupByLibrary.simpleMessage(
+      "Взглянем на ситуацию иначе…",
+    ),
+    "insightLoadingSymbols": MessageLookupByLibrary.simpleMessage(
+      "Прислушиваемся к символам…",
+    ),
+    "insightLoadingTitle": MessageLookupByLibrary.simpleMessage(
+      "Ваша подсказка",
+    ),
+    "insightLoadingTogether": MessageLookupByLibrary.simpleMessage(
+      "Собираем подсказку для вас…",
+    ),
     "keltCardPositionTitle": m24,
     "keltDeckCompletedDescription": MessageLookupByLibrary.simpleMessage(
       "Ты открыл(а) все 10 карт Кельтского креста. Этот расклад дал тебе целостное видение текущей ситуации: от корней в прошлом — до будущих тенденций, от внутренних мотиваций — до внешних влияний.\n✨ Подумай над вопросом, с которым ты пришёл(а) — что сейчас откликается сильнее всего?\nЕсли хочешь глубже осмыслить расклад:\n• Вернись к ключевым картам — позициям 1, 4 и 6\n• Обрати внимание на то, что повторяется\n• Почувствуй, какой совет даёт позиция 10",
@@ -2090,6 +2105,18 @@ class MessageLookup extends MessageLookupByLibrary {
     "shopTitle": MessageLookupByLibrary.simpleMessage("Магазин"),
     "shopUnitPrice": MessageLookupByLibrary.simpleMessage("цена за 1"),
     "shopUnitPriceValue": m61,
+    "sonnikLoadingDetails": MessageLookupByLibrary.simpleMessage(
+      "Детали складываются в узор…",
+    ),
+    "sonnikLoadingImages": MessageLookupByLibrary.simpleMessage(
+      "У каждого образа своя история…",
+    ),
+    "sonnikLoadingLiveya": MessageLookupByLibrary.simpleMessage(
+      "Ливея заглядывает в мир снов…",
+    ),
+    "sonnikLoadingMeaning": MessageLookupByLibrary.simpleMessage(
+      "Ищем подсказку в вашем сне…",
+    ),
     "specialReadingsTitle": MessageLookupByLibrary.simpleMessage(
       "Особые расклады",
     ),

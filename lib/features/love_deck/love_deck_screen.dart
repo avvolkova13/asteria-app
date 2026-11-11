@@ -81,6 +81,7 @@ class _LoveDeckScreenState extends State<LoveDeckScreen> {
       backgroundColor: Colors.transparent,
       builder: (context) => SharedPurchaseModal(
         featureKey: 'tarot_spread',
+        loaderType: GlobalLoaderType.insight,
         purchaseTitle: context.l10n.loveDeckTitle,
         price: PurchaseProductsConst.loveDeck.price,
         originSurface: 'tarot',
@@ -223,7 +224,7 @@ class _LoveDeckContent extends StatelessWidget {
     final userProvider = di.get<UserProvider>();
     if (userProvider.isAllCardsOpened('love_deck')) {
       try {
-        di.get<GlobalLoaderService>().show();
+        di.get<GlobalLoaderService>().showWithSpheres(GlobalLoaderType.insight);
         await di.get<ContentProvider>().getDeckInsight('love_deck');
       } catch (e) {
         debugPrint('[LoveDeck] Failed to load deck insight: $e');
