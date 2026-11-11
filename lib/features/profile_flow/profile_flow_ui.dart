@@ -217,17 +217,9 @@ class ProfileIconBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: size,
       height: size,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8),
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Color(0xFF8D59FF), Color(0xFF6439F2)],
-        ),
-      ),
       child: Center(
         child: iconAsset != null
             ? ClayAssetIcon(
