@@ -18,12 +18,12 @@ class MoonScreenCubit extends Cubit<MoonScreenState> {
   Future<void> loadData() async {
     emit(state.copyWith(isLoading: true, clearError: true));
 
+    final generation = ++_requestGeneration;
     try {
-      final generation = ++_requestGeneration;
       final now = DateTime.now();
       final normalizedDate = DateTime(now.year, now.month, now.day);
       await _contentProvider.loadPersonalizedLunarMonth(now);
-      if (generation != _requestGeneration) return;
+      if (isClosed || generation != _requestGeneration) return;
       final personalizedDay = _contentProvider.getPersonalizedLunarDayByDate(
         normalizedDate,
       );
@@ -48,6 +48,7 @@ class MoonScreenCubit extends Cubit<MoonScreenState> {
         ),
       );
     } catch (e) {
+      if (isClosed || generation != _requestGeneration) return;
       emit(
         state.copyWith(isLoading: false, error: MoonScreenErrorCode.loadData),
       );
@@ -84,7 +85,7 @@ class MoonScreenCubit extends Cubit<MoonScreenState> {
         month,
         forceRefresh: forceRefresh,
       );
-      if (generation != _requestGeneration) return;
+      if (isClosed || generation != _requestGeneration) return;
       final dayStatuses = _generateDayStatuses(month, state.selectedSphere);
       final primaryPhaseDates = _generatePrimaryPhaseDates(month);
       final selectedDate = _selectedDateForLoadedMonth(month);
@@ -107,6 +108,7 @@ class MoonScreenCubit extends Cubit<MoonScreenState> {
         ),
       );
     } catch (_) {
+      if (isClosed || generation != _requestGeneration) return;
       emit(
         state.copyWith(isLoading: false, error: MoonScreenErrorCode.loadData),
       );
