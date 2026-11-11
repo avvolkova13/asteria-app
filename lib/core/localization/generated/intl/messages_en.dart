@@ -367,6 +367,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "Your profile isn\'t ready yet. Return to the previous step and try again.",
     ),
     "avatarAstrologer": MessageLookupByLibrary.simpleMessage("Astrologer"),
+    "avatarAstrologerWoman": MessageLookupByLibrary.simpleMessage(
+      "Astrologer, woman",
+    ),
     "avatarChange": MessageLookupByLibrary.simpleMessage("Change avatar"),
     "avatarChooseTitle": MessageLookupByLibrary.simpleMessage(
       "Choose your avatar",

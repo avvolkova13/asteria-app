@@ -13,6 +13,7 @@ void main() {
       'elf_man',
       'dragon',
       'astrologer',
+      'astrologer_woman',
       'phoenix',
     ]);
     for (final preset in AvatarPreset.values) {

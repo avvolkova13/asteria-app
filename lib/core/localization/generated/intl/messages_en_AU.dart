@@ -34,6 +34,9 @@ class MessageLookup extends MessageLookupByLibrary {
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
     "avatarAstrologer": MessageLookupByLibrary.simpleMessage("Astrologer"),
+    "avatarAstrologerWoman": MessageLookupByLibrary.simpleMessage(
+      "Astrologer, woman",
+    ),
     "avatarChange": MessageLookupByLibrary.simpleMessage("Change avatar"),
     "avatarChooseTitle": MessageLookupByLibrary.simpleMessage(
       "Choose your avatar",

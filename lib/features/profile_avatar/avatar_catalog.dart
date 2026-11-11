@@ -17,6 +17,7 @@ class AvatarPreset {
     AvatarPreset(id: 'elf_man', name: 'Эльф'),
     AvatarPreset(id: 'dragon', name: 'Дракон'),
     AvatarPreset(id: 'astrologer', name: 'Астролог'),
+    AvatarPreset(id: 'astrologer_woman', name: 'Женщина-астролог'),
     AvatarPreset(id: 'phoenix', name: 'Феникс'),
   ];
 

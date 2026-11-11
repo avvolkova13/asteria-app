@@ -8709,6 +8709,16 @@ class AppLocalizations {
   String get avatarPhoenix {
     return Intl.message('Phoenix', name: 'avatarPhoenix', desc: '', args: []);
   }
+
+  /// `Astrologer, woman`
+  String get avatarAstrologerWoman {
+    return Intl.message(
+      'Astrologer, woman',
+      name: 'avatarAstrologerWoman',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<AppLocalizations> {

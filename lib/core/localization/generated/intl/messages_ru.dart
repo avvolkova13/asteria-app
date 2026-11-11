@@ -365,6 +365,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "Профиль ещё не готов. Вернитесь на предыдущий шаг и попробуйте снова.",
     ),
     "avatarAstrologer": MessageLookupByLibrary.simpleMessage("Астролог"),
+    "avatarAstrologerWoman": MessageLookupByLibrary.simpleMessage(
+      "Астролог, женщина",
+    ),
     "avatarChange": MessageLookupByLibrary.simpleMessage("Изменить образ"),
     "avatarChooseTitle": MessageLookupByLibrary.simpleMessage(
       "Выберите свой образ",

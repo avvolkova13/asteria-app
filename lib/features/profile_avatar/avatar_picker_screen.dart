@@ -18,6 +18,7 @@ String avatarLabel(AppLocalizations strings, String id) => switch (id) {
   'elf_man' => strings.avatarElfMan,
   'dragon' => strings.avatarDragon,
   'astrologer' => strings.avatarAstrologer,
+  'astrologer_woman' => strings.avatarAstrologerWoman,
   _ => strings.avatarPhoenix,
 };
 
@@ -182,7 +183,7 @@ class _AvatarPickerScreenState extends State<AvatarPickerScreen> {
                     ),
                   ],
                 ),
-              ).withEntrance(order: 10),
+              ).withEntrance(order: AvatarPreset.values.length + 2),
             ],
           ),
         ),
@@ -211,41 +212,23 @@ class _AvatarPickerScreenState extends State<AvatarPickerScreen> {
             minimumSize: const Size(44, 44),
             foregroundColor: AppColors.textInverse,
           ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              AnimatedContainer(
-                duration: reduceMotion
-                    ? Duration.zero
-                    : const Duration(milliseconds: 180),
-                padding: const EdgeInsets.all(3),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: selected
-                        ? ProfileFlowColors.accent
-                        : Colors.transparent,
-                    width: 1.5,
-                  ),
-                ),
-                child: ProfileAvatar(
-                  size: extent - 15,
-                  presetId: preset.id,
-                  preferences: _preferences,
-                ),
+          child: AnimatedContainer(
+            duration: reduceMotion
+                ? Duration.zero
+                : const Duration(milliseconds: 180),
+            padding: const EdgeInsets.all(3),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: selected ? ProfileFlowColors.accent : Colors.transparent,
+                width: 1.5,
               ),
-              const SizedBox(height: 7),
-              Text(
-                label,
-                textAlign: TextAlign.center,
-                style: AppTypography.text1.copyWith(
-                  fontSize: 14,
-                  color: selected
-                      ? ProfileFlowColors.accent
-                      : AppColors.textInverse,
-                ),
-              ),
-            ],
+            ),
+            child: ProfileAvatar(
+              size: extent - 15,
+              presetId: preset.id,
+              preferences: _preferences,
+            ),
           ),
         ),
       ),
