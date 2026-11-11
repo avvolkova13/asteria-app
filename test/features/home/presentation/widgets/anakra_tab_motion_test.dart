@@ -47,7 +47,7 @@ void main() {
             widget is Image &&
             widget.image is AssetImage &&
             (widget.image as AssetImage).assetName.endsWith(
-              'anakra_horse_badge.png',
+              'year_animals/horse.webp',
             ),
         skipOffstage: false,
       );
@@ -63,6 +63,8 @@ void main() {
             )
             .transform,
       );
+      expect(tester.getSize(badge), const Size.square(46));
+      expect(tester.widget<Image>(badge).fit, BoxFit.contain);
       final start = transform();
       await tester.pump(const Duration(milliseconds: 600));
       expect(transform(), isNot(start));

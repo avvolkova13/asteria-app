@@ -3,31 +3,18 @@ import 'dart:math' as math;
 
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
-import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
-import 'package:asteria_app/features/home/presentation/widgets/home_glass_surface.dart';
+import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
 import 'package:flutter/material.dart';
 
 const _barContentHeight = 58.0;
-const _barTopPadding = 16.0;
+const _barTopPadding = 10.0;
 const _barHorizontalPadding = 25.0;
 const _compactHorizontalPadding = 16.0;
 const _buttonGap = 16.0;
 const _compactButtonGap = 10.0;
 const _tabsHeight = 50.0;
-const _barBottomPadding = 25.0;
-const _tabsInset = 6.0;
-const _barBackgroundInset = -4.0;
+const _barBottomPadding = 8.0;
 const _aiButtonSize = 58.0;
-const _aiGlowSize = 118.0;
-const _inactiveOpacity = 0.30;
-const _tabItemGap = 1.0;
-const _activePillColor = Color(0xFF151028);
-const _inactiveItemColor = AppColors.white;
-const _footerBackdropColor = AppColorsDark.homeCanvas;
-
-const _activeGradient = LinearGradient(
-  colors: [Color(0xFFE6994D), Color(0xFFF3B76A), Color(0xFFE6994D)],
-);
 
 class BottomTabBarWidget extends StatelessWidget {
   final int currentIndex;
@@ -49,7 +36,7 @@ class BottomTabBarWidget extends StatelessWidget {
         MediaQuery.paddingOf(context).bottom + _barBottomPadding;
 
     return ColoredBox(
-      color: _footerBackdropColor,
+      color: AppColorsDark.homeCanvas,
       child: SizedBox(
         height: _barTopPadding + _barContentHeight + bottomPadding,
         child: Padding(
@@ -74,71 +61,9 @@ class BottomTabBarWidget extends StatelessWidget {
                     Expanded(
                       child: SizedBox(
                         height: _tabsHeight,
-                        child: Stack(
-                          clipBehavior: Clip.none,
-                          children: [
-                            Positioned(
-                              left: _barBackgroundInset,
-                              top: _barBackgroundInset,
-                              right: _barBackgroundInset,
-                              bottom: _barBackgroundInset,
-                              child: const DecoratedBox(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.all(
-                                    Radius.circular(100),
-                                  ),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Color(0x1F000000),
-                                      blurRadius: 40,
-                                      offset: Offset(0, 8),
-                                    ),
-                                  ],
-                                ),
-                                child: HomeGlassSurface(
-                                  radius: 100,
-                                  child: SizedBox.expand(),
-                                ),
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: _tabsInset,
-                              ),
-                              child: Row(
-                                children: [
-                                  _TabItem(
-                                    icon:
-                                        'assets/icons/nav_bar/tab_home_icon.svg',
-                                    label: context.l10n.navHome,
-                                    isActive: currentIndex == 0,
-                                    onPressed: () => onTabChanged(0),
-                                  ),
-                                  _TabItem(
-                                    icon:
-                                        'assets/icons/nav_bar/tab_star_icon.svg',
-                                    label: context.l10n.navPersonal,
-                                    isActive: currentIndex == 1,
-                                    onPressed: () => onTabChanged(1),
-                                  ),
-                                  _TabItem(
-                                    icon:
-                                        'assets/icons/nav_bar/tab_moon_icon.svg',
-                                    label: context.l10n.navMoon,
-                                    isActive: currentIndex == 2,
-                                    onPressed: () => onTabChanged(2),
-                                  ),
-                                  _TabItem(
-                                    icon:
-                                        'assets/icons/nav_bar/tab_practices_icon.svg',
-                                    label: context.l10n.navPractices,
-                                    isActive: currentIndex == 3,
-                                    onPressed: () => onTabChanged(3),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
+                        child: _LiquidTabStrip(
+                          index: currentIndex,
+                          onChanged: onTabChanged,
                         ),
                       ),
                     ),
@@ -257,43 +182,12 @@ class _AiAstrologerButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (assetPath == 'assets/images/year_animals/horse.webp') {
-      // The artwork includes the off-centre glow around the 58-point button.
-      return SizedBox.square(
-        dimension: _aiButtonSize,
-        child: Stack(
-          clipBehavior: Clip.none,
-          children: [
-            Positioned(
-              left: -40.5,
-              top: -32.5,
-              width: 371 / 3,
-              height: 139,
-              child: IgnorePointer(
-                child: Image.asset(
-                  'assets/icons/nav_bar/anakra_horse_badge.png',
-                  fit: BoxFit.fill,
-                  excludeFromSemantics: true,
-                ),
-              ),
-            ),
-          ],
-        ),
-      );
-    }
     return SizedBox(
       width: _aiButtonSize,
       height: _aiButtonSize,
       child: Stack(
         clipBehavior: Clip.none,
         children: [
-          Positioned(
-            left: (_aiButtonSize - _aiGlowSize) / 2,
-            top: (_aiButtonSize - _aiGlowSize) / 2,
-            width: _aiGlowSize,
-            height: _aiGlowSize,
-            child: CustomPaint(painter: _MessageBubbleSparklePainter()),
-          ),
           CustomPaint(
             size: const Size.square(_aiButtonSize),
             painter: _MessageBubbleShadowPainter(),
@@ -302,20 +196,15 @@ class _AiAstrologerButton extends StatelessWidget {
             clipper: const _MessageBubbleClipper(),
             child: CustomPaint(
               painter: _MessageBubbleBackgroundPainter(),
-              child: Stack(
-                children: [
-                  Positioned(
-                    left: 12,
-                    top: 2,
-                    width: 72,
-                    height: 106,
-                    child: Image.asset(
-                      assetPath,
-                      fit: BoxFit.contain,
-                      alignment: Alignment.topLeft,
-                    ),
-                  ),
-                ],
+              child: Center(
+                child: Image.asset(
+                  assetPath,
+                  width: 46,
+                  height: 46,
+                  fit: BoxFit.contain,
+                  filterQuality: FilterQuality.medium,
+                  excludeFromSemantics: true,
+                ),
               ),
             ),
           ),
@@ -347,7 +236,7 @@ class _MessageBubbleBackgroundPainter extends CustomPainter {
       ..shader = const LinearGradient(
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
-        colors: [Color(0xFF7354E6), Color(0xFF7050E1), Color(0xFF462A58)],
+        colors: [Color(0xFF786190), Color(0xFF513C69), Color(0xFF30243F)],
         stops: [0.0, 0.48, 1.0],
       ).createShader(rect);
     canvas.drawRect(rect, basePaint);
@@ -369,65 +258,6 @@ class _MessageBubbleBackgroundPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_MessageBubbleBackgroundPainter oldDelegate) => false;
-}
-
-class _MessageBubbleSparklePainter extends CustomPainter {
-  static const _sparkles = <Offset>[
-    Offset(0.50, 0.03),
-    Offset(0.67, 0.06),
-    Offset(0.78, 0.13),
-    Offset(0.88, 0.29),
-    Offset(0.93, 0.48),
-    Offset(0.89, 0.68),
-    Offset(0.76, 0.83),
-    Offset(0.58, 0.94),
-    Offset(0.35, 0.92),
-    Offset(0.18, 0.80),
-    Offset(0.08, 0.60),
-    Offset(0.06, 0.40),
-    Offset(0.14, 0.22),
-    Offset(0.30, 0.10),
-    Offset(0.46, 0.14),
-    Offset(0.60, 0.18),
-    Offset(0.73, 0.31),
-    Offset(0.78, 0.52),
-    Offset(0.69, 0.69),
-    Offset(0.49, 0.78),
-    Offset(0.28, 0.70),
-    Offset(0.20, 0.50),
-    Offset(0.24, 0.31),
-  ];
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final glowPaint = Paint()
-      ..shader = RadialGradient(
-        colors: [
-          const Color(0xFFE15B97).withValues(alpha: 0.22),
-          const Color(0xFFB49CFF).withValues(alpha: 0.10),
-          Colors.transparent,
-        ],
-        stops: const [0.0, 0.46, 1.0],
-      ).createShader(Offset.zero & size);
-    canvas.drawCircle(size.center(Offset.zero), size.width * 0.36, glowPaint);
-
-    final sparklePaint = Paint()
-      ..color = AppColors.white.withValues(alpha: 0.58)
-      ..style = PaintingStyle.fill;
-
-    for (var index = 0; index < _sparkles.length; index++) {
-      final point = _sparkles[index];
-      final radius = index.isEven ? 0.9 : 0.55;
-      canvas.drawCircle(
-        Offset(point.dx * size.width, point.dy * size.height),
-        radius,
-        sparklePaint,
-      );
-    }
-  }
-
-  @override
-  bool shouldRepaint(_MessageBubbleSparklePainter oldDelegate) => false;
 }
 
 class _MessageBubbleShadowPainter extends CustomPainter {
@@ -485,101 +315,286 @@ Path _messageBubblePath(Size size) {
     ..close();
 }
 
-class _TabItem extends StatelessWidget {
-  final String icon;
-  final String label;
-  final bool isActive;
-  final VoidCallback onPressed;
+class _LiquidTabStrip extends StatefulWidget {
+  const _LiquidTabStrip({required this.index, required this.onChanged});
 
-  const _TabItem({
-    required this.icon,
-    required this.label,
-    required this.isActive,
-    required this.onPressed,
-  });
+  final int index;
+  final ValueChanged<int> onChanged;
+
+  @override
+  State<_LiquidTabStrip> createState() => _LiquidTabStripState();
+}
+
+class _LiquidTabStripState extends State<_LiquidTabStrip>
+    with TickerProviderStateMixin {
+  late final _position = AnimationController.unbounded(
+    vsync: this,
+    value: widget.index.toDouble(),
+  );
+  late final _lift = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 145),
+  );
+  static const _settle = Duration(milliseconds: 400);
+  static const _assets = ['home', 'personal', 'moon', 'practice'];
+
+  bool _reduced = false;
+  bool _dragging = false;
+  int? _pointer;
+  double _origin = 0;
+  double _startIndex = 0;
+  int _candidate = 0;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _reduced = MediaQuery.disableAnimationsOf(context);
+    if (_reduced) {
+      _lift.value = 0;
+      _position.value = widget.index.toDouble();
+    }
+  }
+
+  void _settleOn(int index) {
+    if (_reduced) {
+      _position.value = index.toDouble();
+    } else {
+      _position.animateTo(
+        index.toDouble(),
+        duration: _settle,
+        curve: const ElasticOutCurve(.98),
+      );
+    }
+  }
+
+  @override
+  void didUpdateWidget(_LiquidTabStrip oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.index != widget.index && !_dragging) _settleOn(widget.index);
+  }
+
+  @override
+  void dispose() {
+    _lift.dispose();
+    _position.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final content = Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        ClayAssetIcon(
-          icon,
-          width: 24,
-          height: 24,
-          tint: isActive
-              ? AppColors.white
-              : _inactiveItemColor.withValues(alpha: _inactiveOpacity),
+    const ink = AppColors.white;
+    final rtl = Directionality.of(context) == TextDirection.rtl;
+    final labels = [
+      context.l10n.navHome,
+      context.l10n.navPersonal,
+      context.l10n.navMoon,
+      context.l10n.navPractices,
+    ];
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(100),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: const [
+            Color(0xc046344f),
+            Color(0xd2251b31),
+            Color(0xcf44354b),
+          ],
         ),
-        const SizedBox(height: _tabItemGap),
-        Flexible(
-          child: FittedBox(
-            fit: BoxFit.scaleDown,
-            child: Text(
-              label,
-              maxLines: 1,
-              style:
-                  (isActive
-                          ? AppTypography.tabBarSemiBold
-                          : AppTypography.tabBar)
-                      .copyWith(
-                        color: isActive
-                            ? AppColors.white
-                            : _inactiveItemColor.withValues(
-                                alpha: _inactiveOpacity,
+        border: Border.all(color: ink.withValues(alpha: .16)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 4),
+        child: LayoutBuilder(
+          builder: (context, bounds) {
+            final slot = bounds.maxWidth / labels.length;
+            double logical(double x) => (rtl ? bounds.maxWidth - x : x) / slot;
+            int indexAt(double x) =>
+                logical(x).floor().clamp(0, labels.length - 1);
+            return Listener(
+              onPointerDown: (e) {
+                if (_pointer != null || e.buttons != 1) return;
+                _pointer = e.pointer;
+                _origin = logical(e.localPosition.dx);
+                _candidate = indexAt(e.localPosition.dx);
+                _startIndex = _candidate.toDouble();
+                _settleOn(_candidate);
+                if (!_reduced) _lift.forward();
+              },
+              onPointerCancel: (e) {
+                if (_pointer != e.pointer) return;
+                _pointer = null;
+                _dragging = false;
+                _lift.reverse();
+                _settleOn(widget.index);
+              },
+              onPointerUp: (e) {
+                if (_pointer != e.pointer) return;
+                _pointer = null;
+                _lift.reverse();
+                if (!_dragging) _settleOn(widget.index);
+              },
+              child: GestureDetector(
+                excludeFromSemantics: true,
+                behavior: HitTestBehavior.opaque,
+                onHorizontalDragStart: (_) => _dragging = true,
+                onHorizontalDragUpdate: (e) {
+                  if (!_dragging) return;
+                  _candidate = indexAt(e.localPosition.dx);
+                  _position.value = _reduced
+                      ? _candidate.toDouble()
+                      : (_startIndex + logical(e.localPosition.dx) - _origin)
+                            .clamp(0.0, 3.0);
+                },
+                onHorizontalDragEnd: (_) {
+                  if (!_dragging) return;
+                  _dragging = false;
+                  _settleOn(_candidate);
+                  if (_candidate != widget.index) {
+                    LotusFeedback.selection();
+                    widget.onChanged(_candidate);
+                  }
+                },
+                onHorizontalDragCancel: () {
+                  if (!_dragging) return;
+                  _dragging = false;
+                  _settleOn(widget.index);
+                },
+                child: Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    Row(
+                      children: [
+                        for (var i = 0; i < labels.length; i++)
+                          Expanded(
+                            child: LotusFeedback(
+                              onActivate: () => widget.onChanged(i),
+                              keyboard: true,
+                              builder: (activate) => Semantics(
+                                button: true,
+                                selected: widget.index == i,
+                                label: labels[i],
+                                onTap: activate,
+                                child: ExcludeSemantics(
+                                  child: GestureDetector(
+                                    behavior: HitTestBehavior.opaque,
+                                    onTap: activate,
+                                    child: SizedBox.expand(
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          LotusRasterIcon(
+                                            'assets/icons/nav_bar/clay_${_assets[i]}.webp',
+                                            width: 28,
+                                            height: 26,
+                                            fit: BoxFit.contain,
+                                            excludeFromSemantics: true,
+                                          ),
+                                          Flexible(
+                                            child: FittedBox(
+                                              fit: BoxFit.scaleDown,
+                                              child: Text(
+                                                labels[i],
+                                                maxLines: 1,
+                                                style:
+                                                    (widget.index == i
+                                                            ? AppTypography
+                                                                  .tabBarSemiBold
+                                                            : AppTypography
+                                                                  .tabBar)
+                                                        .copyWith(
+                                                          color: ink.withValues(
+                                                            alpha:
+                                                                widget.index ==
+                                                                    i
+                                                                ? 1
+                                                                : .78,
+                                                          ),
+                                                        ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
                               ),
-                      ),
-            ),
-          ),
-        ),
-      ],
-    );
-
-    return Expanded(
-      child: LotusFeedback(
-        onActivate: onPressed,
-        keyboard: true,
-        builder: (activate) => Semantics(
-          button: true,
-          selected: isActive,
-          label: label,
-          onTap: activate,
-          child: ExcludeSemantics(
-            child: GestureDetector(
-              onTap: activate,
-              behavior: HitTestBehavior.opaque,
-              child: Stack(
-                alignment: Alignment.center,
-                clipBehavior: Clip.none,
-                children: [
-                  if (isActive)
-                    const Positioned(
-                      left: -6,
-                      right: -6,
-                      top: 0,
-                      bottom: 0,
-                      child: DecoratedBox(
-                        decoration: BoxDecoration(
-                          color: _activePillColor,
-                          borderRadius: BorderRadius.all(Radius.circular(100)),
-                        ),
-                      ),
+                            ),
+                          ),
+                      ],
                     ),
-                  SizedBox.expand(
-                    child: isActive
-                        ? ShaderMask(
-                            shaderCallback: (bounds) =>
-                                _activeGradient.createShader(bounds),
-                            blendMode: BlendMode.modulate,
-                            child: content,
-                          )
-                        : content,
-                  ),
-                ],
+                    AnimatedBuilder(
+                      animation: Listenable.merge([_position, _lift]),
+                      builder: (context, _) {
+                        final lift = Curves.easeOut.transform(_lift.value);
+                        final position = rtl
+                            ? 3 - _position.value
+                            : _position.value;
+                        final width = slot - 2 + 5 * lift;
+                        final height = bounds.maxHeight - 6 + 9 * lift;
+                        return Positioned(
+                          left: slot * (position + .5) - width / 2,
+                          top: (bounds.maxHeight - height) / 2,
+                          width: width,
+                          height: height,
+                          child: IgnorePointer(
+                            child: ExcludeSemantics(
+                              child: RawMagnifier(
+                                key: const ValueKey('navigation-lens'),
+                                size: Size(width, height),
+                                magnificationScale: _reduced
+                                    ? 1
+                                    : 1.025 + .125 * lift,
+                                decoration: const MagnifierDecoration(
+                                  shape: StadiumBorder(),
+                                ),
+                                child: DecoratedBox(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(100),
+                                    border: Border.all(
+                                      color: ink.withValues(
+                                        alpha: .31 + .20 * lift,
+                                      ),
+                                      width: .8,
+                                    ),
+                                    gradient: LinearGradient(
+                                      begin: const Alignment(-.45, -1),
+                                      end: const Alignment(.55, 1),
+                                      stops: const [0, .10, .44, .78, 1],
+                                      colors: [
+                                        const Color(
+                                          0xffffe9f4,
+                                        ).withValues(alpha: .42 + .12 * lift),
+                                        const Color(
+                                          0xffe2b9ed,
+                                        ).withValues(alpha: .22 + .10 * lift),
+                                        const Color(
+                                          0xffcbaad7,
+                                        ).withValues(alpha: .11),
+                                        const Color(
+                                          0xffd1acd9,
+                                        ).withValues(alpha: .16),
+                                        const Color(
+                                          0xffead2ed,
+                                        ).withValues(alpha: .34 + .10 * lift),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ),
+            );
+          },
         ),
       ),
     );
