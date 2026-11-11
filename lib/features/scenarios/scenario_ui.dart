@@ -7,12 +7,15 @@ import 'package:asteria_app/core/routing/app_route.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/features/auth/presentation/widgets/auth_flow_widgets.dart';
 import 'package:asteria_app/features/home/presentation/widgets/home_glass_surface.dart';
+import 'package:asteria_app/features/home/presentation/cubit/home_cubit.dart';
 import 'package:asteria_app/features/home/presentation/widgets/home_section_heading.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 void scenarioHome(BuildContext context) {
   final router = GoRouter.of(context);
+  context.read<HomeCubit>().changeTab(0);
   Navigator.of(context, rootNavigator: true).popUntil((route) => route.isFirst);
   router.go(HomeRoute.routeName);
 }

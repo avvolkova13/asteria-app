@@ -1,6 +1,10 @@
 import 'package:asteria_app/app/data/models/article/article_model.dart';
 import 'package:asteria_app/app/data/models/user/user_model.dart';
 import 'package:asteria_app/app/providers/content_provider.dart';
+import 'package:asteria_app/app/data/repositories/user/user_repository.dart';
+import 'package:asteria_app/features/home/presentation/cubit/home_cubit.dart';
+import 'package:asteria_app/features/home/presentation/cubit/home_state.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:asteria_app/app/providers/user_provider.dart';
 import 'package:asteria_app/core/analytics/product_analytics_service.dart';
 import 'package:asteria_app/core/di/di.dart';
@@ -25,6 +29,14 @@ void main() {
       di.registerSingleton<ContentProvider>(content);
       di.registerSingleton<UserProvider>(user);
       di.registerSingleton<ProductAnalyticsService>(_ProfileAnalytics());
+      final home = HomeCubit(
+        userRepository: _Repository(),
+        contentProvider: content,
+        userProvider: user,
+      );
+      await home.start();
+      home.changeTab(3);
+      addTearDown(home.close);
       final router = GoRouter(
         initialLocation: '/home',
         routes: [
@@ -35,7 +47,13 @@ void main() {
           GoRoute(
             path: '/home',
             routes: [HomeProfileRoute()],
-            builder: (_, _) => const Scaffold(body: PracticesScreen()),
+            builder: (_, _) => BlocBuilder<HomeCubit, HomeState>(
+              builder: (_, state) => Scaffold(
+                body: (state as HomeLoaded).currentTabIndex == 3
+                    ? const PracticesScreen()
+                    : const Text('Main tab'),
+              ),
+            ),
           ),
         ],
       );
@@ -53,7 +71,7 @@ void main() {
             data: AppThemeDark.instance.getThemeData(context),
             child: ChangeNotifierProvider<UserProvider>.value(
               value: user,
-              child: child,
+              child: BlocProvider.value(value: home, child: child!),
             ),
           ),
         ),
@@ -91,14 +109,30 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.byType(PracticesScreen), findsOneWidget);
       expect(find.byType(ProfileScreen), findsNothing);
+      expect((home.state as HomeLoaded).currentTabIndex, 3);
+      await tester.tap(avatar);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(labels.scenarioStartTitle));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(labels.scenarioGoHome));
+      await tester.pumpAndSettle();
+      expect((home.state as HomeLoaded).currentTabIndex, 0);
+      expect(find.text('Main tab'), findsOneWidget);
+      expect(router.canPop(), isFalse);
       await tester.pumpWidget(const SizedBox.shrink());
     },
   );
 }
 
+class _Repository extends Fake implements UserRepository {}
+
 class _Content extends ChangeNotifier implements ContentProvider {
   @override
   List<ArticleModel> get articles => const [];
+  @override
+  bool isTodayTarotCardOpened() => false;
+  @override
+  bool isTodayRuneOpened() => false;
   @override
   bool get isLoadingContent => false;
   @override
