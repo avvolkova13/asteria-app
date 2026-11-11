@@ -12,7 +12,7 @@ void main() {
       'elf_woman',
       'elf_man',
       'dragon',
-      'raven',
+      'astrologer',
       'phoenix',
     ]);
     for (final preset in AvatarPreset.values) {
@@ -44,9 +44,9 @@ void main() {
     addTearDown(preferences.dispose);
     await preferences.select('alice', 'dragon');
     expect(preferences.selectedFor('bob', Gender.male).id, 'elf_man');
-    await preferences.select('bob', 'raven');
+    await preferences.select('bob', 'astrologer');
     expect(preferences.selectedFor('alice', Gender.female).id, 'dragon');
-    expect(preferences.selectedFor('bob', Gender.male).id, 'raven');
+    expect(preferences.selectedFor('bob', Gender.male).id, 'astrologer');
     expect(preferences.selectedFor(null, Gender.female).id, 'elf_woman');
   });
 
@@ -77,6 +77,22 @@ void main() {
       );
       await expectLater(preferences.select('', 'dragon'), throwsArgumentError);
       expect(storage.records, {'alice': 'removed'});
+    },
+  );
+
+  test(
+    'legacy raven selection resolves to astrologer across instances',
+    () async {
+      final storage = _MemoryAvatarStorage()..records['alice'] = 'raven';
+      final preferences = AvatarPreferences(storage: storage);
+      addTearDown(preferences.dispose);
+      expect(AvatarPreset.findById('raven')?.id, 'astrologer');
+      expect(preferences.selectedFor('alice', Gender.female).id, 'astrologer');
+      await preferences.select('alice', 'astrologer');
+      expect(storage.read('alice'), 'astrologer');
+      final restored = AvatarPreferences(storage: storage);
+      addTearDown(restored.dispose);
+      expect(restored.selectedFor('alice', Gender.male).id, 'astrologer');
     },
   );
 

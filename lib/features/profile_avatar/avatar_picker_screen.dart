@@ -17,7 +17,7 @@ String avatarLabel(AppLocalizations strings, String id) => switch (id) {
   'elf_woman' => strings.avatarElfWoman,
   'elf_man' => strings.avatarElfMan,
   'dragon' => strings.avatarDragon,
-  'raven' => strings.avatarRaven,
+  'astrologer' => strings.avatarAstrologer,
   _ => strings.avatarPhoenix,
 };
 

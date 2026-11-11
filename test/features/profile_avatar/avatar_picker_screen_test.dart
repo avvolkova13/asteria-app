@@ -77,6 +77,8 @@ void main() {
       await tester.tap(find.text('open'));
       await tester.pumpAndSettle();
       expect(find.text('Выберите свой образ'), findsOneWidget);
+      expect(find.text('Астролог'), findsOneWidget);
+      expect(find.text('Ворон'), findsNothing);
       await tester.ensureVisible(find.text('Единорог'));
       await tester.pumpAndSettle();
       await tester.tap(find.text('Единорог'));

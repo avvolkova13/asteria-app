@@ -16,13 +16,15 @@ class AvatarPreset {
     AvatarPreset(id: 'elf_woman', name: 'Эльфийка'),
     AvatarPreset(id: 'elf_man', name: 'Эльф'),
     AvatarPreset(id: 'dragon', name: 'Дракон'),
-    AvatarPreset(id: 'raven', name: 'Ворон'),
+    AvatarPreset(id: 'astrologer', name: 'Астролог'),
     AvatarPreset(id: 'phoenix', name: 'Феникс'),
   ];
 
   static AvatarPreset? findById(String? id) {
+    // Preserve existing device-local selections after retiring the raven.
+    final canonicalId = id == 'raven' ? 'astrologer' : id;
     for (final preset in values) {
-      if (preset.id == id) return preset;
+      if (preset.id == canonicalId) return preset;
     }
     return null;
   }

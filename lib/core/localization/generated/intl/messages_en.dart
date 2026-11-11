@@ -366,6 +366,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "authUserNotInitialized": MessageLookupByLibrary.simpleMessage(
       "Your profile isn\'t ready yet. Return to the previous step and try again.",
     ),
+    "avatarAstrologer": MessageLookupByLibrary.simpleMessage("Astrologer"),
     "avatarChange": MessageLookupByLibrary.simpleMessage("Change avatar"),
     "avatarChooseTitle": MessageLookupByLibrary.simpleMessage(
       "Choose your avatar",
@@ -374,7 +375,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "avatarElfMan": MessageLookupByLibrary.simpleMessage("Elf man"),
     "avatarElfWoman": MessageLookupByLibrary.simpleMessage("Elf woman"),
     "avatarPhoenix": MessageLookupByLibrary.simpleMessage("Phoenix"),
-    "avatarRaven": MessageLookupByLibrary.simpleMessage("Raven"),
     "avatarSave": MessageLookupByLibrary.simpleMessage("Choose avatar"),
     "avatarSaveError": MessageLookupByLibrary.simpleMessage(
       "Could not save your avatar. Please try again.",

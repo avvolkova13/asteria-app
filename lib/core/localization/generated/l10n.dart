@@ -8695,9 +8695,14 @@ class AppLocalizations {
     return Intl.message('Dragon', name: 'avatarDragon', desc: '', args: []);
   }
 
-  /// `Raven`
-  String get avatarRaven {
-    return Intl.message('Raven', name: 'avatarRaven', desc: '', args: []);
+  /// `Astrologer`
+  String get avatarAstrologer {
+    return Intl.message(
+      'Astrologer',
+      name: 'avatarAstrologer',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Phoenix`
