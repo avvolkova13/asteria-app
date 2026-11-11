@@ -452,7 +452,7 @@ class _NatalCardContentState extends State<_NatalCardContent> {
           ),
           birthPlace: personalInfo?.birthPlace?.location ?? '',
         ),
-        const SizedBox(height: 24),
+        const SizedBox(height: 16),
         SegmentedPicker<_NatalCardTab>(
           options: _NatalCardTab.values,
           surfaceBrightness: Brightness.dark,
@@ -462,7 +462,7 @@ class _NatalCardContentState extends State<_NatalCardContent> {
             _selectedTab = tab;
           }),
         ).withEntrance(),
-        const SizedBox(height: 24),
+        const SizedBox(height: 9),
         AnimatedSwitcher(
           duration: const Duration(milliseconds: 180),
           child: switch (_selectedTab) {
