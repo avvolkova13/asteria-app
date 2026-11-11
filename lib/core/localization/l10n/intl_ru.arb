@@ -990,5 +990,8 @@
   "avatarDragon": "Дракон",
   "avatarAstrologer": "Астролог",
   "avatarPhoenix": "Феникс",
-  "avatarAstrologerWoman": "Астролог, женщина"
+  "avatarAstrologerWoman": "Астролог, женщина",
+  "subscriptionPlanWeek": "Неделя",
+  "subscriptionPlanMonth": "Месяц",
+  "subscriptionPlanYear": "Год"
 }

@@ -122,92 +122,115 @@ void main() {
     await tester.ensureVisible(find.text(r'$4.99'));
     await tester.pumpAndSettle();
     await tester.tap(find.text(r'$4.99'));
+    await tester.pumpAndSettle();
+    expect((realCubit ?? cubit).state, isA<PaywallProductsLoaded>());
+    await tester.tap(find.text(AppLocalizations.current.subscriptionConnect));
     await tester.pump();
     expect((realCubit ?? cubit).state, isA<PaywallPurchasing>());
   }
 
-  testWidgets('ArcPay PRO returns to origin after its plans unmount', (
-    tester,
-  ) async {
-    final contextual = _ContextualMonetization();
-    addTearDown(contextual.dispose);
-    await di.unregister<PaymentProviderRouter>();
-    di.registerSingleton<PaymentProviderRouter>(
-      PaymentProviderRouter(
-        Storefront(),
-        platform: TargetPlatform.android,
-        distributionChannel: DistributionChannel.ru,
-      ),
-    );
-    di.registerFactory<ArcPayCheckoutCubit>(
-      () => ArcPayCheckoutCubit(
-        api: _ProProductsApi(),
-        store: _ArcStore(),
-        currentUserId: () => 'subscription-user',
-      ),
-    );
-    final router = GoRouter(
-      routes: [
-        GoRoute(
-          path: '/',
-          builder: (context, _) => Scaffold(
-            body: TextButton(
-              child: const Text('Original action'),
-              onPressed: () => openContextualPurchase(
-                context,
-                subscription: true,
-                originSurface: 'test',
+  for (final alreadyActive in [false, true]) {
+    testWidgets('ArcPay PRO selection and return with active=$alreadyActive', (
+      tester,
+    ) async {
+      final contextual = _ContextualMonetization(arcGrant: alreadyActive);
+      if (alreadyActive) contextual.activate();
+      addTearDown(contextual.dispose);
+      await di.unregister<PaymentProviderRouter>();
+      di.registerSingleton<PaymentProviderRouter>(
+        PaymentProviderRouter(
+          Storefront(),
+          platform: TargetPlatform.android,
+          distributionChannel: DistributionChannel.ru,
+        ),
+      );
+      di.registerFactory<ArcPayCheckoutCubit>(
+        () => ArcPayCheckoutCubit(
+          api: _ProProductsApi(),
+          store: _ArcStore(),
+          currentUserId: () => 'subscription-user',
+        ),
+      );
+      final router = GoRouter(
+        routes: [
+          GoRoute(
+            path: '/',
+            builder: (context, _) => Scaffold(
+              body: TextButton(
+                child: const Text('Original action'),
+                onPressed: () => openContextualPurchase(
+                  context,
+                  subscription: true,
+                  originSurface: 'test',
+                ),
               ),
             ),
           ),
-        ),
-        SubscriptionRoute(),
-        GoRoute(
-          path: PaymentsRoute.routeName,
-          name: PaymentsRoute.routeName,
-          builder: (context, _) =>
-              const Scaffold(body: Text('Payment pending')),
-        ),
-      ],
-    );
-    addTearDown(router.dispose);
-    await tester.pumpWidget(
-      MultiProvider(
-        providers: [
-          ChangeNotifierProvider<UserProvider>.value(value: user),
-          ChangeNotifierProvider<MonetizationProvider>.value(value: contextual),
+          SubscriptionRoute(),
+          GoRoute(
+            path: PaymentsRoute.routeName,
+            name: PaymentsRoute.routeName,
+            builder: (context, _) =>
+                const Scaffold(body: Text('Payment pending')),
+          ),
         ],
-        child: MaterialApp.router(
-          routerConfig: router,
-          locale: const Locale('en'),
-          localizationsDelegates: const [
-            AppLocalizations.delegate,
-            ...GlobalMaterialLocalizations.delegates,
+      );
+      addTearDown(router.dispose);
+      await tester.pumpWidget(
+        MultiProvider(
+          providers: [
+            ChangeNotifierProvider<UserProvider>.value(value: user),
+            ChangeNotifierProvider<MonetizationProvider>.value(
+              value: contextual,
+            ),
           ],
-          supportedLocales: AppLocalizations.delegate.supportedLocales,
-          builder: (context, child) => Theme(
-            data: AppThemeDark.instance.getThemeData(context),
-            child: child!,
+          child: MaterialApp.router(
+            routerConfig: router,
+            locale: const Locale('en'),
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              ...GlobalMaterialLocalizations.delegates,
+            ],
+            supportedLocales: AppLocalizations.delegate.supportedLocales,
+            builder: (context, child) => Theme(
+              data: AppThemeDark.instance.getThemeData(context),
+              child: child!,
+            ),
           ),
         ),
-      ),
-    );
-    await tester.tap(find.text('Original action'));
-    await tester.pumpAndSettle();
-    await tester.ensureVisible(find.text('Arc PRO'));
-    await tester.tap(find.text('Arc PRO'));
-    await tester.pumpAndSettle();
-    expect(router.state.uri.path, PaymentsRoute.routeName);
-    contextual
-        .activate(); // Fulfillment refreshes entitlements before Continue.
-    await tester.pumpAndSettle();
-    expect(find.text('Arc PRO', skipOffstage: false), findsNothing);
-    router.pop(true);
-    await tester.pumpAndSettle();
-    expect(router.state.uri.path, '/');
-    expect(find.text('Original action'), findsOneWidget);
-    await tester.pumpWidget(const SizedBox());
-  });
+      );
+      await tester.tap(find.text('Original action'));
+      await tester.pumpAndSettle();
+      await tester.ensureVisible(
+        find.text(AppLocalizations.current.subscriptionPlanMonth),
+      );
+      await tester.tap(
+        find.text(AppLocalizations.current.subscriptionPlanMonth),
+      );
+      await tester.pumpAndSettle();
+      expect(router.state.uri.path, isNot(PaymentsRoute.routeName));
+      await tester.tap(find.text(AppLocalizations.current.subscriptionConnect));
+      await tester.pumpAndSettle();
+      expect(router.state.uri.path, PaymentsRoute.routeName);
+      contextual
+          .activate(); // Fulfillment refreshes entitlements before Continue.
+      await tester.pumpAndSettle();
+      if (!alreadyActive) {
+        expect(
+          find.text(
+            AppLocalizations.current.subscriptionPlanMonth,
+            skipOffstage: false,
+          ),
+          findsNothing,
+        );
+      }
+      router.pop(true);
+      await tester.pumpAndSettle();
+      expect(router.state.uri.path, '/');
+      expect(find.text('Original action'), findsOneWidget);
+      await tester.pumpWidget(const SizedBox());
+    });
+  }
 
   for (final active in [false, true]) {
     for (final outcome in [
@@ -754,6 +777,8 @@ class RestorePaymentsApi extends CancelPaymentsApi {
 }
 
 class _ContextualMonetization extends TestMonetization {
+  _ContextualMonetization({this.arcGrant = false});
+  final bool arcGrant;
   @override
   Future<void> refreshForAccess() async {}
   @override
@@ -763,6 +788,16 @@ class _ContextualMonetization extends TestMonetization {
     'uid': 'subscription-user',
     'catalog_revision': 1,
     'effective_pro': effectivePro,
+    if (arcGrant && effectivePro)
+      'effective_grants': [
+        {
+          'entitlement': 'pro',
+          'provider': 'arc_pay',
+          'product_id': 'pro_30',
+          'status': 'active',
+          'ends_at': '2027-01-01T00:00:00Z',
+        },
+      ],
     'wallet': {
       'uid': 'subscription-user',
       'balance': 0,

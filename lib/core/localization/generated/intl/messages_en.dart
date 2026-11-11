@@ -2179,6 +2179,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "subscriptionOpenPaymentAgain": MessageLookupByLibrary.simpleMessage(
       "Open payment again",
     ),
+    "subscriptionPlanMonth": MessageLookupByLibrary.simpleMessage("Month"),
+    "subscriptionPlanWeek": MessageLookupByLibrary.simpleMessage("Week"),
+    "subscriptionPlanYear": MessageLookupByLibrary.simpleMessage("Year"),
     "subscriptionPlansUnavailable": MessageLookupByLibrary.simpleMessage(
       "Subscriptions are currently unavailable. Try again later.",
     ),

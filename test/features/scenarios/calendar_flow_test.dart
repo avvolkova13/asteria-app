@@ -13,6 +13,10 @@ import 'package:asteria_app/core/analytics/analytics_facade.dart';
 import 'package:asteria_app/core/analytics/product_analytics_service.dart';
 import 'package:asteria_app/features/home/presentation/cubit/moon_screen_cubit.dart';
 import 'package:asteria_app/features/home/presentation/screens/moon_screen.dart';
+import 'package:asteria_app/features/home/presentation/widgets/moon_calendar_widget.dart';
+import 'package:asteria_app/features/home/presentation/widgets/sphere_selection_widget.dart';
+import 'package:asteria_app/features/home/presentation/widgets/advice_widget.dart';
+import 'package:asteria_app/features/home/presentation/widgets/lunar_recommendations_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -90,8 +94,40 @@ void main() {
       }
 
       final start = find.text('Find a day for an activity');
-      expect(start.hitTestable(), findsOneWidget);
-      expect(find.text('My plans').hitTestable(), findsOneWidget);
+      // Daily context and the calendar precede planning and saved history.
+      final monthGrid = find.byType(MoonCalendarWidget);
+      final spheres = find.byType(SphereSelectionWidget);
+      final dayAdvice = find.byType(AdviceWidget);
+      expect(tester.getTopLeft(dayAdvice).dy, lessThan(300));
+      expect(monthGrid.hitTestable(), findsOneWidget);
+      expect(start.hitTestable(), findsNothing);
+      expect(find.text('My plans').hitTestable(), findsNothing);
+      expect(tester.getTopLeft(monthGrid).dy, lessThan(430));
+      expect(
+        tester.getBottomLeft(monthGrid).dy,
+        lessThanOrEqualTo(tester.getTopLeft(spheres).dy),
+      );
+      expect(
+        tester.getBottomLeft(dayAdvice).dy,
+        lessThan(tester.getTopLeft(monthGrid).dy),
+      );
+      expect(
+        tester.getBottomLeft(dayAdvice).dy,
+        lessThan(tester.getTopLeft(start).dy),
+      );
+      expect(
+        tester.getTopLeft(start).dy,
+        lessThan(tester.getTopLeft(find.text('My plans')).dy),
+      );
+      await tap(find.text('Gardening'));
+      await tap(find.text('12').first);
+      final recommendations = find.byType(LunarRecommendationsWidget);
+      expect(recommendations, findsOneWidget);
+      expect(find.text('Repotting on ${month.month}/12'), findsOneWidget);
+      expect(
+        tester.getBottomLeft(recommendations).dy,
+        lessThan(tester.getTopLeft(start).dy),
+      );
       await tap(start);
       expect(find.text('What are you planning?'), findsOneWidget);
       await tap(find.text('Repotting plants'));
@@ -191,12 +227,15 @@ class _UnusedUserRepository extends Fake implements UserRepository {}
 class _Calendar extends Fake implements ContentProvider {
   bool empty = false;
   @override
-  LunarDayModel? getPersonalizedLunarDayByDate(DateTime date) => null;
+  LunarDayModel? getPersonalizedLunarDayByDate(DateTime date) =>
+      _month(date).days.where((day) => day.date.day == date.day).firstOrNull;
   @override
   Future<LunarMonthModel> loadPersonalizedLunarMonth(
     DateTime month, {
     bool forceRefresh = false,
-  }) async => LunarMonthModel(
+  }) async => _month(month);
+
+  LunarMonthModel _month(DateTime month) => LunarMonthModel(
     year: month.year,
     month: month.month,
     timezone: 'Europe/Moscow',

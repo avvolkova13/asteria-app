@@ -990,5 +990,8 @@
   "avatarDragon": "Dragon",
   "avatarAstrologer": "Astrologer",
   "avatarPhoenix": "Phoenix",
-  "avatarAstrologerWoman": "Astrologer, woman"
+  "avatarAstrologerWoman": "Astrologer, woman",
+  "subscriptionPlanWeek": "Week",
+  "subscriptionPlanMonth": "Month",
+  "subscriptionPlanYear": "Year"
 }

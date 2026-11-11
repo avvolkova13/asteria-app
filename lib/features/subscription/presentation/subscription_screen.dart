@@ -36,6 +36,7 @@ import 'package:asteria_app/features/subscription/presentation/paywall_failure_l
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:intl/intl.dart';
 
 @visibleForTesting
 Uri googlePlaySubscriptionManagementUrl() => Uri.parse(
@@ -101,7 +102,9 @@ class _SubscriptionScreenContent extends StatefulWidget {
 class _SubscriptionScreenContentState extends State<_SubscriptionScreenContent>
     with WidgetsBindingObserver {
   bool _paywallTracked = false;
+  bool? _lastHasPro;
   PaymentProduct? _selectedProduct;
+  final _planSelection = ValueNotifier<_PlanChoice?>(null);
 
   String get _paymentProvider =>
       widget.route == PaymentProviderRoute.googlePlay ? 'google' : 'apple';
@@ -209,6 +212,7 @@ class _SubscriptionScreenContentState extends State<_SubscriptionScreenContent>
 
   @override
   void dispose() {
+    _planSelection.dispose();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
@@ -222,7 +226,12 @@ class _SubscriptionScreenContentState extends State<_SubscriptionScreenContent>
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) => _PlanSelectionScope(
+    notifier: _planSelection,
+    child: Builder(builder: _buildWithSelection),
+  );
+
+  Widget _buildWithSelection(BuildContext context) {
     if (widget.route == PaymentProviderRoute.arcPay) {
       return _buildContent(context);
     }
@@ -243,6 +252,16 @@ class _SubscriptionScreenContentState extends State<_SubscriptionScreenContent>
     final hasProSubscription =
         user != null && (monetization?.effectivePro ?? false);
 
+    if (_lastHasPro != null && _lastHasPro != hasProSubscription) {
+      final previousChoice = _planSelection.value;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted && identical(_planSelection.value, previousChoice)) {
+          _planSelection.value = null;
+        }
+      });
+    }
+    _lastHasPro = hasProSubscription;
+
     if (!hasProSubscription && !_paywallTracked) {
       _paywallTracked = true;
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -257,13 +276,21 @@ class _SubscriptionScreenContentState extends State<_SubscriptionScreenContent>
     }
 
     if (hasProSubscription) {
+      final canExtend = activeGrant?.provider == 'arc_pay';
       return Scaffold(
         backgroundColor: ProfileFlowColors.background,
+        floatingActionButton: canExtend
+            ? Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: _SubscribeCta(route: widget.route),
+              )
+            : null,
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
         body: ProfileFlowBackground(
           child: SafeArea(
             bottom: false,
             child: SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(16, 14, 16, 48),
+              padding: EdgeInsets.fromLTRB(16, 14, 16, canExtend ? 116 : 48),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -358,6 +385,11 @@ class _SubscribeCta extends StatelessWidget {
                 ? null
                 : () {
                     _trackCtaClick(context);
+                    final choice = _PlanSelectionScope.of(context).value;
+                    if (choice != null) {
+                      choice.purchase();
+                      return;
+                    }
                     Scrollable.ensureVisible(
                       _IosSubscriptionPlans.globalKey.currentContext ?? context,
                       duration: const Duration(milliseconds: 300),
@@ -382,6 +414,11 @@ class _SubscribeCta extends StatelessWidget {
                 ? null
                 : () {
                     _trackCtaClick(context);
+                    final choice = _PlanSelectionScope.of(context).value;
+                    if (choice != null) {
+                      choice.purchase();
+                      return;
+                    }
                     Scrollable.ensureVisible(
                       _ArcPayOneTimeProPlans.globalKey.currentContext ??
                           context,
@@ -531,28 +568,16 @@ class _ArcPayOneTimeProPlansList extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         for (final product in products) ...[
-          ProfileGlassCard(
-            padding: const EdgeInsets.all(16),
-            onTap: () => _purchase(context, product),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        product.name,
-                        style: context.textTheme.inverseUrbanistSemiBold17,
-                      ),
-                    ],
-                  ),
-                ),
-                Text(
-                  '${(product.amountMinor / 100).toStringAsFixed(0)} ₽',
-                  style: context.textTheme.inverseUrbanistSemiBold20,
-                ),
-              ],
+          _SubscriptionPlanCard(
+            id: product.productId,
+            title: _planTitle(
+              context,
+              product.productId,
+              product.name,
+              durationDays: product.durationDays,
             ),
+            price: _arcPrice(context, product.amountMinor, product.currency),
+            onPurchase: () => _purchase(context, product),
           ),
           const SizedBox(height: 12),
         ],
@@ -720,24 +745,17 @@ class _ArcPayPlansList extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         for (final product in products) ...[
-          ProfileGlassCard(
-            padding: const EdgeInsets.all(16),
-            onTap: () => context.read<ArcPaySubscriptionCubit>().start(
+          _SubscriptionPlanCard(
+            id: product.productId,
+            title: _planTitle(
+              context,
               product.productId,
+              product.name,
+              periodUnit: product.periodCount == 1 ? product.periodUnit : null,
             ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    product.name,
-                    style: context.textTheme.inverseUrbanistSemiBold17,
-                  ),
-                ),
-                Text(
-                  '${(product.amountMinor / 100).toStringAsFixed(0)} ₽',
-                  style: context.textTheme.inverseUrbanistSemiBold20,
-                ),
-              ],
+            price: _arcPrice(context, product.amountMinor, product.currency),
+            onPurchase: () => context.read<ArcPaySubscriptionCubit>().start(
+              product.productId,
             ),
           ),
           const SizedBox(height: 12),
@@ -812,43 +830,28 @@ class _PlanTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final googleTerms = googleSubscriptionTerms(product.rawDetails);
-    return ProfileGlassCard(
-      padding: const EdgeInsets.all(16),
-      onTap: onTap,
-      child: Row(
+    return _SubscriptionPlanCard(
+      id: product.id,
+      title: _planTitle(context, product.id, product.title),
+      price: googleTerms == null ? product.localizedPrice : null,
+      onPurchase: onTap,
+      details: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  product.title,
-                  style: context.textTheme.inverseUrbanistSemiBold17,
-                ),
-                if (googleTerms != null) ...[
-                  const SizedBox(height: 8),
-                  GoogleSubscriptionPrice(
-                    terms: googleTerms,
-                    style: context.textTheme.inverseUrbanistRegular16,
-                  ),
-                ],
-                if (product.description.isNotEmpty) ...[
-                  const SizedBox(height: 4),
-                  Text(
-                    product.description,
-                    style: context.textTheme.inverseUrbanistRegular14.copyWith(
-                      color: ProfileFlowColors.textMuted,
-                    ),
-                  ),
-                ],
-              ],
+          if (googleTerms != null)
+            GoogleSubscriptionPrice(
+              terms: googleTerms,
+              style: context.textTheme.inverseUrbanistRegular16,
             ),
-          ),
-          if (googleTerms == null)
+          if (product.description.isNotEmpty) ...[
+            const SizedBox(height: 6),
             Text(
-              product.localizedPrice,
-              style: context.textTheme.inverseUrbanistSemiBold20,
+              product.description,
+              style: context.textTheme.inverseUrbanistRegular14.copyWith(
+                color: ProfileFlowColors.textMuted,
+              ),
             ),
+          ],
         ],
       ),
     );
@@ -931,7 +934,7 @@ class _SubscriptionInfoCard extends StatelessWidget {
         children: [
           LayoutBuilder(
             builder: (context, constraints) {
-              final artSize = (constraints.maxWidth * .29).clamp(64.0, 108.0);
+              final artSize = (constraints.maxWidth * .36).clamp(100.0, 128.0);
               return Row(
                 children: [
                   Expanded(
@@ -971,12 +974,18 @@ class _SubscriptionInfoCard extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 12),
-                  Image.asset(
-                    'assets/images/sonnik/pro_crystal.webp',
+                  SizedBox(
                     width: artSize,
                     height: artSize,
-                    fit: BoxFit.contain,
-                    excludeFromSemantics: true,
+                    child: Transform.scale(
+                      // Compensate for transparent margins in the source image.
+                      scale: 1.32,
+                      child: Image.asset(
+                        'assets/images/sonnik/pro_crystal.webp',
+                        fit: BoxFit.contain,
+                        excludeFromSemantics: true,
+                      ),
+                    ),
                   ),
                 ],
               );
@@ -1229,5 +1238,151 @@ class _CancelSubscriptionButton extends StatelessWidget {
         mode: LaunchMode.externalApplication,
       );
     }
+  }
+}
+
+class _PlanChoice {
+  const _PlanChoice(this.id, this.purchase);
+  final String id;
+  final VoidCallback purchase;
+}
+
+class _PlanSelectionScope
+    extends InheritedNotifier<ValueNotifier<_PlanChoice?>> {
+  const _PlanSelectionScope({required super.notifier, required super.child});
+
+  static ValueNotifier<_PlanChoice?> of(BuildContext context) => context
+      .dependOnInheritedWidgetOfExactType<_PlanSelectionScope>()!
+      .notifier!;
+}
+
+String _arcPrice(BuildContext context, int minor, String currency) =>
+    NumberFormat.simpleCurrency(
+      locale: Localizations.localeOf(context).toString(),
+      name: currency,
+      decimalDigits: minor % 100 == 0 ? 0 : 2,
+    ).format(minor / 100);
+
+String _planTitle(
+  BuildContext context,
+  String id,
+  String fallback, {
+  int? durationDays,
+  String? periodUnit,
+}) {
+  final unit =
+      periodUnit ??
+      (durationDays == 7
+          ? 'week'
+          : durationDays == 30
+          ? 'month'
+          : durationDays == 365
+          ? 'year'
+          : null);
+  final known =
+      unit ??
+      RegExp(
+        r'(?:^|[._-])(week|month|year)(?:ly)?(?:$|[._-])',
+      ).firstMatch(id.toLowerCase())?.group(1);
+  return switch (known) {
+    'week' => context.l10n.subscriptionPlanWeek,
+    'month' => context.l10n.subscriptionPlanMonth,
+    'year' => context.l10n.subscriptionPlanYear,
+    _ => fallback,
+  };
+}
+
+class _SubscriptionPlanCard extends StatelessWidget {
+  const _SubscriptionPlanCard({
+    required this.id,
+    required this.title,
+    required this.onPurchase,
+    this.price,
+    this.details,
+  });
+  final String id;
+  final String title;
+  final String? price;
+  final Widget? details;
+  final VoidCallback onPurchase;
+
+  @override
+  Widget build(BuildContext context) {
+    final selection = _PlanSelectionScope.of(context);
+    final selected = selection.value?.id == id;
+    final radius = BorderRadius.circular(AsteriaCardRadii.card);
+    return Semantics(
+      selected: selected,
+      inMutuallyExclusiveGroup: true,
+      child: AnimatedContainer(
+        duration: MediaQuery.disableAnimationsOf(context)
+            ? Duration.zero
+            : const Duration(milliseconds: 220),
+        decoration: BoxDecoration(
+          borderRadius: radius,
+          border: Border.all(
+            color: selected ? ProfileFlowColors.accent : Colors.transparent,
+            width: 1.2,
+          ),
+        ),
+        child: ProfileGlassCard(
+          borderRadius: AsteriaCardRadii.card,
+          padding: const EdgeInsets.all(16),
+          onTap: () => selection.value = _PlanChoice(id, onPurchase),
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: context.textTheme.inversePlayfairSemiBold24,
+                    ),
+                    if (price != null) ...[
+                      const SizedBox(height: 10),
+                      Text(
+                        price!,
+                        style: context.textTheme.inversePlayfairSemiBold20
+                            .copyWith(color: ProfileFlowColors.accent),
+                      ),
+                    ],
+                    if (details != null) details!,
+                  ],
+                ),
+              ),
+              const SizedBox(width: 16),
+              ExcludeSemantics(
+                child: AnimatedContainer(
+                  width: 48,
+                  height: 48,
+                  duration: MediaQuery.disableAnimationsOf(context)
+                      ? Duration.zero
+                      : const Duration(milliseconds: 220),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: selected
+                        ? ProfileFlowColors.accent
+                        : ProfileFlowColors.cardStrong,
+                    border: Border.all(
+                      color: selected
+                          ? ProfileFlowColors.accent
+                          : ProfileFlowColors.border,
+                    ),
+                  ),
+                  child: selected
+                      ? Icon(
+                          Icons.check_rounded,
+                          size: 26,
+                          color: ProfileFlowColors.purpleDark,
+                        )
+                      : null,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

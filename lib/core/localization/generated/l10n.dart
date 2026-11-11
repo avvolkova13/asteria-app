@@ -8719,6 +8719,36 @@ class AppLocalizations {
       args: [],
     );
   }
+
+  /// `Week`
+  String get subscriptionPlanWeek {
+    return Intl.message(
+      'Week',
+      name: 'subscriptionPlanWeek',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Month`
+  String get subscriptionPlanMonth {
+    return Intl.message(
+      'Month',
+      name: 'subscriptionPlanMonth',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Year`
+  String get subscriptionPlanYear {
+    return Intl.message(
+      'Year',
+      name: 'subscriptionPlanYear',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<AppLocalizations> {

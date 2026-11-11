@@ -62,5 +62,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "onboardingPage2Description": MessageLookupByLibrary.simpleMessage(
       "Moon phases, daily energy,\nfavourable periods, and guidance",
     ),
+    "subscriptionPlanMonth": MessageLookupByLibrary.simpleMessage("Month"),
+    "subscriptionPlanWeek": MessageLookupByLibrary.simpleMessage("Week"),
+    "subscriptionPlanYear": MessageLookupByLibrary.simpleMessage("Year"),
   };
 }

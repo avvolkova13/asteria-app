@@ -2223,6 +2223,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "subscriptionOpenPaymentAgain": MessageLookupByLibrary.simpleMessage(
       "Открыть оплату снова",
     ),
+    "subscriptionPlanMonth": MessageLookupByLibrary.simpleMessage("Месяц"),
+    "subscriptionPlanWeek": MessageLookupByLibrary.simpleMessage("Неделя"),
+    "subscriptionPlanYear": MessageLookupByLibrary.simpleMessage("Год"),
     "subscriptionPlansUnavailable": MessageLookupByLibrary.simpleMessage(
       "Подписки пока недоступны. Попробуйте позже.",
     ),

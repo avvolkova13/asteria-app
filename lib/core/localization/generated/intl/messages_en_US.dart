@@ -58,5 +58,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "googleSubscriptionPerYear": m21,
     "googleSubscriptionRecurringTerms": m22,
     "googleSubscriptionTrialTerms": m23,
+    "subscriptionPlanMonth": MessageLookupByLibrary.simpleMessage("Month"),
+    "subscriptionPlanWeek": MessageLookupByLibrary.simpleMessage("Week"),
+    "subscriptionPlanYear": MessageLookupByLibrary.simpleMessage("Year"),
   };
 }
