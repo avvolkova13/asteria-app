@@ -104,7 +104,7 @@ class _AffirmationSurface extends StatelessWidget {
 
   static const _radius = BorderRadius.all(Radius.circular(26));
   static const _mood = ScenarioMood.practice;
-  static const _lotus = 'assets/images/affirmation/lavender-clay-lotus.webp';
+  static const _lotus = 'assets/images/scenarios/lotus.webp';
 
   @override
   Widget build(BuildContext context) {

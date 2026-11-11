@@ -14,6 +14,7 @@ import 'package:asteria_app/core/location/device_location_service.dart';
 import 'package:asteria_app/core/location/widgets/current_location_controls.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
+import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
 import 'package:asteria_app/features/home/home.dart';
 import 'package:asteria_app/features/home/presentation/models/day_status.dart';
 import 'package:asteria_app/features/home/presentation/models/day_status_advice.dart';
@@ -1201,14 +1202,21 @@ class _MoonCalendarButton extends StatelessWidget {
         label: context.l10n.openLunarCalendarLabel,
         onTap: activate,
         child: ExcludeSemantics(
-          child: TextButton(
+          child: TextButton.icon(
             onPressed: activate,
+            icon: const LotusRasterIcon(
+              'assets/images/scenarios/calendar.webp',
+              width: 26,
+              height: 26,
+              fit: BoxFit.contain,
+              excludeFromSemantics: true,
+            ),
             style: TextButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 6),
               minimumSize: const Size(44, 44),
               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
             ),
-            child: _GradientText(
+            label: _GradientText(
               text: context.l10n.homeOpenCalendar,
               gradient: _MoonPhaseWidgetState._orangeGradient,
               style: context.textTheme.urbanistSemiBold16.copyWith(
