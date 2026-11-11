@@ -1,101 +1,50 @@
-import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/routing/app_route.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
+import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
+import 'package:asteria_app/features/scenarios/scenario_card_grid.dart'
+    show ScenarioMood;
 import 'package:flutter/material.dart';
 
 class AffirmationOfTheDayWidget extends StatelessWidget {
-  static const double _cardHeight = 264;
-  static const Color _cardBackgroundColor = Color(0xFF1B1433);
-  static const double _flowerWidth = 126;
-  static const double _flowerVisibleHeight = 143;
-  static const double _flowerImageWidth = 154.61;
-  static const double _flowerImageHeight = 231;
-  static const double _flowerImageLeft = -13.33;
-  static const double _flowerImageTop = -16;
-  static const double _flowerTop = 121;
-  static const double _maxTextScaleFactor = 1.2;
-  static const LinearGradient _accentGradient = LinearGradient(
-    colors: [Color(0xFFE6994D), Color(0xFFF3B76A), Color(0xFFE6994D)],
-    stops: [0, 0.50032, 1],
-  );
-
-  const AffirmationOfTheDayWidget({Key? key, required this.text})
-    : super(key: key);
+  const AffirmationOfTheDayWidget({super.key, required this.text});
 
   final String text;
 
   @override
-  Widget build(BuildContext context) {
-    final textScaler = MediaQuery.textScalerOf(context)
-        .clamp(maxScaleFactor: _maxTextScaleFactor);
-
-    return Semantics(
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 16),
+    child: Semantics(
       button: true,
-      label: context.l10n.affirmationOfDay,
       child: LotusTap(
         onTap: () => AffirmationRoute.push(context),
-        child: Container(
-          height: _cardHeight,
-          clipBehavior: Clip.hardEdge,
-          margin: const EdgeInsets.symmetric(horizontal: 16),
-          decoration: BoxDecoration(
-            color: _cardBackgroundColor,
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              return Stack(
-                clipBehavior: Clip.hardEdge,
-                children: [
-                  Positioned(
-                    left: (constraints.maxWidth - _flowerWidth) / 2,
-                    top: _flowerTop,
-                    width: _flowerWidth,
-                    height: _flowerVisibleHeight,
-                    child: ClipRect(
-                      child: Stack(
-                        clipBehavior: Clip.hardEdge,
-                        children: [
-                          Positioned(
-                            left: _flowerImageLeft,
-                            top: _flowerImageTop,
-                            width: _flowerImageWidth,
-                            height: _flowerImageHeight,
-                            child: Image.asset(
-                              'assets/images/home/affirmation_flower_figma.webp',
-                              fit: BoxFit.fill,
-                              cacheWidth: 464,
-                              cacheHeight: 693,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+        child: _AffirmationSurface(
+          text: text,
+          footer: Row(
+            children: [
+              Flexible(
+                child: Text(
+                  context.l10n.allAffirmations,
+                  style: AppTypography.link.copyWith(
+                    color: ScenarioMood.practice.rim,
                   ),
-                  MediaQuery(
-                    data: MediaQuery.of(context)
-                        .copyWith(textScaler: textScaler),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Flexible(child: _Description(text: text)),
-                          const _AffirmationLink(),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              );
-            },
+                ),
+              ),
+              const SizedBox(width: 6),
+              ExcludeSemantics(
+                child: ClayIcon(
+                  Icons.chevron_right,
+                  size: 18,
+                  color: ScenarioMood.practice.rim,
+                ),
+              ),
+            ],
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
 }
 
 class AffirmationUnavailableWidget extends StatelessWidget {
@@ -109,209 +58,137 @@ class AffirmationUnavailableWidget extends StatelessWidget {
   final VoidCallback? onRetry;
 
   @override
-  Widget build(BuildContext context) {
-    return Semantics(
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 16),
+    child: Semantics(
       container: true,
-      label: isLoading
-          ? context.l10n.affirmationLoadingLabel
-          : context.l10n.affirmationUnavailableLabel,
-      child: Container(
-        width: double.infinity,
-        height: AffirmationOfTheDayWidget._cardHeight,
-        clipBehavior: Clip.hardEdge,
-        margin: const EdgeInsets.symmetric(horizontal: 16),
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: AffirmationOfTheDayWidget._cardBackgroundColor,
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Stack(
-          children: [
-            Positioned(
-              right: -24,
-              bottom: -72,
-              width: 154.61,
-              height: 231,
-              child: Opacity(
-                opacity: 0.35,
-                child: Image.asset(
-                  'assets/images/home/affirmation_flower_figma.webp',
-                  fit: BoxFit.fill,
-                  cacheWidth: 464,
-                  cacheHeight: 693,
+      liveRegion: true,
+      child: _AffirmationSurface(
+        text: isLoading
+            ? context.l10n.affirmationLoading
+            : context.l10n.affirmationLoadError,
+        footer: isLoading
+            ? ExcludeSemantics(
+                child: SizedBox.square(
+                  dimension: 23,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: ScenarioMood.practice.rim,
+                  ),
+                ),
+              )
+            : LotusButtons.text(
+                onPressed: onRetry,
+                style: TextButton.styleFrom(
+                  alignment: Alignment.centerLeft,
+                  minimumSize: const Size(44, 44),
+                  padding: EdgeInsets.zero,
+                  foregroundColor: ScenarioMood.practice.rim,
+                ),
+                child: Text(
+                  context.l10n.commonRetry,
+                  semanticsLabel: context.l10n.affirmationRetryLabel,
+                  style: AppTypography.link,
                 ),
               ),
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _GradientText(
-                  context.l10n.affirmationOfDay,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontFamily: 'Lora',
-                    fontSize: 20,
-                    fontWeight: FontWeight.w500,
-                    height: 1.1,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  isLoading
-                      ? context.l10n.affirmationLoading
-                      : context.l10n.affirmationLoadError,
-                  maxLines: 3,
-                  overflow: TextOverflow.ellipsis,
-                  style: context.textTheme.inverseUrbanistRegular16.copyWith(
-                    fontFamily: 'Onest',
-                    height: 1.2,
-                  ),
-                ),
-                const Spacer(),
-                if (isLoading)
-                  const SizedBox(
-                    width: 24,
-                    height: 24,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: AppColors.warning,
-                    ),
-                  )
-                else
-                  Semantics(
-                    button: true,
-                    label: context.l10n.affirmationRetryLabel,
-                    child: LotusButtons.text(
-                      onPressed: onRetry,
-                      style: TextButton.styleFrom(
-                        padding: EdgeInsets.zero,
-                        minimumSize: const Size(96, 44),
-                        alignment: Alignment.centerLeft,
-                      ),
-                      child: _GradientText(
-                        context.l10n.commonRetry,
-                        maxLines: 1,
-                        style: TextStyle(
-                          fontFamily: 'Onest',
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          height: 1.2,
-                        ),
-                      ),
-                    ),
-                  ),
-              ],
-            ),
-          ],
+      ),
+    ),
+  );
+}
+
+class _AffirmationSurface extends StatelessWidget {
+  const _AffirmationSurface({required this.text, required this.footer});
+
+  final String text;
+  final Widget footer;
+
+  static const _radius = BorderRadius.all(Radius.circular(26));
+  static const _mood = ScenarioMood.practice;
+  static const _lotus = 'assets/images/affirmation/lavender-clay-lotus.webp';
+
+  @override
+  Widget build(BuildContext context) {
+    final title = Text(
+      context.l10n.affirmationOfDay,
+      style: AppTypography.h3.copyWith(color: AppColors.textInverse),
+    );
+    final quote = Text(
+      text,
+      style: AppTypography.text1.copyWith(color: AppColors.cardTinted),
+    );
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        borderRadius: _radius,
+        gradient: LinearGradient(
+          begin: Alignment.topRight,
+          end: Alignment.bottomLeft,
+          colors: [_mood.rim, _mood.ground, _mood.mist.withValues(alpha: .65)],
+          stops: const [0, .62, 1],
         ),
       ),
-    );
-  }
-}
-
-class _Description extends StatelessWidget {
-  const _Description({required this.text});
-
-  final String text;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _GradientText(
-          context.l10n.affirmationOfDay,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: TextStyle(
-            fontFamily: 'Lora',
-            fontSize: 20,
-            fontWeight: FontWeight.w500,
-            height: 1.1,
-            letterSpacing: 0,
+      child: Padding(
+        padding: const EdgeInsets.all(1.25),
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            borderRadius:
+                _radius - const BorderRadius.all(Radius.circular(1.25)),
+            gradient: RadialGradient(
+              center: const Alignment(.79, -.72),
+              radius: 1.24,
+              colors: [
+                Color.lerp(_mood.mist, _mood.ground, .28)!,
+                _mood.ground,
+                Color.lerp(_mood.ground, AppColorsDark.homeCanvas, .60)!,
+              ],
+              stops: const [0, .51, 1],
+            ),
           ),
-        ),
-        const SizedBox(height: 8),
-        Flexible(
-          child: Text(
-            text,
-            maxLines: 4,
-            overflow: TextOverflow.ellipsis,
-            style: context.textTheme.inverseUrbanistRegular16.copyWith(
-              fontFamily: 'Onest',
-              height: 1.2,
-              letterSpacing: -0.408,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 16, 16, 16),
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final wideQuote =
+                    constraints.maxWidth < 290 ||
+                    MediaQuery.textScalerOf(context).scale(16) > 20 ||
+                    text.length > 90;
+                final art = LotusRasterIcon(
+                  _lotus,
+                  width: wideQuote ? 86 : 116,
+                  height: wideQuote ? 57 : 78,
+                  fit: BoxFit.contain,
+                  excludeFromSemantics: true,
+                );
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              title,
+                              if (!wideQuote) ...[
+                                const SizedBox(height: 10),
+                                quote,
+                              ],
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        art,
+                      ],
+                    ),
+                    if (wideQuote) ...[const SizedBox(height: 10), quote],
+                    const SizedBox(height: 16),
+                    footer,
+                  ],
+                );
+              },
             ),
           ),
         ),
-      ],
-    );
-  }
-}
-
-class _AffirmationLink extends StatelessWidget {
-  const _AffirmationLink();
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Flexible(
-          child: _GradientText(
-            context.l10n.allAffirmations,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              fontFamily: 'Onest',
-              fontSize: 16,
-              fontWeight: FontWeight.w400,
-              height: 1.2,
-              letterSpacing: -0.408,
-            ),
-          ),
-        ),
-        const SizedBox(width: 16),
-        ClayAssetIcon(
-          'assets/icons/home_affirmation_link.svg',
-          width: 24,
-          height: 24,
-          excludeFromSemantics: true,
-        ),
-      ],
-    );
-  }
-}
-
-class _GradientText extends StatelessWidget {
-  const _GradientText(
-    this.text, {
-    required this.style,
-    this.maxLines,
-    this.overflow,
-  });
-
-  final String text;
-  final TextStyle style;
-  final int? maxLines;
-  final TextOverflow? overflow;
-
-  @override
-  Widget build(BuildContext context) {
-    return ShaderMask(
-      blendMode: BlendMode.srcIn,
-      shaderCallback: (bounds) {
-        return AffirmationOfTheDayWidget._accentGradient.createShader(
-          Offset.zero & bounds.size,
-        );
-      },
-      child: Text(
-        text,
-        maxLines: maxLines,
-        overflow: overflow,
-        style: style.copyWith(color: AppColors.textInverse),
       ),
     );
   }
