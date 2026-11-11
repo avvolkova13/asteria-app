@@ -1,4 +1,5 @@
 import 'package:asteria_app/app/data/models/affirmation/affirmation_model.dart';
+import 'package:asteria_app/core/ui_kit/card_radii.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 import 'package:flutter/material.dart';
@@ -47,10 +48,10 @@ class AffirmationCardWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
-      borderRadius: BorderRadius.circular(24),
+      borderRadius: BorderRadius.circular(AsteriaCardRadii.card),
       child: Container(
         foregroundDecoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(AsteriaCardRadii.card),
           border: Border.all(
             color: AppColors.white.withValues(alpha: borderOpacity),
           ),
@@ -58,7 +59,39 @@ class AffirmationCardWidget extends StatelessWidget {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            Image.asset(imageAssetPath, fit: BoxFit.cover),
+            // Reuse the portrait scene's ambient colours outside its frame.
+            Image.asset(
+              imageAssetPath,
+              fit: BoxFit.fill,
+              cacheWidth: 3,
+              excludeFromSemantics: true,
+            ),
+            LayoutBuilder(
+              builder: (_, bounds) => Center(
+                child: SizedBox(
+                  width: bounds.maxHeight * 450 / 560,
+                  height: bounds.maxHeight,
+                  child: ShaderMask(
+                    blendMode: BlendMode.dstIn,
+                    shaderCallback: const LinearGradient(
+                      colors: [
+                        Colors.transparent,
+                        Colors.white,
+                        Colors.white,
+                        Colors.transparent,
+                      ],
+                      stops: [0, .09, .91, 1],
+                    ).createShader,
+                    child: Image.asset(
+                      imageAssetPath,
+                      fit: BoxFit.cover,
+                      alignment: Alignment.topCenter,
+                      excludeFromSemantics: true,
+                    ),
+                  ),
+                ),
+              ),
+            ),
             const DecoratedBox(
               decoration: BoxDecoration(
                 gradient: LinearGradient(

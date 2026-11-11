@@ -4,7 +4,6 @@ import 'package:asteria_app/core/analytics/product_analytics_service.dart';
 import 'package:asteria_app/core/di/di.dart';
 import 'package:asteria_app/core/routing/app_route.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
-import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/features/anakra_chat/presentation/provider/anakra_chat_provider.dart';
 import 'package:asteria_app/features/home/localization/home_localization_contract.dart';
 import 'package:asteria_app/features/home/presentation/cubit/home_cubit.dart';
@@ -62,18 +61,18 @@ class _HomeScreenState extends State<HomeScreen> {
       },
       child: BlocBuilder<HomeCubit, HomeState>(
         builder: (context, state) {
-          return switch (state) {
+          final content = switch (state) {
             HomeInitial() => const Scaffold(
-              backgroundColor: Color(0xFFEEEAFD),
+              backgroundColor: AppColorsDark.homeCanvas,
               body: Center(child: LoadingWidget()),
             ),
             HomeLoading() => const Scaffold(
-              backgroundColor: Color(0xFFEEEAFD),
+              backgroundColor: AppColorsDark.homeCanvas,
               body: Center(child: LoadingWidget()),
             ),
             HomeLoaded() => _buildHomeScreen(context, state),
             HomeLoggedOut() => const Scaffold(
-              backgroundColor: Color(0xFFEEEAFD),
+              backgroundColor: AppColorsDark.homeCanvas,
               body: SizedBox.shrink(),
             ),
             HomeError() => _buildErrorScaffold(
@@ -83,6 +82,24 @@ class _HomeScreenState extends State<HomeScreen> {
               () => context.read<HomeCubit>().start(),
             ),
           };
+          return ColoredBox(
+            color: AppColorsDark.homeCanvas,
+            child: AnimatedSwitcher(
+              duration: MediaQuery.disableAnimationsOf(context)
+                  ? Duration.zero
+                  : const Duration(milliseconds: 320),
+              switchInCurve: Curves.easeInOut,
+              switchOutCurve: Curves.easeInOut,
+              child: KeyedSubtree(
+                key: ValueKey(
+                  state is HomeInitial || state is HomeLoading
+                      ? HomeLoading
+                      : state.runtimeType,
+                ),
+                child: content,
+              ),
+            ),
+          );
         },
       ),
     );
@@ -93,7 +110,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final aiAstrologerAsset = YearAnimalAsset.forYear(DateTime.now().year);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFEEEAFD),
+      backgroundColor: AppColorsDark.homeCanvas,
       body: HomeTabContents(
         index: state.currentTabIndex,
         children: [
@@ -126,7 +143,7 @@ class _HomeScreenState extends State<HomeScreen> {
     VoidCallback onPressed,
   ) {
     return Scaffold(
-      backgroundColor: const Color(0xFFEEEAFD),
+      backgroundColor: AppColorsDark.homeCanvas,
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -135,7 +152,9 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               Text(
                 message,
-                style: Theme.of(context).textTheme.titleLarge,
+                style: Theme.of(
+                  context,
+                ).textTheme.titleLarge?.copyWith(color: AppColors.textInverse),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 20),
@@ -148,8 +167,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-/// Keeps each tab's scroll, input and navigation state while presenting only
-/// the selected tab. Nested entrances share this first visible transition.
+/// Each tab keeps its scroll and form state. During a handoff only the new
+/// tab can receive input or run its own tickers.
 class HomeTabContents extends StatelessWidget {
   const HomeTabContents({
     super.key,
@@ -162,15 +181,36 @@ class HomeTabContents extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AsteriaEntrance(
-      replayKey: index,
-      child: IndexedStack(
-        index: index,
-        children: [
-          for (var i = 0; i < children.length; i++)
-            TickerMode(enabled: i == index, child: children[i]),
-        ],
-      ),
+    final duration = MediaQuery.disableAnimationsOf(context)
+        ? Duration.zero
+        : const Duration(milliseconds: 300);
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        for (var i = 0; i < children.length; i++)
+          TweenAnimationBuilder<double>(
+            tween: Tween<double>(
+              begin: i == index ? 1 : 0,
+              end: i == index ? 1 : 0,
+            ),
+            duration: duration,
+            curve: Curves.easeInOut,
+            builder: (context, opacity, child) => Offstage(
+              offstage: opacity == 0,
+              child: Opacity(opacity: opacity, child: child),
+            ),
+            child: IgnorePointer(
+              ignoring: i != index,
+              child: ExcludeSemantics(
+                excluding: i != index,
+                child: ExcludeFocus(
+                  excluding: i != index,
+                  child: TickerMode(enabled: i == index, child: children[i]),
+                ),
+              ),
+            ),
+          ),
+      ],
     );
   }
 }

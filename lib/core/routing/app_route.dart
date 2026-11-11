@@ -1,4 +1,3 @@
-import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/features/monetization/presentation/contextual_purchase_page.dart';
 import 'package:asteria_app/features/about_us/about_us_screen.dart';
 import 'package:asteria_app/features/achievements/presentation/achievements_screen.dart';
@@ -83,8 +82,7 @@ Widget $unimplementedRoute(String name) {
 
 /// Native iOS navigation still owns the edge swipe and route result.
 class AsteriaPage<T> extends CupertinoPage<T> {
-  AsteriaPage({required Widget child, super.key, super.name})
-    : super(child: AsteriaEntrance(child: child));
+  const AsteriaPage({required super.child, super.key, super.name});
 }
 
 class AppRoute extends GoRoute {
@@ -101,15 +99,15 @@ class AppRoute extends GoRoute {
          path: path ?? name,
          pageBuilder: child == null
              ? (pageBuilder ??
-                   (context, state) => NoTransitionPage<void>(
+                   (context, state) => AsteriaPage<void>(
                      name: name,
                      key: state.pageKey,
-                     child: AsteriaEntrance(child: $unimplementedRoute(name)),
+                     child: $unimplementedRoute(name),
                    ))
-             : (context, state) => NoTransitionPage<void>(
+             : (context, state) => AsteriaPage<void>(
                  name: name,
                  key: state.pageKey,
-                 child: AsteriaEntrance(child: child),
+                 child: child,
                ),
        );
 }

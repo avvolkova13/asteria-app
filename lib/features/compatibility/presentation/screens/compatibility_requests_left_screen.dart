@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/card_radii.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
@@ -181,6 +182,7 @@ class _SubscriptionOfferCard extends StatelessWidget {
     return LotusTap(
       onTap: onTap,
       child: CompatibilityGlassCard(
+        borderRadius: BorderRadius.circular(AsteriaCardRadii.card),
         padding: const EdgeInsets.all(16),
         gradient: _glassCardGradient,
         child: ConstrainedBox(
@@ -212,8 +214,8 @@ class _SubscriptionOfferCard extends StatelessWidget {
                 ),
               ),
               Positioned(
-                right: -2,
-                bottom: -4,
+                right: 0,
+                bottom: 0,
                 child: Image.asset(
                   'assets/images/sonnik/pro_crystal.webp',
                   width: 89,
@@ -242,7 +244,7 @@ class _BuyAttemptsCard extends StatelessWidget {
         height: 93,
         child: CompatibilityGlassCard(
           padding: const EdgeInsets.all(8),
-          borderRadius: const BorderRadius.all(Radius.circular(8)),
+          borderRadius: const BorderRadius.all(Radius.circular(AsteriaCardRadii.compact)),
           gradient: _glassCardGradient,
           child: Stack(
             children: [

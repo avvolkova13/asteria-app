@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/card_radii.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
 import 'package:asteria_app/core/const/pricing_catalog.dart';
 import 'package:asteria_app/core/routing/app_route.dart';
@@ -109,7 +110,7 @@ class _HistoryButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return ProfileGlassCard(
       onTap: onTap,
-      borderRadius: 14,
+      borderRadius: AsteriaCardRadii.compact,
       padding: const EdgeInsets.symmetric(horizontal: 14),
       color: const Color(0x5C72418A),
       child: SizedBox(
@@ -227,7 +228,7 @@ class _WhereToSpend extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ProfileGlassCard(
-      borderRadius: 8,
+      borderRadius: AsteriaCardRadii.card,
       padding: const EdgeInsets.all(16),
       color: const Color(0x6672418A),
       child: Column(

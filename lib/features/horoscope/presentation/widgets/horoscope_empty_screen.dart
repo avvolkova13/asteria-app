@@ -1,3 +1,5 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
+import 'package:asteria_app/core/ui_kit/card_radii.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/core/utils/enums.dart';
@@ -94,7 +96,7 @@ class _InsideCard extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(16, 15, 12, 14),
       decoration: BoxDecoration(
         color: _HoroscopePaywall.glass,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AsteriaCardRadii.card),
         border: Border.all(color: _HoroscopePaywall.glassBorder, width: 0.7),
       ),
       child: Stack(
@@ -121,10 +123,12 @@ class _InsideCard extends StatelessWidget {
                       right: wandRight,
                       top: wandTop,
                       child: IgnorePointer(
-                        child: _PaywallWandImage(
+                        child: Image.asset(
+                          'assets/images/home/natal_paywall_wand.webp',
                           width: wandWidth,
                           height: wandHeight,
-                          horizontalCrop: isCompact ? 0.16 : 0.42,
+                          fit: BoxFit.contain,
+                          excludeFromSemantics: true,
                         ),
                       ),
                     ),
@@ -144,23 +148,20 @@ class _InsideCard extends StatelessWidget {
                             children: [
                               _InsideFeatureItem(
                                 title: '${context.l10n.horoscopeEssence} ',
-                                description: context
-                                    .l10n
-                                    .horoscopeEssenceDescription,
+                                description:
+                                    context.l10n.horoscopeEssenceDescription,
                               ),
                               SizedBox(height: 8),
                               _InsideFeatureItem(
                                 title: '${context.l10n.horoscopeLifeAreas} ',
-                                description: context
-                                    .l10n
-                                    .horoscopeLifeAreasDescription,
+                                description:
+                                    context.l10n.horoscopeLifeAreasDescription,
                               ),
                               SizedBox(height: 8),
                               _InsideFeatureItem(
                                 title: '${context.l10n.horoscopeEvolution} ',
-                                description: context
-                                    .l10n
-                                    .horoscopeEvolutionDescription,
+                                description:
+                                    context.l10n.horoscopeEvolutionDescription,
                               ),
                             ],
                           ),
@@ -191,7 +192,13 @@ class _InsideFeatureItem extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.only(top: 1),
-          child: const _PaywallSpriteIcon.crescent(),
+          child: const LotusRasterIcon(
+            'assets/icons/clay/moon_icon.webp',
+            width: 19,
+            height: 19,
+            fit: BoxFit.contain,
+            excludeFromSemantics: true,
+          ),
         ),
         const SizedBox(width: 4),
         Expanded(
@@ -237,11 +244,12 @@ class _ChapterIncludesList extends StatelessWidget {
         const SizedBox(height: 8),
         _ChapterItem(text: context.l10n.horoscopeWeakPoints, isStrong: true),
         const SizedBox(height: 8),
-        _ChapterItem(text: context.l10n.horoscopePersonalAdvice, isStrong: true),
-        const SizedBox(height: 8),
         _ChapterItem(
-          text: context.l10n.horoscopeLifetimeDescription,
+          text: context.l10n.horoscopePersonalAdvice,
+          isStrong: true,
         ),
+        const SizedBox(height: 8),
+        _ChapterItem(text: context.l10n.horoscopeLifetimeDescription),
       ],
     );
   }
@@ -251,10 +259,7 @@ class _ChapterItem extends StatelessWidget {
   final String text;
   final bool isStrong;
 
-  const _ChapterItem({
-    required this.text,
-    this.isStrong = false,
-  });
+  const _ChapterItem({required this.text, this.isStrong = false});
 
   @override
   Widget build(BuildContext context) {
@@ -272,104 +277,19 @@ class _ChapterItem extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.only(top: 3),
-          child: const _PaywallSpriteIcon.star(),
+          child: const LotusRasterIcon(
+            'assets/icons/clay/star_icon.webp',
+            width: 19,
+            height: 19,
+            fit: BoxFit.contain,
+            excludeFromSemantics: true,
+          ),
         ),
         const SizedBox(width: 4),
         Expanded(
           child: Text(text, style: isStrong ? strongStyle : regularStyle),
         ),
       ],
-    );
-  }
-}
-
-class _PaywallWandImage extends StatelessWidget {
-  final double width;
-  final double height;
-  final double horizontalCrop;
-
-  const _PaywallWandImage({
-    required this.width,
-    required this.height,
-    required this.horizontalCrop,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final imageWidth = width * 3.2463;
-    final imageHeight = height * 2.1642;
-
-    return SizedBox(
-      width: width,
-      height: height,
-      child: ClipRect(
-        child: OverflowBox(
-          alignment: Alignment.topLeft,
-          minWidth: imageWidth,
-          maxWidth: imageWidth,
-          minHeight: imageHeight,
-          maxHeight: imageHeight,
-          child: Transform.translate(
-            offset: Offset(-width * horizontalCrop, -height * 0.0419),
-            child: Image.asset(
-              'assets/images/horoscope/year_paywall_wand.webp',
-              width: imageWidth,
-              height: imageHeight,
-              fit: BoxFit.fill,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-enum _PaywallSpriteCrop { crescent, star }
-
-class _PaywallSpriteIcon extends StatelessWidget {
-  final _PaywallSpriteCrop crop;
-
-  const _PaywallSpriteIcon.crescent() : crop = _PaywallSpriteCrop.crescent;
-
-  const _PaywallSpriteIcon.star() : crop = _PaywallSpriteCrop.star;
-
-  @override
-  Widget build(BuildContext context) {
-    const size = 19.0;
-    final imageWidth = switch (crop) {
-      _PaywallSpriteCrop.crescent => size * 2.744,
-      _PaywallSpriteCrop.star => size * 2.7991,
-    };
-    final imageHeight = switch (crop) {
-      _PaywallSpriteCrop.crescent => size * 2.6968,
-      _PaywallSpriteCrop.star => size * 2.732,
-    };
-    final offset = switch (crop) {
-      _PaywallSpriteCrop.crescent => Offset(-size * 1.5164, -size * 1.4452),
-      _PaywallSpriteCrop.star => Offset(-size * 0.2433, -size * 1.4597),
-    };
-
-    return SizedBox(
-      width: size,
-      height: size,
-      child: ClipRect(
-        child: OverflowBox(
-          alignment: Alignment.topLeft,
-          minWidth: imageWidth,
-          maxWidth: imageWidth,
-          minHeight: imageHeight,
-          maxHeight: imageHeight,
-          child: Transform.translate(
-            offset: offset,
-            child: Image.asset(
-              'assets/images/horoscope/year_paywall_moon.webp',
-              width: imageWidth,
-              height: imageHeight,
-              fit: BoxFit.fill,
-            ),
-          ),
-        ),
-      ),
     );
   }
 }

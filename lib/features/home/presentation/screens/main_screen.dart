@@ -79,11 +79,7 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   void _trackAffirmationCardViewOnce() {
-    if (!_isVisible ||
-        _hasTrackedAffirmationCardView ||
-        _contentProvider.affirmations.isEmpty) {
-      return;
-    }
+    if (!_isVisible || _hasTrackedAffirmationCardView) return;
 
     _hasTrackedAffirmationCardView = true;
     di.get<ProductAnalyticsService>().trackHomeCardView(
@@ -178,11 +174,7 @@ class _MainScreenState extends State<MainScreen> {
                             const AsteriaEntrance(child: MoonPhaseWidget()),
                             const SizedBox(height: 24),
                             _buildSubscriptionPromoSection(),
-                            AsteriaEntrance(
-                              replayKey:
-                                  _contentProvider.affirmations.isNotEmpty,
-                              child: _buildAffirmationCard(),
-                            ),
+                            AsteriaEntrance(child: _buildAffirmationCard()),
                             const SizedBox(height: 24),
                             _buildDailySymbolWidget(state),
                             const SizedBox(height: 24),
@@ -201,33 +193,34 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   Widget _buildAffirmationCard() {
-    if (_contentProvider.affirmations.isEmpty) {
-      return AffirmationUnavailableWidget(
-        isLoading: _contentProvider.isLoadingContent,
-        onRetry: _contentProvider.isLoadingContent
-            ? null
-            : () {
-                _contentProvider.loadContent();
-              },
-      );
-    }
-
-    // Affirmation widget owns its own onTap (navigates to AffirmationRoute
-    // internally). Wrap in a passive Listener so analytics doesn't hijack the
-    // gesture from the child.
-    return Listener(
-      behavior: HitTestBehavior.translucent,
-      onPointerDown: (_) {
+    void track(String action) =>
         di.get<ProductAnalyticsService>().trackHomeCardClick(
           funnelType: FunnelType.affirmations,
           entryPointId: 'home_affirmation_card',
           position: 0,
-          ctaName: 'open_affirmation',
+          ctaName: action,
         );
+
+    return AffirmationOfTheDayWidget(
+      onPlay: () => track('play_affirmation'),
+      onOpenCollection: () async {
+        if (_contentProvider.affirmations.isEmpty) {
+          await _contentProvider.loadContent();
+          if (!mounted ||
+              !(ModalRoute.isCurrentOf(context) ?? true) ||
+              !TickerMode.valuesOf(context).enabled) {
+            return;
+          }
+          if (_contentProvider.affirmations.isEmpty) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(context.l10n.affirmationLoadError)),
+            );
+            return;
+          }
+        }
+        track('open_affirmation');
+        if (mounted) AffirmationRoute.push(context);
       },
-      child: AffirmationOfTheDayWidget(
-        text: _contentProvider.getTodayAffirmation().text,
-      ),
     );
   }
 

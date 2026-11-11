@@ -57,8 +57,9 @@ void main() {
     expect(find.text(labels.energyOfDay), findsNothing);
     final profileLabel = labels.navProfile;
     final avatar = find.byTooltip(profileLabel);
-    expect(find.text(profileLabel), findsNothing);
-    expect(tester.getSize(avatar), const Size(44, 44));
+    expect(find.text(profileLabel), findsOneWidget);
+    expect(tester.getSize(avatar).width, greaterThan(44));
+    expect(tester.getSize(avatar).height, greaterThanOrEqualTo(44));
     await tester.tap(avatar);
     await tester.pumpAndSettle();
     expect(find.byType(ProfileScreen), findsOneWidget);

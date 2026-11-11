@@ -31,12 +31,16 @@ class ProfilePaymentRoute extends AppRoute {
         path: ProfileRoutes.profilePaymentRouteName,
         pageBuilder: (context, state) {
           return AsteriaPage(
+            key: state.pageKey,
+            name: state.name,
             child: Scaffold(body: Center(child: Text('Profile Payment'))),
           );
         },
       );
 
-  static void go(BuildContext context) => context.goNamed(ProfileRoutes.profilePaymentRouteName);
+  static void go(BuildContext context) =>
+      context.goNamed(ProfileRoutes.profilePaymentRouteName);
 
-  static void push(BuildContext context) => context.pushNamed(ProfileRoutes.profilePaymentRouteName);
+  static void push(BuildContext context) =>
+      context.pushNamed(ProfileRoutes.profilePaymentRouteName);
 }

@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/card_radii.dart';
 import 'dart:ui' as ui;
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
@@ -39,7 +40,7 @@ class AchievementCard extends StatelessWidget {
       value: remaining,
       child: ExcludeSemantics(
         child: StaticGlassSurface(
-          radius: 16,
+          radius: AsteriaCardRadii.tile,
           tint: AchievementsStyle.card,
           child: Padding(
             padding: const EdgeInsets.all(8),
@@ -133,7 +134,7 @@ class _Artwork extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => ClipRRect(
-    borderRadius: BorderRadius.circular(32),
+    borderRadius: BorderRadius.circular(AsteriaCardRadii.compact),
     child: SizedBox.square(
       dimension: 112,
       child: Stack(

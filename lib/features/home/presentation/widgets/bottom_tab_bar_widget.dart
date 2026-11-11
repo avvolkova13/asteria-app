@@ -5,14 +5,15 @@ import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/physics.dart';
 
-const _barContentHeight = 58.0;
+const _barContentHeight = 66.0;
 const _barTopPadding = 10.0;
-const _barHorizontalPadding = 25.0;
-const _compactHorizontalPadding = 16.0;
-const _buttonGap = 16.0;
-const _compactButtonGap = 10.0;
-const _tabsHeight = 50.0;
+const _barHorizontalPadding = 14.0;
+const _compactHorizontalPadding = 8.0;
+const _buttonGap = 9.0;
+const _compactButtonGap = 6.0;
+const _tabsHeight = 62.0;
 const _barBottomPadding = 8.0;
 const _aiButtonSize = 58.0;
 
@@ -76,9 +77,7 @@ class BottomTabBarWidget extends StatelessWidget {
                           onTap: onAiAstrologerPressed,
                           behavior: HitTestBehavior.opaque,
                           child: _AnakraIdleMotion(
-                            child: _AiAstrologerButton(
-                              assetPath: aiAstrologerAsset,
-                            ),
+                            assetPath: aiAstrologerAsset,
                           ),
                         ),
                       )
@@ -95,12 +94,11 @@ class BottomTabBarWidget extends StatelessWidget {
   }
 }
 
-/// A small continuous float, sampled at 25 fps. Only the badge transform
-/// updates; the original artwork and the chat button's hit area stay intact.
+/// Only the portrait and its light move. The chat target and shell stay still.
 class _AnakraIdleMotion extends StatefulWidget {
-  const _AnakraIdleMotion({required this.child});
+  const _AnakraIdleMotion({required this.assetPath});
 
-  final Widget child;
+  final String assetPath;
 
   @override
   State<_AnakraIdleMotion> createState() => _AnakraIdleMotionState();
@@ -164,24 +162,21 @@ class _AnakraIdleMotionState extends State<_AnakraIdleMotion>
   Widget build(BuildContext context) {
     final angle = 2 * math.pi * _ticks / _cycleTicks;
     return RepaintBoundary(
-      child: Transform(
-        alignment: Alignment.center,
-        transformHitTests: false,
-        transform: Matrix4.translationValues(0, -1.6 * math.sin(angle), 0)
-          ..rotateZ(0.025 * math.sin(angle)),
-        child: widget.child,
-      ),
+      child: _AiAstrologerButton(assetPath: widget.assetPath, angle: angle),
     );
   }
 }
 
 class _AiAstrologerButton extends StatelessWidget {
-  const _AiAstrologerButton({required this.assetPath});
+  const _AiAstrologerButton({required this.assetPath, required this.angle});
 
   final String assetPath;
+  final double angle;
 
   @override
   Widget build(BuildContext context) {
+    final breath = math.sin(angle);
+    final glint = math.pow(math.max(0.0, math.sin(angle - .25)), 4).toDouble();
     return SizedBox(
       width: _aiButtonSize,
       height: _aiButtonSize,
@@ -197,17 +192,36 @@ class _AiAstrologerButton extends StatelessWidget {
             child: CustomPaint(
               painter: _MessageBubbleBackgroundPainter(),
               child: Center(
-                child: Image.asset(
-                  assetPath,
-                  width: 46,
-                  height: 46,
-                  fit: BoxFit.contain,
-                  filterQuality: FilterQuality.medium,
-                  excludeFromSemantics: true,
+                child: Transform(
+                  alignment: Alignment.bottomCenter,
+                  transformHitTests: false,
+                  transform:
+                      Matrix4.translationValues(.55 * breath, -1.65 * breath, 0)
+                        ..rotateZ(.043 * breath)
+                        ..scaleByDouble(
+                          1 + .024 * breath,
+                          1 + .035 * breath,
+                          1,
+                          1,
+                        ),
+                  child: Image.asset(
+                    assetPath,
+                    width: 46,
+                    height: 46,
+                    fit: BoxFit.contain,
+                    filterQuality: FilterQuality.medium,
+                    excludeFromSemantics: true,
+                  ),
                 ),
               ),
             ),
           ),
+          if (glint > 0)
+            Positioned.fill(
+              child: IgnorePointer(
+                child: CustomPaint(painter: _AnakraGlint(glint)),
+              ),
+            ),
           CustomPaint(
             size: const Size.square(_aiButtonSize),
             painter: _MessageBubbleBorderPainter(),
@@ -216,6 +230,41 @@ class _AiAstrologerButton extends StatelessWidget {
       ),
     );
   }
+}
+
+class _AnakraGlint extends CustomPainter {
+  const _AnakraGlint(this.intensity);
+
+  final double intensity;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = Offset(size.width * .78, size.height * .24);
+    final glow = Paint()
+      ..shader = RadialGradient(
+        colors: [
+          AppColors.cardTinted.withValues(alpha: .45 * intensity),
+          AppColors.cardTinted.withValues(alpha: 0),
+        ],
+      ).createShader(Rect.fromCircle(center: center, radius: 8));
+    canvas.drawCircle(center, 8, glow);
+    final r = 2.6 + 1.5 * intensity;
+    final flare = Path()
+      ..moveTo(0, -r)
+      ..quadraticBezierTo(0, 0, r * .72, 0)
+      ..quadraticBezierTo(0, 0, 0, r)
+      ..quadraticBezierTo(0, 0, -r * .72, 0)
+      ..quadraticBezierTo(0, 0, 0, -r)
+      ..close();
+    canvas.drawPath(
+      flare.shift(center),
+      Paint()..color = AppColors.white.withValues(alpha: .86 * intensity),
+    );
+  }
+
+  @override
+  bool shouldRepaint(_AnakraGlint oldDelegate) =>
+      oldDelegate.intensity != intensity;
 }
 
 class _MessageBubbleClipper extends CustomClipper<Path> {
@@ -335,7 +384,12 @@ class _LiquidTabStripState extends State<_LiquidTabStrip>
     vsync: this,
     duration: const Duration(milliseconds: 145),
   );
-  static const _settle = Duration(milliseconds: 400);
+  static final _spring = SpringDescription.withDampingRatio(
+    mass: 1,
+    stiffness: 380,
+    ratio: .98,
+  );
+  int? _target;
   static const _assets = ['home', 'personal', 'moon', 'practice'];
 
   bool _reduced = false;
@@ -356,15 +410,27 @@ class _LiquidTabStripState extends State<_LiquidTabStrip>
   }
 
   void _settleOn(int index) {
+    final destination = index.toDouble();
     if (_reduced) {
-      _position.value = index.toDouble();
-    } else {
-      _position.animateTo(
-        index.toDouble(),
-        duration: _settle,
-        curve: const ElasticOutCurve(.98),
-      );
+      _position.value = destination;
+      return;
     }
+    if (_target == index && _position.isAnimating) return;
+    _target = index;
+    final velocity = _position.velocity.clamp(-14.0, 14.0);
+    if ((_position.value - destination).abs() < .001 && velocity.abs() < .01) {
+      _position.value = destination;
+      return;
+    }
+    _position.animateWith(
+      SpringSimulation(
+        _spring,
+        _position.value,
+        destination,
+        velocity,
+        snapToEnd: true,
+      ),
+    );
   }
 
   @override
@@ -419,7 +485,6 @@ class _LiquidTabStripState extends State<_LiquidTabStrip>
                 _origin = logical(e.localPosition.dx);
                 _candidate = indexAt(e.localPosition.dx);
                 _startIndex = _candidate.toDouble();
-                _settleOn(_candidate);
                 if (!_reduced) _lift.forward();
               },
               onPointerCancel: (e) {
@@ -433,12 +498,14 @@ class _LiquidTabStripState extends State<_LiquidTabStrip>
                 if (_pointer != e.pointer) return;
                 _pointer = null;
                 _lift.reverse();
-                if (!_dragging) _settleOn(widget.index);
               },
               child: GestureDetector(
                 excludeFromSemantics: true,
                 behavior: HitTestBehavior.opaque,
-                onHorizontalDragStart: (_) => _dragging = true,
+                onHorizontalDragStart: (_) {
+                  _dragging = true;
+                  _target = null;
+                },
                 onHorizontalDragUpdate: (e) {
                   if (!_dragging) return;
                   _candidate = indexAt(e.localPosition.dx);
@@ -469,7 +536,10 @@ class _LiquidTabStripState extends State<_LiquidTabStrip>
                         for (var i = 0; i < labels.length; i++)
                           Expanded(
                             child: LotusFeedback(
-                              onActivate: () => widget.onChanged(i),
+                              onActivate: () {
+                                _settleOn(i);
+                                widget.onChanged(i);
+                              },
                               keyboard: true,
                               builder: (activate) => Semantics(
                                 button: true,
@@ -492,27 +562,34 @@ class _LiquidTabStripState extends State<_LiquidTabStrip>
                                             fit: BoxFit.contain,
                                             excludeFromSemantics: true,
                                           ),
+                                          const SizedBox(height: 2),
                                           Flexible(
-                                            child: FittedBox(
-                                              fit: BoxFit.scaleDown,
-                                              child: Text(
-                                                labels[i],
-                                                maxLines: 1,
-                                                style:
-                                                    (widget.index == i
-                                                            ? AppTypography
-                                                                  .tabBarSemiBold
-                                                            : AppTypography
-                                                                  .tabBar)
-                                                        .copyWith(
-                                                          color: ink.withValues(
-                                                            alpha:
-                                                                widget.index ==
-                                                                    i
-                                                                ? 1
-                                                                : .78,
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                    horizontal: 4,
+                                                  ),
+                                              child: FittedBox(
+                                                fit: BoxFit.scaleDown,
+                                                child: Text(
+                                                  labels[i],
+                                                  maxLines: 1,
+                                                  style:
+                                                      (widget.index == i
+                                                              ? AppTypography
+                                                                    .tabBarSemiBold
+                                                              : AppTypography
+                                                                    .tabBar)
+                                                          .copyWith(
+                                                            color: ink.withValues(
+                                                              alpha:
+                                                                  widget.index ==
+                                                                      i
+                                                                  ? 1
+                                                                  : .78,
+                                                            ),
                                                           ),
-                                                        ),
+                                                ),
                                               ),
                                             ),
                                           ),
@@ -533,10 +610,19 @@ class _LiquidTabStripState extends State<_LiquidTabStrip>
                         final position = rtl
                             ? 3 - _position.value
                             : _position.value;
-                        final width = slot - 2 + 5 * lift;
-                        final height = bounds.maxHeight - 6 + 9 * lift;
+                        final speed = (_position.velocity.abs() / 12).clamp(
+                          0.0,
+                          1.0,
+                        );
+                        final width = slot + 3 * lift + 7 * speed;
+                        final height =
+                            bounds.maxHeight - 9 + 4 * lift - 2 * speed;
+                        final left = (slot * (position + .5) - width / 2).clamp(
+                          -1.5,
+                          bounds.maxWidth - width + 1.5,
+                        );
                         return Positioned(
-                          left: slot * (position + .5) - width / 2,
+                          left: left,
                           top: (bounds.maxHeight - height) / 2,
                           width: width,
                           height: height,
@@ -547,7 +633,7 @@ class _LiquidTabStripState extends State<_LiquidTabStrip>
                                 size: Size(width, height),
                                 magnificationScale: _reduced
                                     ? 1
-                                    : 1.025 + .125 * lift,
+                                    : 1.025 + .085 * lift + .045 * speed,
                                 decoration: const MagnifierDecoration(
                                   shape: StadiumBorder(),
                                 ),
@@ -567,10 +653,10 @@ class _LiquidTabStripState extends State<_LiquidTabStrip>
                                       colors: [
                                         const Color(
                                           0xffffe9f4,
-                                        ).withValues(alpha: .42 + .12 * lift),
+                                        ).withValues(alpha: .29 + .10 * lift),
                                         const Color(
                                           0xffe2b9ed,
-                                        ).withValues(alpha: .22 + .10 * lift),
+                                        ).withValues(alpha: .12 + .07 * lift),
                                         const Color(
                                           0xffcbaad7,
                                         ).withValues(alpha: .11),
@@ -579,7 +665,7 @@ class _LiquidTabStripState extends State<_LiquidTabStrip>
                                         ).withValues(alpha: .16),
                                         const Color(
                                           0xffead2ed,
-                                        ).withValues(alpha: .34 + .10 * lift),
+                                        ).withValues(alpha: .23 + .08 * lift),
                                       ],
                                     ),
                                   ),

@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/card_radii.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/app/providers/user_provider.dart';
 import 'package:asteria_app/core/analytics/analytics_events.dart';
@@ -916,11 +917,12 @@ class _SubscriptionInfoCard extends StatelessWidget {
         : context.l10n.subscriptionInactive;
 
     return ProfileGlassCard(
+      borderRadius: AsteriaCardRadii.card,
       padding: EdgeInsets.zero,
       child: Stack(
         children: [
           Positioned(
-            top: isActive ? 6 : -3,
+            top: 8,
             right: 16,
             child: Image.asset(
               'assets/images/sonnik/pro_crystal.webp',

@@ -12,8 +12,8 @@ class AsteriaEntrance extends SingleChildRenderObjectWidget {
     this.animateInitially = true,
   });
 
-  static const duration = Duration(milliseconds: 200);
-  static const distance = 4.0;
+  static const duration = Duration(milliseconds: 320);
+  static const distance = 3.0;
 
   /// Change only for a newly displayed page or item, never for a repaint.
   final Object? replayKey;
@@ -212,8 +212,8 @@ class _RenderEntrance extends RenderProxyBox {
       }
       _ticker = Ticker(_tick)..start();
     }
-    final eased = Curves.easeOutCubic.transform(_progress);
-    final alpha = ((.22 + .78 * eased) * 255).round();
+    final eased = Curves.easeInOutSine.transform(_progress);
+    final alpha = ((.08 + .92 * eased) * 255).round();
     layer = context.pushOpacity(
       offset + Offset(0, AsteriaEntrance.distance * (1 - eased)),
       alpha,

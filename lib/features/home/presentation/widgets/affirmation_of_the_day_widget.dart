@@ -1,193 +1,222 @@
-import 'package:asteria_app/core/routing/app_route.dart';
+import 'package:asteria_app/core/ui_kit/card_radii.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
-import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
-import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
-import 'package:asteria_app/features/scenarios/scenario_card_grid.dart'
-    show ScenarioMood;
+import 'package:asteria_app/features/affirmation/player/player_artwork.dart';
+import 'package:asteria_app/features/affirmation/player/player_pebble.dart';
+import 'package:asteria_app/features/affirmation/player/practice_playback_controller.dart';
 import 'package:flutter/material.dart';
 
-class AffirmationOfTheDayWidget extends StatelessWidget {
-  const AffirmationOfTheDayWidget({super.key, required this.text});
-
-  final String text;
-
-  @override
-  Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 16),
-    child: Semantics(
-      button: true,
-      child: LotusTap(
-        onTap: () => AffirmationRoute.push(context),
-        child: _AffirmationSurface(
-          text: text,
-          footer: Row(
-            children: [
-              Flexible(
-                child: Text(
-                  context.l10n.allAffirmations,
-                  style: AppTypography.link.copyWith(
-                    color: ScenarioMood.practice.rim,
-                  ),
-                ),
-              ),
-              const SizedBox(width: 6),
-              ExcludeSemantics(
-                child: ClayIcon(
-                  Icons.chevron_right,
-                  size: 18,
-                  color: ScenarioMood.practice.rim,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    ),
-  );
-}
-
-class AffirmationUnavailableWidget extends StatelessWidget {
-  const AffirmationUnavailableWidget({
+class AffirmationOfTheDayWidget extends StatefulWidget {
+  const AffirmationOfTheDayWidget({
     super.key,
-    required this.isLoading,
-    required this.onRetry,
+    required this.onOpenCollection,
+    this.onPlay,
   });
 
-  final bool isLoading;
-  final VoidCallback? onRetry;
+  final Future<void> Function() onOpenCollection;
+  final VoidCallback? onPlay;
 
   @override
-  Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 16),
-    child: Semantics(
-      container: true,
-      liveRegion: true,
-      child: _AffirmationSurface(
-        text: isLoading
-            ? context.l10n.affirmationLoading
-            : context.l10n.affirmationLoadError,
-        footer: isLoading
-            ? ExcludeSemantics(
-                child: SizedBox.square(
-                  dimension: 23,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    color: ScenarioMood.practice.rim,
-                  ),
-                ),
-              )
-            : LotusButtons.text(
-                onPressed: onRetry,
-                style: TextButton.styleFrom(
-                  alignment: Alignment.centerLeft,
-                  minimumSize: const Size(44, 44),
-                  padding: EdgeInsets.zero,
-                  foregroundColor: ScenarioMood.practice.rim,
-                ),
-                child: Text(
-                  context.l10n.commonRetry,
-                  semanticsLabel: context.l10n.affirmationRetryLabel,
-                  style: AppTypography.link,
-                ),
-              ),
-      ),
-    ),
-  );
+  State<AffirmationOfTheDayWidget> createState() => _AffirmationOfTheDayState();
 }
 
-class _AffirmationSurface extends StatelessWidget {
-  const _AffirmationSurface({required this.text, required this.footer});
+class _AffirmationOfTheDayState extends State<AffirmationOfTheDayWidget> {
+  PracticePlaybackController? _player;
+  Duration _resumeAt = Duration.zero;
+  bool _visible = false;
+  bool _opening = false;
+  bool _commandPending = false;
 
-  final String text;
-  final Widget footer;
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final current = ModalRoute.isCurrentOf(context) ?? true;
+    _visible = current && TickerMode.valuesOf(context).enabled;
+    if (!_visible) _release();
+  }
 
-  static const _radius = BorderRadius.all(Radius.circular(26));
-  static const _mood = ScenarioMood.practice;
-  static const _lotus = 'assets/images/scenarios/lotus.webp';
+  void _release() {
+    final player = _player;
+    if (player == null) return;
+    _resumeAt = player.isComplete ? Duration.zero : player.position;
+    player.removeListener(_sync);
+    player.dispose();
+    _player = null;
+  }
+
+  void _sync() => setState(() {});
+
+  Future<void> _toggle() async {
+    if (_commandPending || !_visible) return;
+    _commandPending = true;
+    final fresh = _player == null;
+    final player = _player ??= (PracticePlaybackController()
+      ..addListener(_sync));
+    final starting = !player.isPlaying;
+    try {
+      if (fresh && _resumeAt > Duration.zero) await player.seek(_resumeAt);
+      await player.toggle();
+      if (identical(_player, player) && starting && player.isPlaying) {
+        widget.onPlay?.call();
+      }
+    } catch (_) {
+      if (mounted && _visible) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(context.l10n.playerPlayError)));
+      }
+    } finally {
+      _commandPending = false;
+    }
+  }
+
+  @override
+  void dispose() {
+    _release();
+    super.dispose();
+  }
+
+  Future<void> _openCollection() async {
+    if (_opening) return;
+    setState(() => _opening = true);
+    try {
+      await widget.onOpenCollection();
+    } catch (_) {
+      if (mounted && _visible) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(context.l10n.affirmationLoadError)),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _opening = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    final title = Text(
-      context.l10n.affirmationOfDay,
-      style: AppTypography.h3.copyWith(color: AppColors.textInverse),
-    );
-    final quote = Text(
-      text,
-      style: AppTypography.text1.copyWith(color: AppColors.cardTinted),
-    );
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        borderRadius: _radius,
-        gradient: LinearGradient(
-          begin: Alignment.topRight,
-          end: Alignment.bottomLeft,
-          colors: [_mood.rim, _mood.ground, _mood.mist.withValues(alpha: .65)],
-          stops: const [0, .62, 1],
-        ),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(1.25),
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            borderRadius:
-                _radius - const BorderRadius.all(Radius.circular(1.25)),
-            gradient: RadialGradient(
-              center: const Alignment(.79, -.72),
-              radius: 1.24,
-              colors: [
-                Color.lerp(_mood.mist, _mood.ground, .28)!,
-                _mood.ground,
-                Color.lerp(_mood.ground, AppColorsDark.homeCanvas, .60)!,
-              ],
-              stops: const [0, .51, 1],
+    final player = _player;
+    final playing = player?.isPlaying ?? false;
+    final strings = context.l10n;
+    const radius = BorderRadius.all(Radius.circular(AsteriaCardRadii.card));
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: ClipRRect(
+        borderRadius: radius,
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            Positioned.fill(
+              child: ExcludeSemantics(
+                child: ExcludeFocus(
+                  child: LotusTap(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: _toggle,
+                    child: RepaintBoundary(
+                      child: PlayerArtwork(
+                        position: player?.position ?? _resumeAt,
+                        duration:
+                            player?.duration ?? const Duration(seconds: 75),
+                        playing: playing,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
             ),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(20, 16, 16, 16),
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                final wideQuote =
-                    constraints.maxWidth < 290 ||
-                    MediaQuery.textScalerOf(context).scale(16) > 20 ||
-                    text.length > 90;
-                final art = LotusRasterIcon(
-                  _lotus,
-                  width: wideQuote ? 86 : 116,
-                  height: wideQuote ? 57 : 78,
-                  fit: BoxFit.contain,
-                  excludeFromSemantics: true,
-                );
-                return Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              title,
-                              if (!wideQuote) ...[
-                                const SizedBox(height: 10),
-                                quote,
-                              ],
-                            ],
+            const Positioned.fill(
+              child: IgnorePointer(
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Color(0x80291B36),
+                        Color(0x70291B36),
+                        Color(0x00291B36),
+                        Color(0x00291B36),
+                        Color(0x88291B36),
+                        Color(0x80291B36),
+                      ],
+                      stops: [0, .16, .42, .58, .84, 1],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 16, 16, 12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  IgnorePointer(
+                    child: Text(
+                      strings.affirmationOfDay,
+                      style: AppTypography.h3.copyWith(
+                        color: AppColors.textInverse,
+                        shadows: const [
+                          Shadow(color: Color(0x88402A55), blurRadius: 5),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 94),
+                  Row(
+                    children: [
+                      PlayerPebble(
+                        primary: true,
+                        compact: true,
+                        glyph: playing ? ClayGlyph.pause : ClayGlyph.play,
+                        label: playing
+                            ? strings.playerPause
+                            : player?.isComplete == true
+                            ? strings.playerReplay
+                            : strings.playerPlay,
+                        onTap: _toggle,
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Align(
+                          alignment: Alignment.centerRight,
+                          child: LotusButtons.text(
+                            onPressed: _openCollection,
+                            style: TextButton.styleFrom(
+                              minimumSize: const Size(44, 44),
+                              foregroundColor: AppColors.textInverse,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                              ),
+                            ),
+                            child: _opening
+                                ? const SizedBox.square(
+                                    dimension: 20,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                    ),
+                                  )
+                                : Text(
+                                    strings.allAffirmations,
+                                    textAlign: TextAlign.end,
+                                    style: AppTypography.link.copyWith(
+                                      color: AppColors.textInverse,
+                                      shadows: const [
+                                        Shadow(
+                                          color: Color(0x99402A55),
+                                          blurRadius: 5,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
                           ),
                         ),
-                        const SizedBox(width: 10),
-                        art,
-                      ],
-                    ),
-                    if (wideQuote) ...[const SizedBox(height: 10), quote],
-                    const SizedBox(height: 16),
-                    footer,
-                  ],
-                );
-              },
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );

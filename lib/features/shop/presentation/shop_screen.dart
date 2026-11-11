@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/card_radii.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
@@ -271,13 +272,13 @@ class _ShopListItem extends StatelessWidget {
               behavior: HitTestBehavior.opaque,
               onTap: activate,
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(AsteriaCardRadii.tile),
                 child: BackdropFilter(
                   filter: ui.ImageFilter.blur(sigmaX: 8, sigmaY: 8),
                   child: DecoratedBox(
                     decoration: BoxDecoration(
                       color: _ShopColors.card,
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: BorderRadius.circular(AsteriaCardRadii.tile),
                       border: Border.all(
                         color: _ShopColors.cardBorder,
                         width: 0.6,
@@ -694,9 +695,9 @@ class _ShopItemVisual {
 
   const _ShopItemVisual({
     required this.asset,
-    this.fit = BoxFit.cover,
+    this.fit = BoxFit.contain,
     this.alignment = Alignment.center,
-    this.padding = EdgeInsets.zero,
+    this.padding = const EdgeInsets.all(6),
   });
 
   final String asset;
@@ -708,7 +709,7 @@ class _ShopItemVisual {
     if (product.id == UserProvider.shopItemCompatibilityId) {
       return const _ShopItemVisual(
         asset: 'assets/images/shop/shop_compatibility.webp',
-        fit: BoxFit.cover,
+        fit: BoxFit.contain,
         alignment: Alignment.center,
       );
     }
@@ -716,8 +717,8 @@ class _ShopItemVisual {
     if (product.id == UserProvider.shopItemAnakraId) {
       return const _ShopItemVisual(
         asset: 'assets/images/shop/shop_ai_astrologer.webp',
-        fit: BoxFit.cover,
-        alignment: Alignment.topCenter,
+        fit: BoxFit.contain,
+        alignment: Alignment.center,
       );
     }
 
@@ -725,15 +726,15 @@ class _ShopItemVisual {
       return const _ShopItemVisual(
         asset: 'assets/images/shop/shop_love_deck.webp',
         fit: BoxFit.contain,
-        alignment: Alignment.topCenter,
+        alignment: Alignment.center,
         padding: EdgeInsets.all(7),
       );
     }
 
     return _ShopItemVisual(
       asset: YearAnimalAsset.forYear(DateTime.now().year),
-      fit: BoxFit.cover,
-      alignment: Alignment.topCenter,
+      fit: BoxFit.contain,
+      alignment: Alignment.center,
     );
   }
 }

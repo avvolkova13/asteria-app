@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/card_radii.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'dart:math' as math;
 import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
@@ -498,34 +499,16 @@ class _PersonalScreenState extends State<PersonalScreen> {
               title: context.l10n.personalHarmony,
               description: week?.personalArea.description ?? '',
               imageAsset: _weekBalanceHarmonyImage,
-              imageFrame: const _WeeklyAreaCardImageFrame(
-                left: -6.8,
-                top: -20.9,
-                width: 82.9,
-                height: 123.8,
-              ),
             ),
             _WeeklyAreaCardData(
               title: context.l10n.personalLoveRelationships,
               description: week?.loveArea.description ?? '',
               imageAsset: _weekLoveRelationshipsImage,
-              imageFrame: const _WeeklyAreaCardImageFrame(
-                left: -13.6,
-                top: -8,
-                width: 99,
-                height: 99,
-              ),
             ),
             _WeeklyAreaCardData(
               title: context.l10n.personalFinancialStability,
               description: week?.financeArea.description ?? '',
               imageAsset: _weekFinancialStabilityImage,
-              imageFrame: const _WeeklyAreaCardImageFrame(
-                left: -7,
-                top: -21,
-                width: 79.2,
-                height: 128.7,
-              ),
             ),
           ],
         ),
@@ -830,7 +813,7 @@ class _ConstellationCard extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
         color: _cardTint,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AsteriaCardRadii.compact),
       ),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
@@ -917,7 +900,7 @@ class _ZodiacAttributeCard extends StatelessWidget {
 
 final _zodiacCardDecoration = BoxDecoration(
   color: _cardTint,
-  borderRadius: BorderRadius.circular(16),
+  borderRadius: BorderRadius.circular(AsteriaCardRadii.compact),
   border: Border.all(color: AppColors.white.withValues(alpha: 0.18)),
 );
 
@@ -1264,7 +1247,7 @@ class _DailyAddonCard extends StatelessWidget {
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
           color: _cardTint,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(AsteriaCardRadii.tile),
           border: Border.all(color: AppColors.white.withValues(alpha: 0.1)),
         ),
         clipBehavior: Clip.hardEdge,
@@ -1350,7 +1333,7 @@ class _DailyAddonPanel extends StatelessWidget {
     return DecoratedBox(
       decoration: BoxDecoration(
         color: const Color(0x8021183D),
-        borderRadius: BorderRadius.circular(32),
+        borderRadius: BorderRadius.circular(AsteriaCardRadii.compact),
       ),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 8),
@@ -1393,40 +1376,13 @@ class _DailyAddonImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final frameSize = isWeakness ? const Size(66, 65) : const Size(80, 75.45);
-    final imageWidth = isWeakness
-        ? frameSize.width * 1.5597
-        : frameSize.width * 1.4091;
-    final imageHeight = isWeakness
-        ? frameSize.height * 1.5647
-        : frameSize.height * 1.494;
-    final imageLeft = isWeakness
-        ? frameSize.width * -0.2862
-        : frameSize.width * -0.2273;
-    final imageTop = isWeakness
-        ? frameSize.height * -0.2744
-        : frameSize.height * -0.253;
-
-    return SizedBox(
+    return Image.asset(
+      asset,
+      key: imageKey,
       width: frameSize.width,
       height: frameSize.height,
-      child: ClipRect(
-        child: Stack(
-          clipBehavior: Clip.hardEdge,
-          children: [
-            Positioned(
-              left: imageLeft,
-              top: imageTop,
-              child: Image.asset(
-                asset,
-                key: imageKey,
-                width: imageWidth,
-                height: imageHeight,
-                fit: BoxFit.cover,
-              ),
-            ),
-          ],
-        ),
-      ),
+      fit: BoxFit.contain,
+      excludeFromSemantics: true,
     );
   }
 }
@@ -1593,7 +1549,7 @@ class _WeeklyAreaCard extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: _cardTint,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AsteriaCardRadii.tile),
         border: Border.all(color: AppColors.white.withValues(alpha: 0.18)),
       ),
       clipBehavior: Clip.hardEdge,
@@ -1620,9 +1576,13 @@ class _WeeklyAreaCard extends StatelessWidget {
                   ),
                 ),
               ),
-              _WeeklyAreaCardImage(
-                asset: data.imageAsset,
-                frame: data.imageFrame,
+              Image.asset(
+                data.imageAsset,
+                width: _imageWidth,
+                height: 82,
+                fit: BoxFit.contain,
+                cacheWidth: 260,
+                excludeFromSemantics: true,
               ),
             ],
           ),
@@ -1640,60 +1600,15 @@ class _WeeklyAreaCard extends StatelessWidget {
   }
 }
 
-class _WeeklyAreaCardImage extends StatelessWidget {
-  final String asset;
-  final _WeeklyAreaCardImageFrame frame;
-
-  const _WeeklyAreaCardImage({required this.asset, required this.frame});
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: 72,
-      height: 82,
-      child: ClipRect(
-        child: Stack(
-          clipBehavior: Clip.hardEdge,
-          children: [
-            Positioned(
-              left: frame.left,
-              top: frame.top,
-              width: frame.width,
-              height: frame.height,
-              child: Image.asset(asset, cacheWidth: 300, fit: BoxFit.fill),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
 class _WeeklyAreaCardData {
   final String title;
   final String description;
   final String imageAsset;
-  final _WeeklyAreaCardImageFrame imageFrame;
 
   const _WeeklyAreaCardData({
     required this.title,
     required this.description,
     required this.imageAsset,
-    required this.imageFrame,
-  });
-}
-
-class _WeeklyAreaCardImageFrame {
-  final double left;
-  final double top;
-  final double width;
-  final double height;
-
-  const _WeeklyAreaCardImageFrame({
-    required this.left,
-    required this.top,
-    required this.width,
-    required this.height,
   });
 }
 
@@ -1738,7 +1653,7 @@ class _MonthPeriodItem extends StatelessWidget {
       width: double.infinity,
       decoration: BoxDecoration(
         color: AppColors.deepPurple.withValues(alpha: 0.74),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AsteriaCardRadii.tile),
       ),
       clipBehavior: Clip.hardEdge,
       child: Column(
@@ -1829,7 +1744,7 @@ class _MonthKeyTopicsCard extends StatelessWidget {
       constraints: const BoxConstraints(minHeight: 191),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AsteriaCardRadii.card),
         color: AppColors.deepPurple,
         image: const DecorationImage(
           image: AssetImage(_monthKeyTopicsBackground),
@@ -1891,23 +1806,11 @@ class _MonthKeyTopicsImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ClipRect(
-      child: Stack(
-        clipBehavior: Clip.hardEdge,
-        children: [
-          Positioned(
-            left: -22.1,
-            top: -0.3,
-            width: 108.4,
-            height: 163.8,
-            child: Image.asset(
-              _monthKeyTopicsSpiral,
-              cacheWidth: 325,
-              fit: BoxFit.fill,
-            ),
-          ),
-        ],
-      ),
+    return Image.asset(
+      _monthKeyTopicsSpiral,
+      cacheWidth: 240,
+      fit: BoxFit.contain,
+      excludeFromSemantics: true,
     );
   }
 }
@@ -1963,7 +1866,7 @@ class _ForecastUnlockBanner extends StatelessWidget {
           constraints: BoxConstraints(minHeight: minHeight),
           decoration: BoxDecoration(
             color: _cardTint,
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(AsteriaCardRadii.card),
             border: Border.all(color: AppColors.white.withValues(alpha: 0.18)),
           ),
           clipBehavior: Clip.hardEdge,
@@ -1971,13 +1874,13 @@ class _ForecastUnlockBanner extends StatelessWidget {
             children: [
               Positioned(
                 top: 0,
-                right: -1,
+                right: 4,
                 width: imageWidth,
                 height: imageHeight,
                 child: Image.asset(
                   imageAsset,
                   cacheWidth: 430,
-                  fit: BoxFit.cover,
+                  fit: BoxFit.contain,
                 ),
               ),
               Padding(
@@ -2085,7 +1988,7 @@ class _DarkContentCard extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: AppColors.white.withValues(alpha: 0.08),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AsteriaCardRadii.card),
         border: Border.all(color: AppColors.white.withValues(alpha: 0.1)),
       ),
       child: Column(
@@ -2213,7 +2116,7 @@ class _EmptyCompatibilityCard extends StatelessWidget {
       child: Material(
         // Figma Compatibility / Empty: Surface/card-tinted.
         color: const Color(0xFF1B1433),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AsteriaCardRadii.card),
         clipBehavior: Clip.antiAlias,
         child: LotusInkTap(
           onTap: onPressed,
@@ -2311,7 +2214,7 @@ class _CompatibilityHistoryCard extends StatelessWidget {
         child: SizedBox(
           width: double.infinity,
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(AsteriaCardRadii.card),
             child: Stack(
               children: [
                 Positioned.fill(

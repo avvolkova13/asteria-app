@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/card_radii.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'dart:async';
 
@@ -363,7 +364,7 @@ class _PaymentsScreenState extends State<PaymentsScreen>
           padding: const EdgeInsets.all(24),
           decoration: BoxDecoration(
             color: AppColors.cardBackground,
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(AsteriaCardRadii.card),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,

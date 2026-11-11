@@ -16,80 +16,76 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets(
-    'renders the pre-cropped haircut icon inside its allocated area',
-    (tester) async {
-      await tester.pumpWidget(
-        MaterialApp(
-          locale: const Locale('ru'),
-          localizationsDelegates: const [
-            AppLocalizations.delegate,
-            ...GlobalMaterialLocalizations.delegates,
-          ],
-          supportedLocales: AppLocaleService.supportedLocales,
-          home: Builder(
-            builder: (context) {
-              return Theme(
-                data: AppThemeDark.instance.getThemeData(context),
-                child: const Scaffold(
-                  body: LunarSubcategoriesWidget(
-                    content: _content,
-                    sphere: Sphere.beauty,
-                  ),
+  testWidgets('fits the haircut illustration inside its allocated area', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        locale: const Locale('ru'),
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          ...GlobalMaterialLocalizations.delegates,
+        ],
+        supportedLocales: AppLocaleService.supportedLocales,
+        home: Builder(
+          builder: (context) {
+            return Theme(
+              data: AppThemeDark.instance.getThemeData(context),
+              child: const Scaffold(
+                body: LunarSubcategoriesWidget(
+                  content: _content,
+                  sphere: Sphere.beauty,
                 ),
-              );
-            },
-          ),
+              ),
+            );
+          },
+        ),
+      ),
+    );
+    await tester.pump();
+
+    final haircutImageFinder = find.byWidgetPredicate((widget) {
+      return widget is Image &&
+          widget.image is AssetImage &&
+          (widget.image as AssetImage).assetName ==
+              'assets/images/prediction_images/'
+                  'moon_card_beauty_haircut.webp';
+    });
+
+    expect(haircutImageFinder, findsOneWidget);
+
+    final haircutImage = tester.widget<Image>(haircutImageFinder);
+    expect(haircutImage.image, isA<AssetImage>());
+    expect(haircutImage.fit, BoxFit.contain);
+
+    await tester.runAsync(() async {
+      final assetData = await rootBundle.load(
+        'assets/images/prediction_images/moon_card_beauty_haircut.webp',
+      );
+      final codec = await ui.instantiateImageCodec(
+        assetData.buffer.asUint8List(
+          assetData.offsetInBytes,
+          assetData.lengthInBytes,
         ),
       );
-      await tester.pump();
+      final frame = await codec.getNextFrame();
+      final rgba = await frame.image.toByteData(
+        format: ui.ImageByteFormat.rawRgba,
+      );
+      // The trimmed artwork still supplies three pixels per displayed point.
+      expect(frame.image.height, greaterThanOrEqualTo(38 * 3));
+      expect(rgba, isNotNull);
+      expect(rgba!.getUint8(3), 0);
+      frame.image.dispose();
+      codec.dispose();
+    });
 
-      final haircutImageFinder = find.byWidgetPredicate((widget) {
-        return widget is Image &&
-            widget.image is AssetImage &&
-            (widget.image as AssetImage).assetName ==
-                'assets/images/prediction_images/'
-                    'moon_card_beauty_haircut.webp';
-      });
-
-      expect(haircutImageFinder, findsOneWidget);
-
-      final haircutImage = tester.widget<Image>(haircutImageFinder);
-      expect(haircutImage.image, isA<AssetImage>());
-      expect(haircutImage.fit, BoxFit.fill);
-      expect(haircutImage.width, 83);
-      expect(haircutImage.height, 44);
-
-      await tester.runAsync(() async {
-        final assetData = await rootBundle.load(
-          'assets/images/prediction_images/moon_card_beauty_haircut.webp',
-        );
-        final codec = await ui.instantiateImageCodec(
-          assetData.buffer.asUint8List(
-            assetData.offsetInBytes,
-            assetData.lengthInBytes,
-          ),
-        );
-        final frame = await codec.getNextFrame();
-        final rgba = await frame.image.toByteData(
-          format: ui.ImageByteFormat.rawRgba,
-        );
-        expect(frame.image.width, 249);
-        expect(frame.image.height, 132);
-        expect(rgba, isNotNull);
-        expect(rgba!.getUint8(3), 0);
-        frame.image.dispose();
-        codec.dispose();
-      });
-
-      final imageRect = tester.getRect(haircutImageFinder);
-      expect(imageRect.width, 83);
-      expect(imageRect.height, 44);
-      final descriptionRect = tester.getRect(find.text(_haircutDescription));
-      expect(imageRect.bottom, lessThanOrEqualTo(descriptionRect.top));
-      expect(tester.takeException(), isNull);
-    },
-  );
+    final imageRect = tester.getRect(haircutImageFinder);
+    expect(imageRect.size, const Size(77, 38));
+    final descriptionRect = tester.getRect(find.text(_haircutDescription));
+    expect(imageRect.bottom, lessThanOrEqualTo(descriptionRect.top));
+    expect(tester.takeException(), isNull);
+  });
 
   testWidgets('renders lunar subcategory display names from English ARB', (
     tester,

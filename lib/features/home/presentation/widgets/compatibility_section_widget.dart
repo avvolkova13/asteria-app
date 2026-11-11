@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/card_radii.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'dart:math' as math;
 import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
@@ -181,7 +182,7 @@ class _CompatibilityHistoryWidget extends StatelessWidget {
           height: _cardHeight,
           width: double.infinity,
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(AsteriaCardRadii.card),
             child: DecoratedBox(
               decoration: const BoxDecoration(color: Color(0xFF171026)),
               child: LayoutBuilder(

@@ -30,7 +30,7 @@ class CreateSonnikRoute extends AppRoute {
       : super(
           name: SonnikRoutes.createSonnikRouteName,
           path: SonnikRoutes.createSonnikRouteName,
-          pageBuilder: (context, state) => AsteriaPage(child: CreateSonnikScreen()),
+          pageBuilder: (context, state) => AsteriaPage(key: state.pageKey, name: state.name, child: CreateSonnikScreen()),
         );
 
   static void push(BuildContext context) => context.pushNamed(SonnikRoutes.createSonnikRouteName);

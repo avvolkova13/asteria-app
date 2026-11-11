@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/card_radii.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
@@ -259,7 +260,7 @@ class _RewardArtwork extends StatelessWidget {
       height: 112,
       decoration: BoxDecoration(
         color: const Color(0xFF342848).withValues(alpha: 0.78),
-        borderRadius: BorderRadius.circular(32),
+        borderRadius: BorderRadius.circular(AsteriaCardRadii.compact),
       ),
       clipBehavior: Clip.hardEdge,
       child: assetPath == null
@@ -286,10 +287,10 @@ class _RewardImage extends StatelessWidget {
     return Center(
       child: Image.asset(
         assetPath,
-        width: isTarot ? 78 : 112,
-        height: isTarot ? 104 : 112,
+        width: isTarot ? 78 : 92,
+        height: isTarot ? 98 : 92,
         cacheWidth: isTarot ? 180 : 224,
-        fit: isTarot ? BoxFit.contain : BoxFit.cover,
+        fit: BoxFit.contain,
       ),
     );
   }

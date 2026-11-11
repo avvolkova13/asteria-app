@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/card_radii.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
@@ -156,6 +157,7 @@ class _SubscriptionOfferCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AnakraGlassCard(
+      borderRadius: BorderRadius.circular(AsteriaCardRadii.card),
       onTap: onTap,
       semanticLabel: context.l10n.offerProTitle,
       padding: const EdgeInsets.all(16),
@@ -189,8 +191,8 @@ class _SubscriptionOfferCard extends StatelessWidget {
               ),
             ),
             Positioned(
-              right: -2,
-              bottom: -4,
+              right: 0,
+              bottom: 0,
               child: Image.asset(
                 AnakraAssets.proCrystal,
                 width: 89,
@@ -218,7 +220,7 @@ class _BuyAttemptsCard extends StatelessWidget {
         onTap: onTap,
         semanticLabel: context.l10n.buyAttemptsLabel,
         padding: const EdgeInsets.all(8),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(AsteriaCardRadii.compact),
         child: Stack(
           children: [
             const Positioned(top: 0, right: 0, child: _OfferArrow()),

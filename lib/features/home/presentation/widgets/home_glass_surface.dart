@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/card_radii.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'dart:math' as math;
 
@@ -7,7 +8,7 @@ import 'package:flutter/material.dart';
 class HomeGlassSurface extends StatelessWidget {
   const HomeGlassSurface({
     super.key,
-    this.radius = 16,
+    this.radius = AsteriaCardRadii.card,
     this.tint = const Color(0x339A7DB8),
     required this.child,
   });

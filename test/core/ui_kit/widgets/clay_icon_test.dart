@@ -6,6 +6,33 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets('a constrained slot displays exactly one atlas cell', (
+    tester,
+  ) async {
+    for (final slot in [24.0, 16.0]) {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Center(
+            child: SizedBox.square(
+              dimension: slot,
+              child: const LotusSprite(LotusPose.play, size: 20, frame: 5),
+            ),
+          ),
+        ),
+      );
+      final sprite = find.byType(LotusSprite);
+      final clip = find.descendant(of: sprite, matching: find.byType(ClipRect));
+      final plate = tester.renderObject<RenderBox>(clip);
+      expect(plate.size, const Size.square(20));
+      final visible =
+          plate.localToGlobal(plate.size.bottomRight(Offset.zero)) -
+          plate.localToGlobal(Offset.zero);
+      expect(visible.dx, slot.clamp(0, 20));
+      expect(visible.dy, slot.clamp(0, 20));
+      expect(tester.getCenter(clip), tester.getCenter(sprite));
+    }
+  });
+
   testWidgets('a platform action keeps its layout, theme and accessible name', (
     tester,
   ) async {

@@ -84,8 +84,8 @@ class _SubscriptionStatusCard extends StatelessWidget {
           final titleWidth = 174.0 * compactScale;
           final descriptionWidth = 170.0 * compactScale;
           final buttonWidth = 175.0 * compactScale;
-          final artWidth = 198.0 * compactScale;
-          final artHeight = 217.0 * compactScale;
+          final artWidth = (cardWidth - titleWidth - 44).clamp(0.0, 140.0);
+          final artHeight = artWidth * 1.12;
 
           return SizedBox(
             key: const ValueKey('profile-subscription-status-card'),
@@ -94,8 +94,8 @@ class _SubscriptionStatusCard extends StatelessWidget {
               clipBehavior: Clip.hardEdge,
               children: [
                 Positioned(
-                  top: 4,
-                  right: -42,
+                  top: 18,
+                  right: 12,
                   child: Image.asset(
                     key: const ValueKey('profile-subscription-status-art'),
                     'assets/images/home/balance_subscription_art.webp',

@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/card_radii.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/app/providers/content_provider.dart';
 import 'package:asteria_app/core/di/di.dart';
@@ -165,7 +166,7 @@ class _ArticleCard extends StatelessWidget {
         color: isRedesigned || isDarkSection
             ? AppColors.deepPurple
             : AppColors.cardTinted,
-        borderRadius: BorderRadius.circular(isRedesigned ? 16 : 8),
+        borderRadius: BorderRadius.circular(AsteriaCardRadii.tile),
       ),
       clipBehavior: Clip.antiAlias,
       child: SizedBox(
@@ -176,8 +177,8 @@ class _ArticleCard extends StatelessWidget {
           children: [
             ClipRRect(
               borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(8),
-                topRight: Radius.circular(8),
+                topLeft: Radius.circular(AsteriaCardRadii.tile),
+                topRight: Radius.circular(AsteriaCardRadii.tile),
               ),
               child: Image.asset(
                 'assets/images/articles/$imageName.webp',

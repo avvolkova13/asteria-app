@@ -41,7 +41,7 @@ class _CreateCompatibilityLoadedScreenState
         child: Center(
           child: Text(
             context.l10n.compatibilityNoData,
-            style: context.textTheme.urbanistRegular16,
+            style: context.textTheme.inverseUrbanistRegular16,
           ),
         ),
       );

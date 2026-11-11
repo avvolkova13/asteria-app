@@ -5,6 +5,7 @@ import 'package:asteria_app/features/home/presentation/widgets/bottom_tab_bar_wi
 import 'package:flutter/material.dart';
 import 'package:asteria_app/core/ui_kit/theme/theme.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() {
   testWidgets(
@@ -58,8 +59,9 @@ void main() {
             home: StatefulBuilder(
               builder: (context, setState) {
                 return MediaQuery(
-                  data: MediaQuery.of(context)
-                      .copyWith(disableAnimations: reduced),
+                  data: MediaQuery.of(
+                    context,
+                  ).copyWith(disableAnimations: reduced),
                   child: Scaffold(
                     bottomNavigationBar: BottomTabBarWidget(
                       currentIndex: index,
@@ -91,7 +93,7 @@ void main() {
         await tester.pump(const Duration(milliseconds: 200));
         expect(
           tester.widget<RawMagnifier>(lens).magnificationScale,
-          reduced ? 1 : closeTo(1.15, .001),
+          reduced ? 1 : closeTo(1.11, .001),
         );
         await finger.moveTo(Offset.lerp(start, end, .24)!);
         await tester.pump();
@@ -117,11 +119,85 @@ void main() {
     );
   }
 
+  for (final width in [320.0, 393.0]) {
+    testWidgets(
+      'Russian labels fit the settled lens at ${width}pt; rapid taps interrupt travel',
+      (tester) async {
+        tester.view.devicePixelRatio = 1;
+        tester.view.physicalSize = Size(width, 812);
+        addTearDown(tester.view.resetPhysicalSize);
+        addTearDown(tester.view.resetDevicePixelRatio);
+        var index = 0;
+        final changes = <int>[];
+        await tester.pumpWidget(
+          MaterialApp(
+            locale: const Locale('ru'),
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              ...GlobalMaterialLocalizations.delegates,
+            ],
+            supportedLocales: AppLocalizations.delegate.supportedLocales,
+            home: StatefulBuilder(
+              builder: (context, update) => Scaffold(
+                bottomNavigationBar: BottomTabBarWidget(
+                  currentIndex: index,
+                  aiAstrologerAsset: 'assets/images/year_animals/horse.webp',
+                  onTabChanged: (value) {
+                    changes.add(value);
+                    update(() => index = value);
+                  },
+                  onAiAstrologerPressed: () {},
+                ),
+              ),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+        final lens = find.byType(RawMagnifier);
+        final practice = find.text('Практики');
+        final personal = find.text('Личное');
+        final initialX = tester.getCenter(lens).dx;
+        await tester.tap(practice);
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 70));
+        final midX = tester.getCenter(lens).dx;
+        expect(midX, inExclusiveRange(initialX, tester.getCenter(practice).dx));
+        await tester.tap(personal);
+        await tester.pump();
+        expect(tester.getCenter(lens).dx, closeTo(midX, 1));
+        await tester.pumpAndSettle();
+        expect(
+          tester.getCenter(lens).dx,
+          closeTo(tester.getCenter(personal).dx, 1),
+        );
+        await tester.tap(practice);
+        await tester.pumpAndSettle();
+        expect(changes, [3, 1, 3]);
+        final frame = tester.getRect(lens);
+        final caption = tester.getRect(practice);
+        expect(caption.left - frame.left, greaterThanOrEqualTo(3));
+        expect(frame.right - caption.right, greaterThanOrEqualTo(3));
+        expect(frame.bottom - caption.bottom, greaterThanOrEqualTo(3));
+        expect(frame.height, greaterThanOrEqualTo(50));
+        final horse = find.bySemanticsLabel(
+          AppLocalizations.of(tester.element(lens)).anakraTitle,
+        );
+        expect(
+          tester.getRect(horse).left - frame.right,
+          greaterThanOrEqualTo(5),
+        );
+        expect(tester.takeException(), isNull);
+        await tester.pumpWidget(const SizedBox.shrink());
+      },
+    );
+  }
+
   test('retired feature implementations and entry points are absent', () {
     expect(Directory('lib/features/social').existsSync(), isFalse);
     expect(Directory('lib/features/star_fair').existsSync(), isFalse);
-    final home = File('lib/features/home/presentation/screens/home_screen.dart')
-        .readAsStringSync();
+    final home = File(
+      'lib/features/home/presentation/screens/home_screen.dart',
+    ).readAsStringSync();
     expect(home, contains('const MainScreen()'));
     expect(home, contains('const PersonalScreen()'));
     for (final path in [

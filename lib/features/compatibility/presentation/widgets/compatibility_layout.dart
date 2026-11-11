@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/card_radii.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/core/ui_kit/widgets/top_nav_bar.dart';
@@ -253,7 +254,7 @@ class CompatibilityGlassCard extends StatelessWidget {
     required this.child,
     this.padding = const EdgeInsets.all(14),
     this.border,
-    this.borderRadius = const BorderRadius.all(Radius.circular(16)),
+    this.borderRadius = const BorderRadius.all(Radius.circular(AsteriaCardRadii.tile)),
     this.gradient,
   });
 

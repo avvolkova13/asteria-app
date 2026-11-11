@@ -54,6 +54,11 @@ class LotusSprite extends StatelessWidget {
         ),
       ),
     );
-    return flip ? Transform.flip(flipX: true, child: art) : art;
+    // Isolate the atlas cell before fitting the glyph into its caller's slot.
+    // Tight button constraints can be wider than the illustrated frame.
+    return FittedBox(
+      fit: BoxFit.scaleDown,
+      child: flip ? Transform.flip(flipX: true, child: art) : art,
+    );
   }
 }

@@ -1,4 +1,3 @@
-import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/features/home/presentation/screens/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -32,17 +31,20 @@ void main() {
     );
     expect(TickerMode.valuesOf(first).enabled, isTrue);
     expect(TickerMode.valuesOf(second).enabled, isFalse);
-    final entrance = tester.element(find.byType(AsteriaEntrance));
-    expect((entrance.widget as AsteriaEntrance).animateInitially, isTrue);
+    double opacity(Element tab) =>
+        tab.findAncestorWidgetOfExactType<Opacity>()!.opacity;
     index.value = 1;
     await tester.pump();
     expect(TickerMode.valuesOf(first).enabled, isFalse);
     expect(TickerMode.valuesOf(second).enabled, isTrue);
-    expect((entrance.widget as AsteriaEntrance).replayKey, 1);
+    await tester.pump(const Duration(milliseconds: 125));
+    expect(opacity(first), inExclusiveRange(0, 1));
+    expect(opacity(second), inExclusiveRange(0, 1));
     index.value = 0;
     await tester.pumpAndSettle();
     expect(tester.element(find.byKey(const Key('first'))), same(first));
     expect(find.text('saved value'), findsOneWidget);
-    expect((entrance.widget as AsteriaEntrance).replayKey, 0);
+    expect(opacity(first), 1);
+    expect(opacity(second), 0);
   });
 }

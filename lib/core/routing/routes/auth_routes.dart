@@ -25,6 +25,8 @@ class AuthLoginRoute extends AppRoute {
         name: AuthRoutes.loginRouteName,
         path: AuthRoutes.loginRouteName,
         pageBuilder: (context, state) => AsteriaPage(
+          key: state.pageKey,
+          name: state.name,
           child: BlocProvider<EmailAuthCubit>(
             create: (_) => di.get<EmailAuthCubit>(),
             child: const EmailLoginScreen(isRoot: true),
@@ -52,6 +54,8 @@ class AuthPersonalInfoRoute extends AppRoute {
                 email: di.get<AuthSessionService>().currentEmail ?? '',
               );
           return AsteriaPage(
+            key: state.pageKey,
+            name: state.name,
             child: PersonalInfoInputScreen(
               identity: identity,
               authLocalization: AuthLocalization(),
@@ -83,6 +87,8 @@ class AuthEmailRoute extends AppRoute {
         pageBuilder: (context, state) {
           final arguments = state.extra as _EmailRouteArguments?;
           return AsteriaPage(
+            key: state.pageKey,
+            name: state.name,
             child: BlocProvider<EmailAuthCubit>(
               create: (_) => di.get<EmailAuthCubit>(),
               child: EmailLoginScreen(
@@ -143,6 +149,8 @@ class AuthEmailCodeRoute extends AppRoute {
         pageBuilder: (context, state) {
           final arguments = state.extra as _EmailCodeRouteArguments;
           return AsteriaPage(
+            key: state.pageKey,
+            name: state.name,
             child: BlocProvider<EmailAuthCubit>.value(
               value: arguments.cubit,
               child: EmailCodeScreen(

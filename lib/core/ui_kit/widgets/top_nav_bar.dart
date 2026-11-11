@@ -432,18 +432,40 @@ class HomeAccountBar extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Row(
           children: [
-            SizedBox.square(
-              dimension: 44,
-              child: LotusButtons.icon(
-                tooltip: context.l10n.navProfile,
+            Expanded(
+              child: Align(
                 alignment: Alignment.centerLeft,
-                padding: EdgeInsets.zero,
-                onPressed: () => HomeProfileRoute.push(context),
-                icon: ProfileAvatar(size: 36, gender: gender),
+                child: Tooltip(
+                  message: context.l10n.navProfile,
+                  excludeFromSemantics: true,
+                  child: LotusButtons.text(
+                    style: TextButton.styleFrom(
+                      minimumSize: const Size(44, 44),
+                      visualDensity: VisualDensity.standard,
+                      padding: const EdgeInsets.only(right: 8),
+                      foregroundColor: AppColors.textInverse,
+                    ),
+                    onPressed: () => HomeProfileRoute.push(context),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        ProfileAvatar(size: 36, gender: gender),
+                        const SizedBox(width: 8),
+                        Flexible(
+                          child: Text(
+                            context.l10n.navProfile,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: AppTypography.text1SemiBold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               ),
             ),
             if (showAccountActions) ...[
-              const Spacer(),
               Transform.translate(
                 offset: const Offset(0, 2),
                 child: _MoonTopNavBarActions(labelStyle: accountLabelStyle),

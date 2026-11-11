@@ -422,65 +422,74 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('keeps the day strip stable while the moon card animates', (
-    tester,
-  ) async {
-    final currentMoonPhase = _moonPhase(15);
-    final selectedDate = currentMoonPhase.date.fromRussianShortDate();
-    final lastDayOfMonth = DateTime(
-      selectedDate.year,
-      selectedDate.month + 1,
-      0,
-    ).day;
-    final targetOffset = selectedDate.day == lastDayOfMonth ? -1 : 1;
-    final targetDate = selectedDate.add(Duration(days: targetOffset));
-    await _pumpMoonPhaseWidget(
-      tester,
-      moonPhase: currentMoonPhase,
-      contentRepository: _FakeContentRepository.byDate({
-        _dateKey(selectedDate): currentMoonPhase,
-        _dateKey(targetDate): _moonPhase(
-          16,
-          moonPhase: 'full_moon',
-          moonPhaseRu: 'Полнолуние',
-        ),
-      }),
-    );
-
-    final nextDayLabel = LocaleFormatters.dayMonth(
-      targetDate,
-      const Locale('ru'),
-    ).replaceAll('.', '');
-    await tester.tap(find.text(nextDayLabel).first);
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 125));
-
-    final dayStripSlides = tester
-        .widgetList<SlideTransition>(find.byType(SlideTransition))
-        .where(
-          (widget) =>
-              widget.position.value.dx.abs() > 0.25 &&
-              widget.position.value.dy == 0 &&
-              find
-                  .descendant(
-                    of: find.byWidget(widget),
-                    matching: find.text(nextDayLabel),
-                  )
-                  .evaluate()
-                  .isNotEmpty,
-        );
-    expect(dayStripSlides, isEmpty);
-    expect(
-      tester
-          .widgetList<SlideTransition>(find.byType(SlideTransition))
-          .where(
-            (widget) =>
-                widget.position.value.dx.abs() > 0.01 &&
-                widget.position.value.dy == 0,
+  testWidgets(
+    'pages the date strip and day card together and reverses mid-flight',
+    (tester) async {
+      final currentMoonPhase = _moonPhase(15);
+      final selectedDate = currentMoonPhase.date.fromRussianShortDate();
+      final lastDayOfMonth = DateTime(
+        selectedDate.year,
+        selectedDate.month + 1,
+        0,
+      ).day;
+      final targetOffset = selectedDate.day == lastDayOfMonth ? -1 : 1;
+      final targetDate = selectedDate.add(Duration(days: targetOffset));
+      await _pumpMoonPhaseWidget(
+        tester,
+        moonPhase: currentMoonPhase,
+        contentRepository: _FakeContentRepository.byDate({
+          _dateKey(selectedDate): currentMoonPhase,
+          _dateKey(targetDate): _moonPhase(
+            16,
+            moonPhase: 'full_moon',
+            moonPhaseRu: 'Полнолуние',
           ),
-      isNotEmpty,
-    );
-  });
+        }),
+      );
+
+      final nextDayLabel = LocaleFormatters.dayMonth(
+        targetDate,
+        const Locale('ru'),
+      ).replaceAll('.', '');
+      final todayLabel = LocaleFormatters.dayMonth(
+        selectedDate,
+        const Locale('ru'),
+      ).replaceAll('.', '');
+      final today = find.text(todayLabel);
+      final next = find.text(nextDayLabel);
+      final selectedX = tester.getCenter(today).dx;
+      final initialDistance = (tester.getCenter(next).dx - selectedX).abs();
+      await tester.tap(next);
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 190));
+
+      final distance = (tester.getCenter(next).dx - selectedX).abs();
+      expect(distance, inExclusiveRange(1, initialDistance - 1));
+      final shifts = tester
+          .widgetList<SlideTransition>(find.byType(SlideTransition))
+          .map((w) => w.position.value.dx);
+      expect(shifts.any((dx) => dx < -.05), isTrue);
+      expect(shifts.any((dx) => dx > .05), isTrue);
+      await tester.tap(today);
+      await tester.pumpAndSettle();
+      expect(tester.getCenter(today).dx, closeTo(selectedX, .5));
+      expect(
+        find.byKey(const ValueKey('moon-phase-lunar-day-label')),
+        findsOneWidget,
+      );
+
+      tester.platformDispatcher.accessibilityFeaturesTestValue =
+          const FakeAccessibilityFeatures(disableAnimations: true);
+      addTearDown(
+        tester.platformDispatcher.clearAccessibilityFeaturesTestValue,
+      );
+      await tester.pump();
+      await tester.tap(next);
+      await tester.pump();
+      await tester.pump();
+      expect(tester.getCenter(next).dx, closeTo(selectedX, .5));
+    },
+  );
 
   testWidgets('keeps loading state until backend day is loaded', (
     tester,
@@ -628,6 +637,8 @@ void main() {
       await tester.pump(const Duration(milliseconds: 100));
 
       expect(find.text('Загружаем фазу луны'), findsOneWidget);
+      expect(find.text('Укажи текущую геолокацию').hitTestable(), findsNothing);
+      await tester.pump(const Duration(milliseconds: 370));
       expect(find.text('Укажи текущую геолокацию'), findsNothing);
 
       moonPhaseCompleter.complete(_moonPhase(12));

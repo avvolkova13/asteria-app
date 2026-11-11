@@ -26,9 +26,16 @@ void main() {
       expect(find.text('Подписка PRO\nне активна'), findsOneWidget);
       expect(find.text('Подключить PRO'), findsOneWidget);
 
-      expect(
+      final art = tester.getRect(
         find.byKey(const ValueKey('profile-subscription-status-art')),
-        findsOneWidget,
+      );
+      final card = tester.getRect(cardFinder);
+      expect(art.right, lessThanOrEqualTo(card.right - 12));
+      expect(
+        art.left,
+        greaterThan(
+          tester.getRect(find.text('Подписка PRO\nне активна')).right,
+        ),
       );
 
       await tester.tap(find.text('Подключить PRO'));

@@ -82,7 +82,7 @@ void main() {
     );
   });
 
-  testWidgets('core position card keeps the medallion out of text content', (
+  testWidgets('core position card contains the entire medallion beside its text', (
     tester,
   ) async {
     await tester.binding.setSurfaceSize(const Size(390, 640));
@@ -121,14 +121,14 @@ void main() {
     );
 
     expect(tester.getSize(cardFinder).width, 325);
-    expect(tester.getSize(imageFinder), const Size(130, 130));
+    expect(tester.getSize(imageFinder), const Size(96, 96));
     expect(
       tester.getTopRight(imageFinder).dx,
-      greaterThan(tester.getTopRight(cardFinder).dx),
+      lessThanOrEqualTo(tester.getTopRight(cardFinder).dx - 12),
     );
     expect(
       tester.getTopLeft(imageFinder).dy,
-      lessThanOrEqualTo(tester.getTopLeft(cardFinder).dy),
+      greaterThanOrEqualTo(tester.getTopLeft(cardFinder).dy + 12),
     );
     expect(
       tester.getTopLeft(titleFinder).dy - tester.getTopLeft(cardFinder).dy,
@@ -181,6 +181,5 @@ void main() {
 
     expect(source, isNot(contains('imageHeight: 164')));
     expect(source, contains('imageHeight: 98'));
-    expect(source, contains('titleReservedImageWidth: 116'));
   });
 }

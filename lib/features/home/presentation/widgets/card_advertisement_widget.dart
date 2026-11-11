@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/card_radii.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'dart:async';
 import 'dart:math' as math;
@@ -50,7 +51,7 @@ class CardAdvertisementWidget extends StatelessWidget {
       margin: EdgeInsets.symmetric(horizontal: horizontalMargin ?? 16),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AsteriaCardRadii.card),
         image: const DecorationImage(
           image: AssetImage('assets/images/home/birth_map_bg.webp'),
           fit: BoxFit.cover,
@@ -78,61 +79,55 @@ class CardAdvertisementWidget extends StatelessWidget {
   Widget _buildNatalCardBanner(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final contentWidth = constraints.maxWidth - 32;
-        final titleWidth = contentWidth < 192 ? contentWidth : 192.0;
-        final descriptionWidth = contentWidth < 199 ? contentWidth : 199.0;
+        final cardWidth = constraints.maxWidth - 2 * (horizontalMargin ?? 16);
+        final wheelSize = (cardWidth * .34).clamp(0.0, 138.0).toDouble();
+        final roomyCopy =
+            cardWidth < 330 || MediaQuery.textScalerOf(context).scale(16) > 20;
+        final heading = Text(
+          title,
+          style: context.textTheme.inversePlayfairSemiBold24.copyWith(
+            height: 1.1,
+          ),
+        );
+        final body = Text(
+          description,
+          style: context.textTheme.inverseUrbanistRegular16,
+        );
 
         return Container(
           key: const ValueKey('natal-card-banner'),
           margin: EdgeInsets.symmetric(horizontal: horizontalMargin ?? 16),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(16),
-            child: ColoredBox(
-              color: _natalCardBannerBackground,
-              child: Stack(
-                clipBehavior: Clip.hardEdge,
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: _natalCardBannerBackground,
+            borderRadius: BorderRadius.circular(AsteriaCardRadii.card),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const Positioned(
-                    top: 0,
-                    left: 216,
-                    width: 143,
-                    height: 158,
-                    child: _NatalCardWheel(),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(16),
+                  Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        SizedBox(
-                          width: titleWidth,
-                          child: Text(
-                            title,
-                            maxLines: 3,
-                            overflow: TextOverflow.ellipsis,
-                            style: context.textTheme.inversePlayfairSemiBold24
-                                .copyWith(height: 1),
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        SizedBox(
-                          width: descriptionWidth,
-                          child: Text(
-                            description,
-                            style: context.textTheme.inverseUrbanistRegular16,
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        _NatalCardButton(
-                          text: buttonText,
-                          onPressed: onPressed,
-                        ),
+                        heading,
+                        if (!roomyCopy) ...[const SizedBox(height: 8), body],
                       ],
                     ),
                   ),
+                  const SizedBox(width: 12),
+                  SizedBox.square(
+                    dimension: wheelSize,
+                    child: const _NatalCardWheel(),
+                  ),
                 ],
               ),
-            ),
+              if (roomyCopy) ...[const SizedBox(height: 8), body],
+              const SizedBox(height: 16),
+              _NatalCardButton(text: buttonText, onPressed: onPressed),
+            ],
           ),
         );
       },
@@ -152,9 +147,9 @@ class CardAdvertisementWidget extends StatelessWidget {
         final scaledHeight =
             baseHeight + ((clampedTextScale - 1).clamp(0, 1) * 320);
         final textWidth = cardWidth * 0.61;
-        final artWidth = cardWidth * 0.52;
+        final artWidth = cardWidth * 0.34;
 
-        const borderRadius = 16.0;
+        const borderRadius = AsteriaCardRadii.card;
 
         return Container(
           width: double.infinity,
@@ -169,8 +164,8 @@ class CardAdvertisementWidget extends StatelessWidget {
             clipBehavior: Clip.hardEdge,
             children: [
               Positioned(
-                top: -6,
-                right: -18,
+                top: 14,
+                right: 12,
                 width: artWidth,
                 height: baseHeight * 0.76,
                 child: Image.asset(
@@ -239,23 +234,10 @@ class _NatalCardWheel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ClipRect(
-      child: Stack(
-        clipBehavior: Clip.hardEdge,
-        children: [
-          Positioned(
-            left: -4.85,
-            top: -53.42,
-            width: 214.7,
-            height: 213.46,
-            child: Image.asset(
-              'assets/images/home/natal_card_banner_wheel.webp',
-              cacheWidth: 645,
-              fit: BoxFit.fill,
-            ),
-          ),
-        ],
-      ),
+    return Image.asset(
+      'assets/images/home/natal_card_banner_wheel.webp',
+      fit: BoxFit.contain,
+      excludeFromSemantics: true,
     );
   }
 }

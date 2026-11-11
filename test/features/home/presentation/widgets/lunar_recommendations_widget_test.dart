@@ -214,36 +214,37 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('renders hair coloring icon as a full card image', (
-    tester,
-  ) async {
-    await tester.pumpWidget(
-      _app(
-        const LunarRecommendationsWidget(
-          recommendation: SphereRecommendationModel(
-            status: RecommendationStatus.neutral,
-            tasks: {
-              'hair_coloring': TaskRecommendationModel(
-                status: RecommendationStatus.neutral,
-                description: 'Цвет ляжет нормально.',
-              ),
-            },
+  testWidgets(
+    'fits the full hair coloring silhouette inside the illustration slot',
+    (tester) async {
+      await tester.pumpWidget(
+        _app(
+          const LunarRecommendationsWidget(
+            recommendation: SphereRecommendationModel(
+              status: RecommendationStatus.neutral,
+              tasks: {
+                'hair_coloring': TaskRecommendationModel(
+                  status: RecommendationStatus.neutral,
+                  description: 'Цвет ляжет нормально.',
+                ),
+              },
+            ),
           ),
         ),
-      ),
-    );
+      );
 
-    final image = tester.widget<Image>(
-      _assetImage(
-        'assets/images/prediction_images/moon_card_beauty_hair_coloring.webp',
-      ),
-    );
+      final image = tester.widget<Image>(
+        _assetImage(
+          'assets/images/prediction_images/moon_card_beauty_hair_coloring.webp',
+        ),
+      );
 
-    expect(image.width, 83);
-    expect(image.height, 44);
-    expect(image.fit, BoxFit.fill);
-    expect(tester.takeException(), isNull);
-  });
+      expect(tester.getSize(find.byType(LunarCardImage)), const Size(83, 44));
+      expect(tester.getSize(find.byWidget(image)), const Size(77, 38));
+      expect(image.fit, BoxFit.contain);
+      expect(tester.takeException(), isNull);
+    },
+  );
 
   testWidgets('uses Figma typography for lunar recommendation cards', (
     tester,

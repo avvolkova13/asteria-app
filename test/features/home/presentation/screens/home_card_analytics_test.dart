@@ -175,16 +175,16 @@ void main() {
     tester,
   ) async {
     await mount(tester, initialTab: 0);
-    expect(analytics.cards, ['home_tarot_card']);
+    expect(analytics.cards, ['home_tarot_card', 'home_affirmation_card']);
     showTab(3);
     await tester.pump();
     content.loadAffirmation();
     user.signIn();
     await tester.pump();
-    expect(analytics.cards, ['home_tarot_card']);
+    expect(analytics.cards, ['home_tarot_card', 'home_affirmation_card']);
 
     showTab(0);
-    expect(analytics.cards, ['home_tarot_card']);
+    expect(analytics.cards, ['home_tarot_card', 'home_affirmation_card']);
     await tester.pump();
     expect(
       analytics.cards,
@@ -221,10 +221,11 @@ void main() {
         'home_natal_card',
         'home_compatibility_card',
         'home_tarot_card',
+        'home_affirmation_card',
       ]);
       showTab(1);
       await tester.pump();
-      expect(analytics.cards, hasLength(3));
+      expect(analytics.cards, hasLength(4));
       expect(analytics.warehouseEvents, isEmpty);
       expect(tester.takeException(), isNull);
       await tester.pumpWidget(const SizedBox.shrink());

@@ -1,3 +1,5 @@
+import 'package:asteria_app/features/horoscope/presentation/horoscope_core_position_assets.dart';
+import 'package:asteria_app/core/ui_kit/card_radii.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/app/providers/content_provider.dart';
@@ -664,7 +666,7 @@ class _GeneralInfoItem extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(8, 8, 6, 8),
       decoration: BoxDecoration(
         color: _NatalCardColors.figmaPurple.withValues(alpha: 0.2),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AsteriaCardRadii.compact),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -938,76 +940,50 @@ class _PlanetPositionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final imageCrop = _PlanetImageCrop.forCode(planet.code);
-
     return Container(
       width: 325,
       constraints: const BoxConstraints(minHeight: 104),
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
         color: _NatalCardColors.figmaPurple.withValues(alpha: 0.2),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AsteriaCardRadii.tile),
       ),
-      child: Stack(
-        clipBehavior: Clip.hardEdge,
+      padding: const EdgeInsets.all(16),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Positioned(
-            right: 0,
-            top: 0,
-            child: IgnorePointer(
-              child: SizedBox(
-                width: 99,
-                height: 104,
-                child: ClipRect(
-                  child: OverflowBox(
-                    alignment: Alignment.topLeft,
-                    maxWidth: imageCrop.width,
-                    maxHeight: imageCrop.height,
-                    child: Transform.translate(
-                      offset: imageCrop.offset,
-                      child: Image.asset(
-                        imageCrop.assetPath,
-                        frameBuilder: AsteriaEntrance.imageFrame,
-                        width: imageCrop.width,
-                        height: imageCrop.height,
-                        fit: BoxFit.fill,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(16),
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(
-                  width: 202,
-                  child: Text(
-                    context.l10n.planetName(planet.code),
-                    style: context.textTheme.inversePlayfairSemiBold24.copyWith(
-                      fontFamily: 'Lora',
-                      letterSpacing: 0,
-                      height: 1,
-                    ),
+                Text(
+                  context.l10n.planetName(planet.code),
+                  style: context.textTheme.inversePlayfairSemiBold24.copyWith(
+                    fontFamily: 'Lora',
+                    letterSpacing: 0,
+                    height: 1,
                   ),
                 ),
                 const SizedBox(height: 8),
-                SizedBox(
-                  width: 210,
-                  child: Text(
-                    planet.description,
-                    style: context.textTheme.inverseUrbanistRegular16.copyWith(
-                      fontFamily: 'Onest',
-                      height: 1.2,
-                      letterSpacing: -0.408,
-                    ),
+                Text(
+                  planet.description,
+                  style: context.textTheme.inverseUrbanistRegular16.copyWith(
+                    fontFamily: 'Onest',
+                    height: 1.2,
+                    letterSpacing: -0.408,
                   ),
                 ),
               ],
             ),
+          ),
+          const SizedBox(width: 10),
+          Image.asset(
+            horoscopeCorePositionAssetFor(planet.code),
+            width: 72,
+            height: 72,
+            fit: BoxFit.contain,
+            frameBuilder: AsteriaEntrance.imageFrame,
+            excludeFromSemantics: true,
           ),
         ],
       ),
@@ -1069,7 +1045,7 @@ class _HouseThemeCard extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
         color: _NatalCardColors.cardSolid,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AsteriaCardRadii.tile),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1265,7 +1241,7 @@ class _MagicConclusionCard extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: _NatalCardColors.cardSolid,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AsteriaCardRadii.card),
         image: const DecorationImage(
           image: AssetImage(_backgroundAsset),
           fit: BoxFit.cover,
@@ -1285,8 +1261,8 @@ class _MagicConclusionCard extends StatelessWidget {
                   child: Image.asset(
                     _imageAsset,
                     frameBuilder: AsteriaEntrance.imageFrame,
-                    fit: BoxFit.cover,
-                    alignment: Alignment.topCenter,
+                    fit: BoxFit.contain,
+                    alignment: Alignment.center,
                   ),
                 ),
               ),
@@ -1317,60 +1293,6 @@ class _MagicConclusionCard extends StatelessWidget {
         ],
       ),
     );
-  }
-}
-
-class _PlanetImageCrop {
-  final String assetPath;
-  final double width;
-  final double height;
-  final Offset offset;
-
-  const _PlanetImageCrop({
-    required this.assetPath,
-    required this.width,
-    required this.height,
-    required this.offset,
-  });
-
-  static const _sun = _PlanetImageCrop(
-    assetPath: 'assets/images/home/natal_card_position_sun.webp',
-    width: 181,
-    height: 272,
-    offset: Offset(-28, -87),
-  );
-
-  static const _venus = _PlanetImageCrop(
-    assetPath: 'assets/images/home/natal_card_position_venus.webp',
-    width: 172,
-    height: 258,
-    offset: Offset(-24, -79),
-  );
-
-  static const _jupiter = _PlanetImageCrop(
-    assetPath: 'assets/images/home/natal_card_position_jupiter.webp',
-    width: 169,
-    height: 254,
-    offset: Offset(-25, -77),
-  );
-
-  static const _chiron = _PlanetImageCrop(
-    assetPath: 'assets/images/home/natal_card_position_chiron.webp',
-    width: 172,
-    height: 258,
-    offset: Offset(-25, -78),
-  );
-
-  static _PlanetImageCrop forCode(String code) {
-    return switch (code) {
-      'mars' => _venus,
-      'venus' => _venus,
-      'saturn' => _jupiter,
-      'jupiter' => _jupiter,
-      'lilith' => _chiron,
-      'chiron' => _chiron,
-      _ => _sun,
-    };
   }
 }
 

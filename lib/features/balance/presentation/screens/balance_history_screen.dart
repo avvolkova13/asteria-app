@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/card_radii.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
@@ -390,7 +391,7 @@ class _HistoryItem extends StatelessWidget {
           : BalanceHistoryStyle.debit,
     );
     return StaticGlassSurface(
-      radius: 8,
+      radius: AsteriaCardRadii.compact,
       tint: BalanceHistoryStyle.card,
       light: 0.8,
       child: Padding(
@@ -612,7 +613,7 @@ class _EmptyState extends StatelessWidget {
   @override
   Widget build(BuildContext context) => StaticGlassSurface(
     key: const Key('history-empty'),
-    radius: 16,
+    radius: AsteriaCardRadii.tile,
     tint: BalanceHistoryStyle.card,
     light: 0.8,
     child: Padding(

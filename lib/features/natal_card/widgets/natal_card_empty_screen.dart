@@ -1,3 +1,5 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
+import 'package:asteria_app/core/ui_kit/card_radii.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/const/purchase_products_const.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
@@ -91,7 +93,7 @@ class _InsideCard extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: _NatalPaywall.glass,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AsteriaCardRadii.card),
         border: Border.all(color: _NatalPaywall.glassBorder, width: 0.7),
       ),
       child: LayoutBuilder(
@@ -169,7 +171,13 @@ class _InsideFeatureItem extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.only(top: 1),
-          child: const _PaywallSpriteIcon.crescent(),
+          child: const LotusRasterIcon(
+            'assets/icons/clay/moon_icon.webp',
+            width: 19,
+            height: 19,
+            fit: BoxFit.contain,
+            excludeFromSemantics: true,
+          ),
         ),
         const SizedBox(width: 4),
         Expanded(
@@ -214,7 +222,13 @@ class _ForeverAccessItem extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.only(top: 3),
-          child: const _PaywallSpriteIcon.star(),
+          child: const LotusRasterIcon(
+            'assets/icons/clay/star_icon.webp',
+            width: 19,
+            height: 19,
+            fit: BoxFit.contain,
+            excludeFromSemantics: true,
+          ),
         ),
         const SizedBox(width: 4),
         Expanded(
@@ -227,56 +241,6 @@ class _ForeverAccessItem extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-}
-
-enum _PaywallSpriteCrop { crescent, star }
-
-class _PaywallSpriteIcon extends StatelessWidget {
-  final _PaywallSpriteCrop crop;
-
-  const _PaywallSpriteIcon.crescent() : crop = _PaywallSpriteCrop.crescent;
-
-  const _PaywallSpriteIcon.star() : crop = _PaywallSpriteCrop.star;
-
-  @override
-  Widget build(BuildContext context) {
-    const size = 19.0;
-    final imageWidth = switch (crop) {
-      _PaywallSpriteCrop.crescent => size * 2.744,
-      _PaywallSpriteCrop.star => size * 2.7991,
-    };
-    final imageHeight = switch (crop) {
-      _PaywallSpriteCrop.crescent => size * 2.6968,
-      _PaywallSpriteCrop.star => size * 2.732,
-    };
-    final offset = switch (crop) {
-      _PaywallSpriteCrop.crescent => Offset(-size * 1.5164, -size * 1.4452),
-      _PaywallSpriteCrop.star => Offset(-size * 0.2433, -size * 1.4597),
-    };
-
-    return SizedBox(
-      width: size,
-      height: size,
-      child: ClipRect(
-        child: OverflowBox(
-          alignment: Alignment.topLeft,
-          minWidth: imageWidth,
-          maxWidth: imageWidth,
-          minHeight: imageHeight,
-          maxHeight: imageHeight,
-          child: Transform.translate(
-            offset: offset,
-            child: Image.asset(
-              'assets/images/horoscope/year_paywall_moon.webp',
-              width: imageWidth,
-              height: imageHeight,
-              fit: BoxFit.fill,
-            ),
-          ),
-        ),
-      ),
     );
   }
 }

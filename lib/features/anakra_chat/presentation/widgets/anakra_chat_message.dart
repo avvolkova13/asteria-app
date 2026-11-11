@@ -29,30 +29,29 @@ class AnakraChatMessage extends StatelessWidget {
                   padding: const EdgeInsets.only(left: 17),
                   child: Text(
                     context.l10n.anakraName,
-                    style: AppTypography.text2.copyWith(color: AnakraPalette.textMuted),
+                    style: AppTypography.text2.copyWith(
+                      color: AnakraPalette.textMuted,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 2),
               ],
-              AnakraGlassSurface(
-                side: isUser
-                    ? AnakraBubbleSide.outgoing
-                    : AnakraBubbleSide.incoming,
-                radius: 16,
-                light: 0.8,
-                tint: isUser
-                    ? const Color(0x335B3FD2)
-                    : const Color(0x331B1433),
+              CustomPaint(
+                painter: _MessageSurface(isUser: isUser),
                 child: Padding(
                   padding: EdgeInsets.fromLTRB(
-                    isUser ? 12 : 17,
-                    6,
-                    isUser ? 17 : 12,
-                    6,
+                    isUser ? 14 : 19,
+                    10,
+                    isUser ? 19 : 14,
+                    10,
                   ),
                   child: Text(
                     message.text,
-                    style: AppTypography.text1.copyWith(color: Colors.white),
+                    style: AppTypography.text1.copyWith(
+                      color: isUser
+                          ? Colors.white
+                          : AnakraPalette.backgroundDeep,
+                    ),
                   ),
                 ),
               ),
@@ -62,4 +61,56 @@ class AnakraChatMessage extends StatelessWidget {
       ),
     );
   }
+}
+
+class _MessageSurface extends CustomPainter {
+  const _MessageSurface({required this.isUser});
+  final bool isUser;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final rect = Offset.zero & size;
+    final shape = anakraBubblePath(
+      size,
+      isUser ? AnakraBubbleSide.outgoing : AnakraBubbleSide.incoming,
+      21,
+    );
+    final base = isUser ? AnakraPalette.purpleDark : const Color(0xFFE7DDEE);
+    canvas.drawShadow(
+      shape,
+      AnakraPalette.backgroundDeep.withValues(alpha: .38),
+      2,
+      false,
+    );
+    canvas.save();
+    canvas.clipPath(shape);
+    final paint = Paint()
+      ..shader = LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [
+          Color.lerp(base, Colors.white, isUser ? .13 : .4)!,
+          base,
+          Color.lerp(base, AnakraPalette.backgroundDeep, isUser ? .19 : .12)!,
+        ],
+        stops: const [0, .50, 1],
+      ).createShader(rect);
+    canvas.drawPath(shape, paint);
+    // A soft highlight follows the silhouette, keeping the reading area quiet.
+    paint
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 3
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 2)
+      ..shader = const LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [Color(0x99FFFFFF), Color(0x11FFFFFF), Color(0x337F6294)],
+      ).createShader(rect);
+    canvas.drawPath(shape, paint);
+    canvas.restore();
+  }
+
+  @override
+  bool shouldRepaint(_MessageSurface oldDelegate) =>
+      oldDelegate.isUser != isUser;
 }

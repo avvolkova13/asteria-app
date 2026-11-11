@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/card_radii.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/routing/app_route.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
@@ -35,10 +36,10 @@ class AdvertisingBlockWidget extends StatelessWidget {
           final imageScale = (cardWidth / 358).clamp(0.8, 1).toDouble();
           final imageWidth = 144 * imageScale;
           final imageHeight = 212 * imageScale;
-          final imageRight = cardWidth < 330 ? -6.0 : 16 * imageScale;
+          final imageRight = 8 * imageScale;
 
           return ClipRRect(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(AsteriaCardRadii.card),
             child: SizedBox(
               height: 243,
               child: Stack(
@@ -58,12 +59,10 @@ class AdvertisingBlockWidget extends StatelessWidget {
                     right: imageRight,
                     width: imageWidth,
                     height: imageHeight,
-                    child: ClipRect(
-                      child: OverflowBox(
-                        maxWidth: imageWidth * 1.0694,
-                        maxHeight: imageHeight * 1.0053,
-                        child: Image.asset(_liveyaAsset, fit: BoxFit.fill),
-                      ),
+                    child: Image.asset(
+                      _liveyaAsset,
+                      fit: BoxFit.contain,
+                      alignment: Alignment.bottomCenter,
                     ),
                   ),
                   Positioned(

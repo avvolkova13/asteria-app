@@ -113,11 +113,11 @@ void main() {
 
       expect(assetNames, contains(_currentYearAnimalAsset()));
       expect(assetNames, isNot(contains('assets/icons/ai_astrologer.png')));
-      expect(animalImage.alignment, Alignment.topCenter);
+      expect(animalImage.alignment, Alignment.center);
     },
   );
 
-  testWidgets('uses top aligned Anakra image for Anakra products', (
+  testWidgets('centers the full Anakra illustration for Anakra products', (
     tester,
   ) async {
     await tester.binding.setSurfaceSize(const Size(390, 840));
@@ -147,8 +147,8 @@ void main() {
       ),
     );
 
-    expect(anakraImage.fit, BoxFit.cover);
-    expect(anakraImage.alignment, Alignment.topCenter);
+    expect(anakraImage.fit, BoxFit.contain);
+    expect(anakraImage.alignment, Alignment.center);
   });
 
   testWidgets('uses former Sonnik image for Love Deck products', (
@@ -182,7 +182,7 @@ void main() {
     expect(loveDeckImageFinder, findsOneWidget);
     final loveDeckImage = tester.widget<Image>(loveDeckImageFinder);
     expect(loveDeckImage.fit, BoxFit.contain);
-    expect(loveDeckImage.alignment, Alignment.topCenter);
+    expect(loveDeckImage.alignment, Alignment.center);
   });
 
   testWidgets('uses default year animal image for Sonnik products', (

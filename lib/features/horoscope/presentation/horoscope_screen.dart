@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/card_radii.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
@@ -346,8 +347,6 @@ class _HoroscopeYourEssence extends StatelessWidget {
           imagePath: 'assets/images/horoscope/year_emotional_world.webp',
           imageWidth: 124,
           imageHeight: 142,
-          imageTop: -24,
-          imageRight: -16,
         ),
         const SizedBox(height: 24),
         _TagSection(
@@ -439,9 +438,6 @@ class _HoroscopeYourEvolution extends StatelessWidget {
           imagePath: 'assets/images/horoscope/year_transformation.webp',
           imageWidth: 144,
           imageHeight: 98,
-          imageTop: 4,
-          imageRight: -12,
-          titleReservedImageWidth: 116,
         ),
         const SizedBox(height: 24),
         Text(
@@ -869,10 +865,10 @@ class HoroscopeCorePositionCard extends StatelessWidget {
   static const _horizontalPadding = 16.0;
   static const _topPadding = 28.0;
   static const _bottomPadding = 16.0;
-  static const _imageSize = 130.0;
-  static const _imageRight = -26.0;
-  static const _imageTop = -26.0;
-  static const _imageReserve = 144.0;
+  static const _imageSize = 96.0;
+  static const _imageRight = 14.0;
+  static const _imageTop = 16.0;
+  static const _imageReserve = 124.0;
 
   final String title;
   final String description;
@@ -967,9 +963,6 @@ class _HoroscopeInfoCard extends StatelessWidget {
   final String imagePath;
   final double imageWidth;
   final double imageHeight;
-  final double imageTop;
-  final double imageRight;
-  final double? titleReservedImageWidth;
 
   const _HoroscopeInfoCard({
     required this.title,
@@ -977,54 +970,36 @@ class _HoroscopeInfoCard extends StatelessWidget {
     required this.imagePath,
     this.imageWidth = 72,
     this.imageHeight = 82,
-    this.imageTop = 16,
-    this.imageRight = 16,
-    this.titleReservedImageWidth,
   });
 
   @override
   Widget build(BuildContext context) {
     return _GlassCard(
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final reservedImageWidth = titleReservedImageWidth ?? imageWidth;
-          final titleWidth = math
-              .max(
-                0,
-                constraints.maxWidth - reservedImageWidth - imageRight - 16,
-              )
-              .toDouble();
-
-          return Stack(
-            children: [
-              Positioned(
-                top: imageTop,
-                right: imageRight,
-                child: Image.asset(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Text(title, style: _HoroscopeDesign.h2(context)),
+                ),
+                const SizedBox(width: 12),
+                Image.asset(
                   imagePath,
-                  frameBuilder: AsteriaEntrance.imageFrame,
                   width: imageWidth,
                   height: imageHeight,
                   fit: BoxFit.contain,
+                  frameBuilder: AsteriaEntrance.imageFrame,
+                  excludeFromSemantics: true,
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(
-                      width: titleWidth,
-                      child: Text(title, style: _HoroscopeDesign.h2(context)),
-                    ),
-                    const SizedBox(height: 24),
-                    Text(description, style: _HoroscopeDesign.body(context)),
-                  ],
-                ),
-              ),
-            ],
-          );
-        },
+              ],
+            ),
+            const SizedBox(height: 12),
+            Text(description, style: _HoroscopeDesign.body(context)),
+          ],
+        ),
       ),
     );
   }
@@ -1085,7 +1060,7 @@ class _LabeledCard extends StatelessWidget {
       constraints: const BoxConstraints(minHeight: 74),
       decoration: BoxDecoration(
         color: _HoroscopeDesign.cardAlt,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AsteriaCardRadii.tile),
       ),
       clipBehavior: Clip.antiAlias,
       child: Column(
@@ -1189,7 +1164,7 @@ class _MetaphorCard extends StatelessWidget {
       width: double.infinity,
       decoration: BoxDecoration(
         color: const Color(0xFF151028),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AsteriaCardRadii.card),
         image: const DecorationImage(
           image: AssetImage(
             'assets/images/horoscope/year_astro_metaphor_bg.webp',
@@ -1254,7 +1229,7 @@ class _GlassCard extends StatelessWidget {
       width: double.infinity,
       decoration: BoxDecoration(
         color: _HoroscopeDesign.card.withValues(alpha: 0.82),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AsteriaCardRadii.tile),
         border: Border.all(color: _HoroscopeDesign.cardBorder, width: 0.7),
       ),
       clipBehavior: Clip.antiAlias,

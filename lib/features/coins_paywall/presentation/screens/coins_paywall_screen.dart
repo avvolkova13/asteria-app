@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/card_radii.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
 import 'dart:io' show Platform;
@@ -440,7 +441,7 @@ class _PackageItem extends StatelessWidget {
       package.coins ?? 0,
       fallback: context.l10n.coinPackageFallback(package.coins ?? 0),
     )!;
-    final radius = BorderRadius.circular(16);
+    final radius = BorderRadius.circular(AsteriaCardRadii.tile);
 
     final tile = ClipRRect(
       borderRadius: radius,
@@ -916,7 +917,7 @@ class _IosPackageTile extends StatelessWidget {
       metadata?.stars,
       fallback: product.description.isEmpty ? null : product.description,
     );
-    final radius = BorderRadius.circular(16);
+    final radius = BorderRadius.circular(AsteriaCardRadii.tile);
 
     final tile = ClipRRect(
       borderRadius: radius,

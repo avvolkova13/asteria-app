@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/card_radii.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
 import 'package:asteria_app/core/const/purchase_products_const.dart';
@@ -88,7 +89,7 @@ class _SpecialDeckItem extends StatelessWidget {
                   child: DecoratedBox(
                     decoration: BoxDecoration(
                       color: _SpecialDecksColors.cardBackground,
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: BorderRadius.circular(AsteriaCardRadii.tile),
                     ),
                     child: Padding(
                       padding: const EdgeInsets.all(8),
@@ -130,7 +131,7 @@ class _SpecialDeckPreview extends StatelessWidget {
       child: DecoratedBox(
         decoration: BoxDecoration(
           color: _SpecialDecksColors.imageBackground,
-          borderRadius: BorderRadius.circular(32),
+          borderRadius: BorderRadius.circular(AsteriaCardRadii.compact),
         ),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -141,7 +142,7 @@ class _SpecialDeckPreview extends StatelessWidget {
                   'assets/images/horoscope/$image.webp',
                   width: 80,
                   height: 75,
-                  fit: BoxFit.cover,
+                  fit: BoxFit.contain,
                 ),
               ),
               const SizedBox(height: 6),

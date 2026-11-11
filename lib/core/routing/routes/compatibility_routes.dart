@@ -30,7 +30,7 @@ class CreateCompatibilityRoute extends AppRoute {
       : super(
           name: CompatibilityRoutes.createCompatibilityRouteName,
           path: CompatibilityRoutes.createCompatibilityRouteName,
-          pageBuilder: (context, state) => AsteriaPage(child: CreateCompatibilityScreen()),
+          pageBuilder: (context, state) => AsteriaPage(key: state.pageKey, name: state.name, child: CreateCompatibilityScreen()),
         );
 
   static void push(BuildContext context) => context.pushNamed(CompatibilityRoutes.createCompatibilityRouteName);
