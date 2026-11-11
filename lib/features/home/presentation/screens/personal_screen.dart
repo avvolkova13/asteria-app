@@ -1,4 +1,4 @@
-import 'package:asteria_app/core/ui_kit/widgets/pearl_progress_ring_painter.dart';
+import 'package:asteria_app/core/ui_kit/widgets/pearl_metric_row.dart';
 import 'package:asteria_app/core/config/app_feature_visibility.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
@@ -997,122 +997,24 @@ class _HoroscopeImpactMetricsState extends State<_HoroscopeImpactMetrics> {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        _ImpactMetric(
-          visible: _visible,
-          percentage: widget.lovePercentage,
-          label: context.l10n.personalLove,
-          metricId: 'love',
-        ),
-        _ImpactMetric(
-          visible: _visible,
-          percentage: widget.financesPercentage,
-          label: context.l10n.personalFinances,
-          metricId: 'finances',
-        ),
-        _ImpactMetric(
-          visible: _visible,
-          percentage: widget.energyPercentage,
-          label: context.l10n.personalEnergy,
-          metricId: 'energy',
-        ),
-      ],
-    );
-  }
-}
-
-class _ImpactMetric extends StatelessWidget {
-  final String percentage;
-  final String label;
-  final bool visible;
-  final String metricId;
-
-  const _ImpactMetric({
-    required this.percentage,
-    required this.label,
-    required this.visible,
-    required this.metricId,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: 75,
-      child: Column(
-        children: [
-          SizedBox(
-            width: 71,
-            height: 71,
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                _ImpactRing(
-                  metricId: metricId,
-                  value: _progressValue(percentage),
-                  visible: visible,
-                ),
-                Text(
-                  percentage,
-                  textAlign: TextAlign.center,
-                  style: context.textTheme.inversePlayfairMedium20.copyWith(
-                    height: 1.1,
-                  ),
-                ),
-              ],
-            ),
+    return PearlMetricRow(
+      visible: _visible,
+      metrics: [
+        for (final (id, label, reading) in [
+          ('love', context.l10n.personalLove, widget.lovePercentage),
+          (
+            'finances',
+            context.l10n.personalFinances,
+            widget.financesPercentage,
           ),
-          const SizedBox(height: 4),
-          Text(
+          ('energy', context.l10n.personalEnergy, widget.energyPercentage),
+        ])
+          PearlMetric.percentage(
             label,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            textAlign: TextAlign.center,
-            style: context.textTheme.inverseUrbanistSemiBold16.copyWith(
-              height: 1.2,
-              letterSpacing: -0.408,
-            ),
+            reading,
+            paintKey: ValueKey('personal-impact-ring-$id'),
           ),
-        ],
-      ),
-    );
-  }
-
-  double _progressValue(String value) {
-    final parsed = double.tryParse(
-      value.replaceAll('%', '').replaceAll(',', '.').trim(),
-    );
-    if (parsed == null || !parsed.isFinite) return 0;
-    return (parsed / 100).clamp(0, 1);
-  }
-}
-
-class _ImpactRing extends StatelessWidget {
-  const _ImpactRing({
-    required this.metricId,
-    required this.value,
-    required this.visible,
-  });
-  final String metricId;
-  final double value;
-  final bool visible;
-
-  @override
-  Widget build(BuildContext context) {
-    Widget draw(double progress) => CustomPaint(
-      key: ValueKey('personal-impact-ring-$metricId'),
-      size: const Size.square(71),
-      painter: PearlProgressRingPainter(progress),
-    );
-
-    if (MediaQuery.disableAnimationsOf(context)) return draw(value);
-    if (!visible) return draw(0);
-    return TweenAnimationBuilder<double>(
-      duration: const Duration(milliseconds: 720),
-      curve: Curves.easeOutCubic,
-      tween: Tween(begin: 0.0, end: value),
-      builder: (context, progress, _) => draw(progress),
+      ],
     );
   }
 }

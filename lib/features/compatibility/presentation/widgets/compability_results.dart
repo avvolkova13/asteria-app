@@ -1,4 +1,4 @@
-import 'package:asteria_app/core/ui_kit/widgets/pearl_progress_ring_painter.dart';
+import 'package:asteria_app/core/ui_kit/widgets/pearl_metric_row.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/app/data/models/prompt_response.dart';
@@ -204,89 +204,15 @@ class _MetricsRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final largeText = MediaQuery.textScalerOf(context).scale(14) > 20;
-        final stacked = largeText || constraints.maxWidth < 255;
-        final gauges = [
-          for (final (value, label) in [
-            (love, context.l10n.compatibilityLove),
-            (conflicts, context.l10n.compatibilityConflicts),
-            (family, context.l10n.compatibilityFamily),
-          ])
-            _MetricGauge(value: value, label: label, horizontal: stacked),
-        ];
-        if (stacked) {
-          return Column(spacing: 8, children: gauges);
-        }
-        return Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [for (final gauge in gauges) Expanded(child: gauge)],
-        );
-      },
-    );
-  }
-}
-
-class _MetricGauge extends StatelessWidget {
-  final double value;
-  final String label;
-  final bool horizontal;
-
-  const _MetricGauge({
-    required this.value,
-    required this.label,
-    required this.horizontal,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final progress = (value / 100).clamp(0.0, 1.0);
-    final percentage = '${value.toStringAsFixed(0)}%';
-    final size =
-        MediaQuery.textScalerOf(context).scale(17).clamp(17.0, 40.0) + 54;
-    final reading = Padding(
-      padding: const EdgeInsets.all(12),
-      child: FittedBox(
-        fit: BoxFit.scaleDown,
-        child: Text(
-          percentage,
-          style: context.textTheme.inversePlayfairMedium20,
-        ),
-      ),
-    );
-    final ring = SizedBox.square(
-      dimension: size,
-      child: TweenAnimationBuilder<double>(
-        tween: Tween(begin: 0, end: progress),
-        duration: MediaQuery.disableAnimationsOf(context)
-            ? Duration.zero
-            : const Duration(milliseconds: 720),
-        curve: Curves.easeOutCubic,
-        child: Center(child: reading),
-        builder: (context, fraction, child) => CustomPaint(
-          painter: PearlProgressRingPainter(fraction),
-          child: child,
-        ),
-      ),
-    );
-    final caption = Text(
-      label,
-      style: context.textTheme.inverseUrbanistSemiBold14,
-    );
-    return Semantics(
-      label: label,
-      value: percentage,
-      excludeSemantics: true,
-      child: horizontal
-          ? Row(
-              spacing: 12,
-              children: [
-                ring,
-                Expanded(child: caption),
-              ],
-            )
-          : Column(spacing: 6, children: [ring, caption]),
+    return PearlMetricRow(
+      metrics: [
+        for (final (value, label) in [
+          (love, context.l10n.compatibilityLove),
+          (conflicts, context.l10n.compatibilityConflicts),
+          (family, context.l10n.compatibilityFamily),
+        ])
+          PearlMetric(label, '${value.toStringAsFixed(0)}%', value / 100),
+      ],
     );
   }
 }

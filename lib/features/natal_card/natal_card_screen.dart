@@ -26,7 +26,7 @@ import 'package:asteria_app/core/localization/localized_display_names.dart';
 import 'package:asteria_app/core/localization/app_locale_service.dart';
 import 'package:asteria_app/core/localization/locale_formatters.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
-import 'package:asteria_app/core/ui_kit/widgets/gradient_circular_progress_painter.dart';
+import 'package:asteria_app/core/ui_kit/widgets/pearl_metric_row.dart';
 import 'package:asteria_app/core/ui_kit/widgets/top_nav_bar.dart';
 import 'package:asteria_app/features/natal_card/widgets/natal_card_empty_screen.dart';
 import 'package:asteria_app/features/natal_card/widgets/natal_card_loading_overlay.dart';
@@ -1047,36 +1047,16 @@ class _ElementsTab extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 16),
-        LayoutBuilder(
-          builder: (context, constraints) {
-            final itemWidth = (constraints.maxWidth / 4).clamp(64.0, 76.0);
-
-            return Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                _ElementMetric(
-                  width: itemWidth,
-                  value: _elementValue(elements?.fire),
-                  label: context.l10n.elementFire,
-                ),
-                _ElementMetric(
-                  width: itemWidth,
-                  value: _elementValue(elements?.water),
-                  label: context.l10n.elementWater,
-                ),
-                _ElementMetric(
-                  width: itemWidth,
-                  value: _elementValue(elements?.air),
-                  label: context.l10n.elementAir,
-                ),
-                _ElementMetric(
-                  width: itemWidth,
-                  value: _elementValue(elements?.earth),
-                  label: context.l10n.elementEarth,
-                ),
-              ],
-            );
-          },
+        PearlMetricRow(
+          metrics: [
+            for (final (raw, label) in [
+              (elements?.fire, context.l10n.elementFire),
+              (elements?.water, context.l10n.elementWater),
+              (elements?.air, context.l10n.elementAir),
+              (elements?.earth, context.l10n.elementEarth),
+            ])
+              _elementMetric(raw, label),
+          ],
         ),
         const SizedBox(height: 16),
         Text(
@@ -1093,82 +1073,9 @@ class _ElementsTab extends StatelessWidget {
     );
   }
 
-  int _elementValue(String? value) {
-    return int.tryParse(value ?? '') ?? 0;
-  }
-}
-
-class _ElementMetric extends StatelessWidget {
-  final double width;
-  final int value;
-  final String label;
-
-  const _ElementMetric({
-    required this.width,
-    required this.value,
-    required this.label,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final circleSize = width.clamp(64.0, 71.0);
-    final innerSize = circleSize - 17;
-
-    return SizedBox(
-      width: width,
-      child: Column(
-        children: [
-          SizedBox(
-            width: circleSize,
-            height: circleSize,
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                Container(
-                  width: innerSize,
-                  height: innerSize,
-                  decoration: BoxDecoration(
-                    color: AppColors.primary.withValues(alpha: 0.36),
-                    shape: BoxShape.circle,
-                  ),
-                ),
-                CustomPaint(
-                  size: Size.square(circleSize),
-                  painter: GradientCircularProgressPainter(
-                    progress: (value / 8).clamp(0.0, 1.0),
-                    strokeWidth: circleSize >= 70 ? 9 : 8,
-                    gradient: const LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        _NatalCardColors.goldLight,
-                        Color(0xFF8A6BFF),
-                        Color(0xFF5A3FD1),
-                      ],
-                    ),
-                  ),
-                ),
-                Text(
-                  '$value',
-                  style: context.textTheme.inversePlayfairMedium20.copyWith(
-                    height: 1.1,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            textAlign: TextAlign.center,
-            style: context.textTheme.inverseUrbanistSemiBold16.copyWith(
-              height: 1.2,
-              letterSpacing: -0.408,
-            ),
-          ),
-        ],
-      ),
-    );
+  PearlMetric _elementMetric(String? raw, String label) {
+    final value = int.tryParse(raw ?? '') ?? 0;
+    return PearlMetric(label, '$value', value / 8);
   }
 }
 
@@ -1250,7 +1157,6 @@ abstract final class _NatalCardColors {
   );
   static const Color background = Color(0xFF0F0A1A);
   static const Color figmaPurple = Color(0xFF9A7DB8);
-  static const Color goldLight = Color(0xFFFFD28A);
   static const Color cardSolid = Color(0xE60B041C);
 
   static const LinearGradient purpleGradient = LinearGradient(
