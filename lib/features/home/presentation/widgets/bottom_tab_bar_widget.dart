@@ -76,9 +76,7 @@ class BottomTabBarWidget extends StatelessWidget {
                         child: LotusTap(
                           onTap: onAiAstrologerPressed,
                           behavior: HitTestBehavior.opaque,
-                          child: AnakraIdleBadge(
-                            assetPath: aiAstrologerAsset,
-                          ),
+                          child: AnakraIdleBadge(assetPath: aiAstrologerAsset),
                         ),
                       )
                     else
@@ -94,7 +92,7 @@ class BottomTabBarWidget extends StatelessWidget {
   }
 }
 
-/// Only the portrait and its light move. The chat target and shell stay still.
+/// The light moves behind a stationary portrait inside the chat bubble.
 class AnakraIdleBadge extends StatefulWidget {
   const AnakraIdleBadge({super.key, required this.assetPath});
 
@@ -107,7 +105,7 @@ class AnakraIdleBadge extends StatefulWidget {
 class _AnakraIdleMotionState extends State<AnakraIdleBadge>
     with WidgetsBindingObserver {
   static const _interval = Duration(milliseconds: 40);
-  static const _cycleTicks = 140;
+  static const _cycleTicks = 200;
 
   Timer? _timer;
   int _ticks = 0;
@@ -175,8 +173,6 @@ class _AiAstrologerButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final breath = math.sin(angle);
-    final glint = math.pow(math.max(0.0, math.sin(angle - .25)), 4).toDouble();
     return SizedBox(
       width: _aiButtonSize,
       height: _aiButtonSize,
@@ -190,38 +186,19 @@ class _AiAstrologerButton extends StatelessWidget {
           ClipPath(
             clipper: const _MessageBubbleClipper(),
             child: CustomPaint(
-              painter: _MessageBubbleBackgroundPainter(),
+              painter: _MessageBubbleBackgroundPainter(angle),
               child: Center(
-                child: Transform(
-                  alignment: Alignment.bottomCenter,
-                  transformHitTests: false,
-                  transform:
-                      Matrix4.translationValues(.55 * breath, -1.65 * breath, 0)
-                        ..rotateZ(.043 * breath)
-                        ..scaleByDouble(
-                          1 + .024 * breath,
-                          1 + .035 * breath,
-                          1,
-                          1,
-                        ),
-                  child: Image.asset(
-                    assetPath,
-                    width: 46,
-                    height: 46,
-                    fit: BoxFit.contain,
-                    filterQuality: FilterQuality.medium,
-                    excludeFromSemantics: true,
-                  ),
+                child: Image.asset(
+                  assetPath,
+                  width: 46,
+                  height: 46,
+                  fit: BoxFit.contain,
+                  filterQuality: FilterQuality.medium,
+                  excludeFromSemantics: true,
                 ),
               ),
             ),
           ),
-          if (glint > 0)
-            Positioned.fill(
-              child: IgnorePointer(
-                child: CustomPaint(painter: _AnakraGlint(glint)),
-              ),
-            ),
           CustomPaint(
             size: const Size.square(_aiButtonSize),
             painter: _MessageBubbleBorderPainter(),
@@ -230,41 +207,6 @@ class _AiAstrologerButton extends StatelessWidget {
       ),
     );
   }
-}
-
-class _AnakraGlint extends CustomPainter {
-  const _AnakraGlint(this.intensity);
-
-  final double intensity;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final center = Offset(size.width * .78, size.height * .24);
-    final glow = Paint()
-      ..shader = RadialGradient(
-        colors: [
-          AppColors.cardTinted.withValues(alpha: .45 * intensity),
-          AppColors.cardTinted.withValues(alpha: 0),
-        ],
-      ).createShader(Rect.fromCircle(center: center, radius: 8));
-    canvas.drawCircle(center, 8, glow);
-    final r = 2.6 + 1.5 * intensity;
-    final flare = Path()
-      ..moveTo(0, -r)
-      ..quadraticBezierTo(0, 0, r * .72, 0)
-      ..quadraticBezierTo(0, 0, 0, r)
-      ..quadraticBezierTo(0, 0, -r * .72, 0)
-      ..quadraticBezierTo(0, 0, 0, -r)
-      ..close();
-    canvas.drawPath(
-      flare.shift(center),
-      Paint()..color = AppColors.white.withValues(alpha: .86 * intensity),
-    );
-  }
-
-  @override
-  bool shouldRepaint(_AnakraGlint oldDelegate) =>
-      oldDelegate.intensity != intensity;
 }
 
 class _MessageBubbleClipper extends CustomClipper<Path> {
@@ -278,6 +220,10 @@ class _MessageBubbleClipper extends CustomClipper<Path> {
 }
 
 class _MessageBubbleBackgroundPainter extends CustomPainter {
+  const _MessageBubbleBackgroundPainter(this.angle);
+
+  final double angle;
+
   @override
   void paint(Canvas canvas, Size size) {
     final rect = Offset.zero & size;
@@ -292,10 +238,10 @@ class _MessageBubbleBackgroundPainter extends CustomPainter {
 
     final sideTonePaint = Paint()
       ..shader = RadialGradient(
-        center: const Alignment(-0.72, -0.12),
+        center: Alignment(-.71 * math.cos(angle), .64 * math.sin(angle)),
         radius: 0.72,
         colors: [
-          const Color(0xFF7A59A1).withValues(alpha: 0.86),
+          const Color(0xFFECCBF8).withValues(alpha: .64),
           const Color(0xFF7A59A1).withValues(alpha: 0.18),
           Colors.transparent,
         ],
@@ -306,7 +252,8 @@ class _MessageBubbleBackgroundPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(_MessageBubbleBackgroundPainter oldDelegate) => false;
+  bool shouldRepaint(_MessageBubbleBackgroundPainter oldDelegate) =>
+      angle != oldDelegate.angle;
 }
 
 class _MessageBubbleShadowPainter extends CustomPainter {

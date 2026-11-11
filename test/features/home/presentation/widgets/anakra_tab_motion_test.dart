@@ -6,7 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   testWidgets(
-    'Anakra floats in the foreground, pauses when covered and respects Reduce Motion',
+    'The portrait stays still while its light moves, pauses and respects Reduce Motion',
     (tester) async {
       var taps = 0;
       final navKey = GlobalKey<NavigatorState>();
@@ -51,23 +51,26 @@ void main() {
             ),
         skipOffstage: false,
       );
-      Matrix4 transform() => Matrix4.copy(
-        tester
-            .widget<Transform>(
-              find
-                  .ancestor(
-                    of: badge,
-                    matching: find.byType(Transform, skipOffstage: false),
-                  )
-                  .first,
-            )
-            .transform,
-      );
+      CustomPainter light() => tester
+          .widget<CustomPaint>(
+            find
+                .ancestor(
+                  of: badge,
+                  matching: find.byType(CustomPaint, skipOffstage: false),
+                )
+                .first,
+          )
+          .painter!;
+      final portraitTransform = tester.renderObject(badge).getTransformTo(null);
       expect(tester.getSize(badge), const Size.square(46));
       expect(tester.widget<Image>(badge).fit, BoxFit.contain);
-      final start = transform();
+      final start = light();
       await tester.pump(const Duration(milliseconds: 600));
-      expect(transform(), isNot(start));
+      expect(light().shouldRepaint(start), isTrue);
+      expect(
+        tester.renderObject(badge).getTransformTo(null),
+        portraitTransform,
+      );
       final button = find.bySemanticsLabel(
         AppLocalizations.of(
           tester.element(find.byType(BottomTabBarWidget)),
@@ -80,27 +83,27 @@ void main() {
         MaterialPageRoute<void>(builder: (_) => const Scaffold()),
       );
       await tester.pumpAndSettle();
-      final covered = transform();
+      final covered = light();
       await tester.pump(const Duration(seconds: 1));
-      expect(transform(), covered);
+      expect(light().shouldRepaint(covered), isFalse);
       navKey.currentState!.pop();
       await tester.pumpAndSettle();
-      final resumed = transform();
+      final resumed = light();
       await tester.pump(const Duration(milliseconds: 600));
-      expect(transform(), isNot(resumed));
+      expect(light().shouldRepaint(resumed), isTrue);
       tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
       await tester.pump();
-      final background = transform();
+      final background = light();
       await tester.pump(const Duration(milliseconds: 600));
-      expect(transform(), background);
+      expect(light().shouldRepaint(background), isFalse);
       tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
       await tester.pump();
 
       reduced.value = true;
       await tester.pumpAndSettle();
-      expect(transform(), Matrix4.identity());
+      final reducedLight = light();
       await tester.pump(const Duration(seconds: 1));
-      expect(transform(), Matrix4.identity());
+      expect(light().shouldRepaint(reducedLight), isFalse);
       await tester.tap(button);
       expect(taps, 2);
       await tester.pumpWidget(const SizedBox.shrink());
