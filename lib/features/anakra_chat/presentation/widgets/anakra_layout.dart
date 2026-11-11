@@ -241,13 +241,20 @@ class AnakraAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final asset = YearAnimalAsset.forYear(DateTime.now().year);
+    // The horse portrait has extra safe space around its ears and mane.
+    final opticalScale = asset.endsWith('/horse.webp') ? 1.28 : 1.0;
     return AsteriaEntrance(
       child: SizedBox.square(
         dimension: size,
-        child: Image.asset(
-          YearAnimalAsset.forYear(DateTime.now().year),
-          fit: BoxFit.contain,
-          excludeFromSemantics: true,
+        child: Transform.scale(
+          scale: opticalScale,
+          transformHitTests: false,
+          child: Image.asset(
+            asset,
+            fit: BoxFit.contain,
+            excludeFromSemantics: true,
+          ),
         ),
       ),
     );
