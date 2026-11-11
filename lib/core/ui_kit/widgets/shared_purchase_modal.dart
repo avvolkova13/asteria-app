@@ -22,7 +22,7 @@ enum PurchaseModalState { initial, notEnoughBalance, success }
 
 const double _purchaseModalSheetHeight = 300;
 const double _successPurchaseModalSheetHeight = 320;
-const Color _modalBackground = Color(0xFF12052A);
+const Color _modalBackground = ModalGlassTokens.surface;
 const Color _modalPurple = Color(0xFF6E4BFF);
 const Color _modalPurpleDark = Color(0xFF5436D9);
 const LinearGradient _modalButtonGradient = LinearGradient(
@@ -138,7 +138,7 @@ class _SharedPurchaseModalState extends State<SharedPurchaseModal> {
 
     return ModalGlassSurface(
       height: _getModalHeight(isNotEnoughModal, isSuccessModal),
-      color: isNotEnoughModal ? const Color(0xFF110628) : _modalBackground,
+      color: _modalBackground,
       child: SafeArea(
         top: false,
         child: Builder(
@@ -222,25 +222,33 @@ class _SharedPurchaseModalState extends State<SharedPurchaseModal> {
     final newBalance =
         monetizationProvider?.balanceAfterSpend(widget.price) ?? 0;
     return Expanded(
-      child: Column(
-        children: AsteriaEntrance.sections([
-          Text(
-            context.l10n.purchaseConfirmTitle,
-            style: context.textTheme.inversePlayfairSemiBold24.copyWith(
-              height: 1,
-            ),
-            textAlign: TextAlign.center,
+      child: ModalGlassScrollBody(
+        key: const ValueKey('purchase-confirmation-scroll'),
+        children: [
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            children: AsteriaEntrance.sections([
+              Text(
+                context.l10n.purchaseConfirmTitle,
+                style: context.textTheme.inversePlayfairSemiBold24.copyWith(
+                  height: 1,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 24),
+              _PurchaseDescription(
+                purchaseTitle: widget.purchaseTitle,
+                price: widget.price,
+              ),
+              const SizedBox(height: 18),
+              _BalanceChangeWidget(
+                balance: currentBalance,
+                newBalance: newBalance,
+              ),
+            ]),
           ),
-          const SizedBox(height: 24),
-          _PurchaseDescription(
-            purchaseTitle: widget.purchaseTitle,
-            price: widget.price,
-          ),
-          const SizedBox(height: 18),
-          _BalanceChangeWidget(balance: currentBalance, newBalance: newBalance),
-          const Spacer(),
-          Container(
-            padding: const EdgeInsets.only(bottom: 32),
+          Padding(
+            padding: const EdgeInsets.only(top: 24, bottom: 32),
             child: Row(
               children: [
                 Expanded(
@@ -260,8 +268,8 @@ class _SharedPurchaseModalState extends State<SharedPurchaseModal> {
                 ),
               ],
             ),
-          ),
-        ]),
+          ).withEntrance(),
+        ],
       ),
     );
   }
@@ -478,34 +486,39 @@ class _SuccessContent extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Column(
-        children: AsteriaEntrance.sections([
-          const _Grabber(),
-          const SizedBox(height: 24),
-          ClayAssetIcon(
-            'assets/icons/success_square_icon.svg',
-            width: 42,
-            height: 42,
+      child: ModalGlassScrollBody(
+        key: const ValueKey('purchase-success-scroll'),
+        children: [
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            children: AsteriaEntrance.sections([
+              const _Grabber(),
+              const SizedBox(height: 24),
+              ClayAssetIcon(
+                'assets/icons/success_square_icon.svg',
+                width: 42,
+                height: 42,
+              ),
+              const SizedBox(height: 14),
+              Text(
+                context.l10n.shopPurchaseComplete,
+                style: context.textTheme.inversePlayfairSemiBold24.copyWith(
+                  height: 1,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 22),
+              _SingleBalance(balance: balance),
+            ]),
           ),
-          const SizedBox(height: 14),
-          Text(
-            context.l10n.shopPurchaseComplete,
-            style: context.textTheme.inversePlayfairSemiBold24.copyWith(
-              height: 1,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 22),
-          _SingleBalance(balance: balance),
-          const Spacer(),
           Padding(
-            padding: const EdgeInsets.only(bottom: 32),
+            padding: const EdgeInsets.only(top: 24, bottom: 32),
             child: _ModalActionButton.primary(
               text: buttonText,
               onPressed: onPressed,
             ),
           ),
-        ]),
+        ],
       ),
     );
   }
@@ -521,7 +534,7 @@ class _Grabber extends StatelessWidget {
       height: 4,
       width: 64,
       decoration: BoxDecoration(
-        color: AppColors.cardTinted.withValues(alpha: 0.48),
+        color: ModalGlassTokens.grabber,
         borderRadius: BorderRadius.circular(2),
       ),
     );
@@ -613,6 +626,8 @@ class _ModalActionButton extends StatelessWidget {
     return Semantics(
       button: true,
       label: text,
+      enabled: onPressed != null,
+      onTap: onPressed == null ? null : LotusFeedback.action(onPressed!),
       child: ExcludeSemantics(
         child: SizedBox(
           height: 50,
@@ -633,7 +648,7 @@ class _ModalActionButton extends StatelessWidget {
                   child: Text(
                     text,
                     style: context.textTheme.button.copyWith(
-                      color: isPrimary ? AppColors.white : _modalPurple,
+                      color: ModalGlassTokens.text,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,

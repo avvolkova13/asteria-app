@@ -625,6 +625,7 @@ class _GradientUnderlineButton extends StatelessWidget {
     return Semantics(
       button: true,
       label: text,
+      onTap: LotusFeedback.action(onPressed),
       child: ExcludeSemantics(
         child: LotusTap(
           behavior: HitTestBehavior.opaque,

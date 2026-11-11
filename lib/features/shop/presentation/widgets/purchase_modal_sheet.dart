@@ -17,7 +17,7 @@ import 'package:uuid/uuid.dart';
 
 const double _purchaseSuccessScreenHeight = 250;
 const double _purchaseModalSheetHeight = 329;
-const Color _purchaseModalBackground = Color(0xFF12052A);
+const Color _purchaseModalBackground = ModalGlassTokens.surface;
 const Color _purchaseModalPurple = Color(0xFF6E4BFF);
 const Color _purchaseModalPurpleDark = Color(0xFF5436D9);
 const Color _purchaseModalGold = Color(0xFFF3B76A);
@@ -85,13 +85,12 @@ class _PurchaseModalSheetState extends State<PurchaseModalSheet> {
         );
         final bool showNotEnoughContent =
             isNotEnoughBalance && !_isPurchaseSuccess;
-        final textScale = MediaQuery.textScalerOf(
-          context,
-        ).scale(1).clamp(1.0, 1.3);
+        final textScale = (MediaQuery.textScalerOf(context).scale(16) / 16)
+            .clamp(1.0, 3.0);
         final baseHeight = _isPurchaseSuccess
             ? _purchaseSuccessScreenHeight
             : _purchaseModalSheetHeight;
-        final scaleAllowance = _isPurchaseSuccess ? 80.0 : 300.0;
+        final scaleAllowance = _isPurchaseSuccess ? 180.0 : 300.0;
         final requestedHeight = baseHeight + ((textScale - 1) * scaleAllowance);
         final maximumHeight = MediaQuery.sizeOf(context).height * 0.92;
 
@@ -99,9 +98,7 @@ class _PurchaseModalSheetState extends State<PurchaseModalSheet> {
           height: showNotEnoughContent
               ? null
               : requestedHeight.clamp(0.0, maximumHeight).toDouble(),
-          color: showNotEnoughContent
-              ? const Color(0xFF110628)
-              : _purchaseModalBackground,
+          color: _purchaseModalBackground,
           child: SafeArea(
             top: false,
             child: showNotEnoughContent
@@ -126,190 +123,155 @@ class _PurchaseModalSheetState extends State<PurchaseModalSheet> {
                       });
                     },
                   )
-                : Builder(
-                    builder: (context) {
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: Column(
-                          children: [
-                            const _PurchaseGrabber(),
+                : Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: ModalGlassScrollBody(
+                      key: ValueKey(_isPurchaseSuccess),
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: AsteriaEntrance.sections([
+                            const Center(child: _PurchaseGrabber()),
                             const SizedBox(height: 14),
-                            _isPurchaseSuccess
-                                ? _PurchaseSuccessScreen(
-                                    balance: monetizationProvider.balance,
-                                  )
-                                : Expanded(
-                                    child: Column(
-                                      children: AsteriaEntrance.sections([
-                                        Text(
-                                          widget.product.title,
-                                          style: context
-                                              .textTheme
-                                              .inversePlayfairSemiBold20
-                                              .copyWith(height: 1),
-                                          textAlign: TextAlign.center,
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                        const SizedBox(height: 2),
-                                        Text(
-                                          context.l10n.shopQuantityQuestion,
-                                          style: context
-                                              .textTheme
-                                              .inversePlayfairMedium18
-                                              .copyWith(height: 1.1),
-                                          textAlign: TextAlign.center,
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                        const SizedBox(height: 28),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Expanded(
-                                              child: Align(
-                                                alignment: Alignment.centerLeft,
-                                                child: _CoinAmountLabel(
-                                                  text: context.l10n
-                                                      .shopUnitPriceValue(
-                                                        widget.product.price,
-                                                      ),
-                                                ),
-                                              ),
-                                            ),
-                                            const SizedBox(width: 16),
-                                            Flexible(
-                                              flex: 0,
-                                              child: _QuantitySelector(
-                                                quantity: _quantity,
-                                                onIncrement: _incrementQuantity,
-                                                onDecrement: _decrementQuantity,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        const SizedBox(height: 20),
-                                        _BalanceChangeWidget(
-                                          balance: monetizationProvider.balance,
-                                          price: _totalPrice,
-                                          newBalance: monetizationProvider
-                                              .balanceAfterSpend(_totalPrice),
-                                          isNotEnoughBalance: false,
-                                        ),
-                                        const Spacer(),
-                                        Padding(
-                                          padding: const EdgeInsets.only(
-                                            bottom: 18,
-                                          ),
-                                          child: Row(
-                                            children: [
-                                              Expanded(
-                                                child:
-                                                    _PurchaseModalActionButton.outline(
-                                                      onPressed: () =>
-                                                          Navigator.pop(
-                                                            context,
-                                                          ),
-                                                      text: context
-                                                          .l10n
-                                                          .commonCancel,
-                                                    ),
-                                              ),
-                                              const SizedBox(width: 12),
-                                              Expanded(
-                                                child: _PurchaseModalActionButton.primary(
-                                                  onPressed: _isSubmitting
-                                                      ? null
-                                                      : () async {
-                                                          setState(() {
-                                                            _isSubmitting =
-                                                                true;
-                                                            _purchaseIdempotencyKey ??=
-                                                                const Uuid()
-                                                                    .v4();
-                                                          });
-                                                          final analytics = di
-                                                              .get<
-                                                                ProductAnalyticsService
-                                                              >();
-                                                          final balanceBefore =
-                                                              monetizationProvider
-                                                                  .balance;
-                                                          analytics
-                                                              .trackCoinSpendStart(
-                                                                originSurface:
-                                                                    'shop',
-                                                                offerType:
-                                                                    OfferType
-                                                                        .shopItem,
-                                                                coinAmount:
-                                                                    _totalPrice,
-                                                                balanceBefore:
-                                                                    balanceBefore,
-                                                              );
-                                                          try {
-                                                            await monetizationProvider
-                                                                .purchaseShopRequestPack(
-                                                                  productId:
-                                                                      widget
-                                                                          .product
-                                                                          .id,
-                                                                  quantity:
-                                                                      _quantity,
-                                                                  expectedPrice:
-                                                                      _totalPrice,
-                                                                  feature: widget
-                                                                      .product
-                                                                      .purchase
-                                                                      ?.featureKey,
-                                                                  idempotencyKey:
-                                                                      _purchaseIdempotencyKey,
-                                                                );
-                                                            setState(() {
-                                                              _isPurchaseSuccess =
-                                                                  true;
-                                                              _purchaseIdempotencyKey =
-                                                                  null;
-                                                            });
-                                                            analytics.trackCoinSpendSuccess(
-                                                              originSurface:
-                                                                  'shop',
-                                                              offerType:
-                                                                  OfferType
-                                                                      .shopItem,
-                                                              coinAmount:
-                                                                  _totalPrice,
-                                                              balanceBefore:
-                                                                  balanceBefore,
-                                                              balanceAfter:
-                                                                  monetizationProvider
-                                                                      .balance,
-                                                            );
-                                                            widget.onConfirm();
-                                                          } finally {
-                                                            if (mounted &&
-                                                                !_isPurchaseSuccess) {
-                                                              setState(() {
-                                                                _isSubmitting =
-                                                                    false;
-                                                              });
-                                                            }
-                                                          }
-                                                        },
-                                                  text: context.l10n.commonBuy,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ]),
+                            if (_isPurchaseSuccess)
+                              _PurchaseSuccessScreen(
+                                balance: monetizationProvider.balance,
+                              )
+                            else ...[
+                              Text(
+                                widget.product.title,
+                                style: context
+                                    .textTheme
+                                    .inversePlayfairSemiBold20
+                                    .copyWith(height: 1.1),
+                                textAlign: TextAlign.center,
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                context.l10n.shopQuantityQuestion,
+                                style: context.textTheme.inversePlayfairMedium18
+                                    .copyWith(height: 1.1),
+                                textAlign: TextAlign.center,
+                              ),
+                              const SizedBox(height: 28),
+                              Wrap(
+                                alignment: WrapAlignment.spaceBetween,
+                                crossAxisAlignment: WrapCrossAlignment.center,
+                                spacing: 12,
+                                runSpacing: 10,
+                                children: [
+                                  _CoinAmountLabel(
+                                    text: context.l10n.shopUnitPriceValue(
+                                      widget.product.price,
                                     ),
                                   ),
-                          ],
+                                  _QuantitySelector(
+                                    quantity: _quantity,
+                                    onIncrement: _incrementQuantity,
+                                    onDecrement: _decrementQuantity,
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 20),
+                              _BalanceChangeWidget(
+                                balance: monetizationProvider.balance,
+                                price: _totalPrice,
+                                newBalance: monetizationProvider
+                                    .balanceAfterSpend(_totalPrice),
+                                isNotEnoughBalance: false,
+                              ),
+                            ],
+                          ]),
                         ),
-                      );
-                    },
+                        Padding(
+                          padding: const EdgeInsets.only(top: 16, bottom: 18),
+                          child: _isPurchaseSuccess
+                              ? _PurchaseModalActionButton.primary(
+                                  onPressed: () => Navigator.pop(context),
+                                  text: context.l10n.commonContinue,
+                                )
+                              : Row(
+                                  children: [
+                                    Expanded(
+                                      child: _PurchaseModalActionButton.outline(
+                                        onPressed: () => Navigator.pop(context),
+                                        text: context.l10n.commonCancel,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 12),
+                                    Expanded(
+                                      child: _PurchaseModalActionButton.primary(
+                                        onPressed: _isSubmitting
+                                            ? null
+                                            : () async {
+                                                setState(() {
+                                                  _isSubmitting = true;
+                                                  _purchaseIdempotencyKey ??=
+                                                      const Uuid().v4();
+                                                });
+                                                final analytics = di
+                                                    .get<
+                                                      ProductAnalyticsService
+                                                    >();
+                                                final balanceBefore =
+                                                    monetizationProvider
+                                                        .balance;
+                                                analytics.trackCoinSpendStart(
+                                                  originSurface: 'shop',
+                                                  offerType: OfferType.shopItem,
+                                                  coinAmount: _totalPrice,
+                                                  balanceBefore: balanceBefore,
+                                                );
+                                                try {
+                                                  await monetizationProvider
+                                                      .purchaseShopRequestPack(
+                                                        productId:
+                                                            widget.product.id,
+                                                        quantity: _quantity,
+                                                        expectedPrice:
+                                                            _totalPrice,
+                                                        feature: widget
+                                                            .product
+                                                            .purchase
+                                                            ?.featureKey,
+                                                        idempotencyKey:
+                                                            _purchaseIdempotencyKey,
+                                                      );
+                                                  setState(() {
+                                                    _isPurchaseSuccess = true;
+                                                    _purchaseIdempotencyKey =
+                                                        null;
+                                                  });
+                                                  analytics
+                                                      .trackCoinSpendSuccess(
+                                                        originSurface: 'shop',
+                                                        offerType:
+                                                            OfferType.shopItem,
+                                                        coinAmount: _totalPrice,
+                                                        balanceBefore:
+                                                            balanceBefore,
+                                                        balanceAfter:
+                                                            monetizationProvider
+                                                                .balance,
+                                                      );
+                                                  widget.onConfirm();
+                                                } finally {
+                                                  if (mounted &&
+                                                      !_isPurchaseSuccess) {
+                                                    setState(() {
+                                                      _isSubmitting = false;
+                                                    });
+                                                  }
+                                                }
+                                              },
+                                        text: context.l10n.commonBuy,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                        ).withEntrance(),
+                      ],
+                    ),
                   ),
           ),
         );
@@ -328,7 +290,7 @@ class _PurchaseGrabber extends StatelessWidget {
       height: 4,
       width: 64,
       decoration: BoxDecoration(
-        color: AppColors.cardTinted.withValues(alpha: 0.22),
+        color: ModalGlassTokens.grabber,
         borderRadius: BorderRadius.circular(2),
       ),
     );
@@ -344,39 +306,42 @@ class _PurchaseSuccessScreen extends StatelessWidget {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: AsteriaEntrance.sections([
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+        Wrap(
+          alignment: WrapAlignment.center,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          spacing: 8,
           children: [
             ClayAssetIcon(
               'assets/icons/success_square_icon.svg',
               width: 24,
               height: 24,
             ),
-            const SizedBox(width: 8),
             Text(
               context.l10n.shopPurchaseComplete,
               style: context.textTheme.inversePlayfairSemiBold24,
+              textAlign: TextAlign.center,
             ),
           ],
         ),
         const SizedBox(height: 16),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              context.l10n.balanceStarsLabel(balance),
-              style: context.textTheme.inverseUrbanistMedium20,
-            ),
-            Padding(
-              padding: const EdgeInsets.only(bottom: 3, left: 4),
-              child: LotusRasterIcon('assets/icons/star_coin_icon.png', width: 20),
-            ),
-          ],
-        ),
-        const SizedBox(height: 24),
-        _PurchaseModalActionButton.primary(
-          onPressed: () => Navigator.pop(context),
-          text: context.l10n.commonContinue,
+        Text.rich(
+          TextSpan(
+            text: context.l10n.balanceStarsLabel(balance),
+            children: [
+              WidgetSpan(
+                alignment: PlaceholderAlignment.middle,
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 4),
+                  child: LotusRasterIcon(
+                    'assets/icons/star_coin_icon.png',
+                    width: 20,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          textAlign: TextAlign.center,
+          style: context.textTheme.inverseUrbanistMedium20,
         ),
       ]),
     );
@@ -465,8 +430,6 @@ class _CoinAmountLabel extends StatelessWidget {
             style: context.textTheme.inverseUrbanistRegular14.copyWith(
               height: 1.1,
             ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
           ),
         ),
         const SizedBox(width: 4),
@@ -519,7 +482,7 @@ class _QuantitySelector extends StatelessWidget {
           border: Border.all(color: _purchaseModalGold.withValues(alpha: 0.78)),
         ),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 4),
           child: Row(
             children: [
               LotusFeedback(
@@ -532,27 +495,36 @@ class _QuantitySelector extends StatelessWidget {
                   onTap: activate,
                   child: ExcludeSemantics(
                     child: GestureDetector(
+                      behavior: HitTestBehavior.opaque,
                       onTap: activate,
-                      child: ClayAssetIcon(
-                        'assets/icons/minus_circle_icon.svg',
-                        height: 22,
-                        tint: quantity > 1
-                              ? _purchaseModalPurple
-                              : _purchaseModalPurple.withValues(alpha: 0.62),
+                      child: SizedBox.square(
+                        dimension: 44,
+                        child: Center(
+                          child: ClayAssetIcon(
+                            'assets/icons/minus_circle_icon.svg',
+                            height: 22,
+                            tint: quantity > 1
+                                ? _purchaseModalPurple
+                                : _purchaseModalPurple.withValues(alpha: 0.62),
+                          ),
+                        ),
                       ),
                     ),
                   ),
                 ),
               ),
-              const Spacer(),
-              Text(
-                '$quantity',
-                style: context.textTheme.inverseUrbanistRegular16.copyWith(
-                  color: _purchaseModalGold,
-                  height: 1,
+              Expanded(
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    '$quantity',
+                    style: context.textTheme.inverseUrbanistRegular16.copyWith(
+                      color: _purchaseModalGold,
+                      height: 1,
+                    ),
+                  ),
                 ),
               ),
-              const Spacer(),
               LotusFeedback(
                 onActivate: onIncrement,
                 keyboard: true,
@@ -562,11 +534,17 @@ class _QuantitySelector extends StatelessWidget {
                   onTap: activate,
                   child: ExcludeSemantics(
                     child: GestureDetector(
+                      behavior: HitTestBehavior.opaque,
                       onTap: activate,
-                      child: ClayAssetIcon(
-                        'assets/icons/plus_circle_icon.svg',
-                        height: 22,
-                        tint: _purchaseModalGold,
+                      child: SizedBox.square(
+                        dimension: 44,
+                        child: Center(
+                          child: ClayAssetIcon(
+                            'assets/icons/plus_circle_icon.svg',
+                            height: 22,
+                            tint: _purchaseModalGold,
+                          ),
+                        ),
                       ),
                     ),
                   ),
@@ -599,16 +577,20 @@ class _PurchaseModalActionButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final borderRadius = BorderRadius.circular(12);
     final textStyle = context.textTheme.button.copyWith(
-      color: isPrimary ? AppColors.textInverse : _purchaseModalPurple,
+      color: isPrimary ? AppColors.textInverse : ModalGlassTokens.text,
     );
 
     return Semantics(
       button: true,
       label: text,
+      enabled: onPressed != null,
+      onTap: onPressed == null ? null : LotusFeedback.action(onPressed!),
       child: ExcludeSemantics(
-        child: SizedBox(
-          height: 44,
-          width: double.infinity,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(
+            minHeight: 44,
+            minWidth: double.infinity,
+          ),
           child: Material(
             color: Colors.transparent,
             borderRadius: borderRadius,
@@ -629,13 +611,17 @@ class _PurchaseModalActionButton extends StatelessWidget {
               child: LotusInkTap(
                 onTap: onPressed,
                 borderRadius: borderRadius,
-                child: Center(
-                  child: Text(
-                    text,
-                    style: textStyle,
-                    textAlign: TextAlign.center,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 8,
+                    horizontal: 8,
+                  ),
+                  child: Center(
+                    child: Text(
+                      text,
+                      style: textStyle,
+                      textAlign: TextAlign.center,
+                    ),
                   ),
                 ),
               ),

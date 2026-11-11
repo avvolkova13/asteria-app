@@ -1,3 +1,8 @@
+import 'package:asteria_app/core/analytics/analytics_facade.dart';
+import 'package:asteria_app/core/analytics/product_analytics_service.dart';
+import 'package:asteria_app/core/di/di.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:asteria_app/core/ui_kit/widgets/modal_glass_surface.dart';
 import 'package:asteria_app/app/data/models/shop_item/shop_item_model.dart';
 import 'package:asteria_app/app/data/models/user/user_model.dart';
@@ -81,7 +86,7 @@ void main() {
     expect(tester.getSize(surface).height, 329);
     expect(
       tester.widget<ModalGlassSurface>(surface).color,
-      const Color(0xFF12052A),
+      ModalGlassTokens.surface,
     );
     expect(
       find.descendant(of: surface, matching: find.byType(BackdropFilter)),
@@ -93,6 +98,127 @@ void main() {
       lessThan(tester.getTopLeft(find.text('цена за 1 = 6')).dy),
     );
   });
+  testWidgets(
+    'large text fits a long item and the resulting balance after buying on a compact phone',
+    (tester) async {
+      tester.view.devicePixelRatio = 1;
+      tester.view.physicalSize = const Size(320, 568);
+      tester.view.padding = const FakeViewPadding(top: 24, bottom: 20);
+      addTearDown(tester.view.reset);
+      await tester.runAsync(() async {
+        for (final font in [
+          ('Lora', 'assets/fonts/lora/Lora-VariableFont_wght.ttf'),
+          ('Onest', 'assets/fonts/onest/Onest-VariableFont_wght.ttf'),
+        ]) {
+          await (FontLoader(font.$1)..addFont(rootBundle.load(font.$2))).load();
+        }
+      });
+      di.registerSingleton<ProductAnalyticsService>(
+        ProductAnalyticsService(_NoopAnalytics()),
+      );
+      addTearDown(() => di.unregister<ProductAnalyticsService>());
+      var confirmed = 0;
+      const title = 'Любовный расклад на отношения с близким человеком';
+      await tester.pumpWidget(
+        ChangeNotifierProvider<MonetizationProvider>.value(
+          value: monetizationProvider,
+          child: MaterialApp(
+            locale: const Locale('ru'),
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              ...GlobalMaterialLocalizations.delegates,
+            ],
+            supportedLocales: AppLocaleService.supportedLocales,
+            builder: (context, child) => Theme(
+              data: AppThemeLight.instance.getThemeData(context),
+              child: MediaQuery(
+                data: MediaQuery.of(
+                  context,
+                ).copyWith(textScaler: TextScaler.linear(1.8)),
+                child: child!,
+              ),
+            ),
+            home: Scaffold(
+              body: Builder(
+                builder: (context) => TextButton(
+                  onPressed: () => showModalBottomSheet<void>(
+                    context: context,
+                    isScrollControlled: true,
+                    backgroundColor: Colors.transparent,
+                    builder: (_) => PurchaseModalSheet(
+                      product: const ShopItemModel(
+                        id: 'love-layout',
+                        title: title,
+                        category: 'Таро',
+                        description: 'Расклад о любви',
+                        price: 6,
+                      ),
+                      onConfirm: () => confirmed++,
+                    ),
+                  ),
+                  child: const Text('Open'),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.tap(find.text('Open'));
+      await tester.pumpAndSettle();
+      void expectFullLabels() {
+        for (final rich
+            in find
+                .descendant(
+                  of: find.byType(ModalGlassSurface),
+                  matching: find.byType(RichText),
+                )
+                .evaluate()) {
+          final paragraph = rich.renderObject! as RenderParagraph;
+          expect(
+            paragraph.didExceedMaxLines,
+            isFalse,
+            reason: paragraph.text.toPlainText(),
+          );
+        }
+        expect(tester.takeException(), isNull);
+      }
+
+      expect(find.text(title), findsOneWidget);
+      expectFullLabels();
+      final increase = find.bySemanticsLabel('Увеличить количество');
+      await tester.ensureVisible(increase);
+      await tester.pumpAndSettle();
+      expect(tester.getSize(increase).shortestSide, greaterThanOrEqualTo(44));
+      await tester.tap(increase);
+      await tester.pumpAndSettle();
+      expect(find.text('2'), findsOneWidget);
+      final buy = find.text('Купить');
+      await tester.ensureVisible(buy);
+      await tester.pumpAndSettle();
+      expect(buy.hitTestable(), findsOneWidget);
+      await tester.tap(buy);
+      await tester.pumpAndSettle();
+      expect(confirmed, 1);
+      expect(monetizationProvider.balance, 218);
+      final scroll = find.descendant(
+        of: find.byType(ModalGlassSurface),
+        matching: find.byType(Scrollable),
+      );
+      expect(tester.state<ScrollableState>(scroll).position.pixels, 0);
+      expect(
+        tester.getRect(find.text('Покупка завершена')).top,
+        greaterThanOrEqualTo(tester.getRect(scroll).top),
+      );
+      expectFullLabels();
+      final done = find.text('Продолжить');
+      await tester.ensureVisible(done);
+      await tester.pumpAndSettle();
+      expect(done.hitTestable(), findsOneWidget);
+      await tester.tap(done);
+      await tester.pumpAndSettle();
+      expect(find.byType(ModalGlassSurface), findsNothing);
+    },
+  );
 }
 
 void _noop() {}
@@ -125,6 +251,23 @@ class _FakeMonetizationApi extends MonetizationApi {
 
   @override
   Future<MonetizationStateModel> getCurrent() async => state;
+  @override
+  Future<RequestQuotaPurchaseResultModel> purchaseShopRequestPack({
+    required String productId,
+    required int quantity,
+    required int expectedPrice,
+    required String idempotencyKey,
+  }) async => RequestQuotaPurchaseResultModel(
+    feature: 'tarot',
+    quantity: quantity,
+    price: expectedPrice,
+    replayed: false,
+    wallet: _state(balance: state.wallet.balance - expectedPrice).wallet,
+    quota: RequestQuotaModel.fromJson({
+      'feature': 'tarot',
+      'paid_remaining': quantity,
+    }),
+  );
 }
 
 class _FakeUserRepository implements UserRepository {
@@ -170,4 +313,11 @@ class _FakeSession implements AuthSessionService {
 
   @override
   Future<void> signOut() async {}
+}
+
+class _NoopAnalytics implements AnalyticsFacade {
+  @override
+  Future<void> trackEvent(String name, {Map<String, dynamic>? params}) async {}
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }

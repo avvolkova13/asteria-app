@@ -4,9 +4,9 @@ import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:flutter/material.dart';
 
 class _HowToUseKeltDeckColors {
-  static const surface = Color(0xFF130622);
-  static const grabber = Color(0xFF332544);
-  static const text = Color(0xFFEEEAFD);
+  static const surface = ModalGlassTokens.surface;
+  static const grabber = ModalGlassTokens.grabber;
+  static const text = ModalGlassTokens.text;
 }
 
 class HowToUseKeltDeck extends StatelessWidget {

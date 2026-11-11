@@ -11,15 +11,13 @@ import 'package:asteria_app/core/ui_kit/widgets/locked_content_image.dart';
 import 'package:flutter/material.dart';
 
 class _AllCardsModalColors {
-  static const surface = Color(0xFF140725);
-  static const grabber = Color(0xFF332544);
-  static const text = Color(0xFFEEEAFD);
+  static const surface = ModalGlassTokens.surface;
+  static const grabber = ModalGlassTokens.grabber;
+  static const text = ModalGlassTokens.text;
   static const goldGradient = LinearGradient(
     colors: [Color(0xFFE6994D), Color(0xFFF3B76A), Color(0xFFE6994D)],
   );
-  static const purpleGradient = LinearGradient(
-    colors: [Color(0xFF6E4BFF), Color(0xFF5A3FD1)],
-  );
+  static const purpleGradient = ModalGlassTokens.headingGradient;
 }
 
 class AllCardsTab extends StatelessWidget {
@@ -72,7 +70,9 @@ class AllCardsTab extends StatelessWidget {
                         ? context.l10n.tarotOpenCardLabel(card.title)
                         : context.l10n.tarotLockedCardLabel(card.title),
                     onTap: canView
-                        ? LotusFeedback.action(() => _showCardDescription(context, card))
+                        ? LotusFeedback.action(
+                            () => _showCardDescription(context, card),
+                          )
                         : null,
                     child: LockedContentImage(
                       imagePath: TarotCardAssetResolver.resolve(
@@ -101,7 +101,7 @@ class AllCardsTab extends StatelessWidget {
     showModalBottomSheet<void>(
       context: context,
       backgroundColor: Colors.transparent,
-      barrierColor: const Color(0xCC0F0A1A),
+      barrierColor: ModalGlassTokens.barrier,
       isScrollControlled: true,
       builder: (BuildContext context) {
         return _CardDescriptionModal(card: card);
@@ -118,8 +118,10 @@ class _CardDescriptionModal extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.sizeOf(context).height;
-    final modalHeight = (screenHeight * 0.63)
-        .clamp(500.0, screenHeight * 0.9)
+    final maxHeight = screenHeight * .9;
+    final minHeight = maxHeight < 500.0 ? maxHeight : 500.0;
+    final modalHeight = (screenHeight * .63)
+        .clamp(minHeight, maxHeight)
         .toDouble();
     return SizedBox(
       height: modalHeight,

@@ -203,7 +203,7 @@ class _CitySelectionScreenState extends State<CitySelectionScreen> {
   Widget build(BuildContext context) {
     if (widget.asSheet) {
       return ModalGlassSurface(
-        color: const Color(0xFF110823),
+        color: ModalGlassTokens.surface,
         child: Scaffold(
           backgroundColor: Colors.transparent,
           body: SafeArea(
@@ -219,7 +219,7 @@ class _CitySelectionScreenState extends State<CitySelectionScreen> {
                       width: 64,
                       height: 4,
                       decoration: BoxDecoration(
-                        color: const Color(0xFF241735),
+                        color: ModalGlassTokens.grabber,
                         borderRadius: BorderRadius.circular(4),
                       ),
                     ),

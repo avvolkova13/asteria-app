@@ -107,7 +107,7 @@ class _CurrentLocationControlsState extends State<CurrentLocationControls> {
                 isScrollControlled: true,
                 useRootNavigator: true,
                 backgroundColor: Colors.transparent,
-                barrierColor: const Color(0xCC100B1D),
+                barrierColor: ModalGlassTokens.barrier,
                 builder: (sheetContext) => FractionallySizedBox(
                   heightFactor:
                       (1 - topInset / MediaQuery.sizeOf(sheetContext).height)
@@ -159,7 +159,7 @@ class _CurrentLocationControlsState extends State<CurrentLocationControls> {
   Future<bool?> _showCityConfirmation(CurrentLocationModel location) {
     return showDialog<bool>(
       context: context,
-      barrierColor: const Color(0xCC100B1D),
+      barrierColor: ModalGlassTokens.barrier,
       useSafeArea: false,
       builder: (dialogContext) => SafeArea(
         minimum: const EdgeInsets.symmetric(horizontal: 16),
@@ -284,7 +284,7 @@ class _CityConfirmationSheet extends StatelessWidget {
     final style = AppTypography.text1.copyWith(color: AppColors.textInverse);
     return ModalGlassSurface(
       key: const ValueKey('city-confirmation-sheet'),
-      color: const Color(0xFF443552),
+      color: ModalGlassTokens.surface,
       sheet: false,
       child: Padding(
         padding: const EdgeInsets.all(16),

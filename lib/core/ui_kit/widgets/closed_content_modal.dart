@@ -7,8 +7,8 @@ import 'package:asteria_app/features/monetization/presentation/monetization_prov
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:flutter/material.dart';
 
-const Color _closedContentModalSurface = Color(0xFF110326);
-const Color _closedContentModalGrabber = Color(0xFF24143A);
+const Color _closedContentModalSurface = ModalGlassTokens.surface;
+const Color _closedContentModalGrabber = ModalGlassTokens.grabber;
 
 class ClosedContentModal extends StatelessWidget {
   final String description;

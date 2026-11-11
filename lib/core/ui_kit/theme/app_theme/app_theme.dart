@@ -1087,21 +1087,30 @@ abstract class AppTheme {
         thickness: 1,
         space: spacingThemeData.medium,
       ),
+      bottomSheetTheme: const BottomSheetThemeData(
+        modalBarrierColor: ModalGlassTokens.barrier,
+      ),
+      dialogTheme: const DialogThemeData(
+        barrierColor: ModalGlassTokens.barrier,
+      ),
       tooltipTheme: TooltipThemeData(
         decoration: CardLensDecoration(
           borderRadius: BorderRadius.circular(16),
-          color: colorSchemeData.surface.withValues(alpha: .94),
+          color: ModalGlassTokens.surface.withValues(alpha: .94),
           intensity: .54,
         ),
         textStyle: textThemeData.urbanistRegular14.copyWith(
-          color: colorSchemeData.textPrimary,
+          color: ModalGlassTokens.text,
         ),
       ),
       snackBarTheme: SnackBarThemeData(
         behavior: SnackBarBehavior.floating,
-        backgroundColor: colorSchemeData.surface.withValues(alpha: .94),
+        actionTextColor: ModalGlassTokens.text,
+        disabledActionTextColor: ModalGlassTokens.muted,
+        closeIconColor: ModalGlassTokens.text,
+        backgroundColor: ModalGlassTokens.surface.withValues(alpha: .94),
         contentTextStyle: textThemeData.urbanistRegular16.copyWith(
-          color: colorSchemeData.textPrimary,
+          color: ModalGlassTokens.text,
         ),
         shape: const ModalLensBorder(),
       ),

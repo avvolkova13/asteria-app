@@ -7,9 +7,9 @@ import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 import 'package:flutter/material.dart';
 
 class _RunesBlockColors {
-  static const modalSurface = Color(0xFF140725);
-  static const grabber = Color(0xFF332544);
-  static const text = Color(0xFFEEEAFD);
+  static const modalSurface = ModalGlassTokens.surface;
+  static const grabber = ModalGlassTokens.grabber;
+  static const text = ModalGlassTokens.text;
 }
 
 class RunesBlock extends StatefulWidget {

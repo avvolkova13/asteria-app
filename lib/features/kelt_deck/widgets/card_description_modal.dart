@@ -7,17 +7,15 @@ import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:flutter/material.dart';
 
 class _KeltCardModalColors {
-  static const surface = Color(0xFF130622);
-  static const grabber = Color(0xFF332544);
-  static const text = Color(0xFFEEEAFD);
+  static const surface = ModalGlassTokens.surface;
+  static const grabber = ModalGlassTokens.grabber;
+  static const text = ModalGlassTokens.text;
   static const secondaryText = Color(0xFFCFC4D8);
   static const cardSurface = Color(0xFF1A0D2C);
   static const goldGradient = LinearGradient(
     colors: [Color(0xFFE6994D), Color(0xFFF3B76A), Color(0xFFE6994D)],
   );
-  static const purpleGradient = LinearGradient(
-    colors: [Color(0xFF8A6BFF), Color(0xFFB090FF), Color(0xFF5A3FD1)],
-  );
+  static const purpleGradient = ModalGlassTokens.headingGradient;
 }
 
 class CardDescriptionModal extends StatelessWidget {
@@ -73,10 +71,8 @@ class CardDescriptionModal extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final mediaSize = MediaQuery.sizeOf(context);
-    final sheetHeight = (mediaSize.height * 0.83).clamp(
-      mediaSize.height * 0.72,
-      700.0,
-    );
+    final maxHeight = (mediaSize.height * .9).clamp(0.0, 700.0);
+    final sheetHeight = (mediaSize.height * .83).clamp(0.0, maxHeight);
 
     return SizedBox(
       height: sheetHeight,

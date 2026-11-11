@@ -10,16 +10,14 @@ import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 import 'package:flutter/material.dart';
 
 class _AllRunesColors {
-  static const surface = Color(0xFF140725);
-  static const grabber = Color(0xFF332544);
-  static const text = Color(0xFFEEEAFD);
+  static const surface = ModalGlassTokens.surface;
+  static const grabber = ModalGlassTokens.grabber;
+  static const text = ModalGlassTokens.text;
   static const gold = Color(0xFFF3B76A);
   static const goldGradient = LinearGradient(
     colors: [Color(0xFFE6994D), Color(0xFFF3B76A), Color(0xFFE6994D)],
   );
-  static const purpleGradient = LinearGradient(
-    colors: [Color(0xFF6E4BFF), Color(0xFF5A3FD1)],
-  );
+  static const purpleGradient = ModalGlassTokens.headingGradient;
 }
 
 class AllRunesTab extends StatelessWidget {
@@ -85,7 +83,7 @@ class AllRunesTab extends StatelessWidget {
     showModalBottomSheet<void>(
       context: context,
       backgroundColor: Colors.transparent,
-      barrierColor: const Color(0xCC0F0A1A),
+      barrierColor: ModalGlassTokens.barrier,
       isScrollControlled: true,
       builder: (BuildContext context) {
         return _RuneDescriptionModal(rune: rune);
@@ -153,7 +151,9 @@ class _RuneGridItem extends StatelessWidget {
                       Positioned.fill(
                         child: DecoratedBox(
                           decoration: BoxDecoration(
-                            color: const Color(0xFF0F0A1A).withValues(alpha: 0.5),
+                            color: const Color(
+                              0xFF0F0A1A,
+                            ).withValues(alpha: 0.5),
                           ),
                         ),
                       ),
@@ -317,8 +317,6 @@ class _GradientText extends StatelessWidget {
       shaderCallback: (bounds) => gradient.createShader(bounds),
       child: Text(
         text,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
         textAlign: TextAlign.left,
         style: style.copyWith(color: AppColors.white),
       ),

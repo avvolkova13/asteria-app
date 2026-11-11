@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/modal_glass_surface.dart';
 import 'package:asteria_app/features/scenarios/scenario_sky.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
@@ -212,7 +213,7 @@ class _LoveDeckContent extends StatelessWidget {
     showModalBottomSheet<void>(
       context: context,
       backgroundColor: Colors.transparent,
-      barrierColor: Colors.black.withValues(alpha: 0.8),
+      barrierColor: ModalGlassTokens.barrier,
       isScrollControlled: true,
       builder: (BuildContext context) {
         return const HowToUseLoveDeck();

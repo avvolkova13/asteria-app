@@ -3,14 +3,27 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 
 import '../app_colors/app_colors.dart';
+import '../app_typography.dart';
 import '../card_radii.dart';
 import 'card_lens_decoration.dart';
+
+/// Shared palette for app-owned transient surfaces, independent of legacy pages.
+abstract final class ModalGlassTokens {
+  static const surface = AppColorsDark.modal;
+  static const text = AppColors.textInverse;
+  static const muted = Color(0xCCFFFFFF);
+  static const grabber = AppColorsDark.divider;
+  static const barrier = Color(0xCC0F0A1A);
+  static const headingGradient = LinearGradient(
+    colors: [AppColors.textInverse, AppColors.background],
+  );
+}
 
 /// A bounded, stationary lens over the actual route below the modal.
 class ModalGlassSurface extends StatelessWidget {
   const ModalGlassSurface({
     super.key,
-    required this.color,
+    this.color = ModalGlassTokens.surface,
     required this.child,
     this.height,
     this.sheet = true,
@@ -53,6 +66,28 @@ class ModalGlassSurface extends StatelessWidget {
   }
 }
 
+/// Keeps content and actions apart when they fit, and scrolls when text grows.
+/// Supply ordinary content groups, without vertical Expanded or Spacer children.
+class ModalGlassScrollBody extends StatelessWidget {
+  const ModalGlassScrollBody({super.key, required this.children});
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (context, constraints) => SingleChildScrollView(
+      child: ConstrainedBox(
+        constraints: BoxConstraints(minHeight: constraints.maxHeight),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: children,
+        ),
+      ),
+    ),
+  );
+}
+
 /// Uses Dialog's native keyboard insets, focus traversal and dialog semantics.
 class ModalGlassAlert extends StatelessWidget {
   const ModalGlassAlert({
@@ -76,8 +111,7 @@ class ModalGlassAlert extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final surface = color ?? theme.colorScheme.surface;
+    final surface = color ?? ModalGlassTokens.surface;
     final ink = ThemeData.estimateBrightnessForColor(surface) == Brightness.dark
         ? AppColors.textInverse
         : AppColors.textPrimary;
@@ -101,7 +135,7 @@ class ModalGlassAlert extends StatelessWidget {
                   namesRoute: true,
                   header: true,
                   child: DefaultTextStyle(
-                    style: theme.textTheme.titleLarge!.copyWith(color: ink),
+                    style: AppTypography.h2.copyWith(color: ink),
                     child: title,
                   ),
                 ),
@@ -109,7 +143,7 @@ class ModalGlassAlert extends StatelessWidget {
               Padding(
                 padding: contentPadding,
                 child: DefaultTextStyle(
-                  style: theme.textTheme.bodyMedium!.copyWith(color: ink),
+                  style: AppTypography.text1.copyWith(color: ink),
                   child: content,
                 ),
               ),

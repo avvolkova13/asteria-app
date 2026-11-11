@@ -59,6 +59,63 @@ void main() {
     await di.reset();
   });
 
+  testWidgets(
+    'purchase confirmation keeps all actions reachable at large text',
+    (tester) async {
+      tester.view.physicalSize = const Size(320, 568);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      await tester.pumpWidget(
+        ChangeNotifierProvider<MonetizationProvider>.value(
+          value: monetizationProvider,
+          child: MaterialApp(
+            locale: const Locale('ru'),
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              ...GlobalMaterialLocalizations.delegates,
+            ],
+            supportedLocales: AppLocaleService.supportedLocales,
+            builder: (context, child) => MediaQuery(
+              data: MediaQuery.of(
+                context,
+              ).copyWith(textScaler: const TextScaler.linear(1.8)),
+              child: child!,
+            ),
+            home: Builder(
+              builder: (context) => Theme(
+                data: AppThemeLight.instance.getThemeData(context),
+                child: Scaffold(
+                  body: Builder(
+                    builder: (context) => TextButton(
+                      onPressed: () => showModalBottomSheet<void>(
+                        context: context,
+                        isScrollControlled: true,
+                        builder: (_) => SharedPurchaseModal(
+                          purchaseTitle: 'Пакет запросов',
+                          price: 40,
+                          onPurchase: () async {},
+                        ),
+                      ),
+                      child: const Text('Open'),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.tap(find.text('Open'));
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
+      await tester.ensureVisible(find.text('Отмена'));
+      await tester.tap(find.text('Отмена'));
+      await tester.pumpAndSettle();
+      expect(find.byType(SharedPurchaseModal), findsNothing);
+    },
+  );
+
   for (final pro in [true, false]) {
     testWidgets('one-off flow with PRO=$pro does not silently spend', (
       tester,

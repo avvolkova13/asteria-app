@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/modal_glass_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/app/data/models/tarot_card/tarot_card_model.dart';
 import 'package:asteria_app/app/providers/content_provider.dart';
@@ -60,7 +61,7 @@ class _LoveLayoutState extends State<LoveLayout> {
     showModalBottomSheet<void>(
       context: context,
       backgroundColor: Colors.transparent,
-      barrierColor: Colors.black.withValues(alpha: 0.8),
+      barrierColor: ModalGlassTokens.barrier,
       isScrollControlled: true,
       builder: (BuildContext context) {
         return LoveDeckCardDescriptionModal(card: card, cardNumber: cardNumber);

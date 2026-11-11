@@ -73,6 +73,8 @@ class _CreateCompatibilityInitialScreenState
     showModalBottomSheet<DateTime>(
       context: context,
       backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      useSafeArea: true,
       builder: (BuildContext context) {
         return DateTimePickerBottomSheet(
           key: ObjectKey('date_picker'),

@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/modal_glass_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/features/scenarios/first_session.dart';
 import 'package:go_router/go_router.dart';
@@ -53,8 +54,9 @@ class _PersonalInfoInputScreenState extends State<PersonalInfoInputScreen> {
     showModalBottomSheet<DateTime>(
       context: context,
       backgroundColor: Colors.transparent,
-      barrierColor: const Color(0xCC0F0A1A),
+      barrierColor: ModalGlassTokens.barrier,
       isScrollControlled: true,
+      useSafeArea: true,
       builder: (BuildContext context) {
         return DateTimePickerBottomSheet(
           key: ObjectKey('date_picker'),
@@ -63,7 +65,6 @@ class _PersonalInfoInputScreenState extends State<PersonalInfoInputScreen> {
           minimumDate: DateTime(1900, 1, 1),
           maximumDate: DateTime.now(),
           title: widget.authLocalization.birthDatePickerTitle(context),
-          useAuthStyle: true,
           onDateChanged: (DateTime newDate) {
             context.read<AuthCubit>().updateUserBirthDate(newDate);
           },
@@ -76,8 +77,9 @@ class _PersonalInfoInputScreenState extends State<PersonalInfoInputScreen> {
     showModalBottomSheet<TimeOfDay>(
       context: context,
       backgroundColor: Colors.transparent,
-      barrierColor: const Color(0xCC0F0A1A),
+      barrierColor: ModalGlassTokens.barrier,
       isScrollControlled: true,
+      useSafeArea: true,
       builder: (BuildContext context) {
         return DateTimePickerBottomSheet(
           key: ObjectKey('time_picker'),
@@ -85,7 +87,6 @@ class _PersonalInfoInputScreenState extends State<PersonalInfoInputScreen> {
           initialDate: DateTime(0, 0, 0, 12, 0),
           title: widget.authLocalization.birthTimePickerTitle(context),
           use24hFormat: LocaleFormatters.uses24HourFormat(context),
-          useAuthStyle: true,
           onDateChanged: (DateTime newDate) {},
           onTimeChanged: (TimeOfDay newTime) {
             context.read<AuthCubit>().updateUserBirthTime(

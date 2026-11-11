@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/modal_glass_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
@@ -48,7 +49,7 @@ class NotEnoughStarsPurchaseContent extends StatelessWidget {
             height: 4,
             width: 64,
             decoration: BoxDecoration(
-              color: const Color(0xFF1B1433),
+              color: ModalGlassTokens.grabber,
               borderRadius: BorderRadius.circular(8),
             ),
           ),
@@ -271,12 +272,14 @@ class _PurchaseActionButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final borderRadius = BorderRadius.circular(16);
     final textStyle = AppTypography.text1SemiBold.copyWith(
-      color: isPrimary ? AppColors.textInverse : _notEnoughStarsPrimary,
+      color: ModalGlassTokens.text,
     );
 
     return Semantics(
       button: true,
       label: text,
+      enabled: true,
+      onTap: LotusFeedback.action(onPressed),
       child: ExcludeSemantics(
         child: ConstrainedBox(
           constraints: const BoxConstraints(minHeight: 48),
