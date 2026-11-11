@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
 import 'anakra_glass_surface.dart';
@@ -22,7 +23,9 @@ class AnakraComposer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final enabled = !busy && hasInput;
-    final style = AppTypography.placeholder.copyWith(color: const Color(0xFFF5F5F5));
+    final style = AppTypography.placeholder.copyWith(
+      color: const Color(0xFFF5F5F5),
+    );
     return Row(
       children: [
         Expanded(
@@ -78,16 +81,15 @@ class AnakraComposer extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 8),
-        AnakraGlassSurface(
-          shadow: true,
-          child: SizedBox(
-            width: 48,
-            height: 48,
-            child: LotusButtons.icon(
-              tooltip: context.l10n.anakraSendMessageLabel,
-              onPressed: enabled ? onSend : null,
-              padding: EdgeInsets.zero,
-              icon: Opacity(
+        SizedBox.square(
+          dimension: 48,
+          child: LotusButtons.icon(
+            tooltip: context.l10n.anakraSendMessageLabel,
+            onPressed: enabled ? onSend : null,
+            padding: EdgeInsets.zero,
+            icon: LotusIconSurface(
+              diameter: 46,
+              child: Opacity(
                 opacity: enabled ? 1 : 0.4,
                 child: LotusRasterIcon(
                   AnakraAssets.send,

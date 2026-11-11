@@ -261,7 +261,7 @@ class _NatalCardButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
           child: Ink(
             padding: const EdgeInsets.symmetric(horizontal: 20),
-            decoration: BoxDecoration(
+            decoration: CardLensDecoration.button(
               borderRadius: BorderRadius.circular(16),
               border: Border.all(color: const Color(0xFF6E4BFF)),
             ),
@@ -512,7 +512,7 @@ class _BalanceSubscriptionButtonState extends State<_BalanceSubscriptionButton>
           onTap: widget.onPressed,
           borderRadius: BorderRadius.circular(21),
           child: Ink(
-            decoration: BoxDecoration(
+            decoration: CardLensDecoration.button(
               gradient: const LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,

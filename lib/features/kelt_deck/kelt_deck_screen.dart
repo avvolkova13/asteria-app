@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/app/providers/content_provider.dart';
@@ -160,14 +161,14 @@ class _KeltDeckScreenState extends State<KeltDeckScreen> {
                     const SizedBox(height: 22),
                     if (_isRefreshing)
                       const Center(
-                        child: AsteriaEntrance(child: CircularProgressIndicator(
-                          color: AppColors.primary,
-                        )),
+                        child: AsteriaEntrance(
+                          child: CircularProgressIndicator(
+                            color: AppColors.primary,
+                          ),
+                        ),
                       )
                     else
-                      _KeltDeckContent(
-                        onRefresh: onRefreshPressed,
-                      ),
+                      _KeltDeckContent(onRefresh: onRefreshPressed),
                     const SizedBox(height: 100),
                   ],
                 ),
@@ -307,15 +308,18 @@ class _KeltDeckTitle extends StatelessWidget {
               width: 48,
               height: 48,
               child: Align(
-                alignment: Alignment.centerRight,
-                child: ShaderMask(
-                  blendMode: BlendMode.srcIn,
-                  shaderCallback: (bounds) =>
-                      _KeltDeckColors.goldGradient.createShader(bounds),
-                  child: const ClayIcon(
-                    Icons.shuffle,
-                    color: AppColors.white,
-                    size: 24,
+                alignment: Alignment.center,
+                child: LotusIconSurface(
+                  diameter: 32,
+                  child: ShaderMask(
+                    blendMode: BlendMode.srcIn,
+                    shaderCallback: (bounds) =>
+                        _KeltDeckColors.goldGradient.createShader(bounds),
+                    child: const ClayIcon(
+                      Icons.shuffle,
+                      color: AppColors.white,
+                      size: 24,
+                    ),
                   ),
                 ),
               ),

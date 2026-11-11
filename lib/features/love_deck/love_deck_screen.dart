@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/app/providers/content_provider.dart';
@@ -335,11 +336,14 @@ class _LoveDeckHeader extends StatelessWidget {
               width: 32,
               height: 32,
               child: Center(
-                child: ClayAssetIcon(
-                  'assets/icons/repeat_icon.svg',
-                  width: 24,
-                  height: 24,
-                  tint: _LoveDeckColors.gold,
+                child: LotusIconSurface(
+                  diameter: 32,
+                  child: ClayAssetIcon(
+                    'assets/icons/repeat_icon.svg',
+                    width: 24,
+                    height: 24,
+                    tint: _LoveDeckColors.gold,
+                  ),
                 ),
               ),
             ),

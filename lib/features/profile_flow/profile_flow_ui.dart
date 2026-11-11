@@ -310,7 +310,8 @@ class ProfilePrimaryButton extends StatelessWidget {
       width: double.infinity,
       height: 50,
       child: DecoratedBox(
-        decoration: BoxDecoration(
+        decoration: CardLensDecoration.button(
+          enabled: onPressed != null && !isLoading,
           borderRadius: BorderRadius.circular(14),
           gradient: const LinearGradient(
             colors: [Color(0xFF7C4DFF), Color(0xFF6B39E9)],

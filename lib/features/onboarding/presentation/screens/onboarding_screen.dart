@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:flutter/material.dart';
@@ -163,7 +164,7 @@ class _OnboardingCtaButton extends StatelessWidget {
           child: Opacity(
             opacity: isEnabled ? 1 : 0.58,
             child: DecoratedBox(
-              decoration: BoxDecoration(
+              decoration: CardLensDecoration.button(
                 gradient: _gradient,
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [

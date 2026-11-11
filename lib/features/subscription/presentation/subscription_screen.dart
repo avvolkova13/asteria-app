@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/card_radii.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
@@ -1085,7 +1086,7 @@ class _RestorePurchasesButton extends StatelessWidget {
               Container(
                 width: 22,
                 height: 22,
-                decoration: BoxDecoration(
+                decoration: CardLensDecoration.button(
                   borderRadius: BorderRadius.circular(6),
                   border: Border.all(color: ProfileFlowColors.accent),
                 ),

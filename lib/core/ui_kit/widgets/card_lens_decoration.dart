@@ -6,12 +6,35 @@ import 'package:flutter/material.dart';
 class CardLensDecoration extends BoxDecoration {
   const CardLensDecoration({
     required BorderRadiusGeometry borderRadius,
+    this.intensity = 1,
     super.color,
     super.image,
     super.gradient,
     super.border,
     super.boxShadow,
   }) : super(borderRadius: borderRadius);
+
+  /// A lower, softer lip on controls, with subdued relief when unavailable.
+  const CardLensDecoration.button({
+    required BorderRadiusGeometry borderRadius,
+    bool enabled = true,
+    super.color,
+    super.gradient,
+    super.border,
+    super.boxShadow,
+  }) : intensity = enabled ? .62 : .18,
+       super(borderRadius: borderRadius);
+
+  final double intensity;
+
+  @override
+  bool operator ==(Object other) =>
+      other is CardLensDecoration &&
+      intensity == other.intensity &&
+      super == other;
+
+  @override
+  int get hashCode => Object.hash(super.hashCode, intensity);
 
   @override
   BoxPainter createBoxPainter([VoidCallback? onChanged]) => _LensBoxPainter(
@@ -21,6 +44,7 @@ class CardLensDecoration extends BoxDecoration {
         gradient == null &&
         (color?.a ?? 0) > .8 &&
         (color?.computeLuminance() ?? 0) > .65,
+    intensity,
     onChanged,
   );
 
@@ -28,23 +52,31 @@ class CardLensDecoration extends BoxDecoration {
   @override
   BoxDecoration? lerpFrom(Decoration? a, double t) {
     if (a is! CardLensDecoration) return super.lerpFrom(a, t);
-    return _from(BoxDecoration.lerp(a, this, t)!);
+    return _from(
+      BoxDecoration.lerp(a, this, t)!,
+      a.intensity + (intensity - a.intensity) * t,
+    );
   }
 
   @override
   BoxDecoration? lerpTo(Decoration? b, double t) {
     if (b is! CardLensDecoration) return super.lerpTo(b, t);
-    return _from(BoxDecoration.lerp(this, b, t)!);
+    return _from(
+      BoxDecoration.lerp(this, b, t)!,
+      intensity + (b.intensity - intensity) * t,
+    );
   }
 
-  static CardLensDecoration _from(BoxDecoration box) => CardLensDecoration(
-    borderRadius: box.borderRadius ?? BorderRadius.zero,
-    color: box.color,
-    image: box.image,
-    gradient: box.gradient,
-    border: box.border,
-    boxShadow: box.boxShadow,
-  );
+  static CardLensDecoration _from(BoxDecoration box, double intensity) =>
+      CardLensDecoration(
+        intensity: intensity,
+        borderRadius: box.borderRadius ?? BorderRadius.zero,
+        color: box.color,
+        image: box.image,
+        gradient: box.gradient,
+        border: box.border,
+        boxShadow: box.boxShadow,
+      );
 
   /// Optical highlights stay at the perimeter, away from text and faces.
   /// All bands fit inside the surface, including at narrow text widths.
@@ -52,12 +84,13 @@ class CardLensDecoration extends BoxDecoration {
     Canvas canvas,
     RRect outline, {
     bool paleBase = false,
+    double intensity = 1,
   }) {
     if (outline.isEmpty) return;
     final shape = outline.scaleRadii();
     final bounds = shape.outerRect;
     final lip = math.min(8.5, bounds.shortestSide * .075);
-    final paint = Paint();
+    final paint = Paint()..color = Colors.white.withValues(alpha: intensity);
     // Rose and lilac are the two reflections in the selected tab's lens.
     const wash = LinearGradient(
       begin: Alignment(-.45, -1),
@@ -106,7 +139,9 @@ class CardLensDecoration extends BoxDecoration {
     for (var i = 0; i < strengths.length; i++) {
       final outer = shape.deflate(lip * i / strengths.length);
       final inner = shape.deflate(lip * (i + 1) / strengths.length);
-      bevelPaint.color = Colors.white.withValues(alpha: strengths[i]);
+      bevelPaint.color = Colors.white.withValues(
+        alpha: strengths[i] * intensity,
+      );
       canvas.drawDRRect(outer, inner, bevelPaint);
     }
     const glint = LinearGradient(
@@ -130,11 +165,18 @@ class CardLensDecoration extends BoxDecoration {
 }
 
 class _LensBoxPainter extends BoxPainter {
-  _LensBoxPainter(this.base, this.radius, this.paleBase, super.onChanged);
+  _LensBoxPainter(
+    this.base,
+    this.radius,
+    this.paleBase,
+    this.intensity,
+    super.onChanged,
+  );
 
   final BoxPainter base;
   final BorderRadiusGeometry radius;
   final bool paleBase;
+  final double intensity;
 
   @override
   void paint(Canvas canvas, Offset offset, ImageConfiguration configuration) {
@@ -145,6 +187,7 @@ class _LensBoxPainter extends BoxPainter {
       canvas,
       radius.resolve(configuration.textDirection).toRRect(offset & size),
       paleBase: paleBase,
+      intensity: intensity,
     );
   }
 

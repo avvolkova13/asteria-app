@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'dart:math' as math;
@@ -587,11 +588,14 @@ class _SectionTitleRow extends StatelessWidget {
               width: 44,
               height: 44,
               child: Align(
-                alignment: Alignment.centerRight,
-                child: ClayAssetIcon(
-                  'assets/icons/daily_symbol_shuffle.svg',
-                  width: 24,
-                  height: 24,
+                alignment: Alignment.center,
+                child: LotusIconSurface(
+                  diameter: 32,
+                  child: ClayAssetIcon(
+                    'assets/icons/daily_symbol_shuffle.svg',
+                    width: 24,
+                    height: 24,
+                  ),
                 ),
               ),
             ),

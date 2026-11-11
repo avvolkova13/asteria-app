@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
@@ -195,7 +196,8 @@ class AuthGradientButton extends StatelessWidget {
             width: double.infinity,
             height: 50,
             child: DecoratedBox(
-              decoration: BoxDecoration(
+              decoration: CardLensDecoration.button(
+                enabled: _isEnabled,
                 color: _isEnabled ? null : _authDisabledButtonFill,
                 gradient: _isEnabled
                     ? const LinearGradient(

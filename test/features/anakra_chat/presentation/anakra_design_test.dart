@@ -5,6 +5,7 @@ import 'package:asteria_app/features/anakra_chat/presentation/widgets/anakra_gla
 import 'package:asteria_app/core/localization/generated/l10n.dart';
 import 'package:asteria_app/features/anakra_chat/presentation/widgets/anakra_layout.dart';
 import 'package:asteria_app/features/anakra_chat/presentation/widgets/anakra_quick_action_button.dart';
+import 'package:asteria_app/features/home/presentation/models/year_animal_asset.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -73,12 +74,12 @@ void main() {
     expect(tester.getSize(find.byType(TextField)).height, 48);
     expect(tester.takeException(), isNull);
   });
-  testWidgets('avatar uses the complete Figma composition', (tester) async {
+  testWidgets('chat shows the same year animal as the tab bar', (tester) async {
     await tester.pumpWidget(app(const AnakraAvatar()));
     final image = tester.widget<Image>(find.byType(Image));
     expect(
       (image.image as AssetImage).assetName,
-      'assets/images/anakra/avatar.png',
+      YearAnimalAsset.forYear(DateTime.now().year),
     );
     expect(tester.getSize(find.byType(AnakraAvatar)), const Size(156, 156));
   });

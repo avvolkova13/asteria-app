@@ -102,20 +102,13 @@ class _PlayerPebbleState extends State<PlayerPebble>
     final inset = header || widget.primary ? 0.0 : 2.0;
     final w = width - 2 * inset;
     final h = height - 2 * inset;
-    final radii = switch (glyph) {
-      ClayGlyph.repeat => [.54, .46, .50, .50, .55, .55, .45, .45],
-      ClayGlyph.bookmark ||
-      ClayGlyph.saved => [.54, .46, .51, .49, .54, .58, .42, .46],
-      ClayGlyph.play ||
-      ClayGlyph.pause => [.52, .48, .46, .54, .60, .57, .43, .40],
-      _ => [.49, .51, .45, .55, .56, .54, .46, .44],
+    final contour = switch (glyph) {
+      ClayGlyph.repeat => LotusPebbleContour.repeat,
+      ClayGlyph.bookmark || ClayGlyph.saved => LotusPebbleContour.bookmark,
+      ClayGlyph.play || ClayGlyph.pause => LotusPebbleContour.play,
+      _ => LotusPebbleContour.action,
     };
-    final shape = BorderRadius.only(
-      topLeft: Radius.elliptical(w * radii[0], h * radii[4]),
-      topRight: Radius.elliptical(w * radii[1], h * radii[5]),
-      bottomRight: Radius.elliptical(w * radii[2], h * radii[6]),
-      bottomLeft: Radius.elliptical(w * radii[3], h * radii[7]),
-    );
+    final shape = contour.resolve(w, h);
     return Semantics(
       container: true,
       label: widget.label,

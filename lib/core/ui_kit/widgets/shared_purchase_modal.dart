@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
@@ -625,7 +626,7 @@ class _ModalActionButton extends StatelessWidget {
             color: Colors.transparent,
             borderRadius: BorderRadius.circular(16),
             child: Ink(
-              decoration: BoxDecoration(
+              decoration: CardLensDecoration.button(
                 gradient: isPrimary ? _modalButtonGradient : null,
                 borderRadius: BorderRadius.circular(16),
                 border: isPrimary ? null : Border.all(color: _modalPurple),

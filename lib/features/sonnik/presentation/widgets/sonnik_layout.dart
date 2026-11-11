@@ -324,7 +324,8 @@ class SonnikGradientButton extends StatelessWidget {
           width: double.infinity,
           height: 54,
           alignment: Alignment.center,
-          decoration: BoxDecoration(
+          decoration: CardLensDecoration.button(
+            enabled: isEnabled,
             gradient: isEnabled ? SonnikPalette.ctaGradient : null,
             color: isEnabled ? null : SonnikPalette.disabled,
             borderRadius: BorderRadius.circular(18),

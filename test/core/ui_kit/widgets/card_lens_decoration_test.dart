@@ -48,6 +48,20 @@ void main() {
     );
   }
 
+  test('button relief interpolates down for the disabled state', () {
+    const enabled = CardLensDecoration.button(borderRadius: radius);
+    const disabled = CardLensDecoration.button(
+      borderRadius: radius,
+      enabled: false,
+    );
+    final tween = Decoration.lerp(enabled, disabled, .5)! as CardLensDecoration;
+    expect(enabled, isNot(disabled));
+    expect(enabled.intensity, lessThan(1));
+    expect(tween.intensity, lessThan(enabled.intensity));
+    expect(tween.intensity, greaterThan(disabled.intensity));
+    expect(tween.borderRadius, enabled.borderRadius);
+  });
+
   test(
     'selection changes interpolate the base with the same glass material',
     () {

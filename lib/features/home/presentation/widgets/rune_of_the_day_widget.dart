@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/app/data/models/rune_of_day/rune_of_day_model.dart';
@@ -104,11 +105,14 @@ class _RuneOfTheDayWidgetState extends State<RuneOfTheDayWidget>
                         width: 32,
                         height: 32,
                         child: Center(
-                          child: ClayAssetIcon(
-                            'assets/icons/repeat_icon.svg',
-                            width: 24,
-                            height: 24,
-                            tint: Color(0xFFF3B76A),
+                          child: LotusIconSurface(
+                            diameter: 32,
+                            child: ClayAssetIcon(
+                              'assets/icons/repeat_icon.svg',
+                              width: 24,
+                              height: 24,
+                              tint: Color(0xFFF3B76A),
+                            ),
                           ),
                         ),
                       )

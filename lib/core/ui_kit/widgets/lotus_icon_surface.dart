@@ -1,5 +1,33 @@
 import 'package:flutter/material.dart';
 
+/// Corner proportions from the four hand-shaped controls in the lotus player.
+enum LotusPebbleContour {
+  action(.49, .51, .45, .55, .56, .54, .46, .44),
+  repeat(.54, .46, .50, .50, .55, .55, .45, .45),
+  bookmark(.54, .46, .51, .49, .54, .58, .42, .46),
+  play(.52, .48, .46, .54, .60, .57, .43, .40);
+
+  const LotusPebbleContour(
+    this.upperLeftX,
+    this.upperRightX,
+    this.lowerRightX,
+    this.lowerLeftX,
+    this.upperLeftY,
+    this.upperRightY,
+    this.lowerRightY,
+    this.lowerLeftY,
+  );
+  final double upperLeftX, upperRightX, lowerRightX, lowerLeftX;
+  final double upperLeftY, upperRightY, lowerRightY, lowerLeftY;
+
+  BorderRadius resolve(double width, double height) => BorderRadius.only(
+    topLeft: Radius.elliptical(width * upperLeftX, height * upperLeftY),
+    topRight: Radius.elliptical(width * upperRightX, height * upperRightY),
+    bottomRight: Radius.elliptical(width * lowerRightX, height * lowerRightY),
+    bottomLeft: Radius.elliptical(width * lowerLeftX, height * lowerLeftY),
+  );
+}
+
 /// The pearlescent surface used by the lotus player, behind a standalone glyph.
 /// The control retains its original layout, gestures and accessibility target.
 class LotusIconSurface extends StatelessWidget {
@@ -10,12 +38,8 @@ class LotusIconSurface extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final radius = BorderRadius.only(
-      topLeft: Radius.elliptical(diameter * .49, diameter * .56),
-      topRight: Radius.elliptical(diameter * .51, diameter * .54),
-      bottomRight: Radius.elliptical(diameter * .45, diameter * .46),
-      bottomLeft: Radius.elliptical(diameter * .55, diameter * .44),
-    );
+    final height = diameter * 75 / 84;
+    final radius = LotusPebbleContour.play.resolve(diameter, height);
     return Stack(
       fit: StackFit.passthrough,
       alignment: Alignment.center,
@@ -26,8 +50,8 @@ class LotusIconSurface extends StatelessWidget {
             child: OverflowBox(
               minWidth: diameter,
               maxWidth: diameter,
-              minHeight: diameter,
-              maxHeight: diameter,
+              minHeight: height,
+              maxHeight: height,
               child: CustomPaint(
                 painter: LotusSurfacePainter(radius, false, false),
               ),

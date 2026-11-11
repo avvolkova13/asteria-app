@@ -193,7 +193,7 @@ class _AdvertisingCtaButton extends StatelessWidget {
         child: SizedBox(
           height: 44,
           child: DecoratedBox(
-            decoration: BoxDecoration(
+            decoration: CardLensDecoration.button(
               borderRadius: BorderRadius.circular(16),
               gradient: AdvertisingBlockWidget._orangeGradient,
               boxShadow: const [

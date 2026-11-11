@@ -219,7 +219,8 @@ class CompatibilityGradientButton extends StatelessWidget {
             child: Container(
               height: height,
               alignment: Alignment.center,
-              decoration: BoxDecoration(
+              decoration: CardLensDecoration.button(
+                enabled: enabled,
                 borderRadius: BorderRadius.circular(16),
                 gradient: enabled
                     ? const LinearGradient(

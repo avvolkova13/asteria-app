@@ -35,7 +35,11 @@ void main() {
       matching: find.byType(CustomPaint),
     );
     expect(tester.getSize(icon), const Size(10, 18));
-    expect(tester.getSize(disc), const Size.square(30));
+    expect(tester.getSize(disc), const Size(30, 30 * 75 / 84));
+    final painter =
+        tester.widget<CustomPaint>(disc).painter! as LotusSurfacePainter;
+    expect(painter.radius.topLeft, isNot(painter.radius.topRight));
+    expect(painter.radius.topLeft.y, greaterThan(painter.radius.bottomLeft.y));
     expect(tester.getCenter(disc), tester.getCenter(icon));
     expect(tester.getSize(button), const Size.square(44));
     expect(find.byTooltip('Previous month'), findsOneWidget);

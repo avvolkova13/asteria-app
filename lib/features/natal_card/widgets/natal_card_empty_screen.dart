@@ -256,7 +256,7 @@ class _BuyButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DecoratedBox(
-      decoration: BoxDecoration(
+      decoration: CardLensDecoration.button(
         gradient: _NatalPaywall.purpleGradient,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(

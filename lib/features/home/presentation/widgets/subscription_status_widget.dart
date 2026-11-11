@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 import 'package:asteria_app/features/profile_flow/profile_flow_ui.dart';
@@ -155,7 +156,7 @@ class _SubscriptionStatusCard extends StatelessWidget {
                     width: buttonWidth,
                     height: 44,
                     child: DecoratedBox(
-                      decoration: BoxDecoration(
+                      decoration: CardLensDecoration.button(
                         color: ProfileFlowColors.accent,
                         borderRadius: BorderRadius.circular(16),
                       ),

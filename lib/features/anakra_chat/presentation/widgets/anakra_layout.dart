@@ -9,12 +9,12 @@ import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 import 'package:asteria_app/core/ui_kit/widgets/subscription_widget.dart';
 import 'package:asteria_app/features/monetization/presentation/monetization_provider.dart';
+import 'package:asteria_app/features/home/presentation/models/year_animal_asset.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 abstract final class AnakraAssets {
-  static const avatar = 'assets/images/anakra/avatar.png';
   static const background = 'assets/images/anakra/background.png';
   static const proCrystal = 'assets/images/sonnik/pro_crystal.webp';
   static const coin = 'assets/icons/star_coin_icon.png';
@@ -249,15 +249,16 @@ class AnakraAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AsteriaEntrance(child: SizedBox(
-      width: size,
-      height: size,
-      child: Image.asset(
-        AnakraAssets.avatar,
-        fit: BoxFit.contain,
-        excludeFromSemantics: true,
+    return AsteriaEntrance(
+      child: SizedBox.square(
+        dimension: size,
+        child: Image.asset(
+          YearAnimalAsset.forYear(DateTime.now().year),
+          fit: BoxFit.contain,
+          excludeFromSemantics: true,
+        ),
       ),
-    ));
+    );
   }
 }
 
@@ -383,7 +384,8 @@ class AnakraGradientButton extends StatelessWidget {
           child: Container(
             height: height,
             alignment: Alignment.center,
-            decoration: BoxDecoration(
+            decoration: CardLensDecoration.button(
+              enabled: enabled,
               borderRadius: BorderRadius.circular(16),
               gradient: enabled ? AnakraPalette.primaryGradient : null,
               color: enabled ? null : AnakraPalette.purpleDark,

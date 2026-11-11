@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'dart:ui' as ui;
@@ -382,7 +383,8 @@ class _LocationSecondaryButton extends StatelessWidget {
     return SizedBox(
       height: 52,
       child: DecoratedBox(
-        decoration: BoxDecoration(
+        decoration: CardLensDecoration.button(
+          enabled: !isLoading,
           color: const Color(0xFF171122),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
@@ -426,7 +428,8 @@ class _LocationPrimaryButton extends StatelessWidget {
     return SizedBox(
       height: 52,
       child: DecoratedBox(
-        decoration: BoxDecoration(
+        decoration: CardLensDecoration.button(
+          enabled: !isLoading,
           gradient: const LinearGradient(
             colors: [Color(0xFF6E4BFF), Color(0xFF5A3FD1)],
           ),

@@ -1406,7 +1406,7 @@ class _PersonalGradientButton extends StatelessWidget {
           width: double.infinity,
           height: 50,
           child: DecoratedBox(
-            decoration: BoxDecoration(
+            decoration: CardLensDecoration.button(
               gradient: _buttonGradient,
               borderRadius: BorderRadius.circular(16),
             ),
@@ -1939,7 +1939,7 @@ class _ForecastUnlockButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
           child: Ink(
             padding: const EdgeInsets.symmetric(horizontal: 20),
-            decoration: BoxDecoration(
+            decoration: CardLensDecoration.button(
               borderRadius: BorderRadius.circular(16),
               border: Border.all(color: _accentPurple),
             ),

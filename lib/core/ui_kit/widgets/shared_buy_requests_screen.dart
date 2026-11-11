@@ -223,7 +223,8 @@ class _GradientBuyButton extends StatelessWidget {
           child: Container(
             height: 50,
             alignment: Alignment.center,
-            decoration: BoxDecoration(
+            decoration: CardLensDecoration.button(
+              enabled: enabled,
               borderRadius: BorderRadius.circular(16),
               gradient: enabled
                   ? const LinearGradient(

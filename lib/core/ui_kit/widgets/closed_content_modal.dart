@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/features/monetization/presentation/contextual_purchase_page.dart';
@@ -145,7 +146,7 @@ class _SubscriptionButton extends StatelessWidget {
       child: SizedBox(
         width: double.infinity,
         child: DecoratedBox(
-          decoration: BoxDecoration(
+          decoration: CardLensDecoration.button(
             borderRadius: BorderRadius.circular(16),
             gradient: const LinearGradient(
               colors: [Color(0xFF6E4BFF), Color(0xFF5A3FD1)],

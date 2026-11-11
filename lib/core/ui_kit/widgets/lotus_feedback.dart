@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'dart:async';
 import 'dart:math' as math;
@@ -280,14 +281,52 @@ class LotusInkTap extends StatelessWidget {
 
 /// Keeps native focus, shortcuts, tooltips, hit targets and disabled styling.
 abstract final class LotusButtons {
+  static ButtonStyle _surface(ButtonStyle? style, {required bool filled}) {
+    final base = style ?? const ButtonStyle();
+    if (base.backgroundBuilder != null ||
+        (!filled && base.backgroundColor == null)) {
+      return base;
+    }
+    return base.copyWith(
+      backgroundBuilder: (context, states, child) {
+        final color = base.backgroundColor?.resolve(states);
+        // Transparent Material buttons may already sit on a decorated CTA.
+        if ((color?.a == 0 && context.widget is! OutlinedButton) ||
+            (!filled && color == null)) {
+          return child!;
+        }
+        final themeStyle = switch (context.widget) {
+          OutlinedButton() => OutlinedButtonTheme.of(context).style,
+          TextButton() => TextButtonTheme.of(context).style,
+          _ => ElevatedButtonTheme.of(context).style,
+        };
+        final shape =
+            base.shape?.resolve(states) ?? themeStyle?.shape?.resolve(states);
+        final radius = shape is RoundedRectangleBorder
+            ? shape.borderRadius
+            : BorderRadius.circular(Theme.of(context).useMaterial3 ? 1000 : 4);
+        return DecoratedBox(
+          decoration: CardLensDecoration.button(
+            borderRadius: radius,
+            enabled: !states.contains(WidgetState.disabled),
+          ),
+          child: child,
+        );
+      },
+    );
+  }
+
   static Widget text({
     required VoidCallback? onPressed,
     required Widget child,
     ButtonStyle? style,
   }) => LotusFeedback(
     onActivate: onPressed,
-    builder: (activate) =>
-        TextButton(onPressed: activate, style: style, child: child),
+    builder: (activate) => TextButton(
+      onPressed: activate,
+      style: _surface(style, filled: false),
+      child: child,
+    ),
   );
 
   static Widget textIcon({
@@ -299,7 +338,7 @@ abstract final class LotusButtons {
     onActivate: onPressed,
     builder: (activate) => TextButton.icon(
       onPressed: activate,
-      style: style,
+      style: _surface(style, filled: false),
       icon: icon,
       label: label,
     ),
@@ -311,8 +350,11 @@ abstract final class LotusButtons {
     ButtonStyle? style,
   }) => LotusFeedback(
     onActivate: onPressed,
-    builder: (activate) =>
-        ElevatedButton(onPressed: activate, style: style, child: child),
+    builder: (activate) => ElevatedButton(
+      onPressed: activate,
+      style: _surface(style, filled: true),
+      child: child,
+    ),
   );
 
   static Widget outlined({
@@ -321,8 +363,11 @@ abstract final class LotusButtons {
     ButtonStyle? style,
   }) => LotusFeedback(
     onActivate: onPressed,
-    builder: (activate) =>
-        OutlinedButton(onPressed: activate, style: style, child: child),
+    builder: (activate) => OutlinedButton(
+      onPressed: activate,
+      style: _surface(style, filled: true),
+      child: child,
+    ),
   );
 
   static Widget icon({
