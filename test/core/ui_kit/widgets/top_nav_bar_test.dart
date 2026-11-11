@@ -45,6 +45,56 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  for (final pushed in [false, true]) {
+    testWidgets('back keeps a page visible: pushed=$pushed', (tester) async {
+      final userProvider = UserProvider(
+        userRepository: _UnusedUserRepository(),
+      );
+      addTearDown(userProvider.dispose);
+      final router = GoRouter(
+        initialLocation: pushed ? '/home' : '/detail',
+        routes: [
+          GoRoute(
+            path: '/home',
+            name: HomeRoute.routeName,
+            builder: (_, _) => const Scaffold(body: Text('home destination')),
+          ),
+          GoRoute(
+            path: '/detail',
+            builder: (_, _) => ChangeNotifierProvider<UserProvider>.value(
+              value: userProvider,
+              child: const Scaffold(
+                body: TopNavBar(
+                  userName: 'Detail',
+                  type: TopNavBarType.transparent,
+                  canPop: true,
+                ),
+              ),
+            ),
+          ),
+        ],
+      );
+      addTearDown(router.dispose);
+      await tester.pumpWidget(
+        MaterialApp.router(
+          routerConfig: router,
+          builder: (context, child) => Theme(
+            data: AppThemeDark.instance.getThemeData(context),
+            child: child!,
+          ),
+        ),
+      );
+      if (pushed) {
+        router.push('/detail');
+        await tester.pumpAndSettle();
+      }
+      await tester.tap(find.bySemanticsLabel('Back'));
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
+      expect(find.text('home destination'), findsOneWidget);
+    });
+  }
+
   testWidgets('opens subscription screen from the PRO badge', (tester) async {
     final userProvider = UserProvider(userRepository: _UnusedUserRepository());
     addTearDown(userProvider.dispose);

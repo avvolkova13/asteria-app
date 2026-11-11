@@ -242,7 +242,7 @@ class TopNavBarDelegate extends SliverPersistentHeaderDelegate {
                   children: [
                     if (canPop) ...[
                       _TopNavBackButton(
-                        onTap: () => Navigator.of(context).pop(),
+                        onTap: () => _navigateBack(context),
                         child: const SizedBox.square(
                           dimension: LotusArrowBubble.hitExtent,
                           child: Center(child: LotusArrowBubble(back: true)),
@@ -392,7 +392,7 @@ class _TopNavBarTitle extends StatelessWidget {
         children: [
           if (canPop)
             _TopNavBackButton(
-              onTap: () => Navigator.of(context).pop(),
+              onTap: () => _navigateBack(context),
               child: const SizedBox.square(
                 dimension: LotusArrowBubble.hitExtent,
                 child: Center(child: LotusArrowBubble(back: true)),
@@ -996,6 +996,15 @@ class _TransparentTopNavBar extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+void _navigateBack(BuildContext context) {
+  final navigator = Navigator.of(context);
+  if (navigator.canPop()) {
+    navigator.pop();
+  } else {
+    HomeRoute.go(context);
   }
 }
 
