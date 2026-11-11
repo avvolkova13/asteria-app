@@ -75,11 +75,34 @@ void main() {
         12,
         'Полное описание позиции планеты.',
       ).join(' ');
-      await _pumpChart(tester, width, description);
+      await _pumpChart(
+        tester,
+        width,
+        description,
+        textScale: width == 320 ? 1.6 : 1,
+      );
       final text = find.textContaining(description);
       expect(text, findsOneWidget);
       final paragraph = tester.renderObject<RenderParagraph>(text);
       expect(paragraph.didExceedMaxLines, isFalse);
+      Finder cardFor(Finder text) => find
+          .ancestor(
+            of: text,
+            matching: find.byWidgetPredicate(
+              (widget) =>
+                  widget is Container && widget.clipBehavior == Clip.antiAlias,
+            ),
+          )
+          .first;
+      final tallest = tester.getRect(cardFor(text));
+      final venus = tester.getRect(
+        cardFor(find.textContaining('Описание Венеры.')),
+      );
+      expect(venus.height, tallest.height);
+      expect(
+        tester.getBottomLeft(text).dy,
+        lessThanOrEqualTo(tallest.bottom - 16),
+      );
       final nextGroup = find.text('Отношения и проявление');
       expect(
         tester.getBottomLeft(text).dy,
@@ -111,6 +134,7 @@ Future<void> _pumpChart(
   String description, {
   Locale locale = const Locale('ru'),
   bool use24Hour = false,
+  double textScale = 1,
 }) async {
   tester.view.physicalSize = Size(width, 844);
   tester.view.devicePixelRatio = 1;
@@ -133,9 +157,10 @@ Future<void> _pumpChart(
       child: MaterialApp(
         locale: locale,
         builder: (context, child) => MediaQuery(
-          data: MediaQuery.of(
-            context,
-          ).copyWith(alwaysUse24HourFormat: use24Hour),
+          data: MediaQuery.of(context).copyWith(
+            alwaysUse24HourFormat: use24Hour,
+            textScaler: TextScaler.linear(textScale),
+          ),
           child: child!,
         ),
         localizationsDelegates: const [

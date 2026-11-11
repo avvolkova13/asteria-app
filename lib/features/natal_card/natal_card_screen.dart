@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:asteria_app/features/scenarios/scenario_sky.dart';
 import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/features/horoscope/presentation/horoscope_core_position_assets.dart';
@@ -755,6 +757,11 @@ class _PositionsTab extends StatelessWidget {
       ),
     ].where((group) => group.planets.isNotEmpty).toList();
 
+    final cardHeight = _PlanetPositionCard.tallestHeight(
+      context,
+      groups.expand((group) => group.planets),
+    );
+
     return Column(
       key: key,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -778,7 +785,10 @@ class _PositionsTab extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 8),
-          _PlanetCardsRow(planets: group.planets),
+          SizedBox(
+            height: cardHeight,
+            child: _PlanetCardsRow(planets: group.planets),
+          ),
           const SizedBox(height: 16),
         ],
       ]),
@@ -815,7 +825,7 @@ class _PlanetCardsRow extends StatelessWidget {
       scrollDirection: Axis.horizontal,
       clipBehavior: Clip.none,
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           for (var index = 0; index < planets.length; index++) ...[
             _PlanetPositionCard(planet: planets[index]),
@@ -830,19 +840,70 @@ class _PlanetCardsRow extends StatelessWidget {
 class _PlanetPositionCard extends StatelessWidget {
   final NatalCardPlanetDisplayModel planet;
 
+  static const _width = 325.0;
+  static const _padding = 16.0;
+  static const _artSize = 72.0;
+  static const _artGap = 10.0;
+  static const _textGap = 8.0;
+
+  static TextStyle _titleStyle(BuildContext context) =>
+      context.textTheme.inversePlayfairSemiBold24.copyWith(
+        fontFamily: 'Lora',
+        letterSpacing: 0,
+        height: 1,
+      );
+
+  static TextStyle _bodyStyle(BuildContext context) =>
+      context.textTheme.inverseUrbanistRegular16.copyWith(
+        fontFamily: 'Onest',
+        height: 1.2,
+        letterSpacing: -0.408,
+      );
+
+  static double tallestHeight(
+    BuildContext context,
+    Iterable<NatalCardPlanetDisplayModel> planets,
+  ) {
+    const textWidth = _width - 2 * _padding - _artSize - _artGap;
+    final painter = TextPainter(
+      textDirection: Directionality.of(context),
+      textScaler: MediaQuery.textScalerOf(context),
+      locale: Localizations.localeOf(context),
+    );
+    final defaults = DefaultTextStyle.of(context).style;
+    final bold = MediaQuery.boldTextOf(context);
+    final boldStyle = bold ? const TextStyle(fontWeight: FontWeight.bold) : null;
+    final title = defaults.merge(_titleStyle(context)).merge(boldStyle);
+    final body = defaults.merge(_bodyStyle(context)).merge(boldStyle);
+    double measure(String text, TextStyle style) {
+      painter.text = TextSpan(text: text, style: style);
+      painter.layout(maxWidth: textWidth);
+      return painter.height;
+    }
+
+    var height = _artSize;
+    for (final planet in planets) {
+      final textHeight = measure(context.l10n.planetName(planet.code), title) +
+          _textGap +
+          measure(planet.description, body);
+      height = math.max(height, textHeight);
+    }
+    painter.dispose();
+    return (height + 2 * _padding).ceilToDouble();
+  }
+
   const _PlanetPositionCard({required this.planet});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 325,
-      constraints: const BoxConstraints(minHeight: 104),
+      width: _width,
       clipBehavior: Clip.antiAlias,
       decoration: CardLensDecoration(
         color: _NatalCardColors.figmaPurple.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(AsteriaCardRadii.tile),
       ),
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(_padding),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -852,29 +913,21 @@ class _PlanetPositionCard extends StatelessWidget {
               children: [
                 Text(
                   context.l10n.planetName(planet.code),
-                  style: context.textTheme.inversePlayfairSemiBold24.copyWith(
-                    fontFamily: 'Lora',
-                    letterSpacing: 0,
-                    height: 1,
-                  ),
+                  style: _titleStyle(context),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: _textGap),
                 Text(
                   planet.description,
-                  style: context.textTheme.inverseUrbanistRegular16.copyWith(
-                    fontFamily: 'Onest',
-                    height: 1.2,
-                    letterSpacing: -0.408,
-                  ),
+                  style: _bodyStyle(context),
                 ),
               ],
             ),
           ),
-          const SizedBox(width: 10),
+          const SizedBox(width: _artGap),
           Image.asset(
             horoscopeCorePositionAssetFor(planet.code),
-            width: 72,
-            height: 72,
+            width: _artSize,
+            height: _artSize,
             fit: BoxFit.contain,
             frameBuilder: AsteriaEntrance.imageFrame,
             excludeFromSemantics: true,

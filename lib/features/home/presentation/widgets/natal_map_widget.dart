@@ -47,16 +47,18 @@ class NatalMapWidget extends StatelessWidget {
           const SizedBox(height: 16),
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: planets
-                  .map(
-                    (planet) => _NatalMapPositionItem(
-                      title: context.l10n.planetName(planet.code),
-                      description: planet.description,
-                    ),
-                  )
-                  .toList(),
+            child: IntrinsicHeight(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: planets
+                    .map(
+                      (planet) => _NatalMapPositionItem(
+                        title: context.l10n.planetName(planet.code),
+                        description: planet.description,
+                      ),
+                    )
+                    .toList(),
+              ),
             ),
           ),
           const SizedBox(height: 16),
