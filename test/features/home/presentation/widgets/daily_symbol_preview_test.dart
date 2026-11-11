@@ -21,7 +21,7 @@ import 'package:provider/provider.dart';
 
 void main() {
   testWidgets(
-    'unread symbols show actual readings without recording a reveal or drawing a new symbol',
+    'the daily tarot starts face down and reveals the selected card on tap',
     (tester) async {
       final user = _User();
       final content = _Content();
@@ -38,6 +38,7 @@ void main() {
         content.dispose();
       });
       var tarotTaps = 0;
+      var tarotOpened = false;
       var runeTaps = 0;
       var refreshes = 0;
       var runeTabSelections = 0;
@@ -47,14 +48,20 @@ void main() {
             path: '/',
             builder: (context, state) => Scaffold(
               body: SingleChildScrollView(
-                child: DailySymbolOfTheDayWidget(
-                  tarotCard: _tarot,
-                  rune: _rune,
-                  onTarotRefresh: () => refreshes++,
-                  onRuneRefresh: () => refreshes++,
-                  onCardTap: () => tarotTaps++,
-                  onRuneTap: () => runeTaps++,
-                  onRuneTabSelected: () => runeTabSelections++,
+                child: StatefulBuilder(
+                  builder: (context, setState) => DailySymbolOfTheDayWidget(
+                    tarotCard: _tarot,
+                    rune: _rune,
+                    onTarotRefresh: () => refreshes++,
+                    onRuneRefresh: () => refreshes++,
+                    isTarotOpened: tarotOpened,
+                    onCardTap: () {
+                      tarotTaps++;
+                      setState(() => tarotOpened = true);
+                    },
+                    onRuneTap: () => runeTaps++,
+                    onRuneTabSelected: () => runeTabSelections++,
+                  ),
                 ),
               ),
             ),
@@ -90,8 +97,17 @@ void main() {
       final tarotImage = find.image(
         const AssetImage('assets/images/cards/the_star.webp'),
       );
-      expect(tarotImage, findsOneWidget);
-      expect(find.text(_tarot.cardOfDayDescription), findsOneWidget);
+      final back = find.image(
+        const AssetImage('assets/images/home/daily_symbol_tarot_back.webp'),
+      );
+      expect(tester.getSize(back), const Size(219, 328));
+      expect(tarotImage, findsNothing);
+      expect(find.text(_tarot.cardOfDayDescription), findsNothing);
+      expect(
+        find.bySemanticsLabel('Перевернуть карту Таро дня'),
+        findsOneWidget,
+      );
+      expect(find.text('Нажми на карту, чтобы перевернуть'), findsOneWidget);
       await tester.tap(find.text('Сделать расклад'));
       await tester.pumpAndSettle();
       expect(find.text('Расклад Таро'), findsOneWidget);
@@ -99,8 +115,14 @@ void main() {
       expect(tarotTaps, 0);
       router.pop();
       await tester.pumpAndSettle();
+      await tester.tap(back);
+      await tester.pumpAndSettle();
+      expect(tarotTaps, 1);
+      expect(tarotImage, findsOneWidget);
+      expect(back, findsNothing);
+      expect(find.text(_tarot.cardOfDayDescription), findsOneWidget);
+      expect(find.bySemanticsLabel('Карта Таро дня: Звезда'), findsOneWidget);
       await tester.tap(tarotImage);
-      await tester.pump();
       expect(tarotTaps, 1);
       await tester.tap(find.text('Руна'));
       await tester.pumpAndSettle();

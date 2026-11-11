@@ -393,7 +393,9 @@ class _TarotSymbolContent extends StatelessWidget {
               onTap: activate,
               label: symbol == null
                   ? context.l10n.commonUnavailable
-                  : context.l10n.dailyTarotOpenedLabel(symbol.title),
+                  : isOpened
+                  ? context.l10n.dailyTarotOpenedLabel(symbol.title)
+                  : context.l10n.dailyTarotFlipLabel,
               child: ExcludeSemantics(
                 child: GestureDetector(
                   behavior: HitTestBehavior.opaque,
@@ -402,6 +404,7 @@ class _TarotSymbolContent extends StatelessWidget {
                       ? const _TarotCardBack()
                       : _FlipContent(
                           animation: flipAnimation,
+                          startsFaceDown: true,
                           back: const _TarotCardBack(),
                           front: _TarotCardFront(tarotCard: symbol),
                         ),
@@ -413,7 +416,7 @@ class _TarotSymbolContent extends StatelessWidget {
         const SizedBox(height: 16),
         AnimatedSwitcher(
           duration: const Duration(milliseconds: 220),
-          child: symbol != null
+          child: isOpened && symbol != null
               ? _OpenedDescription(
                   key: const ValueKey('tarot_opened'),
                   text: symbol.cardOfDayDescription,
@@ -421,7 +424,9 @@ class _TarotSymbolContent extends StatelessWidget {
                 )
               : _ClosedDescription(
                   key: const ValueKey('tarot_closed'),
-                  text: context.l10n.commonUnavailable,
+                  text: symbol == null
+                      ? context.l10n.commonUnavailable
+                      : context.l10n.dailyTarotTap,
                   maxTextWidth: maxTextWidth,
                 ),
         ),
@@ -601,8 +606,10 @@ class _FlipContent extends StatelessWidget {
     required this.animation,
     required this.back,
     required this.front,
+    this.startsFaceDown = false,
   });
 
+  final bool startsFaceDown;
   final Animation<double> animation;
   final Widget back;
   final Widget front;
@@ -612,14 +619,17 @@ class _FlipContent extends StatelessWidget {
     return AnimatedBuilder(
       animation: animation,
       builder: (context, child) {
-        if (animation.isDismissed || animation.isCompleted) return front;
-        final turns = animation.value;
-        final showBack = turns > 0.25 && turns < 0.75;
+        if (animation.isDismissed) return startsFaceDown ? back : front;
+        if (animation.isCompleted) return front;
+        final angle = startsFaceDown
+            ? (animation.value - 1) * math.pi
+            : animation.value * 2 * math.pi;
+        final showBack = math.cos(angle) < 0;
         return Transform(
           alignment: Alignment.center,
           transform: Matrix4.identity()
             ..setEntry(3, 2, 0.001)
-            ..rotateY(turns * 2 * math.pi),
+            ..rotateY(angle),
           child: showBack
               ? Transform(
                   alignment: Alignment.center,
