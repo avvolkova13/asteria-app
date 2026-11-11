@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 
 import 'card_lens_decoration.dart';
 import 'clay_icon.dart';
-import 'lotus_icon_surface.dart';
 
 /// Shared visual surface. Its caller owns navigation and accessibility actions.
 class ProBadgeSurface extends StatelessWidget {
@@ -15,7 +14,7 @@ class ProBadgeSurface extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final radius = LotusPebbleContour.action.resolve(76, 28);
+    const radius = BorderRadius.all(Radius.circular(100));
     return SizedBox(
       width: 76,
       height: 28,
