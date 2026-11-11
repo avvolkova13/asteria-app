@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/analytics/analytics_events.dart';
 import 'package:asteria_app/core/analytics/analytics_facade.dart';
 import 'package:asteria_app/core/analytics/dictionaries/entry_surface.dart';
@@ -290,7 +291,10 @@ class _AnakraChatScreenState extends State<AnakraChatScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             ...provider.messages.map(
-                              (message) => AnakraChatMessage(message: message),
+                              (message) => AsteriaEntrance(
+                                replayKey: (message.timestamp.toUtc(), message.isUser),
+                                child: AnakraChatMessage(message: message),
+                              ),
                             ),
                             if (provider.showQuickActions && !_isDispatching)
                               AnakraQuickActions(

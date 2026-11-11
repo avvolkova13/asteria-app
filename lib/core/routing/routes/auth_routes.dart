@@ -24,7 +24,7 @@ class AuthLoginRoute extends AppRoute {
     : super(
         name: AuthRoutes.loginRouteName,
         path: AuthRoutes.loginRouteName,
-        pageBuilder: (context, state) => CupertinoPage(
+        pageBuilder: (context, state) => AsteriaPage(
           child: BlocProvider<EmailAuthCubit>(
             create: (_) => di.get<EmailAuthCubit>(),
             child: const EmailLoginScreen(isRoot: true),
@@ -51,7 +51,7 @@ class AuthPersonalInfoRoute extends AppRoute {
                 userId: di.get<AuthSessionService>().currentUid ?? '',
                 email: di.get<AuthSessionService>().currentEmail ?? '',
               );
-          return CupertinoPage(
+          return AsteriaPage(
             child: PersonalInfoInputScreen(
               identity: identity,
               authLocalization: AuthLocalization(),
@@ -82,7 +82,7 @@ class AuthEmailRoute extends AppRoute {
         path: AuthRoutes.emailRouteName,
         pageBuilder: (context, state) {
           final arguments = state.extra as _EmailRouteArguments?;
-          return CupertinoPage(
+          return AsteriaPage(
             child: BlocProvider<EmailAuthCubit>(
               create: (_) => di.get<EmailAuthCubit>(),
               child: EmailLoginScreen(
@@ -142,7 +142,7 @@ class AuthEmailCodeRoute extends AppRoute {
         path: AuthRoutes.emailCodeRouteName,
         pageBuilder: (context, state) {
           final arguments = state.extra as _EmailCodeRouteArguments;
-          return CupertinoPage(
+          return AsteriaPage(
             child: BlocProvider<EmailAuthCubit>.value(
               value: arguments.cubit,
               child: EmailCodeScreen(

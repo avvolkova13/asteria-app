@@ -71,7 +71,10 @@ class _InputsSectionWidgetState extends State<InputsSectionWidget> {
   void initState() {
     super.initState();
     _nameFocusNode = FocusNode();
-    _placeFocusNode = FocusNode();
+    _placeFocusNode = FocusNode()
+      ..addListener(() {
+        if (_placeFocusNode.hasFocus) LotusFeedback.selection();
+      });
     widget.nameController.addListener(_handleControllerChanged);
     widget.placeController.addListener(_handleControllerChanged);
   }
@@ -256,6 +259,7 @@ class _InputsSectionWidgetState extends State<InputsSectionWidget> {
           );
         },
         itemClick: (Prediction prediction) {
+          LotusFeedback.selection();
           final description = prediction.description ?? '';
           widget.placeController.text = description;
           widget.placeController.selection = TextSelection.fromPosition(
@@ -263,18 +267,20 @@ class _InputsSectionWidgetState extends State<InputsSectionWidget> {
           );
         },
         itemBuilder: (context, index, Prediction prediction) {
-          return Container(
-            height: 36,
+          return Ink(
+            height: 44,
             color: _authPanelFill,
-            alignment: Alignment.centerLeft,
             padding: const EdgeInsets.symmetric(horizontal: 8),
-            child: Text(
-              prediction.description ?? '',
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: context.textTheme.inverseUrbanistRegular16.copyWith(
-                height: 1.2,
-                letterSpacing: -0.408,
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                prediction.description ?? '',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: context.textTheme.inverseUrbanistRegular16.copyWith(
+                  height: 1.2,
+                  letterSpacing: -0.408,
+                ),
               ),
             ),
           );
@@ -325,6 +331,7 @@ class _AuthTextInput extends StatelessWidget {
         children: [
           Expanded(
             child: TextField(
+              onTap: LotusFeedback.selection,
               controller: controller,
               focusNode: focusNode,
               keyboardType: TextInputType.name,

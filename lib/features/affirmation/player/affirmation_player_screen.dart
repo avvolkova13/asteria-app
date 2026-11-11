@@ -104,6 +104,12 @@ class _AffirmationPlayerScreenState extends State<AffirmationPlayerScreen> {
     }
   }
 
+  Future<void> _commitSeek(Duration position) async {
+    if (position == _player.position) return;
+    LotusFeedback.selection();
+    await _perform(() => _player.seek(position));
+  }
+
   Future<void> _toggleFavorite() async {
     if (_savingFavorite) return;
     _savingFavorite = true;
@@ -533,9 +539,8 @@ class _AffirmationPlayerScreenState extends State<AffirmationPlayerScreen> {
                         value: _formatTime(elapsed),
                         increasedValue: _formatTime(next),
                         decreasedValue: _formatTime(previous),
-                        onIncrease: () => _perform(() => _player.seek(next)),
-                        onDecrease: () =>
-                            _perform(() => _player.seek(previous)),
+                        onIncrease: () => _commitSeek(next),
+                        onDecrease: () => _commitSeek(previous),
                         child: SliderTheme(
                           data: SliderTheme.of(context).copyWith(
                             padding: EdgeInsets.zero,
@@ -560,11 +565,7 @@ class _AffirmationPlayerScreenState extends State<AffirmationPlayerScreen> {
                               onChanged: (v) =>
                                   setState(() => _seekPreview = v),
                               onChangeEnd: (v) async {
-                                await _perform(
-                                  () => _player.seek(
-                                    Duration(milliseconds: v.round()),
-                                  ),
-                                );
+                                await _commitSeek(Duration(milliseconds: v.round()));
                                 if (mounted) {
                                   setState(() => _seekPreview = null);
                                 }

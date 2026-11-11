@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
 import 'dart:ui' as ui;
@@ -126,7 +127,10 @@ class _ShopScreenState extends State<ShopScreen> {
                           ),
                           const SizedBox(height: 16),
                           _buildSubscriptionPromoSection(context),
-                          _buildShopContent(context, state),
+                          AsteriaEntrance(
+                            replayKey: state.runtimeType,
+                            child: _buildShopContent(context, state),
+                          ),
                         ],
                       ),
                     ),

@@ -4,6 +4,7 @@ import 'package:asteria_app/core/analytics/product_analytics_service.dart';
 import 'package:asteria_app/core/di/di.dart';
 import 'package:asteria_app/core/routing/app_route.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/features/anakra_chat/presentation/provider/anakra_chat_provider.dart';
 import 'package:asteria_app/features/home/localization/home_localization_contract.dart';
 import 'package:asteria_app/features/home/presentation/cubit/home_cubit.dart';
@@ -93,7 +94,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Scaffold(
       backgroundColor: const Color(0xFFEEEAFD),
-      body: IndexedStack(
+      body: HomeTabContents(
         index: state.currentTabIndex,
         children: [
           const MainScreen(),
@@ -142,6 +143,33 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+/// Keeps each tab's scroll, input and navigation state while presenting only
+/// the selected tab. Nested entrances share this first visible transition.
+class HomeTabContents extends StatelessWidget {
+  const HomeTabContents({
+    super.key,
+    required this.index,
+    required this.children,
+  });
+
+  final int index;
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) {
+    return AsteriaEntrance(
+      replayKey: index,
+      child: IndexedStack(
+        index: index,
+        children: [
+          for (var i = 0; i < children.length; i++)
+            TickerMode(enabled: i == index, child: children[i]),
+        ],
       ),
     );
   }

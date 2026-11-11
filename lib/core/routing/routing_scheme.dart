@@ -8,7 +8,7 @@ final _routes = [
   ...AnakraChatRoutes.routes,
   GoRoute(
     path: FirstSession.path,
-    pageBuilder: (context, state) => CupertinoPage<void>(
+    pageBuilder: (context, state) => AsteriaPage<void>(
       key: state.pageKey,
       name: FirstSession.path,
       child: const ScenarioPicker(),

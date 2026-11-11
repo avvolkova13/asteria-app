@@ -1,5 +1,6 @@
 import 'dart:ui' as ui;
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 import 'package:asteria_app/core/ui_kit/widgets/static_glass_surface.dart';
 import 'package:asteria_app/features/achievements/presentation/achievements_style.dart';
@@ -62,43 +63,50 @@ class AchievementCard extends StatelessWidget {
                       children: [
                         Text(title, style: AchievementsStyle.title),
                         const SizedBox(height: 16),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              key: ValueKey('achievement-progress-$id'),
-                              children: [
-                                for (var i = 0; i < totalCount; i++) ...[
-                                  Expanded(
-                                    child: DecoratedBox(
-                                      decoration: BoxDecoration(
-                                        gradient: i < completed
-                                            ? AchievementsStyle.accent
-                                            : null,
-                                        color: i < completed
-                                            ? null
-                                            : AchievementsStyle.imageBackground,
-                                        borderRadius: BorderRadius.circular(2),
+                        AsteriaEntrance(
+                          replayKey: completed,
+                          animateInitially: false,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                key: ValueKey('achievement-progress-$id'),
+                                children: [
+                                  for (var i = 0; i < totalCount; i++) ...[
+                                    Expanded(
+                                      child: DecoratedBox(
+                                        decoration: BoxDecoration(
+                                          gradient: i < completed
+                                              ? AchievementsStyle.accent
+                                              : null,
+                                          color: i < completed
+                                              ? null
+                                              : AchievementsStyle
+                                                    .imageBackground,
+                                          borderRadius: BorderRadius.circular(
+                                            2,
+                                          ),
+                                        ),
+                                        child: const SizedBox(height: 4),
                                       ),
-                                      child: const SizedBox(height: 4),
                                     ),
-                                  ),
-                                  if (i < totalCount - 1)
-                                    const SizedBox(width: 2),
+                                    if (i < totalCount - 1)
+                                      const SizedBox(width: 2),
+                                  ],
                                 ],
-                              ],
-                            ),
-                            const SizedBox(height: 8),
-                            ShaderMask(
-                              blendMode: BlendMode.srcIn,
-                              shaderCallback:
-                                  AchievementsStyle.accent.createShader,
-                              child: Text(
-                                remaining,
-                                style: AchievementsStyle.progress,
                               ),
-                            ),
-                          ],
+                              const SizedBox(height: 8),
+                              ShaderMask(
+                                blendMode: BlendMode.srcIn,
+                                shaderCallback:
+                                    AchievementsStyle.accent.createShader,
+                                child: Text(
+                                  remaining,
+                                  style: AchievementsStyle.progress,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ],
                     ),
@@ -136,6 +144,7 @@ class _Artwork extends StatelessWidget {
           ),
           Image.asset(
             imageAsset,
+            frameBuilder: AsteriaEntrance.imageFrame,
             width: imageSize.width,
             height: imageSize.height,
             fit: BoxFit.contain,

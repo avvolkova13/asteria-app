@@ -87,6 +87,44 @@ void main() {
   }
 
   testWidgets(
+    'scrubbing provides one selection on commit and stays silent during the drag',
+    (tester) async {
+      final audio = await show(tester, const Size(393, 852));
+      final messenger =
+          TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
+      final haptics = <Object?>[];
+      messenger.setMockMethodCallHandler(SystemChannels.platform, (call) async {
+        if (call.method == 'HapticFeedback.vibrate') {
+          haptics.add(call.arguments);
+        }
+        return null;
+      });
+      addTearDown(
+        () => messenger.setMockMethodCallHandler(SystemChannels.platform, null),
+      );
+      final track = tester.getRect(find.byType(Slider));
+      final finger = await tester.startGesture(
+        Offset(track.left + 2, track.center.dy),
+      );
+      await finger.moveTo(track.center);
+      await tester.pump();
+      await finger.moveBy(const Offset(8, 0));
+      await tester.pump();
+      expect(haptics, isEmpty);
+      await finger.up();
+      await tester.pump();
+      expect(audio.elapsed.inSeconds, greaterThan(20));
+      expect(haptics, ['HapticFeedbackType.selectionClick']);
+      final slider = tester.getSemantics(
+        find.bySemanticsLabel('Позиция воспроизведения'),
+      );
+      slider.owner!.performAction(slider.id, SemanticsAction.increase);
+      await tester.pump();
+      expect(haptics, hasLength(2));
+    },
+  );
+
+  testWidgets(
     'Playback, scrubbing, repeat, link sharing and transcript are connected',
     (tester) async {
       final audio = await show(tester, const Size(393, 852));

@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/app/data/models/sonnik/sonnik_model.dart';
 import 'package:asteria_app/app/providers/user_provider.dart';
 import 'package:asteria_app/core/di/di.dart';
@@ -38,13 +39,14 @@ class CreateSonnikHistoryScreen extends StatelessWidget {
                       child: Text(
                         context.l10n.dreamHistoryEmpty,
                         style: context.textTheme.inverseUrbanistRegular16,
-                      ),
+                      ).withEntrance(),
                     ),
                   ),
                 )
               else
                 ...history.map((item) {
                   return Padding(
+                    key: ValueKey(item.id),
                     padding: const EdgeInsets.only(bottom: 14),
                     child: _SonnikHistoryItem(
                       sonnik: item,

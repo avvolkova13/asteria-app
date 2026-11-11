@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/app/data/models/saved_compatibility/saved_compatibility_model.dart';
 import 'package:asteria_app/app/data/models/user/user_model.dart';
@@ -39,7 +40,7 @@ class CompatibilityHistoryScreen extends StatelessWidget {
               child: Text(
                 context.l10n.compatibilityHistoryEmpty,
                 style: context.textTheme.inverseUrbanistRegular16,
-              ),
+              ).withEntrance(),
             ),
           )
         else
@@ -51,6 +52,7 @@ class CompatibilityHistoryScreen extends StatelessWidget {
             itemBuilder: (context, index) {
               final item = history[index];
               return Padding(
+                key: ValueKey(item.id),
                 padding: const EdgeInsets.only(bottom: 16),
                 child: _CompatibilityHistoryItem(
                   compatibility: item,

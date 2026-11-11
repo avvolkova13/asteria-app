@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/app/providers/content_provider.dart';
 import 'package:asteria_app/core/di/di.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
@@ -11,6 +12,7 @@ class PracticesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final content = di.get<ContentProvider>();
     return ColoredBox(
       color: AppColors.textPrimary,
       child: SafeArea(
@@ -23,16 +25,21 @@ class PracticesScreen extends StatelessWidget {
               backgroundColor: AppColors.textPrimary,
             ),
             const SizedBox(height: 26),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: HomeSectionHeading(context.l10n.navPractices),
+            AsteriaEntrance(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: HomeSectionHeading(context.l10n.navPractices),
+              ),
             ),
             const SizedBox(height: 16),
-            const AdvertisingBlockWidget(),
+            const AsteriaEntrance(child: AdvertisingBlockWidget()),
             const SizedBox(height: 32),
             ListenableBuilder(
-              listenable: di.get<ContentProvider>(),
-              builder: (context, _) => ArticlesSectionWidget(),
+              listenable: content,
+              builder: (context, _) => AsteriaEntrance(
+                replayKey: content.articles.isNotEmpty,
+                child: ArticlesSectionWidget(),
+              ),
             ),
             const SizedBox(height: 16),
           ],

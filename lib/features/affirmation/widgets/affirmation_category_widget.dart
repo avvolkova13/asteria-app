@@ -60,22 +60,20 @@ class AffirmationCategoryWidget extends StatelessWidget {
               : categoryName,
           child: LotusTap(
             behavior: HitTestBehavior.opaque,
-            onTap: () {
-              if (isLocked) {
-                di.get<ProductAnalyticsService>().trackAffirmationLockedView(
-                  originSurface: 'affirmation_category_$category',
-                  offerType: OfferType.subscription,
-                );
-                di.get<ProductAnalyticsService>().trackAffirmationPaywallView(
-                  originSurface: 'affirmation_category_$category',
-                  offerType: OfferType.subscription,
-                  paywallVariant: 'category_lock',
-                );
-                ClosedContentModal.show(
-                  context,
-                  description: context.l10n.affirmationSubscriptionRequired,
-                );
-              }
+            onTap: !isLocked ? null : () {
+              di.get<ProductAnalyticsService>().trackAffirmationLockedView(
+                originSurface: 'affirmation_category_$category',
+                offerType: OfferType.subscription,
+              );
+              di.get<ProductAnalyticsService>().trackAffirmationPaywallView(
+                originSurface: 'affirmation_category_$category',
+                offerType: OfferType.subscription,
+                paywallVariant: 'category_lock',
+              );
+              ClosedContentModal.show(
+                context,
+                description: context.l10n.affirmationSubscriptionRequired,
+              );
             },
             child: SizedBox(
               height: 24,

@@ -10,7 +10,7 @@ class ShopRoute extends AppRoute {
         name: routeName,
         path: routeName,
         pageBuilder: (context, state) {
-          return CupertinoPage<void>(name: routeName, key: state.pageKey, child: ShopScreen());
+          return AsteriaPage<void>(name: routeName, key: state.pageKey, child: ShopScreen());
         },
       );
 

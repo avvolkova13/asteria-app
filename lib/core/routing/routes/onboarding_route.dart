@@ -17,7 +17,7 @@ class OnboardingRoute extends AppRoute {
          path: routeName,
          pageBuilder: (context, state) {
            final params = state.extra as OnboardingRouteParams?;
-           return CupertinoPage<void>(
+           return AsteriaPage<void>(
              name: routeName,
              key: state.pageKey,
              child: OnboardingScreen(

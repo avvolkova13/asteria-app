@@ -20,7 +20,7 @@ class SubscriptionRoute extends AppRoute {
            final params = state.extra is SubscriptionRouteParams
                ? state.extra! as SubscriptionRouteParams
                : null;
-           return CupertinoPage<bool>(
+           return AsteriaPage<bool>(
              name: routeName,
              key: state.pageKey,
              child: ContextualPurchasePage(

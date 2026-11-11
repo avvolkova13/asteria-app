@@ -7,7 +7,7 @@ class HomeProfileRoute extends AppRoute {
     : super(
         name: routeName,
         path: 'profile',
-        pageBuilder: (context, state) => CupertinoPage<void>(
+        pageBuilder: (context, state) => AsteriaPage<void>(
           name: routeName,
           key: state.pageKey,
           child: const ProfileScreen(canPop: true),
@@ -30,7 +30,7 @@ class ProfilePaymentRoute extends AppRoute {
         name: ProfileRoutes.profilePaymentRouteName,
         path: ProfileRoutes.profilePaymentRouteName,
         pageBuilder: (context, state) {
-          return CupertinoPage(
+          return AsteriaPage(
             child: Scaffold(body: Center(child: Text('Profile Payment'))),
           );
         },

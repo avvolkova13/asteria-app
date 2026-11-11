@@ -31,6 +31,7 @@ class AnakraComposer extends StatelessWidget {
             child: SizedBox(
               height: 48,
               child: TextField(
+                onTap: LotusFeedback.selection,
                 controller: controller,
                 enabled: !busy,
                 style: style,
@@ -39,7 +40,9 @@ class AnakraComposer extends StatelessWidget {
                 maxLines: 1,
                 textInputAction: TextInputAction.send,
                 onSubmitted: (_) {
-                  if (enabled) onSend();
+                  if (!enabled) return;
+                  LotusFeedback.selection();
+                  onSend();
                 },
                 decoration: InputDecoration(
                   isDense: true,

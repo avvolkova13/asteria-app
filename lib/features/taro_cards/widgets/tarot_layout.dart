@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/app/data/models/tarot_card/tarot_card_model.dart';
 import 'package:asteria_app/app/providers/content_provider.dart';
 import 'package:asteria_app/app/providers/user_provider.dart';
@@ -296,6 +297,7 @@ class _TarotLayoutState extends State<TarotLayout> {
             imageName: card.imageName,
             languageCode: Localizations.localeOf(context).languageCode,
           ),
+          frameBuilder: AsteriaEntrance.imageFrame,
           width: width,
           height: height,
           fit: BoxFit.contain,

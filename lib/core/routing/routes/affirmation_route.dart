@@ -10,7 +10,7 @@ class AffirmationRoute extends AppRoute {
           name: routeName,
           path: routeName,
           pageBuilder: (context, state) {
-            return CupertinoPage<void>(
+            return AsteriaPage<void>(
               name: routeName,
               key: state.pageKey,
               child: const AffirmationScreen(),
@@ -32,7 +32,7 @@ class AffirmationPlayerRoute extends AppRoute {
     : super(
         name: routeName,
         path: routeName,
-        pageBuilder: (context, state) => CupertinoPage<void>(
+        pageBuilder: (context, state) => AsteriaPage<void>(
           key: state.pageKey,
           name: routeName,
           child: const AffirmationPlayerScreen(),

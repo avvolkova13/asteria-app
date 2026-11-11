@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/app/providers/content_provider.dart';
 import 'package:asteria_app/app/providers/user_provider.dart';
@@ -164,7 +165,9 @@ class _KeltDeckScreenState extends State<KeltDeckScreen> {
                         ),
                       )
                     else
-                      _KeltDeckContent(onRefresh: onRefreshPressed),
+                      _KeltDeckContent(
+                        onRefresh: onRefreshPressed,
+                      ).withEntrance(),
                     const SizedBox(height: 100),
                   ],
                 ),
@@ -257,7 +260,7 @@ class _KeltDeckContent extends StatelessWidget {
                   isFullWidth: true,
                 )
               else
-                Text(interpretation, style: _bodyStyle(context)),
+                Text(interpretation, style: _bodyStyle(context)).withEntrance(),
             ],
             const SizedBox(height: 64),
           ],

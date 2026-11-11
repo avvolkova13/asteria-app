@@ -30,7 +30,7 @@ class CreateSonnikRoute extends AppRoute {
       : super(
           name: SonnikRoutes.createSonnikRouteName,
           path: SonnikRoutes.createSonnikRouteName,
-          pageBuilder: (context, state) => CupertinoPage(child: CreateSonnikScreen()),
+          pageBuilder: (context, state) => AsteriaPage(child: CreateSonnikScreen()),
         );
 
   static void push(BuildContext context) => context.pushNamed(SonnikRoutes.createSonnikRouteName);
@@ -53,7 +53,7 @@ class CreateSonnikInitialRoute extends AppRoute {
           name: SonnikRoutes.createSonnikInitialRouteName,
           path: SonnikRoutes.createSonnikInitialRouteName,
           pageBuilder: (context, state) {
-            return CupertinoPage<void>(
+            return AsteriaPage<void>(
               name: SonnikRoutes.createSonnikInitialRouteName,
               key: state.pageKey,
               child: const CreateSonnikInitialScreen(),
@@ -82,7 +82,7 @@ class CreateSonnikRequestsLeftRoute extends AppRoute {
           name: SonnikRoutes.createSonnikRequestsLeftRouteName,
           path: SonnikRoutes.createSonnikRequestsLeftRouteName,
           pageBuilder: (context, state) {
-            return CupertinoPage<void>(
+            return AsteriaPage<void>(
               name: SonnikRoutes.createSonnikRequestsLeftRouteName,
               key: state.pageKey,
               child: const CreateSonnikRequestsLeftScreen(),
@@ -111,7 +111,7 @@ class CreateSonnikSubscriptionRoute extends AppRoute {
           name: SonnikRoutes.createSonnikSubscriptionRouteName,
           path: SonnikRoutes.createSonnikSubscriptionRouteName,
           pageBuilder: (context, state) {
-            return CupertinoPage<void>(
+            return AsteriaPage<void>(
               name: SonnikRoutes.createSonnikSubscriptionRouteName,
               key: state.pageKey,
               child: const CreateSonnikSubscriptionScreen(),
@@ -140,7 +140,7 @@ class CreateSonnikHistoryRoute extends AppRoute {
           name: SonnikRoutes.createSonnikHistoryRouteName,
           path: SonnikRoutes.createSonnikHistoryRouteName,
           pageBuilder: (context, state) {
-            return CupertinoPage<void>(
+            return AsteriaPage<void>(
               name: SonnikRoutes.createSonnikHistoryRouteName,
               key: state.pageKey,
               child: const CreateSonnikHistoryScreen(),
@@ -169,7 +169,7 @@ class CreateSonnikLoadedRoute extends AppRoute {
           name: SonnikRoutes.createSonnikLoadedRouteName,
           path: SonnikRoutes.createSonnikLoadedRouteName,
           pageBuilder: (context, state) {
-            return CupertinoPage<void>(
+            return AsteriaPage<void>(
               name: SonnikRoutes.createSonnikLoadedRouteName,
               key: state.pageKey,
               child: const CreateSonnikLoadedScreen(),

@@ -281,6 +281,7 @@ class _CompatibilityInputField extends StatelessWidget {
       ),
       alignment: Alignment.center,
       child: TextField(
+        onTap: LotusFeedback.selection,
         controller: controller,
         onChanged: onChanged,
         textCapitalization: TextCapitalization.words,

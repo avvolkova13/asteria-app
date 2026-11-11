@@ -249,6 +249,7 @@ class SonnikTextArea extends StatelessWidget {
     return SizedBox(
       height: 148,
       child: TextField(
+        onTap: LotusFeedback.selection,
         controller: controller,
         onChanged: onChanged,
         expands: true,

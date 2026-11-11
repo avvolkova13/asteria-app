@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
 import 'dart:async';
@@ -240,7 +241,10 @@ class _CitySelectionScreenState extends State<CitySelectionScreen> {
                           _controller.text.trim().length >= 2))
                     Padding(
                       padding: const EdgeInsets.only(top: 12),
-                      child: Text(_error ?? context.l10n.citySearchEmpty),
+                      child: AsteriaEntrance(
+                        replayKey: _error,
+                        child: Text(_error ?? context.l10n.citySearchEmpty),
+                      ),
                     ),
                   const SizedBox(height: 4),
                   Expanded(child: _buildSuggestionList(context)),
@@ -279,7 +283,7 @@ class _CitySelectionScreenState extends State<CitySelectionScreen> {
                   style: context.textTheme.inverseUrbanistRegular14.copyWith(
                     color: const Color(0xFFFF6D6D),
                   ),
-                ),
+                ).withEntrance(),
               ],
               const SizedBox(height: 8),
               Expanded(child: _buildSuggestionList(context)),
@@ -322,6 +326,7 @@ class _CitySelectionScreenState extends State<CitySelectionScreen> {
                   ? context.l10n.locationManualInputHint
                   : null,
               child: TextField(
+                onTap: LotusFeedback.selection,
                 controller: _controller,
                 focusNode: _focusNode,
                 onChanged: _onQueryChanged,
@@ -388,6 +393,7 @@ class _CitySelectionScreenState extends State<CitySelectionScreen> {
       itemBuilder: (context, index) {
         final suggestion = _suggestions[index];
         return _CitySuggestionTile(
+          key: ValueKey(suggestion.placeId),
           suggestion: suggestion,
           isSelected: suggestion.placeId == _selectedPlaceId,
           asSheet: widget.asSheet,
@@ -463,6 +469,7 @@ class _CitySelectionHeader extends StatelessWidget {
 
 class _CitySuggestionTile extends StatelessWidget {
   const _CitySuggestionTile({
+    super.key,
     required this.suggestion,
     required this.isSelected,
     required this.isEnabled,

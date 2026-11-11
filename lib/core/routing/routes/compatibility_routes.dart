@@ -30,7 +30,7 @@ class CreateCompatibilityRoute extends AppRoute {
       : super(
           name: CompatibilityRoutes.createCompatibilityRouteName,
           path: CompatibilityRoutes.createCompatibilityRouteName,
-          pageBuilder: (context, state) => CupertinoPage(child: CreateCompatibilityScreen()),
+          pageBuilder: (context, state) => AsteriaPage(child: CreateCompatibilityScreen()),
         );
 
   static void push(BuildContext context) => context.pushNamed(CompatibilityRoutes.createCompatibilityRouteName);
@@ -53,7 +53,7 @@ class CreateCompatibilityInitialRoute extends AppRoute {
           name: CompatibilityRoutes.createCompatibilityInitialRouteName,
           path: CompatibilityRoutes.createCompatibilityInitialRouteName,
           pageBuilder: (context, state) {
-            return CupertinoPage<void>(
+            return AsteriaPage<void>(
               name: CompatibilityRoutes.createCompatibilityInitialRouteName,
               key: state.pageKey,
               child: const CreateCompatibilityInitialScreen(),
@@ -82,7 +82,7 @@ class CreateCompatibilityRequestsLeftRoute extends AppRoute {
           name: CompatibilityRoutes.createCompatibilityRequestsLeftRouteName,
           path: CompatibilityRoutes.createCompatibilityRequestsLeftRouteName,
           pageBuilder: (context, state) {
-            return CupertinoPage<void>(
+            return AsteriaPage<void>(
               name: CompatibilityRoutes.createCompatibilityRequestsLeftRouteName,
               key: state.pageKey,
               child: const CreateCompatibilityRequestsLeftScreen(),
@@ -111,7 +111,7 @@ class CreateCompatibilitySubscriptionRoute extends AppRoute {
           name: CompatibilityRoutes.createCompatibilitySubscriptionRouteName,
           path: CompatibilityRoutes.createCompatibilitySubscriptionRouteName,
           pageBuilder: (context, state) {
-            return CupertinoPage<void>(
+            return AsteriaPage<void>(
               name: CompatibilityRoutes.createCompatibilitySubscriptionRouteName,
               key: state.pageKey,
               child: const CreateCompatibilitySubscriptionScreen(),
@@ -140,7 +140,7 @@ class CreateCompatibilityHistoryRoute extends AppRoute {
           name: CompatibilityRoutes.createCompatibilityHistoryRouteName,
           path: CompatibilityRoutes.createCompatibilityHistoryRouteName,
           pageBuilder: (context, state) {
-            return CupertinoPage<void>(
+            return AsteriaPage<void>(
               name: CompatibilityRoutes.createCompatibilityHistoryRouteName,
               key: state.pageKey,
               child: const CreateCompatibilityHistoryScreen(),
@@ -169,7 +169,7 @@ class CreateCompatibilityLoadedRoute extends AppRoute {
           name: CompatibilityRoutes.createCompatibilityLoadedRouteName,
           path: CompatibilityRoutes.createCompatibilityLoadedRouteName,
           pageBuilder: (context, state) {
-            return CupertinoPage<void>(
+            return AsteriaPage<void>(
               name: CompatibilityRoutes.createCompatibilityLoadedRouteName,
               key: state.pageKey,
               child: const CreateCompatibilityLoadedScreen(),

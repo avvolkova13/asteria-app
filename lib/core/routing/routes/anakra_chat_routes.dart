@@ -22,7 +22,7 @@ class AnakraChatRoute extends AppRoute {
         name: AnakraChatRoutes.anakraChatRouteName,
         path: AnakraChatRoutes.anakraChatRouteName,
         pageBuilder: (context, state) {
-          return CupertinoPage<void>(
+          return AsteriaPage<void>(
             name: AnakraChatRoutes.anakraChatRouteName,
             key: state.pageKey,
             child: const AnakraChatScreen(),
@@ -50,7 +50,7 @@ class CreateAnakraRequestsLeftRoute extends AppRoute {
         name: AnakraChatRoutes.createAnakraRequestsLeftRouteName,
         path: AnakraChatRoutes.createAnakraRequestsLeftRouteName,
         pageBuilder: (context, state) {
-          return CupertinoPage<void>(
+          return AsteriaPage<void>(
             name: AnakraChatRoutes.createAnakraRequestsLeftRouteName,
             key: state.pageKey,
             child: const CreateAnakraRequestsLeftScreen(),
@@ -75,7 +75,7 @@ class CreateAnakraSubscriptionRoute extends AppRoute {
         name: AnakraChatRoutes.createAnakraSubscriptionRouteName,
         path: AnakraChatRoutes.createAnakraSubscriptionRouteName,
         pageBuilder: (context, state) {
-          return CupertinoPage<void>(
+          return AsteriaPage<void>(
             name: AnakraChatRoutes.createAnakraSubscriptionRouteName,
             key: state.pageKey,
             child: const CreateAnakraSubscriptionScreen(),

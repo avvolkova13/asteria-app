@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/app/providers/content_provider.dart';
 import 'package:asteria_app/app/providers/user_provider.dart';
@@ -171,7 +172,7 @@ class _LoveDeckScreenState extends State<LoveDeckScreen> {
                         _LoveDeckContent(
                           onRefresh: onRefreshPressed,
                           afterReading: widget.afterReading,
-                        ),
+                        ).withEntrance(),
                       const SizedBox(height: 100),
                     ],
                   ),
@@ -280,12 +281,16 @@ class _LoveDeckContent extends StatelessWidget {
                 isFullWidth: true,
               )
             else
-              Text(
-                interpretation ?? '',
-                style: context.textTheme.urbanistRegular16.copyWith(
-                  color: _LoveDeckColors.descriptionText,
-                  height: 1.2,
-                  letterSpacing: 0,
+              AsteriaEntrance(
+                replayKey: interpretation,
+                animateInitially: interpretation?.isNotEmpty ?? false,
+                child: Text(
+                  interpretation ?? '',
+                  style: context.textTheme.urbanistRegular16.copyWith(
+                    color: _LoveDeckColors.descriptionText,
+                    height: 1.2,
+                    letterSpacing: 0,
+                  ),
                 ),
               ),
             if (afterReading != null &&

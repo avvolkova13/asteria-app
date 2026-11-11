@@ -16,7 +16,7 @@ class HomeRoute extends AppRoute {
          name: routeName,
          path: routeName,
          pageBuilder: (context, state) {
-           return CupertinoPage<void>(
+           return AsteriaPage<void>(
              name: routeName,
              key: state.pageKey,
              child: HomeScreen(homeLocalization: HomeLocalization()),

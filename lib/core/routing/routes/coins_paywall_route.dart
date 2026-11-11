@@ -19,7 +19,7 @@ class CoinsPaywallRoute extends AppRoute {
          path: routeName,
          pageBuilder: (context, state) {
            final params = state.extra as CoinsPaywallRouteParams?;
-           return CupertinoPage<bool>(
+           return AsteriaPage<bool>(
              name: routeName,
              key: state.pageKey,
              child: ContextualPurchasePage(

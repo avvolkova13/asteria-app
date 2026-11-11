@@ -108,6 +108,7 @@ class _TextInputFieldWidgetState extends State<TextInputFieldWidget> {
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: TextField(
+                    onTap: LotusFeedback.selection,
                     inputFormatters: widget.inputFormatters,
                     controller: _controller,
                     keyboardType: widget.keyboardType,

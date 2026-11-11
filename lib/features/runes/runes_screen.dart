@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'dart:async';
 import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
@@ -94,7 +95,7 @@ class RunesScreen extends StatelessWidget {
                             return _RunesContent(
                               rune: rune,
                               initialTab: initialTab,
-                            );
+                            ).withEntrance();
                           } catch (e) {
                             return ErrorScreenWidget(
                               error: context.l10n.runesLoadError,
@@ -551,11 +552,13 @@ class _RuneLayoutTabState extends State<_RuneLayoutTab> {
                         .isRuneInDeckOpened(KeysConst.runeDeckCenterKey),
                     isRuneRightOpened: widget.contentProvider
                         .isRuneInDeckOpened(KeysConst.runeDeckRightKey),
-                  ),
+                  ).withEntrance(),
                   if (allRunesOpened) ...[
                     const SizedBox(height: 16),
                     if (hasLocalizedInterpretation)
-                      RuneInterpretationBlock(interpretation: interpretation)
+                      RuneInterpretationBlock(
+                        interpretation: interpretation,
+                      ).withEntrance()
                     else
                       CustomButton(
                         text: context.l10n.deckGetInsight,

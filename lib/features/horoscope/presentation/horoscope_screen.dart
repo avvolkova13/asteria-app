@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
 import 'dart:math' as math;
@@ -235,7 +236,7 @@ class _HoroscopeScreenState extends State<HoroscopeScreen> {
                             onBuyPressed: _showPurchaseModalSheet,
                           )
                         else
-                          const _HoroscopeContent(),
+                          const AsteriaEntrance(child: _HoroscopeContent()),
                       ],
                     ),
                   ),
@@ -952,6 +953,7 @@ class _CorePositionImage extends StatelessWidget {
     return Image.asset(
       imagePath,
       key: const ValueKey('horoscope-core-card-image'),
+      frameBuilder: AsteriaEntrance.imageFrame,
       width: size,
       height: size,
       fit: BoxFit.contain,
@@ -1000,6 +1002,7 @@ class _HoroscopeInfoCard extends StatelessWidget {
                 right: imageRight,
                 child: Image.asset(
                   imagePath,
+                  frameBuilder: AsteriaEntrance.imageFrame,
                   width: imageWidth,
                   height: imageHeight,
                   fit: BoxFit.contain,
@@ -1224,6 +1227,7 @@ class _MetaphorCard extends StatelessWidget {
                 top: 16,
                 child: Image.asset(
                   'assets/images/horoscope/year_astro_metaphor.webp',
+                  frameBuilder: AsteriaEntrance.imageFrame,
                   width: 78,
                   height: 117,
                   fit: BoxFit.contain,

@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
@@ -17,11 +18,13 @@ class HomeGlassSurface extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(radius),
-      child: CustomPaint(
-        painter: _HomeGlassPainter(radius, tint),
-        child: child,
+    return AsteriaEntrance(
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(radius),
+        child: CustomPaint(
+          painter: _HomeGlassPainter(radius, tint),
+          child: child,
+        ),
       ),
     );
   }

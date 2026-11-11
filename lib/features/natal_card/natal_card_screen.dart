@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/app/providers/content_provider.dart';
 import 'package:asteria_app/app/providers/user_provider.dart';
@@ -380,7 +381,7 @@ class _NatalCardScreenState extends State<NatalCardScreen> {
                         onBuyPressed: _openNatalCard,
                       ),
                     ] else
-                      const _NatalCardContent(),
+                      const AsteriaEntrance(child: _NatalCardContent()),
                     const SizedBox(height: 100),
                   ],
                 ),
@@ -966,6 +967,7 @@ class _PlanetPositionCard extends StatelessWidget {
                       offset: imageCrop.offset,
                       child: Image.asset(
                         imageCrop.assetPath,
+                        frameBuilder: AsteriaEntrance.imageFrame,
                         width: imageCrop.width,
                         height: imageCrop.height,
                         fit: BoxFit.fill,
@@ -1282,6 +1284,7 @@ class _MagicConclusionCard extends StatelessWidget {
                   height: 192,
                   child: Image.asset(
                     _imageAsset,
+                    frameBuilder: AsteriaEntrance.imageFrame,
                     fit: BoxFit.cover,
                     alignment: Alignment.topCenter,
                   ),

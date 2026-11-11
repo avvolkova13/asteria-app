@@ -10,7 +10,7 @@ class BalanceRoute extends AppRoute {
         name: routeName,
         path: routeName,
         pageBuilder: (context, state) {
-          return CupertinoPage<void>(name: routeName, key: state.pageKey, child: const BalanceScreen());
+          return AsteriaPage<void>(name: routeName, key: state.pageKey, child: const BalanceScreen());
         },
       );
 
@@ -34,7 +34,7 @@ class BalanceHistoryRoute extends AppRoute {
         name: routeName,
         path: routeName,
         pageBuilder: (context, state) {
-          return CupertinoPage<void>(name: routeName, key: state.pageKey, child: const BalanceHistoryScreen());
+          return AsteriaPage<void>(name: routeName, key: state.pageKey, child: const BalanceHistoryScreen());
         },
       );
 

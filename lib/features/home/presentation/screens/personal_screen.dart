@@ -17,6 +17,7 @@ import 'package:asteria_app/core/extensions/string_extensions.dart';
 import 'package:asteria_app/core/routing/app_route.dart';
 import 'package:asteria_app/core/services/global_loader_service.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/top_nav_bar.dart';
 import 'package:asteria_app/core/utils/enums.dart';
 import 'package:asteria_app/core/utils/horoscope_parsers/horoscope_request_helper.dart';
@@ -313,7 +314,7 @@ class _PersonalScreenState extends State<PersonalScreen> {
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+      children: AsteriaEntrance.sections([
         Text(
           context.l10n.personalYourHoroscope,
           style: context.textTheme.inversePlayfairSemiBold32.copyWith(
@@ -332,10 +333,13 @@ class _PersonalScreenState extends State<PersonalScreen> {
           },
         ),
         const SizedBox(height: 16),
-        _buildTabContent(
-          _buildTodayContent(context, userProvider),
-          _buildWeekContent(context, userProvider),
-          _buildMonthContent(context, userProvider),
+        AsteriaEntrance(
+          replayKey: _selectedTabIndex,
+          child: _buildTabContent(
+            _buildTodayContent(context, userProvider),
+            _buildWeekContent(context, userProvider),
+            _buildMonthContent(context, userProvider),
+          ),
         ),
         const SizedBox(height: 16),
         _PersonalGradientButton(
@@ -354,7 +358,7 @@ class _PersonalScreenState extends State<PersonalScreen> {
         const SizedBox(height: 24),
         _PersonalCompatibilitySection(onPressed: _onCompatibilityPressed),
         const SizedBox(height: 124),
-      ],
+      ]),
     );
   }
 
@@ -372,51 +376,53 @@ class _PersonalScreenState extends State<PersonalScreen> {
       return _localizedContentPlaceholder();
     }
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          context.l10n.personalImpactAreas,
-          style: context.textTheme.inversePlayfairSemiBold24.copyWith(
-            height: 1,
+    return AsteriaEntrance(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            context.l10n.personalImpactAreas,
+            style: context.textTheme.inversePlayfairSemiBold24.copyWith(
+              height: 1,
+            ),
           ),
-        ),
-        const SizedBox(height: 12),
-        _HoroscopeImpactMetrics(
-          lovePercentage: day?.loveAreaPercentage ?? '0%',
-          financesPercentage: day?.financeAreaPercentage ?? '0%',
-          energyPercentage: day?.personalAreaPercentage ?? '0%',
-        ),
-        const SizedBox(height: 18),
-        Text(
-          context.l10n.personalAdviceDay,
-          style: context.textTheme.inversePlayfairSemiBold24.copyWith(
-            height: 1,
-          ),
-        ),
-        const SizedBox(height: 8),
-        _GradientText(
-          day?.spotlight ?? '',
-          style: context.textTheme.inverseUrbanistRegular16.copyWith(
-            height: 1.2,
-            letterSpacing: -0.408,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          '${day?.focus ?? ''} ${day?.risk ?? ''}'.trim(),
-          style: context.textTheme.inverseUrbanistRegular16.copyWith(
-            height: 1.2,
-            letterSpacing: -0.408,
-          ),
-        ),
-        if (day != null) ...[
-          const SizedBox(height: 18),
-          _buildDayKeyThemeContent(context, day),
           const SizedBox(height: 12),
-          _buildDayWeaknessesContent(context, day),
+          _HoroscopeImpactMetrics(
+            lovePercentage: day?.loveAreaPercentage ?? '0%',
+            financesPercentage: day?.financeAreaPercentage ?? '0%',
+            energyPercentage: day?.personalAreaPercentage ?? '0%',
+          ),
+          const SizedBox(height: 18),
+          Text(
+            context.l10n.personalAdviceDay,
+            style: context.textTheme.inversePlayfairSemiBold24.copyWith(
+              height: 1,
+            ),
+          ),
+          const SizedBox(height: 8),
+          _GradientText(
+            day?.spotlight ?? '',
+            style: context.textTheme.inverseUrbanistRegular16.copyWith(
+              height: 1.2,
+              letterSpacing: -0.408,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            '${day?.focus ?? ''} ${day?.risk ?? ''}'.trim(),
+            style: context.textTheme.inverseUrbanistRegular16.copyWith(
+              height: 1.2,
+              letterSpacing: -0.408,
+            ),
+          ),
+          if (day != null) ...[
+            const SizedBox(height: 18),
+            AsteriaEntrance(child: _buildDayKeyThemeContent(context, day)),
+            const SizedBox(height: 12),
+            AsteriaEntrance(child: _buildDayWeaknessesContent(context, day)),
+          ],
         ],
-      ],
+      ),
     );
   }
 
@@ -470,7 +476,7 @@ class _PersonalScreenState extends State<PersonalScreen> {
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+      children: AsteriaEntrance.sections([
         Text(
           context.l10n.personalImpactAreas,
           style: context.textTheme.inversePlayfairSemiBold24.copyWith(
@@ -523,7 +529,7 @@ class _PersonalScreenState extends State<PersonalScreen> {
             ),
           ],
         ),
-      ],
+      ]),
     );
   }
 
@@ -552,7 +558,7 @@ class _PersonalScreenState extends State<PersonalScreen> {
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+        children: AsteriaEntrance.sections([
           _MonthFavourablePeriodsBlock(
             items: [
               _MonthPeriodData(
@@ -573,7 +579,7 @@ class _PersonalScreenState extends State<PersonalScreen> {
           _MonthAdviceBlock(description: month?.advice ?? ''),
           const SizedBox(height: 16),
           _MonthKeyTopicsCard(description: month?.keyTopic ?? ''),
-        ],
+        ]),
       ),
     );
   }

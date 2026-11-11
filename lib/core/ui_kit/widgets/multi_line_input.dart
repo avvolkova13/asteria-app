@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -77,6 +78,7 @@ class _MultiLineInputState extends State<MultiLineInput> {
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             child: TextField(
+              onTap: LotusFeedback.selection,
               inputFormatters: widget.inputFormatters,
               controller: _controller,
               keyboardType: TextInputType.multiline,

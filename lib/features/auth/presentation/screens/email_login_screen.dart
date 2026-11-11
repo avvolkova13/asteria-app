@@ -10,7 +10,7 @@ import 'package:asteria_app/features/auth/presentation/cubit/email_auth_state.da
 import 'package:asteria_app/features/auth/presentation/email_auth_failure_localization.dart';
 import 'package:asteria_app/features/auth/presentation/widgets/auth_flow_widgets.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/gestures.dart';
+import 'package:asteria_app/core/ui_kit/widgets/lotus_inline_links.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class EmailLoginScreen extends StatefulWidget {
@@ -139,7 +139,11 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
                                   context.read<EmailAuthCubit>().clearError();
                                 }
                               },
-                              onSubmitted: (_) => _requestCode(),
+                              onSubmitted: (_) {
+                                if (isLoading) return;
+                                LotusFeedback.selection();
+                                _requestCode();
+                              },
                             ),
                             const SizedBox(height: 16),
                             AuthGradientButton(
@@ -180,39 +184,9 @@ class _LoginPolicyText extends StatefulWidget {
   State<_LoginPolicyText> createState() => _LoginPolicyTextState();
 }
 
-class _LoginPolicyTextState extends State<_LoginPolicyText> {
-  late final TapGestureRecognizer _agreementRecognizer;
-  late final TapGestureRecognizer _privacyRecognizer;
-
-  @override
-  void initState() {
-    super.initState();
-    _agreementRecognizer = TapGestureRecognizer();
-    _privacyRecognizer = TapGestureRecognizer();
-  }
-
-  @override
-  void dispose() {
-    _agreementRecognizer.dispose();
-    _privacyRecognizer.dispose();
-    super.dispose();
-  }
-
+class _LoginPolicyTextState extends State<_LoginPolicyText> with LotusInlineLinks<_LoginPolicyText> {
   @override
   Widget build(BuildContext context) {
-    _agreementRecognizer.onTap = LotusFeedback.action(
-      () => AboutUsRoute.push(
-        context,
-        params: const AboutUsRouteParams(document: LegalDocumentType.agreement),
-      ),
-    );
-    _privacyRecognizer.onTap = LotusFeedback.action(
-      () => AboutUsRoute.push(
-        context,
-        params: const AboutUsRouteParams(document: LegalDocumentType.privacy),
-      ),
-    );
-
     final baseStyle = AppTypography.subtext.copyWith(
       color: AppColors.white.withValues(alpha: 0.58),
     );
@@ -227,19 +201,27 @@ class _LoginPolicyTextState extends State<_LoginPolicyText> {
             text: '${context.l10n.emailAuthConsentPrefix} ',
             style: baseStyle,
           ),
-          TextSpan(
+          linkSpan(
+            id: LegalDocumentType.agreement.name,
             text: context.l10n.agreementText,
             style: linkStyle,
-            recognizer: _agreementRecognizer,
+            onTap: () => AboutUsRoute.push(
+              context,
+              params: const AboutUsRouteParams(document: LegalDocumentType.agreement),
+            ),
           ),
           TextSpan(
             text: ' ${context.l10n.legalTermsConnector} ',
             style: baseStyle,
           ),
-          TextSpan(
+          linkSpan(
+            id: LegalDocumentType.privacy.name,
             text: context.l10n.policyText,
             style: linkStyle,
-            recognizer: _privacyRecognizer,
+            onTap: () => AboutUsRoute.push(
+              context,
+              params: const AboutUsRouteParams(document: LegalDocumentType.privacy),
+            ),
           ),
         ],
       ),

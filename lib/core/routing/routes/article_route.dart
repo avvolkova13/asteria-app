@@ -17,7 +17,7 @@ class ArticleRoute extends AppRoute {
           path: routeName,
           pageBuilder: (context, state) {
             final params = state.extra as ArticleRouteParams?;
-            return CupertinoPage<void>(
+            return AsteriaPage<void>(
               name: routeName,
               key: state.pageKey,
               child: ArticleScreen(articleId: params?.articleId ?? ''),

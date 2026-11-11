@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:math' as math;
+
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
@@ -147,8 +150,10 @@ class BottomTabBarWidget extends StatelessWidget {
                         child: LotusTap(
                           onTap: onAiAstrologerPressed,
                           behavior: HitTestBehavior.opaque,
-                          child: _AiAstrologerButton(
-                            assetPath: aiAstrologerAsset,
+                          child: _AnakraIdleMotion(
+                            child: _AiAstrologerButton(
+                              assetPath: aiAstrologerAsset,
+                            ),
                           ),
                         ),
                       )
@@ -160,6 +165,86 @@ class BottomTabBarWidget extends StatelessWidget {
             },
           ),
         ),
+      ),
+    );
+  }
+}
+
+/// A small continuous float, sampled at 25 fps. Only the badge transform
+/// updates; the original artwork and the chat button's hit area stay intact.
+class _AnakraIdleMotion extends StatefulWidget {
+  const _AnakraIdleMotion({required this.child});
+
+  final Widget child;
+
+  @override
+  State<_AnakraIdleMotion> createState() => _AnakraIdleMotionState();
+}
+
+class _AnakraIdleMotionState extends State<_AnakraIdleMotion>
+    with WidgetsBindingObserver {
+  static const _interval = Duration(milliseconds: 40);
+  static const _cycleTicks = 140;
+
+  Timer? _timer;
+  int _ticks = 0;
+  bool _visible = false;
+  bool _foreground = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    final lifecycle = WidgetsBinding.instance.lifecycleState;
+    _foreground = lifecycle == null || lifecycle == AppLifecycleState.resumed;
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final reduced = MediaQuery.disableAnimationsOf(context);
+    _visible =
+        !reduced &&
+        TickerMode.valuesOf(context).enabled &&
+        (ModalRoute.isCurrentOf(context) ?? true);
+    if (reduced) _ticks = 0;
+    _updateTimer();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    _foreground = state == AppLifecycleState.resumed;
+    _updateTimer();
+  }
+
+  void _updateTimer() {
+    if (!_visible || !_foreground) {
+      _timer?.cancel();
+      _timer = null;
+      return;
+    }
+    _timer ??= Timer.periodic(_interval, (_) {
+      setState(() => _ticks = (_ticks + 1) % _cycleTicks);
+    });
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final angle = 2 * math.pi * _ticks / _cycleTicks;
+    return RepaintBoundary(
+      child: Transform(
+        alignment: Alignment.center,
+        transformHitTests: false,
+        transform: Matrix4.translationValues(0, -1.6 * math.sin(angle), 0)
+          ..rotateZ(0.025 * math.sin(angle)),
+        child: widget.child,
       ),
     );
   }

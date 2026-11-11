@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
@@ -75,6 +76,7 @@ class BalanceHistoryView extends StatefulWidget {
 
 class _BalanceHistoryViewState extends State<BalanceHistoryView> {
   final _scroll = ScrollController();
+  final _presentedEntries = <String>{};
   bool _checkScheduled = false;
   BalanceHistoryController get history => widget.controller;
 
@@ -186,23 +188,26 @@ class _BalanceHistoryViewState extends State<BalanceHistoryView> {
                               const SliverPadding(
                                 padding: EdgeInsets.fromLTRB(16, 24, 16, 24),
                                 sliver: SliverToBoxAdapter(
-                                  child: _EmptyState(),
+                                  child: AsteriaEntrance(child: _EmptyState()),
                                 ),
                               )
                             else if (history.items.isEmpty)
                               SliverToBoxAdapter(
                                 child: Padding(
                                   padding: const EdgeInsets.all(24),
-                                  child: Text(
-                                    history.filter ==
-                                            WalletHistoryFilter.withdrawals
-                                        ? context
-                                              .l10n
-                                              .balanceHistoryNoWithdrawals
-                                        : context.l10n.balanceHistoryNoDeposits,
-                                    textAlign: TextAlign.center,
-                                    style: BalanceHistoryStyle.body.copyWith(
-                                      color: BalanceHistoryStyle.muted,
+                                  child: AsteriaEntrance(
+                                    replayKey: history.filter,
+                                    child: Text(
+                                      history.filter ==
+                                              WalletHistoryFilter.withdrawals
+                                          ? context
+                                                .l10n
+                                                .balanceHistoryNoWithdrawals
+                                          : context.l10n.balanceHistoryNoDeposits,
+                                      textAlign: TextAlign.center,
+                                      style: BalanceHistoryStyle.body.copyWith(
+                                        color: BalanceHistoryStyle.muted,
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -215,15 +220,17 @@ class _BalanceHistoryViewState extends State<BalanceHistoryView> {
                                 sliver: SliverList.builder(
                                   addRepaintBoundaries: false,
                                   itemCount: history.items.length,
-                                  itemBuilder: (context, index) => Padding(
-                                    padding: const EdgeInsets.only(bottom: 8),
-                                    child: _HistoryItem(
-                                      key: ValueKey(
-                                        history.items[index].entryId,
+                                  itemBuilder: (context, index) {
+                                    final item = history.items[index];
+                                    return AsteriaEntrance(
+                                      key: ValueKey(item.entryId),
+                                      animateInitially: _presentedEntries.add(item.entryId),
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(bottom: 8),
+                                        child: _HistoryItem(item: item),
                                       ),
-                                      item: history.items[index],
-                                    ),
-                                  ),
+                                    );
+                                  },
                                 ),
                               ),
                             if (history.isLoadingMore)
@@ -366,7 +373,7 @@ double _textWidth(BuildContext context, String text, TextStyle style) {
 }
 
 class _HistoryItem extends StatelessWidget {
-  const _HistoryItem({super.key, required this.item});
+  const _HistoryItem({required this.item});
   final WalletHistoryEntryModel item;
 
   @override

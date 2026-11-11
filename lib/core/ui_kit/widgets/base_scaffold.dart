@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
@@ -40,7 +41,7 @@ class BaseScaffold extends StatelessWidget {
         decoration: const BoxDecoration(
           image: DecorationImage(image: AssetImage('assets/background/bg_light.webp'), fit: BoxFit.cover),
         ),
-        child: child,
+        child: AsteriaEntrance(child: child),
       ),
     );
   }

@@ -17,7 +17,7 @@ class AboutUsRoute extends AppRoute {
          path: routeName,
          pageBuilder: (context, state) {
            final params = state.extra as AboutUsRouteParams?;
-           return CupertinoPage<void>(
+           return AsteriaPage<void>(
              name: routeName,
              key: state.pageKey,
              child: AboutUsScreen(initialDocument: params?.document),

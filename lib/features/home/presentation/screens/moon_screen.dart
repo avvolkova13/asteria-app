@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/features/scenarios/calendar_scenario.dart';
 import 'package:asteria_app/app/data/models/lunar_calendar/lunar_recommendation_models.dart';
 import 'package:asteria_app/app/providers/content_provider.dart';
@@ -181,7 +182,7 @@ class _MoonScreenState extends State<MoonScreen> {
                           padding: const EdgeInsets.symmetric(horizontal: 16),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
+                            children: AsteriaEntrance.sections([
                               const SizedBox(height: 26),
                               HomeSectionHeading(
                                 context.l10n.lunarCalendarTitle,
@@ -189,9 +190,16 @@ class _MoonScreenState extends State<MoonScreen> {
                               const SizedBox(height: 16),
                               const CalendarPlanningEntry(),
                               const SizedBox(height: 16),
-                              _MoonScreenAdvice(
-                                state: state,
-                                recommendation: recommendation,
+                              AsteriaEntrance(
+                                replayKey: (
+                                  state.selectedDate,
+                                  state.selectedSphere,
+                                  state.selectedPersonalizedDayData != null,
+                                ),
+                                child: _MoonScreenAdvice(
+                                  state: state,
+                                  recommendation: recommendation,
+                                ),
                               ),
                               const SizedBox(height: 24),
                               const SphereSelectionWidget(),
@@ -203,13 +211,19 @@ class _MoonScreenState extends State<MoonScreen> {
                               ),
                               if (recommendation != null) ...[
                                 const SizedBox(height: 16),
-                                LunarRecommendationsWidget(
-                                  key: ValueKey(state.selectedSphere),
-                                  recommendation: recommendation,
+                                AsteriaEntrance(
+                                  replayKey: (
+                                    state.selectedDate,
+                                    state.selectedSphere,
+                                  ),
+                                  child: LunarRecommendationsWidget(
+                                    key: ValueKey(state.selectedSphere),
+                                    recommendation: recommendation,
+                                  ),
                                 ),
                               ],
                               const SizedBox(height: 24),
-                            ],
+                            ]),
                           ),
                         ),
                       ],

@@ -25,7 +25,7 @@ class PaymentsRoute extends AppRoute {
          path: routeName,
          pageBuilder: (context, state) {
            final params = state.extra as PaymentsRouteParams?;
-           return CupertinoPage<bool>(
+           return AsteriaPage<bool>(
              name: routeName,
              key: state.pageKey,
              child: BlocProvider<ArcPayCheckoutCubit>(

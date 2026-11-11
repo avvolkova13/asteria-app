@@ -54,7 +54,7 @@ class _AffirmationScreenState extends State<AffirmationScreen> {
               padding: const EdgeInsets.fromLTRB(16, 22, 16, 34),
               sliver: SliverToBoxAdapter(
                 child: ListenableBuilder(
-                  listenable: userProvider,
+                  listenable: Listenable.merge([userProvider, contentProvider]),
                   builder: (context, _) {
                     final hasSubscription =
                         MonetizationProvider.maybeOf(context)?.effectivePro ??

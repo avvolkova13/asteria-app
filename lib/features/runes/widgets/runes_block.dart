@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/app/data/models/rune_of_day/rune_of_day_model.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
@@ -339,6 +340,7 @@ class _RunesBlockState extends State<RunesBlock> with TickerProviderStateMixin {
             borderRadius: BorderRadius.circular(12),
             child: Image.asset(
               'assets/images/runes/${rune.imageName}.webp',
+              frameBuilder: AsteriaEntrance.imageFrame,
               width: width,
               height: visualHeight,
               fit: BoxFit.fill,

@@ -1,9 +1,8 @@
-import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/core/localization/localization.dart';
 import 'package:asteria_app/features/profile_flow/profile_flow_ui.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/gestures.dart';
+import 'package:asteria_app/core/ui_kit/widgets/lotus_inline_links.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -471,41 +470,46 @@ class _LegalDocumentTable extends StatelessWidget {
   }
 }
 
-class _LinkedText extends StatelessWidget {
+class _LinkedText extends StatefulWidget {
   const _LinkedText({super.key, required this.text, required this.links});
 
   final String text;
   final List<({String text, String url})> links;
 
   @override
+  State<_LinkedText> createState() => _LinkedTextState();
+}
+
+class _LinkedTextState extends State<_LinkedText> with LotusInlineLinks<_LinkedText> {
+  @override
   Widget build(BuildContext context) {
     final style = context.textTheme.inverseUrbanistRegular14.copyWith(
       height: 1.08,
     );
 
-    if (links.isEmpty) {
-      return Text(text, style: style);
+    if (widget.links.isEmpty) {
+      return Text(widget.text, style: style);
     }
 
     final children = <InlineSpan>[];
-    var remainingText = text;
+    var remainingText = widget.text;
 
-    for (final link in links) {
+    for (final link in widget.links) {
       if (!remainingText.contains(link.text)) continue;
       final parts = remainingText.split(link.text);
       children.add(TextSpan(text: parts[0]));
       children.add(
-        TextSpan(
+        linkSpan(
+          id: link.url,
           text: link.text,
           style: AppTypography.link.copyWith(
             color: style.color,
             decorationColor: AppColors.white.withValues(alpha: 0.85),
           ),
-          recognizer: TapGestureRecognizer()
-            ..onTap = LotusFeedback.action(() => launchUrl(
-              Uri.parse(link.url),
-              mode: LaunchMode.externalApplication,
-            )),
+          onTap: () => launchUrl(
+            Uri.parse(link.url),
+            mode: LaunchMode.externalApplication,
+          ),
         ),
       );
       remainingText = parts.length > 1 ? parts.sublist(1).join(link.text) : '';

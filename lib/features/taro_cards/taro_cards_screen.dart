@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/features/love_deck/love_deck_access.dart';
 import 'package:asteria_app/app/data/models/user/tarot_deck_model.dart';
@@ -99,7 +100,7 @@ class TaroCardsScreen extends StatelessWidget {
                             return _TaroCardsContent(
                               tarotCard: tarotCard,
                               initialTab: initialTab,
-                            );
+                            ).withEntrance();
                           } catch (e) {
                             return ErrorScreenWidget(
                               error: context.l10n.tarotLoadError,
@@ -559,7 +560,7 @@ class _TaroCardsContentState extends State<_TaroCardsContent> {
                           ),
                           const SizedBox(height: 16),
                         ],
-                        const TarotLayout(),
+                        const AsteriaEntrance(child: TarotLayout()),
                         if (!hasOpenedInsight) ...[
                           const SizedBox(height: 16),
                           SizedBox(
@@ -578,7 +579,9 @@ class _TaroCardsContentState extends State<_TaroCardsContent> {
                         if (allCardsOpened) ...[
                           SizedBox(height: hasOpenedInsight ? 10 : 16),
                           if (hasLocalizedInterpretation)
-                            _TarotInsightBlock(interpretation: interpretation)
+                            _TarotInsightBlock(
+                              interpretation: interpretation,
+                            ).withEntrance()
                           else
                             CustomButton(
                               text: context.l10n.deckGetInsight,

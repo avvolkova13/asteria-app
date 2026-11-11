@@ -1,3 +1,8 @@
+import 'package:asteria_app/app/data/models/user/user_model.dart';
+import 'package:asteria_app/app/providers/content_provider.dart';
+import 'package:asteria_app/app/providers/user_provider.dart';
+import 'package:asteria_app/core/analytics/dictionaries/entry_surface.dart';
+import 'package:asteria_app/features/affirmation/affirmation_screen.dart';
 import 'package:asteria_app/app/data/models/affirmation/affirmation_model.dart';
 import 'package:asteria_app/core/analytics/product_analytics_service.dart';
 import 'package:asteria_app/core/di/di.dart';
@@ -68,6 +73,46 @@ void main() {
     tearDown(() {
       di.unregister<ProductAnalyticsService>();
     });
+
+    testWidgets(
+      'a late collection appears while the user remains on the same screen',
+      (tester) async {
+        final content = _DelayedContent();
+        final account = _Account();
+        di.registerSingleton<ContentProvider>(content);
+        di.registerSingleton<UserProvider>(account);
+        addTearDown(() {
+          di.unregister<ContentProvider>();
+          di.unregister<UserProvider>();
+          content.dispose();
+          account.dispose();
+        });
+        await tester.pumpWidget(
+          MaterialApp(
+            locale: const Locale('ru'),
+            supportedLocales: AppLocaleService.supportedLocales,
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              ...GlobalMaterialLocalizations.delegates,
+            ],
+            home: Builder(
+              builder: (context) => Theme(
+                data: AppThemeDark.instance.getThemeData(context),
+                child: const AffirmationScreen(),
+              ),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+        expect(find.byType(AffirmationCardStack), findsNothing);
+        content.deliver(
+          _affirmation(id: 'delivered', text: 'Текст из коллекции'),
+        );
+        await tester.pumpAndSettle();
+        expect(find.byType(AffirmationCardStack), findsOneWidget);
+        expect(find.text('Текст из коллекции'), findsWidgets);
+      },
+    );
 
     testWidgets('a swipe changes the card and a tap opens the shared player', (
       tester,
@@ -250,6 +295,11 @@ void _expectThreeUniqueLoveImages(WidgetTester tester) {
 
 class _FakeProductAnalyticsService implements ProductAnalyticsService {
   @override
+  Future<void> trackAffirmationsStart({
+    EntrySurface entrySurface = EntrySurface.unknown,
+  }) async {}
+
+  @override
   Future<void> trackAffirmationCardView({String? contentId}) async {}
 
   @override
@@ -258,6 +308,30 @@ class _FakeProductAnalyticsService implements ProductAnalyticsService {
     String? contentId,
   }) async {}
 
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+class _DelayedContent extends ChangeNotifier implements ContentProvider {
+  final _cards = <AffirmationModel>[];
+  void deliver(AffirmationModel item) {
+    _cards.add(item);
+    notifyListeners();
+  }
+
+  @override
+  List<String> get affirmationCategories => const ['love'];
+  @override
+  List<AffirmationModel> getAffirmationsByCategory(String category) => [
+    ..._cards,
+  ];
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+class _Account extends ChangeNotifier implements UserProvider {
+  @override
+  UserModel? get currentUser => null;
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }

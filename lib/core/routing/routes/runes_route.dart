@@ -18,7 +18,7 @@ class RunesRoute extends AppRoute {
          path: routeName,
          pageBuilder: (context, state) {
            final extra = state.extra;
-           return CupertinoPage<void>(
+           return AsteriaPage<void>(
              name: routeName,
              key: state.pageKey,
              child: RunesScreen(

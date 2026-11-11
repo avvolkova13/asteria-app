@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/app/data/models/lunar_calendar/lunar_month_model.dart';
 import 'package:asteria_app/app/data/models/lunar_calendar/lunar_recommendation_models.dart';
 import 'package:asteria_app/app/providers/content_provider.dart';
@@ -302,7 +303,8 @@ class _DaySelectionState extends State<_DaySelection> {
           else
             const CalendarStatusesWidget(),
           const SizedBox(height: 16),
-          for (final day in _selected) Text(_dateLabel(context, day)),
+          for (final day in _selected)
+            AsteriaEntrance(key: ValueKey(day), child: Text(_dateLabel(context, day))),
           if (_selected.isNotEmpty) ...[
             const SizedBox(height: 12),
             AuthGradientButton(

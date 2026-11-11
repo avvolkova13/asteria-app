@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'dart:async';
 import 'dart:math' as math;
 
@@ -33,16 +34,24 @@ class LotusFeedback extends StatefulWidget {
 }
 
 class _LotusFeedbackState extends State<LotusFeedback>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   late final AnimationController _pulse = AnimationController(
     vsync: this,
     duration: LotusMotionScope.duration,
   );
+  late final _contactController = AnimationController(
+    vsync: this,
+    duration: LotusMotionScope.pressDuration,
+  );
+  late final _contact = _contactController.drive(
+    CurveTween(curve: Curves.easeOut),
+  );
+  late final _motion = Listenable.merge([_contact, _pulse]);
+
   // Hit testing dispatches to the inner surface first. Only its press scales.
   static final _owners = <int, _LotusFeedbackState>{};
   int? _pointer;
   Offset? _origin;
-  bool _pressed = false;
   bool _showFocus = false;
   bool _reduceMotion = false;
 
@@ -52,7 +61,8 @@ class _LotusFeedbackState extends State<LotusFeedback>
     _reduceMotion = MediaQuery.disableAnimationsOf(context);
     if (_reduceMotion) {
       _release();
-      if (_pulse.isAnimating) _pulse.reset();
+      _contactController.reset();
+      _pulse.reset();
     }
   }
 
@@ -61,6 +71,7 @@ class _LotusFeedbackState extends State<LotusFeedback>
     super.didUpdateWidget(oldWidget);
     if (widget.onActivate == null) {
       _release();
+      _contactController.reset();
       _pulse.reset();
     }
   }
@@ -75,7 +86,7 @@ class _LotusFeedbackState extends State<LotusFeedback>
     _owners[event.pointer] = this;
     _pointer = event.pointer;
     _origin = event.position;
-    setState(() => _pressed = true);
+    _contactController.forward();
   }
 
   void _move(PointerMoveEvent event) {
@@ -89,11 +100,12 @@ class _LotusFeedbackState extends State<LotusFeedback>
     if (_pointer != null) _owners.remove(_pointer);
     _pointer = null;
     _origin = null;
-    _pressed = false;
   }
 
   void _end(PointerEvent event) {
-    if (event.pointer == _pointer) setState(_release);
+    if (event.pointer != _pointer) return;
+    _release();
+    _contactController.reverse();
   }
 
   void _activate() {
@@ -107,6 +119,7 @@ class _LotusFeedbackState extends State<LotusFeedback>
   @override
   void dispose() {
     _release();
+    _contactController.dispose();
     _pulse.dispose();
     super.dispose();
   }
@@ -115,72 +128,66 @@ class _LotusFeedbackState extends State<LotusFeedback>
   Widget build(BuildContext context) {
     final enabled = widget.onActivate != null;
     final control = widget.builder(enabled ? _activate : null);
-    return Listener(
-      onPointerDown: enabled ? _down : null,
-      onPointerMove: _move,
-      onPointerUp: _end,
-      onPointerCancel: _end,
-      child: TweenAnimationBuilder<double>(
-        tween: Tween(
-          end: _pressed && !_reduceMotion ? LotusMotionScope.pressedScale : 1,
-        ),
-        duration: _reduceMotion
-            ? Duration.zero
-            : LotusMotionScope.pressDuration,
-        curve: Curves.easeOut,
-        builder: (context, pressScale, child) => AnimatedBuilder(
-          animation: _pulse,
-          child: child,
+    return AsteriaEntrance(
+      child: Listener(
+        onPointerDown: enabled ? _down : null,
+        onPointerMove: _move,
+        onPointerUp: _end,
+        onPointerCancel: _end,
+        child: AnimatedBuilder(
+          animation: _motion,
           builder: (context, surface) {
-            // A quick tap or keyboard activation can finish before the first press frame.
+            final pressScale =
+                1 - (1 - LotusMotionScope.pressedScale) * _contact.value;
+            // A quick tap or keyboard activation may finish before the first press frame.
             final phase = (_pulse.value / .45).clamp(0.0, 1.0);
-            final activationScale = _reduceMotion
-                ? 1.0
-                : 1 - .018 * math.sin(math.pi * phase);
+            final activationScale = 1 - .018 * math.sin(math.pi * phase);
             return Transform.scale(
-              scale: math.min(pressScale, activationScale),
+              scale: _reduceMotion ? 1 : math.min(pressScale, activationScale),
               transformHitTests: false,
               child: surface,
             );
           },
-        ),
-        child: LotusMotionScope(
-          pulse: _pulse,
-          child: widget.keyboard
-              ? FocusableActionDetector(
-                  enabled: enabled,
-                  includeFocusSemantics: false,
-                  onShowFocusHighlight: (show) =>
-                      setState(() => _showFocus = show),
-                  actions: {
-                    ActivateIntent: CallbackAction<ActivateIntent>(
-                      onInvoke: (_) {
-                        _activate();
-                        return null;
-                      },
+          child: LotusMotionScope(
+            contact: _contact,
+            pulse: _pulse,
+            child: widget.keyboard
+                ? FocusableActionDetector(
+                    enabled: enabled,
+                    includeFocusSemantics: false,
+                    onShowFocusHighlight: (show) =>
+                        setState(() => _showFocus = show),
+                    actions: {
+                      ActivateIntent: CallbackAction<ActivateIntent>(
+                        onInvoke: (_) {
+                          _activate();
+                          return null;
+                        },
+                      ),
+                      ButtonActivateIntent:
+                          CallbackAction<ButtonActivateIntent>(
+                            onInvoke: (_) {
+                              _activate();
+                              return null;
+                            },
+                          ),
+                    },
+                    child: DecoratedBox(
+                      position: DecorationPosition.foreground,
+                      decoration: BoxDecoration(
+                        border: enabled && _showFocus
+                            ? Border.all(
+                                color: Theme.of(context).colorScheme.onSurface,
+                                width: 1.5,
+                              )
+                            : null,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: control,
                     ),
-                    ButtonActivateIntent: CallbackAction<ButtonActivateIntent>(
-                      onInvoke: (_) {
-                        _activate();
-                        return null;
-                      },
-                    ),
-                  },
-                  child: DecoratedBox(
-                    position: DecorationPosition.foreground,
-                    decoration: BoxDecoration(
-                      border: enabled && _showFocus
-                          ? Border.all(
-                              color: Theme.of(context).colorScheme.onSurface,
-                              width: 1.5,
-                            )
-                          : null,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: control,
-                  ),
-                )
-              : control,
+                  )
+                : control,
+          ),
         ),
       ),
     );
