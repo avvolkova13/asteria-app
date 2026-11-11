@@ -150,22 +150,34 @@ class _MainScreenState extends State<MainScreen> {
             statusBarColor: Colors.transparent,
             statusBarBrightness: Brightness.dark,
           ),
-          child: ColoredBox(
-            color: AppColorsDark.homeCanvas,
+          child: DecoratedBox(
+            decoration: const BoxDecoration(
+              color: AppColorsDark.homeCanvas,
+              image: DecorationImage(
+                image: AssetImage('assets/images/home/home_sky.webp'),
+                fit: BoxFit.cover,
+                alignment: Alignment.topCenter,
+              ),
+            ),
             child: SafeArea(
               bottom: false,
               child: CustomScrollView(
                 physics: const ClampingScrollPhysics(),
-                scrollBehavior: ScrollConfiguration.of(context).copyWith(
-                  overscroll: false,
-                ),
+                scrollBehavior: ScrollConfiguration.of(
+                  context,
+                ).copyWith(overscroll: false),
                 slivers: [
-                  PinnedHeaderSliver(
-                    child: HomeAccountBar(
-                      accountLabelStyle: context
-                          .textTheme
-                          .inversePlayfairSemiBold17
-                          .copyWith(fontFamily: 'Lora'),
+                  SliverLayoutBuilder(
+                    builder: (context, constraints) => PinnedHeaderSliver(
+                      child: HomeAccountBar(
+                        backgroundColor: AppColorsDark.homeCanvas.withValues(
+                          alpha: (constraints.scrollOffset / 32).clamp(0, 1),
+                        ),
+                        accountLabelStyle: context
+                            .textTheme
+                            .inversePlayfairSemiBold17
+                            .copyWith(fontFamily: 'Lora'),
+                      ),
                     ),
                   ),
                   SliverToBoxAdapter(
