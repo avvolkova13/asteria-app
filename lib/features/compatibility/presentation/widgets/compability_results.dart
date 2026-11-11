@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/pearl_progress_ring_painter.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/app/data/models/prompt_response.dart';
@@ -42,7 +43,7 @@ class CompabilityResults extends StatelessWidget {
             color: const Color(0xFFFFB45E),
             height: 1.2,
           ),
-          textAlign: TextAlign.center,
+          textAlign: TextAlign.start,
         ),
         const SizedBox(height: 4),
         Text(
@@ -50,7 +51,7 @@ class CompabilityResults extends StatelessWidget {
           style: context.textTheme.inverseUrbanistRegular14.copyWith(
             height: 1.18,
           ),
-          textAlign: TextAlign.center,
+          textAlign: TextAlign.start,
         ),
         const SizedBox(height: 20),
         _MetricsRow(
@@ -112,30 +113,36 @@ class _ZodiacCompatibilityHero extends StatelessWidget {
           Positioned(left: 4, top: 0, child: _ZodiacPerson(date: firstDate)),
           Positioned(right: 4, top: 0, child: _ZodiacPerson(date: secondDate)),
           Positioned(
-            left: 92,
-            top: 78,
+            left: 96,
+            top: 108,
             child: SvgPicture.asset(
               'assets/icons/compatibility_heart_left.svg',
-              width: 56,
-              height: 31,
+              width: 36,
+              height: 20,
             ),
           ),
           Positioned(
-            right: 92,
-            top: 52,
+            right: 96,
+            top: 48,
             child: SvgPicture.asset(
               'assets/icons/compatibility_heart_right.svg',
-              width: 58,
-              height: 28,
+              width: 36,
+              height: 19,
             ),
           ),
           Positioned(
-            top: 78,
-            child: Text(
-              '$percentage%',
-              style: context.textTheme.playfairSemiBold20.copyWith(
-                color: const Color(0xFFFFB45E),
-                height: 1,
+            top: 73,
+            left: 102,
+            right: 102,
+            height: 30,
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                '$percentage%',
+                style: context.textTheme.playfairSemiBold20.copyWith(
+                  color: const Color(0xFFFFB45E),
+                  height: 1,
+                ),
               ),
             ),
           ),
@@ -197,16 +204,26 @@ class _MetricsRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        _MetricGauge(value: love, label: context.l10n.compatibilityLove),
-        _MetricGauge(
-          value: conflicts,
-          label: context.l10n.compatibilityConflicts,
-        ),
-        _MetricGauge(value: family, label: context.l10n.compatibilityFamily),
-      ],
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final largeText = MediaQuery.textScalerOf(context).scale(14) > 20;
+        final stacked = largeText || constraints.maxWidth < 255;
+        final gauges = [
+          for (final (value, label) in [
+            (love, context.l10n.compatibilityLove),
+            (conflicts, context.l10n.compatibilityConflicts),
+            (family, context.l10n.compatibilityFamily),
+          ])
+            _MetricGauge(value: value, label: label, horizontal: stacked),
+        ];
+        if (stacked) {
+          return Column(spacing: 8, children: gauges);
+        }
+        return Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [for (final gauge in gauges) Expanded(child: gauge)],
+        );
+      },
     );
   }
 }
@@ -214,55 +231,62 @@ class _MetricsRow extends StatelessWidget {
 class _MetricGauge extends StatelessWidget {
   final double value;
   final String label;
+  final bool horizontal;
 
-  const _MetricGauge({required this.value, required this.label});
+  const _MetricGauge({
+    required this.value,
+    required this.label,
+    required this.horizontal,
+  });
 
   @override
   Widget build(BuildContext context) {
     final progress = (value / 100).clamp(0.0, 1.0);
-
-    return SizedBox(
-      width: 88,
-      child: Column(
-        children: [
-          SizedBox(
-            width: 58,
-            height: 58,
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                SizedBox.expand(
-                  child: CircularProgressIndicator(
-                    value: 1,
-                    strokeWidth: 8,
-                    color: const Color(0xFF4F3A84),
-                    backgroundColor: AppColors.white.withValues(alpha: 0.1),
-                  ),
-                ),
-                SizedBox.expand(
-                  child: CircularProgressIndicator(
-                    value: progress,
-                    strokeWidth: 8,
-                    strokeCap: StrokeCap.round,
-                    color: const Color(0xFFFFD0A1),
-                    backgroundColor: Colors.transparent,
-                  ),
-                ),
-                Text(
-                  '${value.toStringAsFixed(0)}%',
-                  style: context.textTheme.inverseUrbanistRegular16,
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 6),
-          Text(
-            label,
-            style: context.textTheme.inverseUrbanistSemiBold14,
-            textAlign: TextAlign.center,
-          ),
-        ],
+    final percentage = '${value.toStringAsFixed(0)}%';
+    final size =
+        MediaQuery.textScalerOf(context).scale(17).clamp(17.0, 40.0) + 54;
+    final reading = Padding(
+      padding: const EdgeInsets.all(12),
+      child: FittedBox(
+        fit: BoxFit.scaleDown,
+        child: Text(
+          percentage,
+          style: context.textTheme.inversePlayfairMedium20,
+        ),
       ),
+    );
+    final ring = SizedBox.square(
+      dimension: size,
+      child: TweenAnimationBuilder<double>(
+        tween: Tween(begin: 0, end: progress),
+        duration: MediaQuery.disableAnimationsOf(context)
+            ? Duration.zero
+            : const Duration(milliseconds: 720),
+        curve: Curves.easeOutCubic,
+        child: Center(child: reading),
+        builder: (context, fraction, child) => CustomPaint(
+          painter: PearlProgressRingPainter(fraction),
+          child: child,
+        ),
+      ),
+    );
+    final caption = Text(
+      label,
+      style: context.textTheme.inverseUrbanistSemiBold14,
+    );
+    return Semantics(
+      label: label,
+      value: percentage,
+      excludeSemantics: true,
+      child: horizontal
+          ? Row(
+              spacing: 12,
+              children: [
+                ring,
+                Expanded(child: caption),
+              ],
+            )
+          : Column(spacing: 6, children: [ring, caption]),
     );
   }
 }

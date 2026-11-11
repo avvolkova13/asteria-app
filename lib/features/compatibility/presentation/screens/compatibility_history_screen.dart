@@ -109,7 +109,7 @@ class _CompatibilityHistoryItem extends StatelessWidget {
                             languageCode: locale.languageCode,
                           ),
                           style: context.textTheme.urbanistSemiBold14.copyWith(
-                            color: const Color(0xFF7C4DFF),
+                            color: AppColors.textInverse,
                           ),
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -127,7 +127,7 @@ class _CompatibilityHistoryItem extends StatelessWidget {
                             languageCode: locale.languageCode,
                           ),
                           style: context.textTheme.urbanistSemiBold14.copyWith(
-                            color: const Color(0xFF7C4DFF),
+                            color: AppColors.textInverse,
                           ),
                           overflow: TextOverflow.ellipsis,
                         ),

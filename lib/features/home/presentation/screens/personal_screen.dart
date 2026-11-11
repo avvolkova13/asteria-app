@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/pearl_progress_ring_painter.dart';
 import 'package:asteria_app/core/config/app_feature_visibility.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
@@ -1102,7 +1103,7 @@ class _ImpactRing extends StatelessWidget {
     Widget draw(double progress) => CustomPaint(
       key: ValueKey('personal-impact-ring-$metricId'),
       size: const Size.square(71),
-      painter: _PersonalImpactRingPainter(progress),
+      painter: PearlProgressRingPainter(progress),
     );
 
     if (MediaQuery.disableAnimationsOf(context)) return draw(value);
@@ -1114,82 +1115,6 @@ class _ImpactRing extends StatelessWidget {
       builder: (context, progress, _) => draw(progress),
     );
   }
-}
-
-class _PersonalImpactRingPainter extends CustomPainter {
-  const _PersonalImpactRingPainter(this.progress);
-  final double progress;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final rect = Offset.zero & size;
-    final center = rect.center;
-    final radius = size.shortestSide / 2;
-    final track = Rect.fromCircle(center: center, radius: radius - 6);
-    final trackPaint = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeCap = StrokeCap.round
-      ..strokeWidth = 8;
-
-    canvas.drawCircle(
-      center,
-      radius - 2,
-      Paint()
-        ..shader = const RadialGradient(
-          center: Alignment(-0.46, -0.6),
-          radius: 1.05,
-          colors: [Color(0xFF58435B), Color(0xFF34273F), Color(0xFF241B31)],
-        ).createShader(rect),
-    );
-    canvas.drawOval(track, trackPaint..color = const Color(0xFF503C56));
-
-    if (progress <= 0) return;
-    const start = -math.pi / 2;
-    final sweep = 2 * math.pi * progress;
-    canvas.drawArc(
-      track.shift(const Offset(0, 1.4)),
-      start,
-      sweep,
-      false,
-      trackPaint..color = const Color(0xAA26172F),
-    );
-    canvas.drawArc(
-      track,
-      start,
-      sweep,
-      false,
-      trackPaint
-        ..shader = const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            Color(0xFFF5C6C1),
-            Color(0xFFE5ABD9),
-            Color(0xFFB09ADD),
-            Color(0xFF8968B7),
-          ],
-        ).createShader(rect),
-    );
-    canvas.drawArc(
-      track,
-      start,
-      sweep,
-      false,
-      Paint()
-        ..style = PaintingStyle.stroke
-        ..strokeCap = StrokeCap.round
-        ..strokeWidth = 1.4
-        ..shader = const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Color(0xBBFFF3EB), Color(0x33FFFFFF), Color(0x00FFFFFF)],
-        ).createShader(rect),
-    );
-  }
-
-  @override
-  bool shouldRepaint(_PersonalImpactRingPainter oldDelegate) =>
-      oldDelegate.progress != progress;
 }
 
 class _DailyAddonCard extends StatelessWidget {
@@ -2035,8 +1960,6 @@ class _PersonalCompatibilitySection extends StatelessWidget {
               ),
               compatibilityPercentage:
                   compatibility.compatibilityData.percentage.getPercentage,
-              compatibilityDescription:
-                  compatibility.compatibilityData.introduction,
               phrase: compatibility.compatibilityData.phrase,
               onPressed: onPressed,
             ),
@@ -2134,7 +2057,6 @@ class _CompatibilityHistoryCard extends StatelessWidget {
   final String firstZodiacSign;
   final String secondZodiacSign;
   final int compatibilityPercentage;
-  final String compatibilityDescription;
   final String phrase;
   final VoidCallback onPressed;
 
@@ -2144,7 +2066,6 @@ class _CompatibilityHistoryCard extends StatelessWidget {
     required this.firstZodiacSign,
     required this.secondZodiacSign,
     required this.compatibilityPercentage,
-    required this.compatibilityDescription,
     required this.phrase,
     required this.onPressed,
   });
@@ -2186,24 +2107,12 @@ class _CompatibilityHistoryCard extends StatelessWidget {
                           Padding(
                             padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
                             child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
-                                const SizedBox(height: 200),
-                                _GradientText(
-                                  phrase,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  textAlign: TextAlign.center,
-                                  style: context
-                                      .textTheme
-                                      .inverseUrbanistRegular16
-                                      .copyWith(
-                                        height: 1.2,
-                                        letterSpacing: -0.408,
-                                      ),
-                                ),
+                                const SizedBox(height: 188),
                                 Text(
-                                  compatibilityDescription,
-                                  textAlign: TextAlign.center,
+                                  phrase,
+                                  textAlign: TextAlign.start,
                                   style: context
                                       .textTheme
                                       .inverseUrbanistRegular16
@@ -2253,20 +2162,20 @@ class _CompatibilityHistoryCard extends StatelessWidget {
                             ),
                           ),
                           Positioned(
-                            left: width / 2 - 3.49,
+                            left: width * .5,
                             top: 83,
-                            width: 55,
-                            height: 30,
+                            width: 36,
+                            height: 20,
                             child: SvgPicture.asset(
                               _compatibilityVector51,
                               fit: BoxFit.fill,
                             ),
                           ),
                           Positioned(
-                            left: 118.51,
-                            top: 128,
-                            width: 62.35,
-                            height: 49.105,
+                            right: width * .5,
+                            top: 151,
+                            width: 36,
+                            height: 20,
                             child: Transform.rotate(
                               alignment: Alignment.center,
                               angle: 157 * math.pi / 180,
@@ -2286,10 +2195,12 @@ class _CompatibilityHistoryCard extends StatelessWidget {
                             ),
                           ),
                           Positioned(
-                            top: 118,
-                            left: 0,
-                            right: 0,
-                            child: Center(
+                            top: 109,
+                            height: 34,
+                            left: width * .36,
+                            right: width * .36,
+                            child: FittedBox(
+                              fit: BoxFit.scaleDown,
                               child: _GradientText(
                                 '$compatibilityPercentage%',
                                 style: context

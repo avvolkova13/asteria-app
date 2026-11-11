@@ -275,11 +275,9 @@ void main() {
       );
       await tester.pump();
 
-      final description = tester.widget<Text>(
-        find.text(_longCompatibilityDescription),
-      );
-      expect(description.maxLines, isNull);
-      expect(description.overflow, isNull);
+      expect(find.text(_longCompatibilityDescription), findsNothing);
+      final phrase = find.text('Гармония преодолевает различия');
+      expect(phrase, findsOneWidget);
 
       final cardFinder = find.byKey(
         const ValueKey('personal-compatibility-card'),
@@ -288,12 +286,10 @@ void main() {
         of: cardFinder,
         matching: find.text('Подробнее'),
       );
-      expect(tester.getSize(cardFinder).height, greaterThan(315));
+      expect(detailsFinder, findsOneWidget);
       expect(
         tester.getTopLeft(detailsFinder).dy,
-        greaterThan(
-          tester.getBottomLeft(find.text(_longCompatibilityDescription)).dy,
-        ),
+        greaterThan(tester.getBottomLeft(phrase).dy),
       );
 
       final background = tester.widget<Image>(
@@ -319,7 +315,7 @@ void main() {
 
       await tester.binding.setSurfaceSize(const Size(320, 2000));
       await tester.pump();
-      expect(tester.getSize(cardFinder).height, greaterThan(315));
+      expect(detailsFinder, findsOneWidget);
       expect(tester.takeException(), isNull);
 
       await tester.binding.setSurfaceSize(const Size(390, 2000));
