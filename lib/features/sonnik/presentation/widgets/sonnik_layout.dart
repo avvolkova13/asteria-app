@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/input_bubble_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/ui_kit/card_radii.dart';
@@ -84,7 +85,10 @@ class SonnikPageScaffold extends StatelessWidget {
             Positioned.fill(
               child: RotatedBox(
                 quarterTurns: 2,
-                child: Image.asset(SonnikAssets.clouds, fit: BoxFit.cover).withEntrance(),
+                child: Image.asset(
+                  SonnikAssets.clouds,
+                  fit: BoxFit.cover,
+                ).withEntrance(),
               ),
             ),
             Positioned.fill(
@@ -249,44 +253,32 @@ class SonnikTextArea extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       height: 148,
-      child: TextField(
-        onTap: LotusFeedback.selection,
-        controller: controller,
-        onChanged: onChanged,
-        expands: true,
-        minLines: null,
-        maxLines: null,
-        keyboardType: TextInputType.multiline,
-        textAlignVertical: TextAlignVertical.top,
-        cursorColor: SonnikPalette.gold,
-        style: context.textTheme.urbanistRegular16.copyWith(
-          color: SonnikPalette.white,
-        ),
-        decoration: InputDecoration(
-          hintText: context.l10n.dreamInputHint,
-          hintStyle: AppTypography.placeholder.copyWith(
-            color: SonnikPalette.white.withValues(alpha: 0.56),
+      child: InputBubbleSurface(
+        surfaceBrightness: Brightness.dark,
+        child: TextField(
+          onTap: LotusFeedback.selection,
+          controller: controller,
+          onChanged: onChanged,
+          expands: true,
+          minLines: null,
+          maxLines: null,
+          keyboardType: TextInputType.multiline,
+          textAlignVertical: TextAlignVertical.top,
+          cursorColor: SonnikPalette.gold,
+          style: context.textTheme.urbanistRegular16.copyWith(
+            color: SonnikPalette.white,
           ),
-          filled: true,
-          fillColor: SonnikPalette.white.withValues(alpha: 0.13),
-          contentPadding: const EdgeInsets.all(16),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(20),
-            borderSide: BorderSide(
-              color: SonnikPalette.white.withValues(alpha: 0.3),
+          decoration: InputDecoration(
+            hintText: context.l10n.dreamInputHint,
+            hintStyle: AppTypography.placeholder.copyWith(
+              color: SonnikPalette.white.withValues(alpha: 0.56),
             ),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(20),
-            borderSide: BorderSide(
-              color: SonnikPalette.white.withValues(alpha: 0.3),
-            ),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(20),
-            borderSide: BorderSide(
-              color: SonnikPalette.white.withValues(alpha: 0.45),
-            ),
+            filled: false,
+            contentPadding: const EdgeInsets.all(16),
+            border: InputBorder.none,
+            enabledBorder: InputBorder.none,
+            focusedBorder: InputBorder.none,
+            disabledBorder: InputBorder.none,
           ),
         ),
       ),

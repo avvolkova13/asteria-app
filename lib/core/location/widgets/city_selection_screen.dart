@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/input_bubble_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/modal_glass_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
@@ -46,8 +47,6 @@ class CitySelectionScreen extends StatefulWidget {
 
 class _CitySelectionScreenState extends State<CitySelectionScreen> {
   static const _background = Color(0xFF100817);
-  static const _fieldFill = Color(0xFF1D1531);
-  static const _fieldBorder = Color(0xFF392A58);
 
   final TextEditingController _controller = TextEditingController();
   final FocusNode _focusNode = FocusNode();
@@ -230,7 +229,9 @@ class _CitySelectionScreenState extends State<CitySelectionScreen> {
                     header: true,
                     child: Text(
                       context.l10n.citySelectionTitle,
-                      style: AppTypography.h2.copyWith(color: AppColors.textInverse),
+                      style: AppTypography.h2.copyWith(
+                        color: AppColors.textInverse,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -296,91 +297,90 @@ class _CitySelectionScreenState extends State<CitySelectionScreen> {
   }
 
   Widget _buildSearchField(BuildContext context) {
-    return Container(
-      height: widget.asSheet ? 50 : 44,
-      decoration: BoxDecoration(
-        color: widget.asSheet ? const Color(0x339A7DB8) : _fieldFill,
-        borderRadius: BorderRadius.circular(widget.asSheet ? 16 : 10),
-        border: Border.all(color: _fieldBorder),
-      ),
-      child: Row(
-        children: [
-          SizedBox(width: widget.asSheet ? 16 : 12),
-          if (widget.asSheet)
-            ClayAssetIcon(
-              'assets/icons/city_search.svg',
-              width: 22.5,
-              height: 22.5,
-              tint: AppColors.textInverse,
-              excludeFromSemantics: true,
-            )
-          else
-            ClayIcon(
-              CupertinoIcons.search,
-              size: 17,
-              color: AppColors.white.withValues(alpha: 0.74),
-            ),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Semantics(
-              label: widget.asSheet
-                  ? context.l10n.locationManualInputHint
-                  : null,
-              child: TextField(
-                onTap: LotusFeedback.selection,
-                controller: _controller,
-                focusNode: _focusNode,
-                onChanged: _onQueryChanged,
-                cursorColor: AppColors.white,
-                keyboardAppearance: Brightness.dark,
-                style: context.textTheme.inverseUrbanistRegular16.copyWith(
-                  color: AppColors.textInverse,
-                ),
-                decoration: InputDecoration(
-                  hintText: widget.asSheet
-                      ? null
-                      : context.l10n.locationManualInputHint,
-                  hintStyle: AppTypography.placeholder
-                      .copyWith(color: AppColors.white.withValues(alpha: 0.45)),
-                  filled: false,
-                  fillColor: Colors.transparent,
-                  border: InputBorder.none,
-                  enabledBorder: InputBorder.none,
-                  focusedBorder: InputBorder.none,
-                  disabledBorder: InputBorder.none,
-                  errorBorder: InputBorder.none,
-                  focusedErrorBorder: InputBorder.none,
-                  isDense: true,
-                  contentPadding: EdgeInsets.zero,
+    return InputBubbleSurface(
+      surfaceBrightness: Brightness.dark,
+      child: ConstrainedBox(
+        constraints: BoxConstraints(minHeight: widget.asSheet ? 50 : 44),
+        child: Row(
+          children: [
+            SizedBox(width: widget.asSheet ? 16 : 12),
+            if (widget.asSheet)
+              ClayAssetIcon(
+                'assets/icons/city_search.svg',
+                width: 22.5,
+                height: 22.5,
+                tint: AppColors.textInverse,
+                excludeFromSemantics: true,
+              )
+            else
+              ClayIcon(
+                CupertinoIcons.search,
+                size: 17,
+                color: AppColors.white.withValues(alpha: 0.74),
+              ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Semantics(
+                label: widget.asSheet
+                    ? context.l10n.locationManualInputHint
+                    : null,
+                child: TextField(
+                  onTap: LotusFeedback.selection,
+                  controller: _controller,
+                  focusNode: _focusNode,
+                  onChanged: _onQueryChanged,
+                  cursorColor: AppColors.white,
+                  keyboardAppearance: Brightness.dark,
+                  style: context.textTheme.inverseUrbanistRegular16.copyWith(
+                    color: AppColors.textInverse,
+                  ),
+                  decoration: InputDecoration(
+                    hintText: widget.asSheet
+                        ? null
+                        : context.l10n.locationManualInputHint,
+                    hintStyle: AppTypography.placeholder.copyWith(
+                      color: AppColors.white.withValues(alpha: 0.45),
+                    ),
+                    filled: false,
+                    fillColor: Colors.transparent,
+                    border: InputBorder.none,
+                    enabledBorder: InputBorder.none,
+                    focusedBorder: InputBorder.none,
+                    disabledBorder: InputBorder.none,
+                    errorBorder: InputBorder.none,
+                    focusedErrorBorder: InputBorder.none,
+                    isDense: true,
+                    contentPadding: EdgeInsets.zero,
+                  ),
                 ),
               ),
             ),
-          ),
-          if (_controller.text.isNotEmpty)
-            LotusButtons.icon(
-              onPressed: () {
-                _controller.clear();
-                _onQueryChanged('');
-              },
-              tooltip: MaterialLocalizations.of(context).deleteButtonTooltip,
-              icon: widget.asSheet
-                  ? ClayAssetIcon(
-                      'assets/icons/city_clear.svg',
-                      width: 20,
-                      height: 20,
-                      tint: AppColors.white.withValues(alpha: 0.55),
-                    )
-                  : ClayIcon(
-                      CupertinoIcons.xmark_circle,
-                      size: 18,
-                      color: AppColors.white.withValues(alpha: 0.48),
-                    ),
-              padding: EdgeInsets.zero,
-              constraints: const BoxConstraints(minWidth: 44, minHeight: 44),
-            )
-          else
-            const SizedBox(width: 12),
-        ],
+            if (_controller.text.isNotEmpty)
+              LotusButtons.icon(
+                onPressed: () {
+                  _controller.clear();
+                  _onQueryChanged('');
+                },
+                tooltip: MaterialLocalizations.of(context).deleteButtonTooltip,
+                icon: widget.asSheet
+                    ? ClayAssetIcon(
+                        'assets/icons/city_clear.svg',
+                        width: 20,
+                        height: 20,
+                        tint: AppColors.white.withValues(alpha: 0.55),
+                      )
+                    : ClayIcon(
+                        CupertinoIcons.xmark_circle,
+                        size: 18,
+                        color: AppColors.white.withValues(alpha: 0.48),
+                      ),
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(minWidth: 44, minHeight: 44),
+              )
+            else
+              const SizedBox(width: 12),
+          ],
+        ),
       ),
     );
   }

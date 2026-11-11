@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/input_bubble_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
@@ -69,20 +70,11 @@ class _TextInputFieldWidgetState extends State<TextInputFieldWidget> {
     super.dispose();
   }
 
-  Color _getBorderColor() {
-    switch (widget.state) {
-      case TextInputFieldState.error:
-        return const Color(0xFFDB4C4C);
-      case TextInputFieldState.active:
-      case TextInputFieldState.typing:
-        return const Color(0xFF9747FF);
-      default:
-        return Colors.transparent;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
+    final foreground = Theme.of(context).brightness == Brightness.dark
+        ? AppColors.textInverse
+        : AppColors.textPrimary;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -95,106 +87,111 @@ class _TextInputFieldWidgetState extends State<TextInputFieldWidget> {
           ),
           const SizedBox(height: 8),
         ],
-        Container(
-          height: 50,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: _getBorderColor(), width: 1),
-          ),
-          child: Row(
-            children: [
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: TextField(
-                    onTap: LotusFeedback.selection,
-                    inputFormatters: widget.inputFormatters,
-                    controller: _controller,
-                    keyboardType: widget.keyboardType,
-                    textInputAction: widget.textInputAction,
-                    textCapitalization: widget.textCapitalization,
-                    obscureText: _obscureText,
-                    onChanged: widget.onChanged,
-                    onSubmitted: widget.onSubmitted,
-                    style: context.textTheme.inputText,
-                    cursorColor: AppColors.textPrimary,
-                    decoration: InputDecoration(
-                      hintText: widget.hintText,
-                      hintStyle: context.textTheme.inputHint,
-                      border: InputBorder.none,
-                      focusedBorder: InputBorder.none,
-                      enabledBorder: InputBorder.none,
-                      contentPadding: const EdgeInsets.symmetric(vertical: 12),
-                      filled: true,
-                      fillColor: Colors.transparent,
-                    ),
-                  ),
-                ),
-              ),
-              if (widget.showToggleButton) ...[
-                LotusTap(
-                  onTap: widget.onToggle,
-                  child: Container(
-                    width: 51,
-                    height: 31,
-                    margin: const EdgeInsets.only(right: 16),
-                    decoration: BoxDecoration(
-                      color: widget.toggleValue
-                          ? const Color(0xFF8A6CAF)
-                          : const Color(0xFFE0E0E0),
-                      borderRadius: BorderRadius.circular(15.5),
-                    ),
-                    child: AnimatedAlign(
-                      alignment: widget.toggleValue
-                          ? Alignment.centerRight
-                          : Alignment.centerLeft,
-                      duration: const Duration(milliseconds: 200),
-                      child: Container(
-                        width: 27,
-                        height: 27,
-                        margin: const EdgeInsets.symmetric(horizontal: 2),
-                        decoration: BoxDecoration(
-                          color: Colors.transparent,
-                          borderRadius: BorderRadius.circular(13.5),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.06),
-                              blurRadius: 3,
-                              offset: const Offset(0, 3),
-                            ),
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.15),
-                              blurRadius: 8,
-                              offset: const Offset(0, 3),
-                            ),
-                          ],
+        InputBubbleSurface(
+          focused:
+              widget.state == TextInputFieldState.active ||
+              widget.state == TextInputFieldState.typing,
+          hasError: widget.state == TextInputFieldState.error,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(minHeight: 50),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: TextField(
+                      onTap: LotusFeedback.selection,
+                      inputFormatters: widget.inputFormatters,
+                      controller: _controller,
+                      keyboardType: widget.keyboardType,
+                      textInputAction: widget.textInputAction,
+                      textCapitalization: widget.textCapitalization,
+                      obscureText: _obscureText,
+                      onChanged: widget.onChanged,
+                      onSubmitted: widget.onSubmitted,
+                      style: AppTypography.text1.copyWith(color: foreground),
+                      cursorColor: foreground,
+                      decoration: InputDecoration(
+                        hintText: widget.hintText,
+                        hintStyle: AppTypography.placeholder.copyWith(
+                          color: foreground.withValues(alpha: .65),
                         ),
+                        border: InputBorder.none,
+                        focusedBorder: InputBorder.none,
+                        enabledBorder: InputBorder.none,
+                        contentPadding: const EdgeInsets.symmetric(
+                          vertical: 12,
+                        ),
+                        filled: false,
+                        fillColor: Colors.transparent,
                       ),
                     ),
                   ),
                 ),
-              ] else if (widget.showClearButton &&
-                  _controller.text.isNotEmpty) ...[
-                LotusTap(
-                  onTap: () {
-                    _controller.clear();
-                    widget.onClear?.call();
-                    widget.onChanged?.call('');
-                  },
-                  child: Container(
-                    width: 24,
-                    height: 24,
-                    margin: const EdgeInsets.only(right: 16),
-                    child: ClayAssetIcon(
-                      'assets/icons/close_icon.svg',
-                      width: 24,
-                      height: 24,
+                if (widget.showToggleButton) ...[
+                  LotusTap(
+                    onTap: widget.onToggle,
+                    child: Container(
+                      width: 51,
+                      height: 31,
+                      margin: const EdgeInsets.only(right: 16),
+                      decoration: BoxDecoration(
+                        color: widget.toggleValue
+                            ? const Color(0xFF8A6CAF)
+                            : const Color(0xFFE0E0E0),
+                        borderRadius: BorderRadius.circular(15.5),
+                      ),
+                      child: AnimatedAlign(
+                        alignment: widget.toggleValue
+                            ? Alignment.centerRight
+                            : Alignment.centerLeft,
+                        duration: const Duration(milliseconds: 200),
+                        child: Container(
+                          width: 27,
+                          height: 27,
+                          margin: const EdgeInsets.symmetric(horizontal: 2),
+                          decoration: BoxDecoration(
+                            color: Colors.transparent,
+                            borderRadius: BorderRadius.circular(13.5),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.06),
+                                blurRadius: 3,
+                                offset: const Offset(0, 3),
+                              ),
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.15),
+                                blurRadius: 8,
+                                offset: const Offset(0, 3),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
                     ),
                   ),
-                ),
+                ] else if (widget.showClearButton &&
+                    _controller.text.isNotEmpty) ...[
+                  LotusTap(
+                    onTap: () {
+                      _controller.clear();
+                      widget.onClear?.call();
+                      widget.onChanged?.call('');
+                    },
+                    child: Container(
+                      width: 24,
+                      height: 24,
+                      margin: const EdgeInsets.only(right: 16),
+                      child: ClayAssetIcon(
+                        'assets/icons/close_icon.svg',
+                        width: 24,
+                        height: 24,
+                      ),
+                    ),
+                  ),
+                ],
               ],
-            ],
+            ),
           ),
         ),
         if (widget.errorText != null &&

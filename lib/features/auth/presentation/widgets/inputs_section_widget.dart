@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/input_bubble_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/app/data/models/user/user_model.dart';
@@ -15,8 +16,6 @@ import 'package:google_places_flutter/google_places_flutter.dart';
 import 'package:google_places_flutter/model/place_type.dart';
 import 'package:google_places_flutter/model/prediction.dart';
 
-const _authInputFill = Color(0x339A7DB8);
-const _authInputDarkFill = Color(0x331E1640);
 const _authPanelFill = Color(0xFF151028);
 const _authMutedText = Color(0xFFB5AAB8);
 const _authPurpleStart = Color(0xFF6E4BFF);
@@ -206,98 +205,98 @@ class _InputsSectionWidgetState extends State<InputsSectionWidget> {
           cursorColor: AppColors.white,
         ),
       ),
-      child: GooglePlaceAutoCompleteTextField(
-        boxDecoration: BoxDecoration(
-          gradient: _authInputGradient,
-          borderRadius: BorderRadius.circular(16),
-        ),
-        textEditingController: widget.placeController,
-        focusNode: _placeFocusNode,
-        googleAPIKey: di.get<Environment>().googleMapsApiKey,
-        inputDecoration: InputDecoration(
-          hintText: widget.placeLabel,
-          hintStyle: _inputTextStyle(
-            context,
-          ).copyWith(color: AppColors.white.withValues(alpha: 0.5)),
-          border: _transparentBorder,
-          focusedBorder: _transparentBorder,
-          enabledBorder: _transparentBorder,
-          disabledBorder: _transparentBorder,
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: 14,
+      child: InputBubbleSurface(
+        surfaceBrightness: Brightness.dark,
+        child: GooglePlaceAutoCompleteTextField(
+          boxDecoration: const BoxDecoration(),
+          textEditingController: widget.placeController,
+          focusNode: _placeFocusNode,
+          googleAPIKey: di.get<Environment>().googleMapsApiKey,
+          inputDecoration: InputDecoration(
+            hintText: widget.placeLabel,
+            hintStyle: _inputTextStyle(
+              context,
+            ).copyWith(color: AppColors.white.withValues(alpha: 0.5)),
+            border: _transparentBorder,
+            focusedBorder: _transparentBorder,
+            enabledBorder: _transparentBorder,
+            disabledBorder: _transparentBorder,
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 14,
+            ),
+            filled: false,
+            fillColor: Colors.transparent,
+            suffixIcon: widget.placeController.text.isNotEmpty
+                ? LotusButtons.icon(
+                    onPressed: () {
+                      widget.placeController.clear();
+                      context.read<AuthCubit>().updateUserBirthPlace('');
+                    },
+                    icon: const ClayIcon(
+                      CupertinoIcons.clear_circled_solid,
+                      color: _authMutedText,
+                      size: 20,
+                    ),
+                    padding: const EdgeInsets.only(right: 10),
+                    constraints: const BoxConstraints(
+                      minWidth: 44,
+                      minHeight: 44,
+                    ),
+                  )
+                : null,
           ),
-          filled: false,
-          fillColor: Colors.transparent,
-          suffixIcon: widget.placeController.text.isNotEmpty
-              ? LotusButtons.icon(
-                  onPressed: () {
-                    widget.placeController.clear();
-                    context.read<AuthCubit>().updateUserBirthPlace('');
-                  },
-                  icon: const ClayIcon(
-                    CupertinoIcons.clear_circled_solid,
-                    color: _authMutedText,
-                    size: 20,
+          textStyle: _inputTextStyle(context),
+          debounceTime: 600,
+          language: Localizations.localeOf(context).languageCode,
+          isLatLngRequired: true,
+          getPlaceDetailWithLatLng: (Prediction prediction) {
+            context.read<AuthCubit>().updateUserBirthPlace(
+              prediction.description ?? '',
+              latitude: double.tryParse(prediction.lat ?? '0'),
+              longitude: double.tryParse(prediction.lng ?? '0'),
+            );
+          },
+          itemClick: (Prediction prediction) {
+            LotusFeedback.selection();
+            final description = prediction.description ?? '';
+            widget.placeController.text = description;
+            widget.placeController.selection = TextSelection.fromPosition(
+              TextPosition(offset: description.length),
+            );
+          },
+          itemBuilder: (context, index, Prediction prediction) {
+            return Ink(
+              height: 44,
+              color: _authPanelFill,
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  prediction.description ?? '',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: context.textTheme.inverseUrbanistRegular16.copyWith(
+                    height: 1.2,
+                    letterSpacing: -0.408,
                   ),
-                  padding: const EdgeInsets.only(right: 10),
-                  constraints: const BoxConstraints(
-                    minWidth: 44,
-                    minHeight: 44,
-                  ),
-                )
-              : null,
-        ),
-        textStyle: _inputTextStyle(context),
-        debounceTime: 600,
-        language: Localizations.localeOf(context).languageCode,
-        isLatLngRequired: true,
-        getPlaceDetailWithLatLng: (Prediction prediction) {
-          context.read<AuthCubit>().updateUserBirthPlace(
-            prediction.description ?? '',
-            latitude: double.tryParse(prediction.lat ?? '0'),
-            longitude: double.tryParse(prediction.lng ?? '0'),
-          );
-        },
-        itemClick: (Prediction prediction) {
-          LotusFeedback.selection();
-          final description = prediction.description ?? '';
-          widget.placeController.text = description;
-          widget.placeController.selection = TextSelection.fromPosition(
-            TextPosition(offset: description.length),
-          );
-        },
-        itemBuilder: (context, index, Prediction prediction) {
-          return Ink(
-            height: 44,
-            color: _authPanelFill,
-            padding: const EdgeInsets.symmetric(horizontal: 8),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                prediction.description ?? '',
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: context.textTheme.inverseUrbanistRegular16.copyWith(
-                  height: 1.2,
-                  letterSpacing: -0.408,
                 ),
               ),
-            ),
-          );
-        },
-        seperatedBuilder: const Divider(
-          height: 1,
-          thickness: 1,
-          indent: 8,
-          endIndent: 8,
-          color: Color(0x1AEEEAFD),
+            );
+          },
+          seperatedBuilder: const Divider(
+            height: 1,
+            thickness: 1,
+            indent: 8,
+            endIndent: 8,
+            color: Color(0x1AEEEAFD),
+          ),
+          isCrossBtnShown: false,
+          containerHorizontalPadding: 0,
+          placeType: PlaceType.cities,
+          keyboardType: TextInputType.text,
+          textInputAction: TextInputAction.done,
         ),
-        isCrossBtnShown: false,
-        containerHorizontalPadding: 0,
-        placeType: PlaceType.cities,
-        keyboardType: TextInputType.text,
-        textInputAction: TextInputAction.done,
       ),
     );
   }
@@ -322,58 +321,57 @@ class _AuthTextInput extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 50,
-      decoration: BoxDecoration(
-        gradient: _authInputGradient,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: TextField(
-              onTap: LotusFeedback.selection,
-              controller: controller,
-              focusNode: focusNode,
-              keyboardType: TextInputType.name,
-              textInputAction: textInputAction ?? TextInputAction.next,
-              textCapitalization: TextCapitalization.words,
-              onChanged: onChanged,
-              onSubmitted: onSubmitted,
-              style: _inputTextStyle(context),
-              cursorColor: AppColors.white,
-              decoration: InputDecoration(
-                hintText: hintText,
-                hintStyle: _inputTextStyle(
-                  context,
-                ).copyWith(color: AppColors.white.withValues(alpha: 0.5)),
-                border: InputBorder.none,
-                enabledBorder: InputBorder.none,
-                focusedBorder: InputBorder.none,
-                filled: false,
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 14,
+    return InputBubbleSurface(
+      surfaceBrightness: Brightness.dark,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(minHeight: 50),
+        child: Row(
+          children: [
+            Expanded(
+              child: TextField(
+                onTap: LotusFeedback.selection,
+                controller: controller,
+                focusNode: focusNode,
+                keyboardType: TextInputType.name,
+                textInputAction: textInputAction ?? TextInputAction.next,
+                textCapitalization: TextCapitalization.words,
+                onChanged: onChanged,
+                onSubmitted: onSubmitted,
+                style: _inputTextStyle(context),
+                cursorColor: AppColors.white,
+                decoration: InputDecoration(
+                  hintText: hintText,
+                  hintStyle: _inputTextStyle(
+                    context,
+                  ).copyWith(color: AppColors.white.withValues(alpha: 0.5)),
+                  border: InputBorder.none,
+                  enabledBorder: InputBorder.none,
+                  focusedBorder: InputBorder.none,
+                  filled: false,
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 14,
+                  ),
+                  isDense: true,
                 ),
-                isDense: true,
               ),
             ),
-          ),
-          if (controller.text.isNotEmpty)
-            LotusButtons.icon(
-              onPressed: () {
-                controller.clear();
-                onChanged('');
-              },
-              icon: const ClayIcon(
-                CupertinoIcons.clear_circled_solid,
-                color: _authMutedText,
-                size: 20,
+            if (controller.text.isNotEmpty)
+              LotusButtons.icon(
+                onPressed: () {
+                  controller.clear();
+                  onChanged('');
+                },
+                icon: const ClayIcon(
+                  CupertinoIcons.clear_circled_solid,
+                  color: _authMutedText,
+                  size: 20,
+                ),
+                padding: const EdgeInsets.only(right: 10),
+                constraints: const BoxConstraints(minWidth: 44, minHeight: 44),
               ),
-              padding: const EdgeInsets.only(right: 10),
-              constraints: const BoxConstraints(minWidth: 44, minHeight: 44),
-            ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -403,22 +401,22 @@ class _AuthDateTimeField extends StatelessWidget {
         button: true,
         enabled: isEnabled,
         label: text ?? hintText,
-        child: Container(
-          height: 50,
-          alignment: Alignment.centerLeft,
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          decoration: BoxDecoration(
-            gradient: _authInputGradient,
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: Text(
-            text ?? hintText,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: _inputTextStyle(context).copyWith(
-              color: hasValue
-                  ? AppColors.white.withValues(alpha: isEnabled ? 1 : 0.55)
-                  : AppColors.white.withValues(alpha: 0.5),
+        child: InputBubbleSurface(
+          surfaceBrightness: Brightness.dark,
+          enabled: isEnabled,
+          child: Container(
+            constraints: const BoxConstraints(minHeight: 50),
+            alignment: Alignment.centerLeft,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Text(
+              text ?? hintText,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: _inputTextStyle(context).copyWith(
+                color: hasValue
+                    ? AppColors.white.withValues(alpha: isEnabled ? 1 : 0.55)
+                    : AppColors.white.withValues(alpha: 0.5),
+              ),
             ),
           ),
         ),
@@ -513,10 +511,4 @@ TextStyle _inputTextStyle(BuildContext context) {
 const _transparentBorder = OutlineInputBorder(
   borderSide: BorderSide.none,
   borderRadius: BorderRadius.all(Radius.circular(16)),
-);
-
-const _authInputGradient = LinearGradient(
-  begin: Alignment.topLeft,
-  end: Alignment.bottomRight,
-  colors: [_authInputDarkFill, _authInputFill],
 );

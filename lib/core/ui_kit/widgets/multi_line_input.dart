@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/input_bubble_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:flutter/material.dart';
@@ -48,33 +49,28 @@ class _MultiLineInputState extends State<MultiLineInput> {
     super.dispose();
   }
 
-  Color _getBorderColor() {
-    switch (widget.state) {
-      case MultiLineInputState.error:
-        return const Color(0xFFDB4C4C);
-      case MultiLineInputState.active:
-      case MultiLineInputState.typing:
-        return const Color(0xFF9747FF);
-      default:
-        return Colors.transparent;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
+    final foreground = Theme.of(context).brightness == Brightness.dark
+        ? AppColors.textInverse
+        : AppColors.textPrimary;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (widget.label != null) ...[
-          Text(widget.label!, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
+          Text(
+            widget.label!,
+            style: Theme.of(
+              context,
+            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+          ),
           const SizedBox(height: 8),
         ],
-        Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: _getBorderColor(), width: 1),
-          ),
+        InputBubbleSurface(
+          focused:
+              widget.state == MultiLineInputState.active ||
+              widget.state == MultiLineInputState.typing,
+          hasError: widget.state == MultiLineInputState.error,
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             child: TextField(
@@ -85,22 +81,25 @@ class _MultiLineInputState extends State<MultiLineInput> {
               minLines: widget.minLines,
               maxLines: null,
               onChanged: widget.onChanged,
-              style: context.textTheme.inputText,
-              cursorColor: AppColors.textPrimary,
+              style: AppTypography.text1.copyWith(color: foreground),
+              cursorColor: foreground,
               decoration: InputDecoration(
                 hintText: widget.hintText,
-                hintStyle: context.textTheme.inputHint,
+                hintStyle: AppTypography.placeholder.copyWith(
+                  color: foreground.withValues(alpha: .65),
+                ),
                 border: InputBorder.none,
                 focusedBorder: InputBorder.none,
                 enabledBorder: InputBorder.none,
                 contentPadding: EdgeInsets.zero,
-                filled: true,
+                filled: false,
                 fillColor: Colors.transparent,
               ),
             ),
           ),
         ),
-        if (widget.errorText != null && widget.state == MultiLineInputState.error) ...[
+        if (widget.errorText != null &&
+            widget.state == MultiLineInputState.error) ...[
           const SizedBox(height: 8),
           Text(widget.errorText!, style: context.textTheme.inputErrorText),
         ],

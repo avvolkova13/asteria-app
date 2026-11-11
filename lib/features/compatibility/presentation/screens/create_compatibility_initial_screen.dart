@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/input_bubble_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/app/providers/content_provider.dart';
@@ -273,33 +274,36 @@ class _CompatibilityInputField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 50,
-      decoration: BoxDecoration(
-        color: const Color(0xFF3D2F54).withValues(alpha: 0.78),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.white.withValues(alpha: 0.28)),
-      ),
-      alignment: Alignment.center,
-      child: TextField(
-        onTap: LotusFeedback.selection,
-        controller: controller,
-        onChanged: onChanged,
-        textCapitalization: TextCapitalization.words,
-        cursorColor: AppColors.white,
-        style: context.textTheme.inverseUrbanistRegular16,
-        decoration: InputDecoration(
-          hintText: hintText,
-          hintStyle: AppTypography.placeholder.copyWith(
-            color: context.textTheme.tertiaryUrbanistRegular16.color,
+    return InputBubbleSurface(
+      surfaceBrightness: Brightness.dark,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(minHeight: 50),
+        child: Align(
+          alignment: Alignment.centerLeft,
+          child: TextField(
+            onTap: LotusFeedback.selection,
+            controller: controller,
+            onChanged: onChanged,
+            textCapitalization: TextCapitalization.words,
+            cursorColor: AppColors.white,
+            style: context.textTheme.inverseUrbanistRegular16,
+            decoration: InputDecoration(
+              hintText: hintText,
+              hintStyle: AppTypography.placeholder.copyWith(
+                color: context.textTheme.tertiaryUrbanistRegular16.color,
+              ),
+              border: InputBorder.none,
+              enabledBorder: InputBorder.none,
+              focusedBorder: InputBorder.none,
+              filled: false,
+              fillColor: Colors.transparent,
+              isDense: true,
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 12,
+              ),
+            ),
           ),
-          border: InputBorder.none,
-          enabledBorder: InputBorder.none,
-          focusedBorder: InputBorder.none,
-          filled: true,
-          fillColor: Colors.transparent,
-          isDense: true,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16),
         ),
       ),
     );
@@ -326,24 +330,21 @@ class _CompatibilityDateField extends StatelessWidget {
         behavior: HitTestBehavior.opaque,
         onTap: onTap,
         child: ExcludeSemantics(
-          child: Container(
-            height: 50,
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            decoration: BoxDecoration(
-              color: const Color(0xFF3D2F54).withValues(alpha: 0.78),
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: AppColors.white.withValues(alpha: 0.28),
+          child: InputBubbleSurface(
+            surfaceBrightness: Brightness.dark,
+            child: Container(
+              constraints: const BoxConstraints(minHeight: 50),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              alignment: Alignment.centerLeft,
+              child: Text(
+                text ?? hintText,
+                style: text != null
+                    ? context.textTheme.inverseUrbanistRegular16
+                    : AppTypography.placeholder.copyWith(
+                        color:
+                            context.textTheme.tertiaryUrbanistRegular16.color,
+                      ),
               ),
-            ),
-            alignment: Alignment.centerLeft,
-            child: Text(
-              text ?? hintText,
-              style: text != null
-                  ? context.textTheme.inverseUrbanistRegular16
-                  : AppTypography.placeholder.copyWith(
-                      color: context.textTheme.tertiaryUrbanistRegular16.color,
-                    ),
             ),
           ),
         ),

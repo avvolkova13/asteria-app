@@ -1,9 +1,8 @@
+import 'package:asteria_app/core/ui_kit/widgets/input_bubble_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
-const _codeBoxFill = Color(0x339A7DB8);
 
 class CodeInputWidget extends StatefulWidget {
   final Function(String) onCodeEntered;
@@ -82,41 +81,44 @@ class _CodeInputWidgetState extends State<CodeInputWidget> {
             child: Stack(
               alignment: Alignment.center,
               children: [
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: List.generate(widget.codeLength, (index) {
-                    final digit = _controller.text.length > index
-                        ? _controller.text[index]
-                        : '';
-                    return Padding(
-                      padding: EdgeInsets.only(
-                        right: index == widget.codeLength - 1 ? 0 : spacing,
-                      ),
-                      child: SizedBox(
-                        width: boxWidth,
-                        height: 50,
-                        child: DecoratedBox(
-                          decoration: BoxDecoration(
-                            color: _codeBoxFill,
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(
-                              color: widget.isError
-                                  ? AppColors.error
-                                  : Colors.transparent,
-                              width: 1,
+                ExcludeSemantics(
+                  child: ListenableBuilder(
+                    listenable: _focusNode,
+                    builder: (context, _) => Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: List.generate(widget.codeLength, (index) {
+                        final digit = _controller.text.length > index
+                            ? _controller.text[index]
+                            : '';
+                        return Padding(
+                          padding: EdgeInsets.only(
+                            right: index == widget.codeLength - 1 ? 0 : spacing,
+                          ),
+                          child: SizedBox(
+                            width: boxWidth,
+                            height: 50,
+                            child: InputBubbleSurface(
+                              surfaceBrightness: Brightness.dark,
+                              borderRadius: BorderRadius.circular(14),
+                              hasError: widget.isError,
+                              focused:
+                                  _focusNode.hasFocus &&
+                                  index == _controller.text.length,
+                              child: Center(
+                                child: Text(
+                                  digit,
+                                  style: context
+                                      .textTheme
+                                      .inverseUrbanistSemiBold20
+                                      .copyWith(color: AppColors.white),
+                                ),
+                              ),
                             ),
                           ),
-                          child: Center(
-                            child: Text(
-                              digit,
-                              style: context.textTheme.inverseUrbanistSemiBold20
-                                  .copyWith(color: AppColors.white),
-                            ),
-                          ),
-                        ),
-                      ),
-                    );
-                  }),
+                        );
+                      }),
+                    ),
+                  ),
                 ),
                 Positioned(
                   width: totalWidth,
@@ -152,30 +154,17 @@ class _CodeInputWidgetState extends State<CodeInputWidget> {
                           color: Colors.transparent,
                           fontSize: 1,
                         ),
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           counterText: '',
-                          border: OutlineInputBorder(
-                            borderSide: BorderSide.none,
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide.none,
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide.none,
-                          ),
-                          disabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide.none,
-                          ),
-                          errorBorder: OutlineInputBorder(
-                            borderSide: BorderSide.none,
-                          ),
-                          focusedErrorBorder: OutlineInputBorder(
-                            borderSide: BorderSide.none,
-                          ),
+                          border: InputBorder.none,
+                          enabledBorder: InputBorder.none,
+                          focusedBorder: InputBorder.none,
+                          disabledBorder: InputBorder.none,
+                          errorBorder: InputBorder.none,
+                          focusedErrorBorder: InputBorder.none,
                           contentPadding: EdgeInsets.zero,
                           isDense: true,
-                          filled: true,
-                          fillColor: Colors.transparent,
+                          filled: false,
                         ),
                         onChanged: _onCodeChanged,
                       ),

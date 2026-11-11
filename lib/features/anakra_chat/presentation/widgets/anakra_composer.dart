@@ -1,7 +1,7 @@
 import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
-import 'anakra_glass_surface.dart';
+import 'package:asteria_app/core/ui_kit/widgets/input_bubble_surface.dart';
 import 'anakra_layout.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
@@ -29,8 +29,9 @@ class AnakraComposer extends StatelessWidget {
     return Row(
       children: [
         Expanded(
-          child: AnakraGlassSurface(
-            shadow: true,
+          child: InputBubbleSurface(
+            enabled: !busy,
+            surfaceBrightness: Brightness.dark,
             child: SizedBox(
               height: 48,
               child: TextField(

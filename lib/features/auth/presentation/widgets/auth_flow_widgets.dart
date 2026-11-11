@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/input_bubble_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
@@ -10,7 +11,6 @@ import 'package:flutter/services.dart';
 const _authBackgroundAsset = 'assets/images/auth/auth_flow_background.webp';
 const _authBackdrop = Color(0xFF0F0A1A);
 const _authBackgroundHeightFactor = 780 / 844;
-const _authInputFill = Color(0x339A7DB8);
 const _authButtonStart = Color(0xFF6E4BFF);
 const _authButtonEnd = Color(0xFF5A3FD1);
 const _authButtonHighlight = Color(0x40FFFFFF);
@@ -340,74 +340,72 @@ class _AuthTextInputState extends State<AuthTextInput> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Container(
-          height: 50,
-          decoration: BoxDecoration(
-            color: _authInputFill,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: widget.isError ? AppColors.error : Colors.transparent,
-            ),
-          ),
-          child: Row(
-            children: [
-              Expanded(
-                child: TextField(
-                  onTap: LotusFeedback.selection,
-                  controller: widget.controller,
-                  focusNode: widget.focusNode,
-                  inputFormatters: widget.inputFormatters,
-                  keyboardType: widget.keyboardType,
-                  autofillHints: widget.autofillHints,
-                  readOnly: widget.readOnly,
-                  autocorrect: false,
-                  enableSuggestions:
-                      widget.keyboardType != TextInputType.emailAddress,
-                  textInputAction: TextInputAction.done,
-                  textCapitalization: TextCapitalization.none,
-                  onChanged: widget.onChanged,
-                  onSubmitted: widget.onSubmitted,
-                  style: AppTypography.placeholder.copyWith(
-                    color: AppColors.white,
+        InputBubbleSurface(
+          surfaceBrightness: Brightness.dark,
+          enabled: !widget.readOnly,
+          hasError: widget.isError,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(minHeight: 50),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    onTap: LotusFeedback.selection,
+                    controller: widget.controller,
+                    focusNode: widget.focusNode,
+                    inputFormatters: widget.inputFormatters,
+                    keyboardType: widget.keyboardType,
+                    autofillHints: widget.autofillHints,
+                    readOnly: widget.readOnly,
+                    autocorrect: false,
+                    enableSuggestions:
+                        widget.keyboardType != TextInputType.emailAddress,
+                    textInputAction: TextInputAction.done,
+                    textCapitalization: TextCapitalization.none,
+                    onChanged: widget.onChanged,
+                    onSubmitted: widget.onSubmitted,
+                    style: AppTypography.placeholder.copyWith(
+                      color: AppColors.white,
+                    ),
+                    cursorColor: AppColors.white,
+                    decoration: InputDecoration(
+                      hintText: widget.hintText,
+                      hintStyle: AppTypography.placeholder.copyWith(
+                        color: AppColors.textTertiary,
+                      ),
+                      border: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      filled: false,
+                      fillColor: Colors.transparent,
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 14,
+                      ),
+                      isDense: true,
+                    ),
                   ),
-                  cursorColor: AppColors.white,
-                  decoration: InputDecoration(
-                    hintText: widget.hintText,
-                    hintStyle: AppTypography.placeholder.copyWith(
+                ),
+                if (widget.controller.text.isNotEmpty && !widget.readOnly)
+                  LotusButtons.icon(
+                    onPressed: () {
+                      widget.controller.clear();
+                      widget.onChanged('');
+                    },
+                    tooltip: context.l10n.commonClear,
+                    icon: const ClayIcon(
+                      CupertinoIcons.clear_circled_solid,
                       color: AppColors.textTertiary,
+                      size: 20,
                     ),
-                    border: InputBorder.none,
-                    enabledBorder: InputBorder.none,
-                    focusedBorder: InputBorder.none,
-                    filled: false,
-                    fillColor: Colors.transparent,
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 14,
+                    padding: const EdgeInsets.only(right: 14),
+                    constraints: const BoxConstraints(
+                      minWidth: 44,
+                      minHeight: 44,
                     ),
-                    isDense: true,
                   ),
-                ),
-              ),
-              if (widget.controller.text.isNotEmpty && !widget.readOnly)
-                LotusButtons.icon(
-                  onPressed: () {
-                    widget.controller.clear();
-                    widget.onChanged('');
-                  },
-                  tooltip: context.l10n.commonClear,
-                  icon: const ClayIcon(
-                    CupertinoIcons.clear_circled_solid,
-                    color: AppColors.textTertiary,
-                    size: 20,
-                  ),
-                  padding: const EdgeInsets.only(right: 14),
-                  constraints: const BoxConstraints(
-                    minWidth: 44,
-                    minHeight: 44,
-                  ),
-                ),
-            ],
+              ],
+            ),
           ),
         ),
         if (widget.isError && widget.errorText != null) ...[

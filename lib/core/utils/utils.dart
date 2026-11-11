@@ -32,7 +32,13 @@ Widget buildDateTimeField({
 }) {
   return LotusTap(
     onTap: isEnabled ? onTap : null,
-    child: DateTimePickerWidget(key: key, text: text, hintText: hintText),
+    child: DateTimePickerWidget(
+      key: key,
+      text: text,
+      hintText: hintText,
+      enabled: isEnabled,
+      selected: isSelected,
+    ),
   );
 }
 
