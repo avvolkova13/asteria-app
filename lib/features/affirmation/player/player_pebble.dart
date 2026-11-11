@@ -93,7 +93,7 @@ class _PlayerPebbleState extends State<PlayerPebble>
         ? 44.0
         : 45.0;
     final glyphSize = widget.primary
-        ? 46.0
+        ? (widget.compact ? 28.0 : 46.0)
         : glyph == ClayGlyph.close
         ? 19.5
         : header
