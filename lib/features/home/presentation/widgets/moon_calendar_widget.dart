@@ -54,11 +54,12 @@ class MoonCalendarWidget extends StatelessWidget {
   Widget _calendar(BuildContext context, MoonScreenState state) {
     final localeTag = Localizations.localeOf(context).toLanguageTag();
     final textScaler = MediaQuery.textScalerOf(context);
-    final dayHeight = (textScaler.scale(20) * 1.25 + 32).clamp(
-      57.0,
+    // Reserve room for the phase marker and status without a second large row gap.
+    final dayHeight = (textScaler.scale(20) * 1.25 + 33).clamp(
+      58.0,
       double.infinity,
     );
-    final rowHeight = dayHeight + 16;
+    final rowHeight = dayHeight + 2;
     final weekdayHeight = textScaler.scale(13) * 18 / 13 + 8;
     final monthLabel = DateFormat('LLLL y', localeTag).format(state.focusedDay);
     final title = monthLabel[0].toUpperCase() + monthLabel.substring(1);

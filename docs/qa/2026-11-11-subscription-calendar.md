@@ -21,3 +21,9 @@
 - Full parallel suite: 939 passed, 4 skipped, one failure in the unchanged Apple coordinator test `native future hangs: deadline stops spinner, receipt is processed, duplicate buy remains blocked` (`api.reconciled` expected 1, got 0). The Apple-coordinator file passed separately. This timing failure remains an explicit limitation; no payment-coordinator production code was changed.
 - Calendar reordering and payment-flow review used one bounded independent agent; final native inspection and integration were performed by the main agent.
 - Native screenshots are in `/private/tmp/subscription-ui/` and are temporary inspection artifacts.
+
+## Follow-up: calendar proportions
+
+- Removed the redundant vertical gap between week rows in the shared calendar. A standard row is now 60pt instead of 73pt; a six-week month is 78pt shorter. Date typography, header spacing and status-marker room are retained. Row size continues to grow with system text size.
+- Applied to both the lunar tab and date-planning scenario. Native inspection: November (six rows), phase markers, selected date with gardening statuses, and haircut date selection. No visible overlaps in these states.
+- Calendar widget checks cover four-, five- and six-week months at 390×740 and 390×900, text scales 1.0/1.5, semantic-cell alignment, phase markers, selected capsule and next-month navigation. Calendar comparison/save/return flow also passed: 10 targeted tests, analyzer clean.

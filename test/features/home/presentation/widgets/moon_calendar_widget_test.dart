@@ -24,60 +24,65 @@ void main() {
   setUpAll(() async {
     await initializeDateFormatting('ru');
     final fonts = FontLoader('Onest')
-      ..addFont(rootBundle.load('assets/fonts/onest/Onest-VariableFont_wght.ttf'));
+      ..addFont(
+        rootBundle.load('assets/fonts/onest/Onest-VariableFont_wght.ttf'),
+      );
     await fonts.load();
   });
 
   for (final viewportHeight in [740.0, 900.0]) {
-    testWidgets('fits each month at viewport height $viewportHeight', (
-      tester,
-    ) async {
-      _setCalendarViewport(tester);
-      tester.view.physicalSize = Size(390, viewportHeight);
-      final cubit = _TestMoonScreenCubit();
-      addTearDown(cubit.close);
+    for (final textScale in [1.0, 1.5]) {
+      testWidgets(
+        'fits each month at height $viewportHeight and text scale $textScale',
+        (tester) async {
+          _setCalendarViewport(tester);
+          tester.view.physicalSize = Size(390, viewportHeight);
+          final cubit = _TestMoonScreenCubit();
+          addTearDown(cubit.close);
 
-      // Four, six, then five weeks, exercising height changes in both directions.
-      for (final month in [
-        DateTime(2027, 2),
-        DateTime(2026, 8),
-        DateTime(2026, 9),
-      ]) {
-        cubit.replaceState(MoonScreenState(focusedDay: month));
-        await tester.pumpWidget(_calendarApp(cubit, textScale: 1));
-        await tester.pumpAndSettle();
+          // Four, six, then five weeks, exercising height changes in both directions.
+          for (final month in [
+            DateTime(2027, 2),
+            DateTime(2026, 8),
+            DateTime(2026, 9),
+          ]) {
+            cubit.replaceState(MoonScreenState(focusedDay: month));
+            await tester.pumpWidget(_calendarApp(cubit, textScale: textScale));
+            await tester.pumpAndSettle();
 
-        final visibleCells = find.byWidgetPredicate(
-          (widget) =>
-              widget is Semantics &&
-              widget.properties.button == true &&
-              widget.child is ExcludeSemantics,
-        );
-        final cells = tester.widgetList<Semantics>(visibleCells).toList();
-        final lastCell = visibleCells.at(cells.length - 1);
-        final cardBottom = tester
-            .getBottomLeft(find.byType(MoonCalendarWidget))
-            .dy;
-        final lastCellBottom = tester.getBottomLeft(lastCell).dy;
-        expect(cardBottom - lastCellBottom, inInclusiveRange(16, 18));
+            final visibleCells = find.byWidgetPredicate(
+              (widget) =>
+                  widget is Semantics &&
+                  widget.properties.button == true &&
+                  widget.child is ExcludeSemantics,
+            );
+            final cells = tester.widgetList<Semantics>(visibleCells).toList();
+            final lastCell = visibleCells.at(cells.length - 1);
+            final cardBottom = tester
+                .getBottomLeft(find.byType(MoonCalendarWidget))
+                .dy;
+            final lastCellBottom = tester.getBottomLeft(lastCell).dy;
+            expect(cardBottom - lastCellBottom, inInclusiveRange(8, 10));
 
-        for (var index = 0; index < cells.length; index++) {
-          final label = cells[index].properties.label;
-          final overlayCell = find.byWidgetPredicate(
-            (widget) =>
-                widget is Semantics &&
-                widget.properties.label == label &&
-                widget.child is SizedBox,
-          );
-          expect(overlayCell, findsOneWidget);
-          expect(
-            tester.getCenter(overlayCell).dy,
-            closeTo(tester.getCenter(visibleCells.at(index)).dy, 0.1),
-          );
-        }
-        expect(tester.takeException(), isNull);
-      }
-    });
+            for (var index = 0; index < cells.length; index++) {
+              final label = cells[index].properties.label;
+              final overlayCell = find.byWidgetPredicate(
+                (widget) =>
+                    widget is Semantics &&
+                    widget.properties.label == label &&
+                    widget.child is SizedBox,
+              );
+              expect(overlayCell, findsOneWidget);
+              expect(
+                tester.getCenter(overlayCell).dy,
+                closeTo(tester.getCenter(visibleCells.at(index)).dy, 0.1),
+              );
+            }
+            expect(tester.takeException(), isNull);
+          }
+        },
+      );
+    }
   }
 
   testWidgets('renders star icons only for in-month dates with statuses', (
@@ -195,7 +200,7 @@ void main() {
     final decoration = _selectedDayBackgroundDecoration(tester);
     final highlightSize = tester.getSize(find.byKey(_selectedDayHighlightKey));
 
-    expect(highlightSize, const Size(32, 57));
+    expect(highlightSize, const Size(32, 58));
     expect(decoration.color, isNull);
     expect(decoration.boxShadow, isNull);
     expect(decoration.gradient, isA<LinearGradient>());
