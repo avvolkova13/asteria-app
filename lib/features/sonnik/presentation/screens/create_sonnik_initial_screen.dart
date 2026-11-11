@@ -141,9 +141,9 @@ class _CreateSonnikInitialScreenState extends State<CreateSonnikInitialScreen> {
         physics: const ClampingScrollPhysics(),
         padding: EdgeInsets.fromLTRB(
           16,
-          18,
+          6,
           16,
-          32 + MediaQuery.of(context).viewInsets.bottom,
+          32 + MediaQuery.paddingOf(context).bottom,
         ),
         children: [
           Consumer<MonetizationProvider>(
@@ -153,32 +153,62 @@ class _CreateSonnikInitialScreenState extends State<CreateSonnikInitialScreen> {
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: AsteriaEntrance.sections([
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: Text(
-                          context.l10n.dreamGreeting,
-                          style: context.textTheme.inversePlayfairSemiBold24
-                              .copyWith(height: 1.0),
+                  LayoutBuilder(
+                    builder: (context, constraints) {
+                      final avatarSize = (constraints.maxWidth * .435).clamp(
+                        120.0,
+                        156.0,
+                      );
+                      return ConstrainedBox(
+                        constraints: const BoxConstraints(minHeight: 176),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    context.l10n.dreamGreeting,
+                                    style: context
+                                        .textTheme
+                                        .inversePlayfairSemiBold24
+                                        .copyWith(height: 1.0),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    context.l10n.dreamTellPrompt,
+                                    style: context
+                                        .textTheme
+                                        .inverseUrbanistRegular16
+                                        .copyWith(
+                                          color: SonnikPalette.white.withValues(
+                                            alpha: 0.78,
+                                          ),
+                                          height: 1.2,
+                                        ),
+                                  ),
+                                  if (!monetizationProvider.effectivePro) ...[
+                                    const SizedBox(height: 8),
+                                    SonnikQuotaBadge(
+                                      requestsLeft: requestsLeft,
+                                    ),
+                                  ],
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            SizedBox(
+                              width: avatarSize,
+                              height: avatarSize,
+                              child: const SonnikLiveyaAvatar(),
+                            ),
+                          ],
                         ),
-                      ),
-                      const SizedBox(width: 12),
-                      const SonnikLiveyaAvatar(),
-                    ],
+                      );
+                    },
                   ),
-                  const SizedBox(height: 14),
-                  Text(
-                    context.l10n.dreamTellPrompt,
-                    style: context.textTheme.inverseUrbanistRegular16.copyWith(
-                      color: SonnikPalette.white.withValues(alpha: 0.78),
-                      height: 1.25,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  if (!monetizationProvider.effectivePro)
-                    SonnikQuotaBadge(requestsLeft: requestsLeft),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 32),
                   SonnikTextArea(
                     controller: _textController,
                     onChanged: _onTextChanged,
