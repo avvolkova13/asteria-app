@@ -1102,47 +1102,50 @@ class _MagicConclusionCard extends StatelessWidget {
           opacity: 0.25,
         ),
       ),
-      child: Stack(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Positioned(
-            right: 0,
-            top: 0,
-            child: IgnorePointer(
-              child: ClipRect(
-                child: SizedBox(
-                  width: 78,
-                  height: 192,
-                  child: Image.asset(
-                    _imageAsset,
-                    frameBuilder: AsteriaEntrance.imageFrame,
-                    fit: BoxFit.contain,
-                    alignment: Alignment.center,
-                  ),
-                ),
-              ),
+          Text(
+            context.l10n.natalMagicSummary,
+            style: context.textTheme.inversePlayfairSemiBold24.copyWith(
+              height: 1,
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.only(right: 94),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  context.l10n.natalMagicSummary,
-                  style: context.textTheme.inversePlayfairSemiBold24.copyWith(
-                    height: 1,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Text(
+          const SizedBox(height: 12),
+          Row(
+            spacing: 12,
+            children: [
+              Expanded(
+                flex: 2,
+                child: Text(
                   description,
                   style: context.textTheme.inverseUrbanistRegular16.copyWith(
                     height: 1.2,
                     letterSpacing: -0.408,
                   ),
                 ),
-              ],
-            ),
+              ),
+              Flexible(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 120),
+                  child: AspectRatio(
+                    aspectRatio: 453 / 680,
+                    child: ClipRect(
+                      // The artwork occupies the central 60% of its canvas.
+                      child: Transform.scale(
+                        scale: 1.55,
+                        child: Image.asset(
+                          _imageAsset,
+                          frameBuilder: AsteriaEntrance.imageFrame,
+                          fit: BoxFit.contain,
+                          excludeFromSemantics: true,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),
