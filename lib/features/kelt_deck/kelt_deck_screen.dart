@@ -169,7 +169,7 @@ class _KeltDeckScreenState extends State<KeltDeckScreen> {
                       )
                     else
                       _KeltDeckContent(onRefresh: onRefreshPressed),
-                    const SizedBox(height: 100),
+                    SizedBox(height: MediaQuery.paddingOf(context).bottom + 24),
                   ],
                 ),
               ),

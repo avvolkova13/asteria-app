@@ -1,3 +1,4 @@
+import 'package:asteria_app/features/scenarios/scenario_sky.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
@@ -136,7 +137,9 @@ class _LoveDeckScreenState extends State<LoveDeckScreen> {
 
     return Scaffold(
       backgroundColor: _LoveDeckColors.background,
-      body: CustomScrollView(
+      body: Stack(fit: StackFit.expand, children: [
+        if (ScenarioSkyScope.of(context)) const ScenarioSky(),
+        CustomScrollView(
         slivers: [
           SliverPersistentHeader(
             pinned: true,
@@ -174,7 +177,7 @@ class _LoveDeckScreenState extends State<LoveDeckScreen> {
                           onRefresh: onRefreshPressed,
                           afterReading: widget.afterReading,
                         ),
-                      const SizedBox(height: 100),
+                      SizedBox(height: MediaQuery.paddingOf(context).bottom + 24),
                     ],
                   ),
                 ),
@@ -183,6 +186,7 @@ class _LoveDeckScreenState extends State<LoveDeckScreen> {
           ),
         ],
       ),
+      ]),
     );
   }
 }

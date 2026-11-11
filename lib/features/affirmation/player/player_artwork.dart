@@ -1,3 +1,4 @@
+import 'package:asteria_app/features/scenarios/scenario_sky.dart';
 import 'dart:math' as math;
 import 'dart:ui' as ui;
 
@@ -124,7 +125,7 @@ class _PlayerArtworkState extends State<PlayerArtwork>
             return Stack(
               fit: StackFit.expand,
               children: [
-                Image.asset(
+                if (ScenarioSkyScope.of(context)) const ScenarioSky() else Image.asset(
                   '$playerArtDirectory/zephyr-sky.webp',
                   fit: BoxFit.cover,
                 ),

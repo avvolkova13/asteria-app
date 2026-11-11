@@ -49,7 +49,7 @@ class CalendarPlan {
   final DateTime day;
   final CalendarActivity activity;
   final String title;
-  final TaskRecommendationModel recommendation;
+  final TaskRecommendationModel? recommendation;
 
   Map<String, Object> toJson() => {
     'id': id,
@@ -57,7 +57,7 @@ class CalendarPlan {
     'day': calendarDateKey(day),
     'activity': activity.name,
     'title': title,
-    'recommendation': recommendation.toJson(),
+    if (recommendation case final rec?) 'recommendation': rec.toJson(),
   };
 
   factory CalendarPlan.fromJson(Map data) => CalendarPlan(
@@ -66,9 +66,11 @@ class CalendarPlan {
     day: calendarDay(DateTime.parse(data['day'] as String)),
     activity: CalendarActivity.values.byName(data['activity'] as String),
     title: data['title'] as String,
-    recommendation: TaskRecommendationModel.fromJson(
-      Map<String, dynamic>.from(data['recommendation'] as Map),
-    ),
+    recommendation: data['recommendation'] == null
+        ? null
+        : TaskRecommendationModel.fromJson(
+            Map<String, dynamic>.from(data['recommendation'] as Map),
+          ),
   );
 }
 

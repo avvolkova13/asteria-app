@@ -1,3 +1,6 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
+import 'package:asteria_app/features/home/presentation/models/lunar_almanac.dart';
+import 'package:intl/intl.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/features/scenarios/calendar_scenario.dart';
 import 'package:asteria_app/app/data/models/lunar_calendar/lunar_recommendation_models.dart';
@@ -180,8 +183,6 @@ class _MoonScreenState extends State<MoonScreen> {
                                       context.l10n.lunarCalendarTitle,
                                     ).withEntrance(),
                                     const SizedBox(height: 16),
-                                    const CalendarPlanningEntry(),
-                                    const SizedBox(height: 16),
                                     AsteriaEntrance(
                                       replayKey: (
                                         state.selectedDate,
@@ -194,6 +195,8 @@ class _MoonScreenState extends State<MoonScreen> {
                                         recommendation: recommendation,
                                       ),
                                     ),
+                                    const SizedBox(height: 24),
+                                    const CalendarPlanningEntry(),
                                     const SizedBox(height: 24),
                                     const SphereSelectionWidget(),
                                     const SizedBox(height: 24),
@@ -255,17 +258,61 @@ class _MoonScreenAdvice extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final personalizedDay = state.selectedPersonalizedDayData;
+    final day = state.selectedDate ?? state.focusedDay;
+    final date = DateFormat.MMMMEEEEd(
+      Localizations.localeOf(context).toLanguageTag(),
+    ).format(day);
     if (personalizedDay == null) {
-      return AdviceWidget(
-        title: context.l10n.moonCalendarLoadingDayTitle,
-        text: context.l10n.moonCalendarLoadingDayDescription,
-        status: state.selectedDayStatus,
+      final almanac = LunarAlmanacDay.on(day);
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (almanac != null) ...[
+            Text(
+              date,
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(color: Colors.white70),
+            ),
+            const SizedBox(height: 10),
+          ],
+          AdviceWidget(
+            title: almanac?.phase.label(context) ?? date,
+            text:
+                almanac?.describeNextEvent(context) ??
+                context.l10n.moonDayDetailsUnavailable,
+          ),
+          if (state.error != null && !state.isLoading)
+            LotusButtons.text(
+              onPressed: () => context.read<MoonScreenCubit>().loadMonth(
+                state.focusedDay,
+                forceRefresh: true,
+              ),
+              child: Text(context.l10n.retry),
+            ),
+        ],
       );
     }
-
-    return PhaseBackgroundWidget(
-      background: personalizedDay.dailyBackground,
-      recommendation: recommendation,
+    final lunar = personalizedDay.lunarContext;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          [
+            date,
+            context.l10n.moonDayNumber(lunar.lunarDayNumber),
+            lunar.moonPhaseName,
+          ].join(' · '),
+          style: Theme.of(
+            context,
+          ).textTheme.bodyMedium?.copyWith(color: Colors.white70),
+        ),
+        const SizedBox(height: 12),
+        PhaseBackgroundWidget(
+          background: personalizedDay.dailyBackground,
+          recommendation: recommendation,
+        ),
+      ],
     );
   }
 }

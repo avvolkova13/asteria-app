@@ -83,7 +83,7 @@ void main() {
       final own = CalendarPlans.read(box, 'a').single;
       expect(own.day, DateTime.utc(2026, 12, 1));
       expect(own.title, 'Repot ficus a');
-      expect(own.recommendation.description, rec.description);
+      expect(own.recommendation?.description, rec.description);
       expect(CalendarPlans.read(box, 'unknown'), isEmpty);
     },
   );

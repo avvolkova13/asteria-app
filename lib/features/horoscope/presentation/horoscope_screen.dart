@@ -5,7 +5,6 @@ import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
 import 'dart:math' as math;
 import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
-import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 
 import 'package:asteria_app/app/data/models/horoscope/horoscope_year_model.dart';
 import 'package:asteria_app/app/providers/content_provider.dart';
@@ -207,7 +206,6 @@ class _HoroscopeScreenState extends State<HoroscopeScreen> {
           children: [
             const Positioned.fill(child: _HoroscopeBackground()),
             CustomScrollView(
-              physics: const BouncingScrollPhysics(),
               slivers: [
                 SliverToBoxAdapter(
                   child: Padding(
@@ -559,14 +557,7 @@ class _HoroscopeTopBar extends StatelessWidget {
                         height: 44,
                         child: Align(
                           alignment: Alignment.centerLeft,
-                          child: LotusIconSurface(
-                            diameter: 27,
-                            child: ClayAssetIcon(
-                              'assets/icons/back_icon.svg',
-                              height: 24,
-                              tint: AppColors.textSecondary,
-                            ),
-                          ),
+                          child: LotusArrowBubble(back: true),
                         ),
                       ),
                     ),

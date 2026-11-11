@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/content_scroll_behavior.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'dart:async';
@@ -296,6 +297,7 @@ class _App extends StatelessWidget {
           final themeManager = ThemeManager.instance;
 
           return MaterialApp.router(
+            scrollBehavior: const ContentScrollBehavior(),
             title: 'Asteria',
             debugShowCheckedModeBanner: false,
             locale:

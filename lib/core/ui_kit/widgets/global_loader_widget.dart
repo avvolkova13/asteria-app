@@ -1,7 +1,7 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
 import 'dart:async';
-import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 
 import 'package:asteria_app/app/providers/user_provider.dart';
 import 'package:asteria_app/core/routing/app_route.dart';
@@ -184,12 +184,7 @@ class _CompatibilityLoaderTopBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        ClayAssetIcon(
-          'assets/icons/back_icon.svg',
-          width: 24,
-          height: 24,
-          tint: AppColors.textSecondary,
-        ),
+        const ExcludeSemantics(child: Opacity(opacity: .45, child: LotusArrowBubble(back: true))),
         const SizedBox(width: 10),
         Expanded(
           child: Text(

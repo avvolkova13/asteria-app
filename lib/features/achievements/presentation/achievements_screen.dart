@@ -7,7 +7,6 @@ import 'package:asteria_app/app/data/models/user/user_model.dart';
 import 'package:asteria_app/app/providers/user_provider.dart';
 import 'package:asteria_app/core/di/di.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
-import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 import 'package:asteria_app/core/ui_kit/widgets/static_glass_surface.dart';
 import 'package:asteria_app/features/achievements/presentation/achievements_style.dart';
 import 'package:asteria_app/features/achievements/presentation/widgets/achievement_card.dart';
@@ -126,7 +125,7 @@ class _AchievementsHeader extends StatelessWidget {
             Row(
               children: [
                 SizedBox(
-                  width: 28,
+                  width: 44,
                   height: 44,
                   child: LotusButtons.icon(
                     onPressed: () => Navigator.of(context).pop(),
@@ -134,19 +133,7 @@ class _AchievementsHeader extends StatelessWidget {
                       context,
                     ).backButtonTooltip,
                     padding: EdgeInsets.zero,
-                    icon: const LotusIconSurface(
-                      diameter: 28,
-                      child: SizedBox.square(
-                        dimension: 28,
-                        child: Center(
-                          child: ClayIcon(
-                            Icons.chevron_left,
-                            size: 20,
-                            color: Color(0xFFB5AAB8),
-                          ),
-                        ),
-                      ),
-                    ),
+                    icon: const LotusArrowBubble(back: true),
                   ),
                 ),
                 const SizedBox(width: 6),

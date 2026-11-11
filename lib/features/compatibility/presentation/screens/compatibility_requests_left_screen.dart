@@ -1,9 +1,9 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/card_radii.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
-import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 import 'package:asteria_app/features/compatibility/presentation/widgets/compatibility_layout.dart';
 import 'package:asteria_app/features/monetization/presentation/monetization_provider.dart';
 import 'package:flutter/material.dart';
@@ -188,42 +188,20 @@ class _SubscriptionOfferCard extends StatelessWidget {
         gradient: _glassCardGradient,
         child: ConstrainedBox(
           constraints: const BoxConstraints(minHeight: 125),
-          child: Stack(
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(right: 4),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _OfferHeader(title: context.l10n.offerProTitle),
-                    const SizedBox(height: 17),
-                    Text(
-                      context.l10n.offerIncludesTitle,
-                      style: context.textTheme.inversePlayfairSemiBold17
-                          .copyWith(height: 22 / 17, letterSpacing: -0.408),
-                    ),
-                    const SizedBox(height: 8),
-                    SizedBox(
-                      width: 226,
-                      child: Text(
-                        context.l10n.offerUnlimitedDescription,
-                        style: context.textTheme.inverseUrbanistRegular16
-                            .copyWith(height: 1.2, letterSpacing: -0.408),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Positioned(
-                right: 0,
-                bottom: 0,
-                child: Image.asset(
-                  'assets/images/sonnik/pro_crystal.webp',
-                  width: 89,
-                  height: 103,
-                  fit: BoxFit.contain,
-                ),
-              ),
+          child: Column(
+            crossAxisAlignment:CrossAxisAlignment.start,
+            children:[
+              _OfferHeader(title:context.l10n.offerProTitle),
+              const SizedBox(height:10),
+              Row(children:[
+                Expanded(child: Column(crossAxisAlignment:CrossAxisAlignment.start,children:[
+                  Text(context.l10n.offerIncludesTitle,style:context.textTheme.inversePlayfairSemiBold17),
+                  const SizedBox(height:8),
+                  Text(context.l10n.offerUnlimitedDescription,style:context.textTheme.inverseUrbanistRegular16.copyWith(height:1.2)),
+                ])),
+                const SizedBox(width:10),
+                Image.asset('assets/images/sonnik/pro_crystal.webp',width:76,height:88,fit:BoxFit.contain,excludeFromSemantics:true),
+              ]),
             ],
           ),
         ),
@@ -314,21 +292,7 @@ class _OfferArrow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 18,
-      height: 18,
-      decoration: BoxDecoration(
-        border: Border.all(color: _accentColor),
-        shape: BoxShape.circle,
-      ),
-      child: Center(
-        child: ClayAssetIcon(
-          'assets/icons/right_arrow_icon.svg',
-          width: 10,
-          tint: _accentColor,
-        ),
-      ),
-    );
+    return const LotusArrowBubble();
   }
 }
 

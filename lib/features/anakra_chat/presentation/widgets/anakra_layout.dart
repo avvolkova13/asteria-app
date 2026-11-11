@@ -6,7 +6,6 @@ import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
 import 'package:asteria_app/core/routing/app_route.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
-import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 import 'package:asteria_app/core/ui_kit/widgets/subscription_widget.dart';
 import 'package:asteria_app/features/monetization/presentation/monetization_provider.dart';
 import 'package:asteria_app/features/home/presentation/models/year_animal_asset.dart';
@@ -107,22 +106,15 @@ class AnakraTopNavBar extends StatelessWidget {
       child: Row(
         children: [
           SizedBox(
-            width: 36,
-            height: 36,
+            width: 44,
+            height: 44,
             child: canPop
                 ? LotusButtons.icon(
                     onPressed: () => Navigator.of(context).pop(),
                     tooltip: MaterialLocalizations.of(
                       context,
                     ).backButtonTooltip,
-                    icon: const LotusIconSurface(
-                      diameter: 32,
-                      child: ClayIcon(
-                        Icons.arrow_back_ios_new_rounded,
-                        color: AnakraPalette.white,
-                        size: 20,
-                      ),
-                    ),
+                    icon: const LotusArrowBubble(back: true),
                     padding: EdgeInsets.zero,
                   )
                 : null,

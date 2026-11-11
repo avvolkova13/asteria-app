@@ -101,7 +101,7 @@ class RunesScreen extends StatelessWidget {
                           }
                         },
                       ),
-                      const SizedBox(height: 100),
+                      SizedBox(height: MediaQuery.paddingOf(context).bottom + 24),
                     ],
                   ),
                 ),

@@ -1,7 +1,6 @@
 import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
-import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/features/home/presentation/cubit/moon_screen_cubit.dart';
 import 'package:asteria_app/features/home/presentation/cubit/moon_screen_state.dart';
@@ -646,18 +645,7 @@ class _MonthArrow extends StatelessWidget {
         padding: EdgeInsets.zero,
         icon: Opacity(
           opacity: onTap == null ? 0.3 : 1,
-          child: LotusIconSurface(
-            diameter: 30,
-            child: ClayAssetIcon(
-              previous
-                  ? 'assets/icons/moon_calendar_previous.svg'
-                  : 'assets/icons/moon_calendar_next.svg',
-              width: 10,
-              height: 18,
-              excludeFromSemantics: true,
-              tint: MoonDesignTokens.chipOrange,
-            ),
-          ),
+          child: LotusArrowBubble(back: previous),
         ),
       ),
     );

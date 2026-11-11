@@ -1,3 +1,4 @@
+import 'package:asteria_app/features/scenarios/scenario_sky.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/ui_kit/card_radii.dart';
@@ -39,7 +40,7 @@ class CompatibilityLayout extends StatelessWidget {
         body: Stack(
           fit: StackFit.expand,
           children: [
-            const _CompatibilityStarBackground().withEntrance(),
+            if (ScenarioSkyScope.of(context)) const ScenarioSky() else const _CompatibilityStarBackground().withEntrance(),
             CustomScrollView(
               physics: physics,
               slivers: [

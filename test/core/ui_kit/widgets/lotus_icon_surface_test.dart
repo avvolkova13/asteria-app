@@ -3,6 +3,44 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  for (final back in [false, true]) {
+    testWidgets(
+      'arrow bubble renders and accepts a tap outside its rim ($back)',
+      (tester) async {
+        var taps = 0;
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Center(
+              child: SizedBox.square(
+                dimension: LotusArrowBubble.hitExtent,
+                child: IconButton(
+                  onPressed: () => taps++,
+                  padding: EdgeInsets.zero,
+                  icon: LotusArrowBubble(back: back),
+                ),
+              ),
+            ),
+          ),
+        );
+        final button = find.byType(IconButton);
+        final glyph = find.byIcon(
+          back ? Icons.chevron_left : Icons.chevron_right,
+        );
+        expect(find.byType(LotusArrowBubble), findsOneWidget);
+        expect(find.byType(LotusIconSurface), findsOneWidget);
+        expect(
+          tester.getSize(glyph),
+          const Size.square(LotusArrowBubble.glyphSize),
+        );
+        expect(tester.getSize(button), const Size.square(44));
+        await tester.tapAt(tester.getTopLeft(button) + const Offset(2, 2));
+        await tester.pump();
+        expect(taps, 1);
+        expect(tester.takeException(), isNull);
+      },
+    );
+  }
+
   testWidgets('the standalone surface preserves glyph and tap target bounds', (
     tester,
   ) async {

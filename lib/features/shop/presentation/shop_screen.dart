@@ -106,13 +106,12 @@ class _ShopScreenState extends State<ShopScreen> {
         builder: (context, state) {
           return _ShopBackground(
             child: SafeArea(
-              bottom: false,
               child: CustomScrollView(
                 slivers: [
                   const SliverToBoxAdapter(child: _ShopHeader()),
                   SliverToBoxAdapter(
                     child: Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 30, 16, 112),
+                      padding: const EdgeInsets.fromLTRB(16, 30, 16, 24),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -459,14 +458,7 @@ class _ShopHeader extends StatelessWidget {
                             height: 44,
                             child: Align(
                               alignment: Alignment.centerLeft,
-                              child: LotusIconSurface(
-                                diameter: 27,
-                                child: ClayAssetIcon(
-                                  'assets/icons/back_icon.svg',
-                                  height: 24,
-                                  tint: _ShopColors.navMuted,
-                                ),
-                              ),
+                              child: LotusArrowBubble(back: true),
                             ),
                           ),
                         ),
@@ -754,7 +746,6 @@ class _ShopColors {
   static const card = Color(0x339A7DB8);
   static const cardBorder = Color(0x52FFFFFF);
   static const imageFrame = Color(0x8021183D);
-  static const navMuted = Color(0xB8FFFFFF);
   static const textSecondary = Color(0xD9FFFFFF);
   static const gold = Color(0xFFF3B76A);
   static const zero = Color(0xFFE36A6A);

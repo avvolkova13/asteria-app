@@ -136,73 +136,76 @@ class CardAdvertisementWidget extends StatelessWidget {
   }
 
   Widget _buildBalanceSubscriptionBanner(BuildContext context) {
-    final textScale = MediaQuery.textScalerOf(context).scale(1);
-    final clampedTextScale = textScale > 1.35 ? 1.35 : textScale;
-
     return LayoutBuilder(
       builder: (context, constraints) {
-        final outerWidth = constraints.maxWidth;
-        final horizontalMargin = this.horizontalMargin ?? 16;
-        final cardWidth = outerWidth - (horizontalMargin * 2);
-        final baseHeight = cardWidth / 1.598;
-        final scaledHeight =
-            baseHeight + ((clampedTextScale - 1).clamp(0, 1) * 320);
-        final textWidth = cardWidth * 0.61;
-        final artWidth = cardWidth * 0.34;
-
+        final margin = horizontalMargin ?? 16;
+        final cardWidth = constraints.maxWidth - margin * 2;
+        final artWidth = (cardWidth * .29).clamp(64.0, 120.0);
+        final scale = MediaQuery.textScalerOf(context).scale(1);
+        final minimumHeight =
+            cardWidth / 1.598 + (scale - 1).clamp(0.0, .35) * 320;
+        final roomyCopy = cardWidth < 310 || scale > 1.25;
+        final body = Text(
+          description,
+          style: context.textTheme.inverseUrbanistRegular16.copyWith(
+            height: 1.2,
+          ),
+        );
         const borderRadius = AsteriaCardRadii.card;
-
         return Container(
           width: double.infinity,
-          height: scaledHeight.toDouble(),
-          margin: EdgeInsets.symmetric(horizontal: horizontalMargin),
+          constraints: BoxConstraints(minHeight: minimumHeight),
+          margin: EdgeInsets.symmetric(horizontal: margin),
           clipBehavior: Clip.antiAlias,
           decoration: CardLensDecoration(
             color: _balanceSubscriptionBackground,
             borderRadius: BorderRadius.circular(borderRadius),
           ),
           child: Stack(
-            clipBehavior: Clip.hardEdge,
             children: [
-              Positioned(
-                top: 14,
-                right: 12,
-                width: artWidth,
-                height: baseHeight * 0.76,
-                child: Image.asset(
-                  'assets/images/home/balance_subscription_art.webp',
-                  cacheWidth: 500,
-                  fit: BoxFit.contain,
-                  alignment: Alignment.topRight,
-                ),
-              ),
               Padding(
-                padding: const EdgeInsets.all(16),
+                padding: EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: roomyCopy ? 12 : 16,
+                ),
                 child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SizedBox(
-                      width: textWidth,
-                      child: Text(
-                        title,
-                        maxLines: 3,
-                        overflow: TextOverflow.ellipsis,
-                        style: context.textTheme.inversePlayfairSemiBold24
-                            .copyWith(height: 1),
-                      ),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                title,
+                                style: context
+                                    .textTheme
+                                    .inversePlayfairSemiBold24
+                                    .copyWith(height: 1),
+                              ),
+                              if (!roomyCopy) ...[
+                                const SizedBox(height: 6),
+                                body,
+                              ],
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Image.asset(
+                          'assets/images/home/balance_subscription_art.webp',
+                          width: artWidth,
+                          height: roomyCopy ? artWidth * .92 : artWidth * 1.1,
+                          fit: BoxFit.contain,
+                          cacheWidth: 500,
+                          excludeFromSemantics: true,
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 6),
-                    SizedBox(
-                      width: textWidth,
-                      child: Text(
-                        description,
-                        maxLines: 4,
-                        overflow: TextOverflow.ellipsis,
-                        style: context.textTheme.inverseUrbanistRegular16
-                            .copyWith(height: 1.1),
-                      ),
-                    ),
-                    const Spacer(),
+                    if (roomyCopy) ...[const SizedBox(height: 6), body],
+                    SizedBox(height: roomyCopy ? 10 : 12),
                     SizedBox(
                       width: double.infinity,
                       child: _BalanceSubscriptionButton(

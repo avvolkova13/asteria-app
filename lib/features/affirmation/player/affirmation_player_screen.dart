@@ -1,5 +1,4 @@
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
-import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 import 'dart:async';
 import 'dart:math' as math;
 
@@ -385,18 +384,18 @@ class _AffirmationPlayerScreenState extends State<AffirmationPlayerScreen> {
                                       : strings.playerShowTranscript,
                                   onPressed: _toggleReading,
                                   icon: LotusIconSurface(
-                                    diameter: 32,
+                                    diameter: LotusArrowBubble.diameter,
                                     child: RotatedBox(
                                       quarterTurns: end ? 1 : 3,
                                       child: LotusGlyphMotion(
                                         child: const PlayerClayGlyph(
                                           ClayGlyph.chevron,
-                                          17,
+                                          LotusArrowBubble.glyphSize,
                                         ),
                                         frameBuilder: (frame) =>
                                             PlayerClayGlyph(
                                               ClayGlyph.chevron,
-                                              17,
+                                              LotusArrowBubble.glyphSize,
                                               frame: frame,
                                             ),
                                       ),
@@ -718,13 +717,7 @@ class _PlayerHeader extends StatelessWidget {
                 ? LotusButtons.icon(
                     tooltip: MaterialLocalizations.of(context).backButtonTooltip,
                     onPressed: onExit,
-                    icon: const LotusIconSurface(
-                      child: ClayIcon(
-                        Icons.arrow_back_ios_new_rounded,
-                        size: 24,
-                        color: _headerInk,
-                      ),
-                    ),
+                    icon: const LotusArrowBubble(back: true),
                   )
                 : PlayerPebble(
                     glyph: ClayGlyph.close,

@@ -1,3 +1,4 @@
+import 'package:asteria_app/features/scenarios/scenario_sky.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'dart:convert';
 
@@ -45,7 +46,7 @@ class StrengthTipStore {
 
 Future<void> _open(BuildContext context, Widget child) => Navigator.of(
   context,
-).push<void>(CupertinoPageRoute<void>(builder: (_) => child));
+).push<void>(CupertinoPageRoute<void>(builder: (_) => ScenarioSkyScope(child: child)));
 
 class StrengthScenarioScreen extends StatelessWidget {
   const StrengthScenarioScreen({super.key});

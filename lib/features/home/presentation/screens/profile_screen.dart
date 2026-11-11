@@ -219,9 +219,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
       body: ProfileFlowBackground(
         imageAsset: 'assets/images/home/profile_background.webp',
         child: SafeArea(
-          bottom: false,
           child: SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(16, 14, 16, 112),
+            padding: const EdgeInsets.fromLTRB(16, 14, 16, 24),
             child: Consumer<UserProvider>(
               builder: (context, userProvider, child) {
                 final user = userProvider.currentUser;

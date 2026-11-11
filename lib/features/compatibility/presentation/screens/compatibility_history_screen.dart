@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/app/data/models/saved_compatibility/saved_compatibility_model.dart';
@@ -144,21 +145,7 @@ class _CompatibilityHistoryItem extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 18),
-            Container(
-              width: 20,
-              height: 20,
-              decoration: BoxDecoration(
-                border: Border.all(color: AppColors.white),
-                borderRadius: BorderRadius.circular(6),
-              ),
-              child: Center(
-                child: ClayAssetIcon(
-                  'assets/icons/right_arrow_icon.svg',
-                  width: 12,
-                  tint: AppColors.white,
-                ),
-              ),
-            ),
+            const LotusArrowBubble(),
           ],
         ),
       ),

@@ -578,46 +578,41 @@ class _PackageSelectionControl extends StatelessWidget {
     return Container(
       width: 56,
       height: 56,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: isSelected
-            ? ProfileFlowColors.accent
-            : ProfileFlowColors.purpleDark,
+      padding: const EdgeInsets.all(5),
+      decoration: CardLensDecoration.button(
+        borderRadius: BorderRadius.circular(28),
+        color: isSelected ? AppColors.primary : AppColorsDark.modal,
+        border: Border.all(color: ProfileFlowColors.border, width: .8),
       ),
       child: isSelected
           ? const ClayIcon(
               Icons.check_rounded,
-              color: ProfileFlowColors.purpleDark,
-              size: 38,
+              color: AppColors.white,
+              size: 24,
             )
           : benefit == null
           ? null
-          : Center(
-              child: FittedBox(
-                fit: BoxFit.scaleDown,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      context.l10n.savings,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: context.textTheme.inverseUrbanistRegular16
-                          .copyWith(
-                            color: ProfileFlowColors.accent,
-                            fontSize: 12,
-                            height: 1,
-                          ),
+          : FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    context.l10n.savings,
+                    style: context.textTheme.inverseUrbanistRegular16.copyWith(
+                      color: ProfileFlowColors.textMuted,
+                      fontSize: 11,
+                      height: 1.1,
                     ),
-                    Text(
-                      benefit,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: context.textTheme.inverseUrbanistRegular16
-                          .copyWith(color: ProfileFlowColors.accent, height: 1),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    benefit,
+                    style: context.textTheme.inverseUrbanistSemiBold16.copyWith(
+                      height: 1,
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
     );

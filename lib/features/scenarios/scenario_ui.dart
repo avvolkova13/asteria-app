@@ -1,3 +1,4 @@
+import 'package:asteria_app/features/scenarios/scenario_sky.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
@@ -54,7 +55,7 @@ class ScenarioPage extends StatelessWidget {
     return Theme(
       data: darkTheme,
       child: AuthFlowScaffold(
-        background: background,
+        background: background ?? const ScenarioSky(),
         backgroundOpacity: .25,
         child: SafeArea(
           child: Padding(
@@ -70,13 +71,7 @@ class ScenarioPage extends StatelessWidget {
                         context,
                       ).backButtonTooltip,
                       onPressed: () => Navigator.maybePop(context),
-                      icon: const LotusIconSurface(
-                        child: ClayIcon(
-                          Icons.arrow_back_ios_new_rounded,
-                          size: 24,
-                          color: AppColors.textInverse,
-                        ),
-                      ),
+                      icon: const LotusArrowBubble(back: true),
                     ),
                   ),
                 if (!back) const SizedBox(height: 24),

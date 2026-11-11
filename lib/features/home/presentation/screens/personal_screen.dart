@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/ui_kit/card_radii.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
@@ -27,6 +28,7 @@ import 'package:asteria_app/features/home/presentation/cubit/home_cubit.dart';
 import 'package:asteria_app/features/home/presentation/cubit/home_state.dart';
 import 'package:asteria_app/features/home/presentation/widgets/card_advertisement_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart' show RenderAbstractViewport;
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -344,7 +346,7 @@ class _PersonalScreenState extends State<PersonalScreen> {
         _PersonalCompatibilitySection(
           onPressed: _onCompatibilityPressed,
         ).withEntrance(),
-        const SizedBox(height: 124),
+        const SizedBox(height: 24),
       ],
     );
   }
@@ -913,7 +915,7 @@ final _zodiacCardDecoration = CardLensDecoration(
   border: Border.all(color: AppColors.white.withValues(alpha: 0.18)),
 );
 
-class _HoroscopeImpactMetrics extends StatelessWidget {
+class _HoroscopeImpactMetrics extends StatefulWidget {
   final String lovePercentage;
   final String financesPercentage;
   final String energyPercentage;
@@ -925,22 +927,83 @@ class _HoroscopeImpactMetrics extends StatelessWidget {
   });
 
   @override
+  State<_HoroscopeImpactMetrics> createState() =>
+      _HoroscopeImpactMetricsState();
+}
+
+class _HoroscopeImpactMetricsState extends State<_HoroscopeImpactMetrics> {
+  ScrollPosition? _scroll;
+  bool _visible = false;
+  bool _queued = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final active = TickerMode.valuesOf(context).enabled;
+    final reduced = MediaQuery.disableAnimationsOf(context);
+    if (!active) _visible = false;
+    _watch(
+      active && !_visible && !reduced
+          ? Scrollable.maybeOf(context)?.position
+          : null,
+    );
+    if (active && !_visible && !reduced) _queueCheck();
+  }
+
+  void _watch(ScrollPosition? position) {
+    if (identical(position, _scroll)) return;
+    _scroll?.removeListener(_queueCheck);
+    _scroll = position;
+    _scroll?.addListener(_queueCheck);
+  }
+
+  void _queueCheck() {
+    if (_queued || _visible) return;
+    _queued = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _queued = false;
+      if (!mounted || !TickerMode.valuesOf(context).enabled) return;
+      final box = context.findRenderObject();
+      if (box is! RenderBox || !box.hasSize) return;
+      final viewport = RenderAbstractViewport.maybeOf(box);
+      if (viewport != null) {
+        final bounds = MatrixUtils.transformRect(
+          box.getTransformTo(viewport),
+          box.paintBounds,
+        );
+        if (bounds.intersect(viewport.paintBounds).height < 16) return;
+      }
+      _watch(null);
+      setState(() => _visible = true);
+    });
+  }
+
+  @override
+  void dispose() {
+    _watch(null);
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         _ImpactMetric(
-          percentage: lovePercentage,
+          visible: _visible,
+          percentage: widget.lovePercentage,
           label: context.l10n.personalLove,
           metricId: 'love',
         ),
         _ImpactMetric(
-          percentage: financesPercentage,
+          visible: _visible,
+          percentage: widget.financesPercentage,
           label: context.l10n.personalFinances,
           metricId: 'finances',
         ),
         _ImpactMetric(
-          percentage: energyPercentage,
+          visible: _visible,
+          percentage: widget.energyPercentage,
           label: context.l10n.personalEnergy,
           metricId: 'energy',
         ),
@@ -952,11 +1015,13 @@ class _HoroscopeImpactMetrics extends StatelessWidget {
 class _ImpactMetric extends StatelessWidget {
   final String percentage;
   final String label;
+  final bool visible;
   final String metricId;
 
   const _ImpactMetric({
     required this.percentage,
     required this.label,
+    required this.visible,
     required this.metricId,
   });
 
@@ -972,12 +1037,10 @@ class _ImpactMetric extends StatelessWidget {
             child: Stack(
               alignment: Alignment.center,
               children: [
-                CustomPaint(
-                  key: ValueKey('personal-impact-ring-$metricId'),
-                  size: const Size.square(71),
-                  painter: _PersonalImpactRingPainter(
-                    progress: _progressValue(percentage),
-                  ),
+                _ImpactRing(
+                  metricId: metricId,
+                  value: _progressValue(percentage),
+                  visible: visible,
                 ),
                 Text(
                   percentage,
@@ -1006,122 +1069,116 @@ class _ImpactMetric extends StatelessWidget {
   }
 
   double _progressValue(String value) {
-    final parsed = double.tryParse(value.replaceAll('%', '').trim()) ?? 0;
+    final parsed = double.tryParse(
+      value.replaceAll('%', '').replaceAll(',', '.').trim(),
+    );
+    if (parsed == null || !parsed.isFinite) return 0;
     return (parsed / 100).clamp(0, 1);
   }
 }
 
+class _ImpactRing extends StatelessWidget {
+  const _ImpactRing({
+    required this.metricId,
+    required this.value,
+    required this.visible,
+  });
+  final String metricId;
+  final double value;
+  final bool visible;
+
+  @override
+  Widget build(BuildContext context) {
+    Widget draw(double progress) => CustomPaint(
+      key: ValueKey('personal-impact-ring-$metricId'),
+      size: const Size.square(71),
+      painter: _PersonalImpactRingPainter(progress),
+    );
+
+    if (MediaQuery.disableAnimationsOf(context)) return draw(value);
+    if (!visible) return draw(0);
+    return TweenAnimationBuilder<double>(
+      duration: const Duration(milliseconds: 720),
+      curve: Curves.easeOutCubic,
+      tween: Tween(begin: 0.0, end: value),
+      builder: (context, progress, _) => draw(progress),
+    );
+  }
+}
+
 class _PersonalImpactRingPainter extends CustomPainter {
-  static const _backgroundDiameter = 62.125;
-  static const _outerRadius = 35.5;
-  static const _innerRadius = 24.85;
-
+  const _PersonalImpactRingPainter(this.progress);
   final double progress;
-
-  const _PersonalImpactRingPainter({required this.progress});
 
   @override
   void paint(Canvas canvas, Size size) {
-    final center = Offset(size.width / 2, size.height / 2);
-    final backgroundRect = Rect.fromCenter(
-      center: center,
-      width: _backgroundDiameter,
-      height: _backgroundDiameter,
-    );
-    final backgroundGradient = const LinearGradient(
-      colors: [Color(0x33E6994D), Color(0x33F3B76A), Color(0x33E6994D)],
-      stops: [0, 0.500323, 1],
-    );
+    final rect = Offset.zero & size;
+    final center = rect.center;
+    final radius = size.shortestSide / 2;
+    final track = Rect.fromCircle(center: center, radius: radius - 6);
+    final trackPaint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round
+      ..strokeWidth = 8;
 
-    canvas.drawOval(
-      backgroundRect,
-      Paint()..shader = backgroundGradient.createShader(backgroundRect),
-    );
-    canvas.drawOval(
-      backgroundRect,
+    canvas.drawCircle(
+      center,
+      radius - 2,
       Paint()
-        ..color = const Color(0x33EEEAFD)
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 1,
+        ..shader = const RadialGradient(
+          center: Alignment(-0.46, -0.6),
+          radius: 1.05,
+          colors: [Color(0xFF58435B), Color(0xFF34273F), Color(0xFF241B31)],
+        ).createShader(rect),
     );
+    canvas.drawOval(track, trackPaint..color = const Color(0xFF503C56));
 
-    if (progress <= 0) {
-      return;
-    }
-
-    final sweepAngle = math.pi * 2 * progress;
-    final segment = _buildSegment(
-      center: center,
-      startAngle: -math.pi / 2,
-      sweepAngle: sweepAngle,
-    );
-    final ringRect = Rect.fromCircle(center: center, radius: _outerRadius);
-    final activeGradient = const LinearGradient(
-      colors: [Color(0xFFF3B76A), Color(0xFF8A6BFF), Color(0xFF5A3FD1)],
-      stops: [0, 0.500323, 1],
-    );
-
-    canvas.drawPath(
-      segment,
-      Paint()..shader = activeGradient.createShader(ringRect),
-    );
-
-    canvas.save();
-    canvas.clipPath(segment);
-    canvas.translate(0, 4);
+    if (progress <= 0) return;
+    const start = -math.pi / 2;
+    final sweep = 2 * math.pi * progress;
     canvas.drawArc(
-      Rect.fromCircle(center: center, radius: _innerRadius),
-      -math.pi / 2,
-      sweepAngle,
+      track.shift(const Offset(0, 1.4)),
+      start,
+      sweep,
+      false,
+      trackPaint..color = const Color(0xAA26172F),
+    );
+    canvas.drawArc(
+      track,
+      start,
+      sweep,
+      false,
+      trackPaint
+        ..shader = const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Color(0xFFF5C6C1),
+            Color(0xFFE5ABD9),
+            Color(0xFFB09ADD),
+            Color(0xFF8968B7),
+          ],
+        ).createShader(rect),
+    );
+    canvas.drawArc(
+      track,
+      start,
+      sweep,
       false,
       Paint()
-        ..color = AppColors.white.withValues(alpha: 0.25)
         ..style = PaintingStyle.stroke
-        ..strokeWidth = 2
-        ..strokeCap = StrokeCap.butt
-        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 2),
+        ..strokeCap = StrokeCap.round
+        ..strokeWidth = 1.4
+        ..shader = const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xBBFFF3EB), Color(0x33FFFFFF), Color(0x00FFFFFF)],
+        ).createShader(rect),
     );
-    canvas.restore();
-  }
-
-  Path _buildSegment({
-    required Offset center,
-    required double startAngle,
-    required double sweepAngle,
-  }) {
-    final outerRect = Rect.fromCircle(center: center, radius: _outerRadius);
-    final innerRect = Rect.fromCircle(center: center, radius: _innerRadius);
-    if (sweepAngle >= math.pi * 2) {
-      return Path()
-        ..fillType = PathFillType.evenOdd
-        ..addOval(outerRect)
-        ..addOval(innerRect);
-    }
-
-    final endAngle = startAngle + sweepAngle;
-    final outerStart =
-        center +
-        Offset(
-          math.cos(startAngle) * _outerRadius,
-          math.sin(startAngle) * _outerRadius,
-        );
-    final innerEnd =
-        center +
-        Offset(
-          math.cos(endAngle) * _innerRadius,
-          math.sin(endAngle) * _innerRadius,
-        );
-
-    return Path()
-      ..moveTo(outerStart.dx, outerStart.dy)
-      ..arcTo(outerRect, startAngle, sweepAngle, false)
-      ..lineTo(innerEnd.dx, innerEnd.dy)
-      ..arcTo(innerRect, endAngle, -sweepAngle, false)
-      ..close();
   }
 
   @override
-  bool shouldRepaint(covariant _PersonalImpactRingPainter oldDelegate) =>
+  bool shouldRepaint(_PersonalImpactRingPainter oldDelegate) =>
       oldDelegate.progress != progress;
 }
 
@@ -2045,15 +2102,7 @@ class _EmptyCompatibilityCard extends StatelessWidget {
                               ),
                             ),
                             const SizedBox(width: 8),
-                            Transform.rotate(
-                              angle: math.pi / 4,
-                              child: ClayAssetIcon(
-                                'assets/icons/affirmation_arrow_figma.svg',
-                                width: 20,
-                                height: 20,
-                                excludeFromSemantics: true,
-                              ),
-                            ),
+                            const LotusArrowBubble(),
                           ],
                         ),
                       ),

@@ -21,6 +21,7 @@ import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 
+import 'package:asteria_app/features/home/presentation/models/lunar_almanac.dart';
 import 'calendar_plan.dart';
 import 'scenario_ui.dart';
 
@@ -63,104 +64,42 @@ Future<void> _open(BuildContext c, Widget page, {bool fromTab = false}) async {
   await Navigator.of(c).push(_PlannerPage<void>(c, page, fromTab: fromTab));
 }
 
-class CalendarScenarioScreen extends StatefulWidget {
+class CalendarScenarioScreen extends StatelessWidget {
   const CalendarScenarioScreen({super.key});
 
   @override
-  State<CalendarScenarioScreen> createState() => _CalendarScenarioScreenState();
-}
-
-class _CalendarScenarioScreenState extends State<CalendarScenarioScreen> {
-  late Future<LunarMonthModel> _month;
-  late DateTime _today;
-
-  @override
-  void initState() {
-    super.initState();
-    _month = _load();
-  }
-
-  Future<LunarMonthModel> _load() async {
-    final content = di.get<ContentProvider>();
-    final approximate = DateTime.now();
-    final month = await content.loadPersonalizedLunarMonth(approximate);
-    final date = await const MethodChannel(
-      'asteria/calendar',
-    ).invokeMethod<String>('today', month.timezone);
-    if (date == null) throw const FormatException('Missing calendar date');
-    _today = calendarDay(DateTime.parse(date));
-    if (_today.year != month.year || _today.month != month.month) {
-      return content.loadPersonalizedLunarMonth(_today);
-    }
-    return month;
-  }
-
-  void _retry() => setState(() => _month = _load());
-
-  @override
-  Widget build(BuildContext context) {
-    return ScenarioPage(
-      title: context.l10n.scenarioCalendarChooseActivity,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          FutureBuilder<LunarMonthModel>(
-            future: _month,
-            builder: (c, snapshot) {
-              if (snapshot.connectionState != ConnectionState.done) {
-                return const Center(child: CircularProgressIndicator());
-              }
-              if (snapshot.error is CurrentLocationRequiredException) {
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: AsteriaEntrance.sections([
-                    Text(c.l10n.moonLocationSetupDescription),
-                    CurrentLocationControls(onLocationUpdated: _retry),
-                  ]),
-                );
-              }
-              final month = snapshot.data;
-              final available = CalendarActivity.values.where(
-                (task) =>
-                    month?.days.any(
-                      (day) => task.recommendation(day) != null,
-                    ) ??
-                    false,
-              );
-              if (month == null || available.isEmpty) {
-                return _Retry(
-                  text: c.l10n.scenarioCalendarNoActivities,
-                  onRetry: _retry,
-                );
-              }
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: AsteriaEntrance.sections([
-                  for (final task in available)
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 8),
-                      child: ScenarioTile(
-                        title: _activityLabel(c, task),
-                        onTap: () => _open(
-                          c,
-                          _DaySelection(
-                            initialMonth: month,
-                            activity: task,
-                            today: _today,
-                          ),
-                        ),
-                      ),
-                    ),
-                ]),
-              );
-            },
+  Widget build(BuildContext context) => ScenarioPage(
+    title: context.l10n.scenarioCalendarChooseActivity,
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: AsteriaEntrance.sections([
+        Text(
+          context.l10n.scenarioCalendarActivityIntro,
+          style: AppTypography.text1.copyWith(color: AppColors.cardTinted),
+        ),
+        for (final sphere in ['beauty', 'gardening']) ...[
+          const SizedBox(height: 20),
+          Text(
+            sphere == 'beauty'
+                ? context.l10n.sphereBeauty
+                : context.l10n.sphereGarden,
+            style: AppTypography.text1SemiBold.copyWith(
+              color: AppColors.textInverse,
+            ),
           ),
-          const SizedBox(height: 16),
-          const CalendarPlansButton().withEntrance(),
+          const SizedBox(height: 10),
+          for (final task in CalendarActivity.values.where(
+            (task) => task.sphere == sphere,
+          ))
+            ScenarioTile(
+              title: _activityLabel(context, task),
+              onTap: () => _open(context, _DaySelection(activity: task)),
+            ),
         ],
-      ),
-    );
-  }
+        const CalendarPlansButton(),
+      ]),
+    ),
+  );
 }
 
 class _Retry extends StatelessWidget {
@@ -179,13 +118,7 @@ class _Retry extends StatelessWidget {
 }
 
 class _DaySelection extends StatefulWidget {
-  const _DaySelection({
-    required this.initialMonth,
-    required this.activity,
-    required this.today,
-  });
-  final DateTime today;
-  final LunarMonthModel initialMonth;
+  const _DaySelection({required this.activity});
   final CalendarActivity activity;
   @override
   State<_DaySelection> createState() => _DaySelectionState();
@@ -193,30 +126,38 @@ class _DaySelection extends StatefulWidget {
 
 class _DaySelectionState extends State<_DaySelection> {
   final _months = <DateTime, LunarMonthModel>{};
+  final _revision = ValueNotifier(0);
+  int _locationVersion = 0;
   final _selected = <DateTime>{};
   late DateTime _focused;
   late DateTime _today;
   int _request = 0;
   bool _loading = false;
   bool _failed = false;
+  bool _needsLocation = false;
 
   DateTime _monthOf(DateTime day) => DateTime.utc(day.year, day.month);
 
   @override
   void initState() {
     super.initState();
-    _today = widget.today;
-    final month = widget.initialMonth;
-    _months[DateTime.utc(month.year, month.month)] = month;
+    _today = calendarDay(DateTime.now());
     _focused = _today;
+    _showMonth(_today, resolveToday: true);
   }
 
-  Future<void> _showMonth(DateTime date, {bool refresh = false}) async {
+  Future<void> _showMonth(
+    DateTime date, {
+    bool refresh = false,
+    bool resolveToday = false,
+  }) async {
     final month = _monthOf(date);
     final request = ++_request;
+    final locationVersion = _locationVersion;
     setState(() {
       _focused = date.isBefore(_today) ? _today : date;
       _failed = false;
+      _needsLocation = false;
       _loading = refresh || !_months.containsKey(month);
     });
     if (!_loading) return;
@@ -225,18 +166,52 @@ class _DaySelectionState extends State<_DaySelection> {
         month,
         forceRefresh: refresh,
       );
-      if (!mounted || request != _request) return;
+      if (!mounted || locationVersion != _locationVersion) return;
+      _months[month] = model;
+      _revision.value++;
+      if (request != _request) return;
+      if (resolveToday) {
+        String? localDate;
+        try {
+          localDate = await const MethodChannel(
+            'asteria/calendar',
+          ).invokeMethod<String>('today', model.timezone);
+        } on MissingPluginException {
+          // The device calendar still supports planning without a timezone bridge.
+        } on PlatformException {
+          // Continue using the device date if the calendar timezone is unavailable.
+        }
+        if (!mounted || request != _request) return;
+        final resolved = localDate == null
+            ? null
+            : DateTime.tryParse(localDate);
+        if (resolved != null) {
+          _today = calendarDay(resolved);
+          _selected.removeWhere((day) => day.isBefore(_today));
+          _focused = _today;
+          if (_monthOf(_today) != month) {
+            await _showMonth(_today);
+            return;
+          }
+        }
+      }
       setState(() {
-        _months[month] = model;
         _loading = false;
       });
-    } catch (_) {
+    } catch (error) {
       if (!mounted || request != _request) return;
       setState(() {
         _loading = false;
         _failed = true;
+        _needsLocation = error is CurrentLocationRequiredException;
       });
     }
+  }
+
+  @override
+  void dispose() {
+    _revision.dispose();
+    super.dispose();
   }
 
   void _toggle(DateTime day) {
@@ -252,12 +227,9 @@ class _DaySelectionState extends State<_DaySelection> {
     }
   }
 
-  TaskRecommendationModel? _recommendation(DateTime day) =>
-      widget.activity.recommendation(
-        _months[_monthOf(day)]?.days
-            .where((d) => calendarDay(d.date) == day)
-            .firstOrNull,
-      );
+  LunarDayModel? _dayData(DateTime day) => _months[_monthOf(day)]?.days
+      .where((item) => calendarDay(item.date) == day)
+      .firstOrNull;
 
   @override
   Widget build(BuildContext context) {
@@ -295,38 +267,54 @@ class _DaySelectionState extends State<_DaySelection> {
           const SizedBox(height: 8),
           if (_loading)
             const LinearProgressIndicator()
-          else if (_failed)
+          else if (_needsLocation) ...[
+            Text(context.l10n.moonLocationSetupDescription),
+            CurrentLocationControls(
+              onLocationUpdated: () {
+                _locationVersion++;
+                _months.clear();
+                _showMonth(
+                  _focused,
+                  refresh: true,
+                  resolveToday: _monthOf(_focused) == _monthOf(_today),
+                );
+              },
+            ),
+          ] else if (_failed)
             _Retry(
               text: context.l10n.scenarioCalendarMonthError,
               onRetry: () => _showMonth(_focused, refresh: true),
             )
+          else if (statuses.isNotEmpty)
+            const CalendarStatusesWidget()
           else
-            const CalendarStatusesWidget(),
+            Text(context.l10n.scenarioCalendarUnratedDates),
           const SizedBox(height: 16),
           for (final day in _selected)
-            AsteriaEntrance(key: ValueKey(day), child: Text(_dateLabel(context, day))),
+            AsteriaEntrance(
+              key: ValueKey(day),
+              child: Text(_dateLabel(context, day)),
+            ),
           if (_selected.isNotEmpty) ...[
             const SizedBox(height: 12),
             AuthGradientButton(
               text: _selected.length == 2
                   ? context.l10n.scenarioCalendarCompareAction
                   : context.l10n.scenarioCalendarSingleDate,
-              onPressed: _loading
-                  ? null
-                  : () => _open(
-                      context,
-                      _Comparison(
-                        activity: widget.activity,
-                        days: {
-                          for (final day in _selected)
-                            day: _recommendation(day),
-                        },
-                        replaceDay: (date) {
-                          setState(() => _selected.remove(date));
-                          _showMonth(date, refresh: true);
-                        },
-                      ),
-                    ),
+              onPressed: () => _open(
+                context,
+                ListenableBuilder(
+                  listenable: _revision,
+                  builder: (_, _) => _Comparison(
+                    activity: widget.activity,
+                    days: {for (final day in _selected) day: _dayData(day)},
+                    replaceDay: (date) {
+                      setState(() => _selected.remove(date));
+                      _showMonth(date, refresh: true);
+                    },
+                  ),
+                ),
+              ),
             ),
           ],
         ]),
@@ -342,14 +330,19 @@ class _Comparison extends StatelessWidget {
     required this.replaceDay,
   });
   final CalendarActivity activity;
-  final Map<DateTime, TaskRecommendationModel?> days;
+  final Map<DateTime, LunarDayModel?> days;
   final ValueChanged<DateTime> replaceDay;
   @override
   Widget build(BuildContext c) {
+    final ratings = {
+      for (final entry in days.entries)
+        entry.key: activity.recommendation(entry.value),
+    };
     final tied =
-        days.length == 2 &&
-        days.values.every(
-          (v) => v != null && v.status == days.values.first?.status,
+        ratings.length == 2 &&
+        ratings.values.every(
+          (rating) =>
+              rating != null && rating.status == ratings.values.first?.status,
         );
     return ScenarioPage(
       title: days.length == 2
@@ -377,30 +370,37 @@ class _Comparison extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  if (entry.value case final recommendation?) ...[
-                    _Recommendation(recommendation),
-                    const SizedBox(height: 12),
-                    AuthGradientButton(
-                      text: c.l10n.scenarioCalendarSelectDay,
-                      onPressed: () => _open(
-                        c,
-                        _SavePlan(
-                          activity: activity,
-                          date: entry.key,
-                          recommendation: recommendation,
-                        ),
+                  if ((entry.value?.lunarContext.moonPhaseName ??
+                          LunarAlmanacDay.on(entry.key)?.phase.label(c))
+                      case final phaseName?) ...[
+                    Text(phaseName, style: AppTypography.text1SemiBold),
+                    const SizedBox(height: 8),
+                  ],
+                  if (ratings[entry.key] case final recommendation?)
+                    _Recommendation(recommendation)
+                  else
+                    Text(c.l10n.scenarioCalendarRecommendationMissing),
+                  const SizedBox(height: 12),
+                  AuthGradientButton(
+                    text: c.l10n.scenarioCalendarSelectDay,
+                    onPressed: () => _open(
+                      c,
+                      _SavePlan(
+                        activity: activity,
+                        date: entry.key,
+                        recommendation: ratings[entry.key],
                       ),
                     ),
-                  ] else ...[
-                    Text(c.l10n.scenarioCalendarRecommendationMissing),
-                    AuthGradientButton(
+                  ),
+                  if (ratings[entry.key] == null)
+                    CustomButton(
+                      type: CustomButtonType.text,
                       text: c.l10n.scenarioCalendarChangeDate,
                       onPressed: () {
                         Navigator.pop(c);
                         replaceDay(entry.key);
                       },
                     ),
-                  ],
                 ],
               ),
             ),
@@ -442,7 +442,7 @@ class _SavePlan extends StatefulWidget {
   });
   final CalendarActivity activity;
   final DateTime date;
-  final TaskRecommendationModel recommendation;
+  final TaskRecommendationModel? recommendation;
   @override
   State<_SavePlan> createState() => _SavePlanState();
 }
@@ -544,7 +544,7 @@ class _PlanDetails extends StatelessWidget {
         Text(_dateLabel(c, plan.day)),
         Text(_activityLabel(c, plan.activity)),
         const SizedBox(height: 16),
-        _Recommendation(plan.recommendation),
+        if (plan.recommendation case final rec?) _Recommendation(rec),
         const SizedBox(height: 16),
         AuthGradientButton(
           text: _PlannerPage.tabOf(c) == null

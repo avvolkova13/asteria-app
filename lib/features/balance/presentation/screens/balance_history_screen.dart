@@ -330,13 +330,7 @@ class _HistoryHeader extends StatelessWidget {
                 child: LotusButtons.icon(
                   onPressed: onBack,
                   tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-                  icon: const LotusIconSurface(
-                    child: ClayIcon(
-                      Icons.chevron_left,
-                      size: 28,
-                      color: BalanceHistoryStyle.muted,
-                    ),
-                  ),
+                  icon: const LotusArrowBubble(back: true),
                   constraints: const BoxConstraints(
                     minWidth: 44,
                     minHeight: 44,

@@ -974,5 +974,10 @@
   "scenarioPracticeAlternativeOffered": "Для этого состояния пока нет отдельной записи. Хотите попробовать аффирмацию, чтобы замедлиться?",
   "scenarioPracticeNoMatch": "Для этого состояния пока нет записи. Можно вернуться и выбрать другое.",
   "scenarioPracticeListen": "Послушать · {duration}",
-  "scenarioPracticeUnavailable": "Сейчас нет доступных аудиопрактик."
+  "scenarioPracticeUnavailable": "Сейчас нет доступных аудиопрактик.",
+  "scenarioCalendarActivityIntro": "Выберите занятие, затем отметьте удобные даты. В конце можно сохранить день в своих планах.",
+  "scenarioCalendarUnratedDates": "Лунных подсказок для выбранного занятия пока нет. Вы можете сравнить фазы Луны и сохранить удобную дату.",
+  "moonDayDetailsUnavailable": "Лунная подсказка для этой даты пока недоступна. Вы можете посмотреть другие дни или запланировать занятие.",
+  "moonDayNumber": "Лунный день {number}",
+  "moonNextPhaseDate": "Следующая фаза — {phase}, {date}."
 }

@@ -1,3 +1,4 @@
+import 'clay_icon.dart';
 import 'package:flutter/material.dart';
 
 /// Corner proportions from the four hand-shaped controls in the lotus player.
@@ -60,6 +61,34 @@ class LotusIconSurface extends StatelessWidget {
         ),
         child,
       ],
+    );
+  }
+}
+
+/// Shared optical size for arrows in navigation buttons and clickable cards.
+/// The surrounding button owns semantics, gestures and its minimum tap target.
+class LotusArrowBubble extends StatelessWidget {
+  const LotusArrowBubble({super.key, this.back = false});
+
+  static const diameter = 34.0;
+  static const glyphSize = 17.0;
+  static const hitExtent = 44.0;
+  final bool back;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox.square(
+      dimension: diameter,
+      child: LotusIconSurface(
+        diameter: diameter,
+        child: Center(
+          child: ClayIcon(
+            back ? Icons.chevron_left : Icons.chevron_right,
+            size: glyphSize,
+            color: const Color(0xFFFFE6F4),
+          ),
+        ),
+      ),
     );
   }
 }

@@ -7,6 +7,19 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+  setUpAll(() async {
+    for (final family in ['Lora', 'Onest']) {
+      final loader = FontLoader(family)
+        ..addFont(
+          rootBundle.load(
+            'assets/fonts/${family.toLowerCase()}/$family-VariableFont_wght.ttf',
+          ),
+        );
+      await loader.load();
+    }
+  });
+
   testWidgets('renders the home PRO subscription promo and handles CTA', (
     tester,
   ) async {
@@ -64,15 +77,6 @@ void main() {
   testWidgets('compact home promo matches the design and grows with text', (
     tester,
   ) async {
-    for (final family in ['Lora', 'Onest']) {
-      final loader = FontLoader(family)
-        ..addFont(
-          rootBundle.load(
-            'assets/fonts/${family.toLowerCase()}/$family-VariableFont_wght.ttf',
-          ),
-        );
-      await loader.load();
-    }
     var taps = 0;
     final promo = HomeProSubscriptionCard(
       compactHome: true,

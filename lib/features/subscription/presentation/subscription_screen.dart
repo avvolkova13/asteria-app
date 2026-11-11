@@ -1,5 +1,5 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/modal_glass_surface.dart';
-import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/card_radii.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
@@ -164,8 +164,9 @@ class _SubscriptionScreenContentState extends State<_SubscriptionScreenContent>
             action: state is PaywallAppleStatus
                 ? SnackBarAction(
                     label: context.l10n.applePurchaseCheckStatus,
-                    onPressed: LotusFeedback.action(() =>
-                        context.read<PaywallCubit>().refreshAppleStatus()),
+                    onPressed: LotusFeedback.action(
+                      () => context.read<PaywallCubit>().refreshAppleStatus(),
+                    ),
                   )
                 : null,
           ),
@@ -470,7 +471,9 @@ class _ArcPayOneTimeProPlans extends StatelessWidget {
             return const Padding(
               padding: EdgeInsets.symmetric(vertical: 24),
               child: Center(
-                child: AsteriaEntrance(child: CircularProgressIndicator(color: AppColors.white)),
+                child: AsteriaEntrance(
+                  child: CircularProgressIndicator(color: AppColors.white),
+                ),
               ),
             );
           }
@@ -921,97 +924,96 @@ class _SubscriptionInfoCard extends StatelessWidget {
 
     return ProfileGlassCard(
       borderRadius: AsteriaCardRadii.card,
-      padding: EdgeInsets.zero,
-      child: Stack(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Positioned(
-            top: 8,
-            right: 16,
-            child: Image.asset(
-              'assets/images/sonnik/pro_crystal.webp',
-              width: isActive ? 132 : 128,
-              height: isActive ? 132 : 128,
-              fit: BoxFit.contain,
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 14, 18),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(
-                  width: isActive ? 196 : 190,
-                  child: Text(
-                    title,
-                    style: context.textTheme.inversePlayfairSemiBold24.copyWith(
-                      height: 1,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 18),
-                if (isActive)
-                  SizedBox(
-                    width: 212,
-                    child: Text.rich(
-                      TextSpan(
-                        children: [
-                          TextSpan(
-                            text: cancelAtPeriodEnd
-                                ? context.l10n.subscriptionAccessUntil
-                                : context.l10n.subscriptionNextPaymentInline,
-                          ),
-                          TextSpan(
-                            text: nextPaymentDateText,
-                            style: const TextStyle(
-                              color: ProfileFlowColors.accent,
-                              fontWeight: FontWeight.w700,
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final artSize = (constraints.maxWidth * .29).clamp(64.0, 108.0);
+              return Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          title,
+                          style: context.textTheme.inversePlayfairSemiBold24,
+                        ),
+                        if (isActive) ...[
+                          const SizedBox(height: 8),
+                          Text.rich(
+                            TextSpan(
+                              children: [
+                                TextSpan(
+                                  text: cancelAtPeriodEnd
+                                      ? context.l10n.subscriptionAccessUntil
+                                      : context
+                                            .l10n
+                                            .subscriptionNextPaymentInline,
+                                ),
+                                TextSpan(
+                                  text: nextPaymentDateText,
+                                  style: const TextStyle(
+                                    color: ProfileFlowColors.accent,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ],
                             ),
+                            style: context.textTheme.inverseUrbanistRegular17
+                                .copyWith(height: 1.05),
                           ),
                         ],
-                      ),
-                      style: context.textTheme.inverseUrbanistRegular17
-                          .copyWith(height: 1.05),
+                      ],
                     ),
-                  )
-                else ...[
-                  Text(
-                    context.l10n.subscriptionBenefitsTitle,
-                    style: context.textTheme.inversePlayfairSemiBold17,
+                  ),
+                  const SizedBox(width: 12),
+                  Image.asset(
+                    'assets/images/sonnik/pro_crystal.webp',
+                    width: artSize,
+                    height: artSize,
+                    fit: BoxFit.contain,
+                    excludeFromSemantics: true,
                   ),
                 ],
-                const SizedBox(height: 18),
-                if (isActive)
-                  Text(
-                    context.l10n.subscriptionAvailableToYou,
-                    style: context.textTheme.inverseUrbanistSemiBold17,
-                  ),
-                if (isActive) const SizedBox(height: 18),
-                _BenefitsItem(
-                  iconPath: 'assets/icons/sub/moon_icon.svg',
-                  title: context.l10n.subscriptionBenefitUnlimited,
-                ),
-                const SizedBox(height: 12),
-                _BenefitsItem(
-                  iconPath: 'assets/icons/sub/lock_icon.svg',
-                  title: context.l10n.subscriptionBenefitHoroscope,
-                ),
-                const SizedBox(height: 12),
-                _BenefitsItem(
-                  iconPath: 'assets/icons/sub/calendar_icon.svg',
-                  title: context.l10n.subscriptionBenefitMoon,
-                ),
-                const SizedBox(height: 12),
-                _BenefitsItem(
-                  iconPath: 'assets/icons/sub/people_icon.svg',
-                  title: context.l10n.subscriptionBenefitCompatibility,
-                ),
-                const SizedBox(height: 12),
-                _BenefitsItem(
-                  iconPath: 'assets/icons/sub/star_icon.svg',
-                  title: context.l10n.subscriptionBenefitAffirmations,
-                ),
-              ],
-            ),
+              );
+            },
+          ),
+          const SizedBox(height: 12),
+          Text(
+            isActive
+                ? context.l10n.subscriptionAvailableToYou
+                : context.l10n.subscriptionBenefitsTitle,
+            style: isActive
+                ? context.textTheme.inverseUrbanistSemiBold17
+                : context.textTheme.inversePlayfairSemiBold17,
+          ),
+          const SizedBox(height: 12),
+          _BenefitsItem(
+            iconPath: 'assets/icons/sub/moon_icon.svg',
+            title: context.l10n.subscriptionBenefitUnlimited,
+          ),
+          const SizedBox(height: 12),
+          _BenefitsItem(
+            iconPath: 'assets/icons/sub/lock_icon.svg',
+            title: context.l10n.subscriptionBenefitHoroscope,
+          ),
+          const SizedBox(height: 12),
+          _BenefitsItem(
+            iconPath: 'assets/icons/sub/calendar_icon.svg',
+            title: context.l10n.subscriptionBenefitMoon,
+          ),
+          const SizedBox(height: 12),
+          _BenefitsItem(
+            iconPath: 'assets/icons/sub/people_icon.svg',
+            title: context.l10n.subscriptionBenefitCompatibility,
+          ),
+          const SizedBox(height: 12),
+          _BenefitsItem(
+            iconPath: 'assets/icons/sub/star_icon.svg',
+            title: context.l10n.subscriptionBenefitAffirmations,
           ),
         ],
       ),
@@ -1084,13 +1086,9 @@ class _RestorePurchasesButton extends StatelessWidget {
                   style: context.textTheme.inverseUrbanistRegular17,
                 ),
               ),
-              Container(
-                width: 22,
-                height: 22,
-                decoration: CardLensDecoration.button(
-                  borderRadius: BorderRadius.circular(6),
-                  border: Border.all(color: ProfileFlowColors.accent),
-                ),
+              SizedBox(
+                width: LotusArrowBubble.diameter,
+                height: LotusArrowBubble.diameter,
                 child: isBusy
                     ? const Padding(
                         padding: EdgeInsets.all(3),
@@ -1099,11 +1097,7 @@ class _RestorePurchasesButton extends StatelessWidget {
                           color: ProfileFlowColors.accent,
                         ),
                       )
-                    : const ClayIcon(
-                        Icons.chevron_right,
-                        color: ProfileFlowColors.accent,
-                        size: 18,
-                      ),
+                    : const LotusArrowBubble(),
               ),
             ],
           ),

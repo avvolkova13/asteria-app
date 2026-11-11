@@ -1,3 +1,4 @@
+import 'package:asteria_app/features/scenarios/scenario_sky.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/extensions/build_context_extensions.dart';
 import 'package:asteria_app/features/affirmation/player/affirmation_player_screen.dart';
@@ -51,7 +52,7 @@ const availablePracticeRecordings = [
 Future<void> _openBundledPractice(BuildContext context) =>
     Navigator.of(context).push<void>(
       CupertinoPageRoute(
-        builder: (_) => const AffirmationPlayerScreen(showBack: true),
+        builder: (_) => const ScenarioSkyScope(child: AffirmationPlayerScreen(showBack: true)),
       ),
     );
 

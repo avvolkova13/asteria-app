@@ -131,22 +131,15 @@ class SonnikTopNavBar extends StatelessWidget {
       child: Row(
         children: [
           SizedBox(
-            width: 36,
-            height: 36,
+            width: 44,
+            height: 44,
             child: canPop
                 ? LotusButtons.icon(
                     onPressed: () => Navigator.of(context).pop(),
                     tooltip: MaterialLocalizations.of(
                       context,
                     ).backButtonTooltip,
-                    icon: const LotusIconSurface(
-                      diameter: 32,
-                      child: ClayIcon(
-                        Icons.arrow_back_ios_new_rounded,
-                        color: SonnikPalette.white,
-                        size: 20,
-                      ),
-                    ),
+                    icon: const LotusArrowBubble(back: true),
                     padding: EdgeInsets.zero,
                   )
                 : null,

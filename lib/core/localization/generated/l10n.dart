@@ -8584,6 +8584,56 @@ class AppLocalizations {
       args: [],
     );
   }
+
+  /// `Choose an activity, then mark the dates that suit you and save your plan.`
+  String get scenarioCalendarActivityIntro {
+    return Intl.message(
+      'Choose an activity, then mark the dates that suit you and save your plan.',
+      name: 'scenarioCalendarActivityIntro',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `There are no lunar notes for this activity yet. You can still compare Moon phases and save a date.`
+  String get scenarioCalendarUnratedDates {
+    return Intl.message(
+      'There are no lunar notes for this activity yet. You can still compare Moon phases and save a date.',
+      name: 'scenarioCalendarUnratedDates',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The lunar note for this date is unavailable. Explore another day or plan an activity.`
+  String get moonDayDetailsUnavailable {
+    return Intl.message(
+      'The lunar note for this date is unavailable. Explore another day or plan an activity.',
+      name: 'moonDayDetailsUnavailable',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Lunar day {number}`
+  String moonDayNumber(Object number) {
+    return Intl.message(
+      'Lunar day $number',
+      name: 'moonDayNumber',
+      desc: '',
+      args: [number],
+    );
+  }
+
+  /// `The next phase is {phase} on {date}.`
+  String moonNextPhaseDate(Object phase, Object date) {
+    return Intl.message(
+      'The next phase is $phase on $date.',
+      name: 'moonNextPhaseDate',
+      desc: '',
+      args: [phase, date],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<AppLocalizations> {

@@ -145,17 +145,9 @@ class _AffirmationTopNavBar extends StatelessWidget {
                     child: LotusTap(
                       behavior: HitTestBehavior.opaque,
                       onTap: () => Navigator.of(context).pop(),
-                      child: Padding(
-                        padding: const EdgeInsets.only(right: 8),
-                        child: LotusIconSurface(
-                          diameter: 27,
-                          child: ClayAssetIcon(
-                            'assets/icons/back_icon.svg',
-                            width: 18,
-                            height: 24,
-                            tint: AppColors.textInverse,
-                          ),
-                        ),
+                      child: const SizedBox.square(
+                        dimension: LotusArrowBubble.hitExtent,
+                        child: Center(child: LotusArrowBubble(back: true)),
                       ),
                     ),
                   ),

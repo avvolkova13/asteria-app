@@ -1,3 +1,4 @@
+import 'package:asteria_app/features/scenarios/scenario_sky.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/app/data/models/saved_compatibility/saved_compatibility_model.dart';
@@ -52,7 +53,7 @@ enum RelationshipSituation {
 
 Future<T?> _open<T>(BuildContext context, Widget screen) => Navigator.of(
   context,
-).push<T>(CupertinoPageRoute<T>(builder: (_) => screen));
+).push<T>(CupertinoPageRoute<T>(builder: (_) => ScenarioSkyScope(child: screen)));
 
 class RelationshipsScenarioScreen extends StatefulWidget {
   const RelationshipsScenarioScreen({super.key});

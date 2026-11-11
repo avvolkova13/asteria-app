@@ -64,6 +64,15 @@ class TopNavBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     switch (type) {
+      case TopNavBarType.payment:
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Row(children: [
+            Expanded(child: _TopNavBarTitle(userName: userName, canPop: canPop)),
+            const SizedBox(width: 12),
+            const _MoonTopNavBarActions(),
+          ]),
+        );
       case TopNavBarType.moon:
         return _MoonTopNavBarWidget(userName: userName, canPop: canPop);
       case TopNavBarType.profile:
@@ -230,16 +239,9 @@ class TopNavBarDelegate extends SliverPersistentHeaderDelegate {
                     if (canPop) ...[
                       _TopNavBackButton(
                         onTap: () => Navigator.of(context).pop(),
-                        child: Padding(
-                          padding: const EdgeInsets.only(right: 8),
-                          child: LotusIconSurface(
-                            diameter: 27,
-                            child: ClayAssetIcon(
-                              'assets/icons/back_icon.svg',
-                              tint: AppColors.textSecondary,
-                              height: 24,
-                            ),
-                          ),
+                        child: const SizedBox.square(
+                          dimension: LotusArrowBubble.hitExtent,
+                          child: Center(child: LotusArrowBubble(back: true)),
                         ),
                       ),
                     ],
@@ -385,16 +387,9 @@ class _TopNavBarTitle extends StatelessWidget {
           if (canPop)
             _TopNavBackButton(
               onTap: () => Navigator.of(context).pop(),
-              child: Padding(
-                padding: const EdgeInsets.only(right: 8),
-                child: LotusIconSurface(
-                  diameter: 27,
-                  child: ClayAssetIcon(
-                    'assets/icons/back_icon.svg',
-                    tint: AppColors.textSecondary,
-                    height: 24,
-                  ),
-                ),
+              child: const SizedBox.square(
+                dimension: LotusArrowBubble.hitExtent,
+                child: Center(child: LotusArrowBubble(back: true)),
               ),
             ),
           Flexible(
@@ -585,35 +580,7 @@ class _HomeTopNavBarWidget extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   // Left title with optional back button
-                  Transform.translate(
-                    offset: const Offset(0, -2),
-                    child: Row(
-                      children: [
-                        if (canPop) ...[
-                          _TopNavBackButton(
-                            onTap: () => Navigator.of(context).pop(),
-                            child: Padding(
-                              padding: const EdgeInsets.only(right: 8),
-                              child: LotusIconSurface(
-                                diameter: 27,
-                                child: ClayAssetIcon(
-                                  'assets/icons/back_icon.svg',
-                                  tint: AppColors.textSecondary,
-                                  height: 24,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                        Text(
-                          userName,
-                          style: AppTypography.navTitle.copyWith(
-                            color: AppColors.textInverse,
-                          ),
-                        ).withEntrance(),
-                      ],
-                    ),
-                  ),
+                  Expanded(child: _TopNavBarTitle(userName: userName, canPop: canPop)),
                   // Right content (coins and PRO)
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -962,33 +929,7 @@ class _TransparentTopNavBar extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   // Left title with optional back button
-                  Transform.translate(
-                    offset: const Offset(0, -2),
-                    child: Row(
-                      children: [
-                        if (canPop) ...[
-                          _TopNavBackButton(
-                            onTap: () => Navigator.of(context).pop(),
-                            child: Padding(
-                              padding: const EdgeInsets.only(right: 8),
-                              child: LotusIconSurface(
-                                diameter: 27,
-                                child: ClayAssetIcon(
-                                  'assets/icons/back_icon.svg',
-                                  tint: AppColors.textSecondary,
-                                  height: 24,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                        Text(
-                          userName,
-                          style: context.textTheme.inversePlayfairSemiBold17,
-                        ).withEntrance(),
-                      ],
-                    ),
-                  ),
+                  Expanded(child: _TopNavBarTitle(userName: userName, canPop: canPop)),
                   // Right content (coins and PRO)
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,

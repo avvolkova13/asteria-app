@@ -150,6 +150,32 @@ void main() {
       await tap(find.text('Back to calendar'));
       expect(tester.state(find.byType(MoonScreen)), same(originalTab));
       expect(Navigator.of(tester.element(start)).canPop(), isFalse);
+      calendar.empty = true;
+      await tap(start);
+      await tap(find.text('Haircuts'));
+      await tap(find.text('12').first);
+      await tap(find.text('13').first);
+      await tap(find.text('Compare dates'));
+      expect(
+        find.text(
+          'There is no recommendation for this activity on this date yet.',
+        ),
+        findsNWidgets(2),
+      );
+      expect(
+        find.text('Both dates have the same rating for this activity.'),
+        findsNothing,
+      );
+      await tap(find.text('Choose this day').first);
+      await tester.enterText(
+        find.byType(TextField),
+        'Trim without lunar rating',
+      );
+      await tap(find.text('Save'));
+      await tap(find.text('Back to calendar'));
+      await tap(find.text('My plans'));
+      await tap(find.text('Trim without lunar rating'));
+      expect(find.text('Haircuts'), findsOneWidget);
       expect(tester.takeException(), isNull);
     },
   );
@@ -163,6 +189,7 @@ class _SilentAnalytics extends Fake implements AnalyticsFacade {
 class _UnusedUserRepository extends Fake implements UserRepository {}
 
 class _Calendar extends Fake implements ContentProvider {
+  bool empty = false;
   @override
   LunarDayModel? getPersonalizedLunarDayByDate(DateTime date) => null;
   @override
@@ -174,36 +201,38 @@ class _Calendar extends Fake implements ContentProvider {
     month: month.month,
     timezone: 'Europe/Moscow',
     anchorLocalTime: '12:00',
-    days: [
-      LunarDayModel(
-        date: DateTime.utc(month.year, month.month, 12),
-        lunarContext: const LunarDayContextModel(
-          lunarDayNumber: 2,
-          moonAgeDays: 1,
-          moonAgeDayIndex: 1,
-          moonPhaseCode: 'waxing',
-          moonPhaseName: 'Waxing',
-          moonSignCode: 'a',
-          moonSignName: 'A',
-          phaseEvent: null,
-        ),
-        dailyBackground: const DailyBackgroundModel(
-          tone: PhaseTone.growth,
-          title: 'Growth',
-          summary: 'Overview',
-        ),
-        spheres: {
-          'gardening': SphereRecommendationModel(
-            status: RecommendationStatus.unfavorable,
-            tasks: {
-              'transplanting_pricking': TaskRecommendationModel(
-                status: RecommendationStatus.favorable,
-                description: 'Repotting on ${month.month}/12',
+    days: empty
+        ? []
+        : [
+            LunarDayModel(
+              date: DateTime.utc(month.year, month.month, 12),
+              lunarContext: const LunarDayContextModel(
+                lunarDayNumber: 2,
+                moonAgeDays: 1,
+                moonAgeDayIndex: 1,
+                moonPhaseCode: 'waxing',
+                moonPhaseName: 'Waxing',
+                moonSignCode: 'a',
+                moonSignName: 'A',
+                phaseEvent: null,
               ),
-            },
-          ),
-        },
-      ),
-    ],
+              dailyBackground: const DailyBackgroundModel(
+                tone: PhaseTone.growth,
+                title: 'Growth',
+                summary: 'Overview',
+              ),
+              spheres: {
+                'gardening': SphereRecommendationModel(
+                  status: RecommendationStatus.unfavorable,
+                  tasks: {
+                    'transplanting_pricking': TaskRecommendationModel(
+                      status: RecommendationStatus.favorable,
+                      description: 'Repotting on ${month.month}/12',
+                    ),
+                  },
+                ),
+              },
+            ),
+          ],
   );
 }

@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/card_radii.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
@@ -129,19 +130,7 @@ class _HistoryButton extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 12),
-            Container(
-              width: 22,
-              height: 22,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(6),
-                border: Border.all(color: ProfileFlowColors.accent, width: 2),
-              ),
-              child: const ClayIcon(
-                Icons.chevron_right_rounded,
-                color: ProfileFlowColors.accent,
-                size: 18,
-              ),
-            ),
+            const LotusArrowBubble(),
           ],
         ),
       ),

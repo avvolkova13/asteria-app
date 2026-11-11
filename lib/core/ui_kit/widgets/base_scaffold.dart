@@ -1,7 +1,5 @@
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
-import 'package:asteria_app/core/ui_kit/ui_kit.dart';
-import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -22,9 +20,7 @@ class BaseScaffold extends StatelessWidget {
               elevation: 0,
               leading: LotusButtons.icon(
                 onPressed: () => Navigator.pop(context),
-                icon: const LotusIconSurface(
-                  child: ClayIcon(Icons.arrow_back, color: AppColors.white),
-                ),
+                icon: const LotusArrowBubble(back: true),
               ),
               systemOverlayStyle: SystemUiOverlayStyle(
                 statusBarColor: Colors.transparent,

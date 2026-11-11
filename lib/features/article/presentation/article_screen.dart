@@ -4,7 +4,6 @@ import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
 import 'dart:async';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
-import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 
 import 'package:asteria_app/app/data/models/article/article_model.dart';
 import 'package:asteria_app/app/providers/content_provider.dart';
@@ -195,16 +194,9 @@ class _ArticleTopBar extends StatelessWidget {
                       LotusTap(
                         behavior: HitTestBehavior.opaque,
                         onTap: () => Navigator.of(context).pop(),
-                        child: Padding(
-                          padding: const EdgeInsets.only(right: 8),
-                          child: LotusIconSurface(
-                            diameter: 27,
-                            child: ClayAssetIcon(
-                              'assets/icons/back_icon.svg',
-                              tint: AppColors.textSecondary,
-                              height: 24,
-                            ),
-                          ),
+                        child: const SizedBox.square(
+                          dimension: LotusArrowBubble.hitExtent,
+                          child: Center(child: LotusArrowBubble(back: true)),
                         ),
                       ),
                       Flexible(

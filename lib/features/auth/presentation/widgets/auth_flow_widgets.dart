@@ -103,13 +103,7 @@ class AuthFlowScaffold extends StatelessWidget {
                       tooltip: MaterialLocalizations.of(
                         context,
                       ).backButtonTooltip,
-                      icon: const LotusIconSurface(
-                        child: ClayIcon(
-                          CupertinoIcons.chevron_left,
-                          color: AppColors.white,
-                          size: 28,
-                        ),
-                      ),
+                      icon: const LotusArrowBubble(back: true),
                     ),
                   ),
                 ),

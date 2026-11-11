@@ -107,23 +107,11 @@ class ProfileFlowHeader extends StatelessWidget {
                         behavior: HitTestBehavior.opaque,
                         onTap: () => Navigator.of(context).pop(),
                         child: const SizedBox(
-                          width: 28,
-                          height: 36,
+                          width: 44,
+                          height: 44,
                           child: Align(
                             alignment: Alignment.centerLeft,
-                            child: LotusIconSurface(
-                              diameter: 28,
-                              child: SizedBox.square(
-                                dimension: 32,
-                                child: Center(
-                                  child: ClayIcon(
-                                    Icons.chevron_left,
-                                    color: Color(0xB8FFFFFF),
-                                    size: 20,
-                                  ),
-                                ),
-                              ),
-                            ),
+                            child: LotusArrowBubble(back: true),
                           ),
                         ),
                       ),

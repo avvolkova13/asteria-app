@@ -80,132 +80,91 @@ class _SubscriptionStatusCard extends StatelessWidget {
       onTap: onTap,
       child: LayoutBuilder(
         builder: (context, constraints) {
-          final cardWidth = constraints.maxWidth;
-          final compactScale = (cardWidth / 358).clamp(0.86, 1.0);
-          final titleWidth = 174.0 * compactScale;
-          final descriptionWidth = 170.0 * compactScale;
-          final buttonWidth = 175.0 * compactScale;
-          final artWidth = (cardWidth - titleWidth - 44).clamp(0.0, 140.0);
-          final artHeight = artWidth * 1.12;
-
-          return SizedBox(
+          final artWidth = (constraints.maxWidth * .32).clamp(68.0, 116.0);
+          return Container(
             key: const ValueKey('profile-subscription-status-card'),
-            height: _cardHeight,
-            child: Stack(
-              clipBehavior: Clip.hardEdge,
+            constraints: const BoxConstraints(minHeight: _cardHeight),
+            padding: const EdgeInsets.fromLTRB(16, 16, 12, 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Positioned(
-                  top: 18,
-                  right: 12,
-                  child: Image.asset(
-                    key: const ValueKey('profile-subscription-status-art'),
-                    'assets/images/home/balance_subscription_art.webp',
-                    width: artWidth,
-                    height: artHeight,
-                    cacheWidth: 500,
-                    fit: BoxFit.contain,
-                  ),
-                ),
-                Positioned(
-                  top: 16,
-                  left: 16,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      SizedBox(
-                        width: titleWidth,
-                        child: Text(
-                          title,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            color: AppColors.white,
-                            fontFamily: 'Lora',
-                            fontSize: 24,
-                            fontWeight: FontWeight.w600,
-                            height: 1,
-                            letterSpacing: 0,
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            title,
+                            style: context.textTheme.inversePlayfairSemiBold24
+                                .copyWith(height: 1),
                           ),
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      SizedBox(
-                        width: descriptionWidth,
-                        child: Text(
-                          subtitle,
-                          maxLines: 4,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            color: AppColors.white,
-                            fontFamily: 'Onest',
-                            fontSize: 16,
-                            fontWeight: FontWeight.w400,
-                            height: 1.2,
-                            letterSpacing: -0.41,
+                          const SizedBox(height: 8),
+                          Text(
+                            subtitle.replaceAll('\n', ' '),
+                            style: context.textTheme.inverseUrbanistRegular16
+                                .copyWith(height: 1.2),
                           ),
-                        ),
+                        ],
                       ),
-                    ],
-                  ),
+                    ),
+                    const SizedBox(width: 12),
+                    Image.asset(
+                      'assets/images/home/balance_subscription_art.webp',
+                      key: const ValueKey('profile-subscription-status-art'),
+                      width: artWidth,
+                      height: artWidth * 1.05,
+                      cacheWidth: 500,
+                      fit: BoxFit.contain,
+                      excludeFromSemantics: true,
+                    ),
+                  ],
                 ),
+                const SizedBox(height: 8),
                 if (buttonText != null)
-                  Positioned(
-                    left: 16,
-                    bottom: 16,
-                    width: buttonWidth,
-                    height: 44,
-                    child: DecoratedBox(
-                      decoration: CardLensDecoration.button(
-                        color: ProfileFlowColors.accent,
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: Center(
-                        child: Text(
-                          buttonText!,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            color: AppColors.textPrimary,
-                            fontFamily: 'Onest',
-                            fontSize: 17,
-                            fontWeight: FontWeight.w400,
-                            height: 1.2,
-                            letterSpacing: -0.41,
-                          ),
-                        ),
+                  Container(
+                    constraints: const BoxConstraints(
+                      minHeight: 44,
+                      minWidth: 175,
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 10,
+                    ),
+                    decoration: CardLensDecoration.button(
+                      color: ProfileFlowColors.accent,
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Text(
+                      buttonText!,
+                      textAlign: TextAlign.center,
+                      style: context.textTheme.urbanistRegular17.copyWith(
+                        color: AppColors.textPrimary,
                       ),
                     ),
                   )
                 else if (actionText != null)
-                  Positioned(
-                    left: 16,
-                    bottom: 16,
-                    child: DefaultTextStyle(
-                      style: TextStyle(
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Flexible(
+                        child: Text(
+                          actionText!,
+                          style: AppTypography.text1SemiBold.copyWith(
+                            color: actionColor ?? ProfileFlowColors.accent,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      ClayIcon(
+                        Icons.chevron_right,
+                        size: 16,
                         color: actionColor ?? ProfileFlowColors.accent,
-                        fontFamily: 'Onest',
-                        fontSize: 13,
-                        fontWeight: FontWeight.w400,
-                        height: 1.2,
-                        letterSpacing: -0.41,
                       ),
-                      child: IconTheme(
-                        data: IconThemeData(
-                          color: actionColor ?? ProfileFlowColors.accent,
-                          size: 16,
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(actionText!),
-                            const SizedBox(width: 6),
-                            const ClayIcon(Icons.chevron_right),
-                          ],
-                        ),
-                      ),
-                    ),
+                    ],
                   ),
               ],
             ),

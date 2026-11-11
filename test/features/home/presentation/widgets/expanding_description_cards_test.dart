@@ -496,6 +496,18 @@ void main() {
           expect(tester.getSize(ringFinder), const Size.square(71));
         }
 
+        final love = find.byKey(const ValueKey('personal-impact-ring-love'));
+        CustomPainter painter() => tester.widget<CustomPaint>(love).painter!;
+        final first = painter();
+        await tester.pump(const Duration(milliseconds: 180));
+        final filling = painter();
+        expect(filling.shouldRepaint(first), isTrue);
+        await tester.pump(const Duration(milliseconds: 800));
+        final complete = painter();
+        expect(complete.shouldRepaint(filling), isTrue);
+        await tester.pump(const Duration(milliseconds: 300));
+        expect(painter().shouldRepaint(complete), isFalse);
+
         expect(find.text('Тема отношений'), findsNothing);
         expect(find.text('Глубокое описание отношений'), findsOneWidget);
         expect(find.text('Любовь\nи отношения'), findsOneWidget);

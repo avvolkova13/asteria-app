@@ -1,3 +1,4 @@
+import 'package:asteria_app/features/scenarios/scenario_sky.dart';
 import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/features/horoscope/presentation/horoscope_core_position_assets.dart';
 import 'package:asteria_app/core/ui_kit/card_radii.dart';
@@ -321,8 +322,9 @@ class _NatalCardScreenState extends State<NatalCardScreen> {
 
     return Scaffold(
       backgroundColor: _NatalCardColors.background,
-      body: DecoratedBox(
-        decoration: const BoxDecoration(
+      body: Stack(fit: StackFit.expand, children: [
+        if (ScenarioSkyScope.of(context)) const ScenarioSky() else const DecoratedBox(
+        decoration: BoxDecoration(
           color: _NatalCardColors.background,
           image: DecorationImage(
             image: AssetImage(
@@ -333,7 +335,8 @@ class _NatalCardScreenState extends State<NatalCardScreen> {
             opacity: 0.3,
           ),
         ),
-        child: CustomScrollView(
+        ),
+        CustomScrollView(
           slivers: [
             SliverPersistentHeader(
               pinned: true,
@@ -385,14 +388,14 @@ class _NatalCardScreenState extends State<NatalCardScreen> {
                       ),
                     ] else
                       const _NatalCardContent(),
-                    const SizedBox(height: 100),
+                    SizedBox(height: MediaQuery.paddingOf(context).bottom + 24),
                   ],
                 ),
               ),
             ),
           ],
         ),
-      ),
+      ]),
     );
   }
 }

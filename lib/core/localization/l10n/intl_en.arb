@@ -974,5 +974,10 @@
   "scenarioPracticeAlternativeOffered": "There isn’t a recording for this feeling yet. Would you like to try an affirmation for slowing down?",
   "scenarioPracticeNoMatch": "There isn’t a recording for this feeling yet. Go back to choose another.",
   "scenarioPracticeListen": "Listen · {duration}",
-  "scenarioPracticeUnavailable": "No audio practices are available right now."
+  "scenarioPracticeUnavailable": "No audio practices are available right now.",
+  "scenarioCalendarActivityIntro": "Choose an activity, then mark the dates that suit you and save your plan.",
+  "scenarioCalendarUnratedDates": "There are no lunar notes for this activity yet. You can still compare Moon phases and save a date.",
+  "moonDayDetailsUnavailable": "The lunar note for this date is unavailable. Explore another day or plan an activity.",
+  "moonDayNumber": "Lunar day {number}",
+  "moonNextPhaseDate": "The next phase is {phase} on {date}."
 }

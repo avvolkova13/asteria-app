@@ -1,5 +1,8 @@
 import 'package:asteria_app/core/ui_kit/widgets/modal_glass_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
+import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
+import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
+import 'package:asteria_app/features/profile_flow/profile_flow_ui.dart';
 import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/ui_kit/card_radii.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
@@ -256,7 +259,7 @@ class _PaymentsScreenState extends State<PaymentsScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.surface,
+      backgroundColor: AppColorsDark.homeCanvas,
       body: BlocConsumer<ArcPayCheckoutCubit, ArcPayCheckoutState>(
         listener: (context, state) {
           if (state is ArcPayCheckoutReady) {
@@ -272,20 +275,55 @@ class _PaymentsScreenState extends State<PaymentsScreen>
             _trackAbandoned();
           }
         },
-        builder: (context, state) => Column(
-          children: AsteriaEntrance.sections([
-            TopNavBar(
-              userName: context.l10n.paymentTitle,
-              type: TopNavBarType.payment,
-              canPop: true,
+        builder: (context, state) => DecoratedBox(
+          decoration: const BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage('assets/images/scenarios/picker_sky.webp'),
+              fit: BoxFit.cover,
+              alignment: Alignment.bottomCenter,
             ),
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(16),
-                child: _buildContent(context, state),
-              ),
+          ),
+          child: SafeArea(
+            child: Column(
+              children: [
+                TopNavBar(
+                  userName: context.l10n.paymentTitle,
+                  type: TopNavBarType.payment,
+                  canPop: true,
+                ),
+                Expanded(
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      return SingleChildScrollView(
+                        padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(
+                            minHeight: (constraints.maxHeight - 40).clamp(
+                              0.0,
+                              double.infinity,
+                            ),
+                          ),
+                          child: Align(
+                            alignment: const Alignment(0, -.25),
+                            child: ConstrainedBox(
+                              constraints: const BoxConstraints(maxWidth: 440),
+                              child: KeyedSubtree(
+                                key: ValueKey(state.runtimeType),
+                                child: _buildContent(
+                                  context,
+                                  state,
+                                ).withEntrance(),
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
             ),
-          ]),
+          ),
         ),
       ),
     );
@@ -317,13 +355,13 @@ class _PaymentsScreenState extends State<PaymentsScreen>
         action: Column(
           children: [
             if (_checkoutUrl != null)
-              CustomButton(
+              ProfilePrimaryButton(
                 onPressed: _openCheckout,
                 text: context.l10n.paymentOpenPage,
-                isFullWidth: true,
               ),
             const SizedBox(height: 12),
             LotusButtons.text(
+              style: TextButton.styleFrom(foregroundColor: AppColors.white),
               onPressed: _confirmAbandon,
               child: Text(context.l10n.paymentLeaveAttempt),
             ),
@@ -357,66 +395,64 @@ class _PaymentsScreenState extends State<PaymentsScreen>
     required String title,
     required String message,
     bool loading = false,
+    IconData? icon,
     Widget? action,
   }) {
-    return ConstrainedBox(
-      constraints: const BoxConstraints(minHeight: 450),
-      child: Center(
-        child: Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(24),
-          decoration: CardLensDecoration(
-            color: AppColors.cardBackground,
-            borderRadius: BorderRadius.circular(AsteriaCardRadii.card),
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+      decoration: CardLensDecoration(
+        color: AppColorsDark.modal,
+        borderRadius: BorderRadius.circular(AsteriaCardRadii.card),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          LotusIconSurface(
+            diameter: 54,
+            child: Center(
+              child: loading
+                  ? const SizedBox.square(
+                      dimension: 22,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2.2,
+                        color: AppColors.white,
+                      ),
+                    )
+                  : ClayIcon(icon!, size: 26, color: AppColors.white),
+            ),
           ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (loading) ...[
-                const CircularProgressIndicator(color: AppColors.primary),
-                const SizedBox(height: 24),
-              ],
-              Text(title, style: context.textTheme.playfairSemiBold24),
-              const SizedBox(height: 12),
-              Text(
-                message,
-                style: context.textTheme.urbanistRegular16.copyWith(
-                  color: AppColors.textSecondary,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              if (action != null) ...[const SizedBox(height: 28), action],
-            ],
+          const SizedBox(height: 16),
+          Semantics(
+            header: true,
+            liveRegion: true,
+            child: Text(
+              title,
+              textAlign: TextAlign.center,
+              style: context.textTheme.inversePlayfairSemiBold24,
+            ),
           ),
-        ),
+          const SizedBox(height: 8),
+          Text(
+            message,
+            textAlign: TextAlign.center,
+            style: context.textTheme.inverseUrbanistRegular16.copyWith(
+              color: ProfileFlowColors.textMuted,
+            ),
+          ),
+          if (action != null) ...[const SizedBox(height: 24), action],
+        ],
       ),
     );
   }
 
-  Widget _success(ArcPayOrder order) => Center(
-    child: Column(
-      children: AsteriaEntrance.sections([
-        Image.asset('assets/images/payment/purchase_success.png', height: 280),
-        Text(
-          context.l10n.paymentSuccess,
-          style: context.textTheme.playfairSemiBold24,
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: 12),
-        Text(
-          _successMessage(context, order),
-          style: context.textTheme.urbanistRegular16.copyWith(
-            color: AppColors.textSecondary,
-          ),
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: 32),
-        CustomButton(
-          onPressed: () => Navigator.of(context).pop(true),
-          text: context.l10n.commonBack,
-          isFullWidth: true,
-        ),
-      ]),
+  Widget _success(ArcPayOrder order) => _statusCard(
+    icon: Icons.check_rounded,
+    title: context.l10n.paymentSuccess,
+    message: _successMessage(context, order),
+    action: ProfilePrimaryButton(
+      text: context.l10n.commonBack,
+      onPressed: () => Navigator.of(context).pop(true),
     ),
   );
 
@@ -434,15 +470,17 @@ class _PaymentsScreenState extends State<PaymentsScreen>
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => ModalGlassAlert(
-        color: AppColors.modal,
+        color: AppColorsDark.modal,
         title: Text(context.l10n.paymentLeaveQuestion),
         content: Text(context.l10n.paymentLeaveDescription),
         actions: [
           LotusButtons.text(
+            style: TextButton.styleFrom(foregroundColor: AppColors.white),
             onPressed: () => Navigator.of(dialogContext).pop(false),
             child: Text(context.l10n.paymentContinue),
           ),
           LotusButtons.text(
+            style: TextButton.styleFrom(foregroundColor: AppColors.white),
             onPressed: () => Navigator.of(dialogContext).pop(true),
             child: Text(context.l10n.paymentLeaveAttempt),
           ),
@@ -454,34 +492,18 @@ class _PaymentsScreenState extends State<PaymentsScreen>
     }
   }
 
-  Widget _abandoned(bool serverConfirmed) => Center(
-    child: Column(
-      children: AsteriaEntrance.sections([
-        Image.asset('assets/images/payment/purchase_fail.png', height: 220),
-        const SizedBox(height: 24),
-        Text(
-          context.l10n.paymentAttemptLeft,
-          style: context.textTheme.playfairBold24,
-        ),
-        const SizedBox(height: 12),
-        Text(
-          serverConfirmed
-              ? context.l10n.paymentAbandonedServerConfirmed
-              : context.l10n.paymentAbandonedLocal,
-          style: context.textTheme.urbanistRegular16.copyWith(
-            color: AppColors.textSecondary,
-          ),
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: 32),
-        if (widget.productId != null)
-          CustomButton(
-            onPressed: _retry,
+  Widget _abandoned(bool serverConfirmed) => _statusCard(
+    icon: Icons.close_rounded,
+    title: context.l10n.paymentAttemptLeft,
+    message: serverConfirmed
+        ? context.l10n.paymentAbandonedServerConfirmed
+        : context.l10n.paymentAbandonedLocal,
+    action: widget.productId == null
+        ? null
+        : ProfilePrimaryButton(
             text: context.l10n.paymentCreateNew,
-            isFullWidth: true,
+            onPressed: _retry,
           ),
-      ]),
-    ),
   );
 
   Widget _terminalError(ArcPayOrder order) {
@@ -494,31 +516,15 @@ class _PaymentsScreenState extends State<PaymentsScreen>
     return _error(message);
   }
 
-  Widget _error(String message) => Center(
-    child: Column(
-      children: AsteriaEntrance.sections([
-        Image.asset('assets/images/payment/purchase_fail.png', height: 220),
-        const SizedBox(height: 24),
-        Text(
-          context.l10n.paymentFailed,
-          style: context.textTheme.playfairBold24,
-        ),
-        const SizedBox(height: 12),
-        Text(
-          message,
-          style: context.textTheme.urbanistRegular16.copyWith(
-            color: AppColors.textSecondary,
-          ),
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: 32),
-        if (widget.productId != null)
-          CustomButton(
-            onPressed: _retry,
+  Widget _error(String message) => _statusCard(
+    icon: Icons.info_rounded,
+    title: context.l10n.paymentFailed,
+    message: message,
+    action: widget.productId == null
+        ? null
+        : ProfilePrimaryButton(
             text: context.l10n.commonRetry,
-            isFullWidth: true,
+            onPressed: _retry,
           ),
-      ]),
-    ),
   );
 }
