@@ -5,16 +5,19 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('renders the Figma PRO badge without a user provider', (
+  testWidgets('keeps the compact PRO badge usable without a user provider', (
     tester,
   ) async {
+    var taps = 0;
     await tester.pumpWidget(
       MaterialApp(
         home: Builder(
           builder: (context) {
             return Theme(
               data: AppThemeDark.instance.getThemeData(context),
-              child: const Scaffold(body: Center(child: SubscriptionWidget())),
+              child: Scaffold(
+                body: Center(child: SubscriptionWidget(onTap: () => taps++)),
+              ),
             );
           },
         ),
@@ -27,23 +30,8 @@ void main() {
     expect(find.text('PRO'), findsOneWidget);
     expect(find.byType(SvgPicture), findsNothing);
 
-    final container = tester.widget<Container>(find.byType(Container).last);
-    final decoration = container.decoration! as BoxDecoration;
-    final gradient = decoration.gradient! as LinearGradient;
-
-    expect(
-      container.padding,
-      const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-    );
-    expect(decoration.borderRadius, BorderRadius.circular(100));
-    expect(gradient.begin, Alignment.centerLeft);
-    expect(gradient.end, Alignment.centerRight);
-    expect(gradient.colors, const [
-      Color(0xFFF3B76A),
-      Color(0xFF8A6BFF),
-      Color(0xFF5A3FD1),
-    ]);
-    expect(gradient.stops, const [0, 0.50032, 1]);
+    await tester.tap(badgeFinder);
+    expect(taps, 1);
 
     final label = tester.widget<Text>(find.text('PRO'));
     expect(label.style?.fontFamily, 'Lora');

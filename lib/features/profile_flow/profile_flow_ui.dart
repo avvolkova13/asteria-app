@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/pro_badge_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/ui_kit/card_radii.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
@@ -149,42 +150,7 @@ class ProfileProPill extends StatelessWidget {
   final bool isActive;
 
   @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 29,
-      padding: const EdgeInsets.symmetric(horizontal: 14),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(18),
-        gradient: isActive
-            ? const LinearGradient(
-                colors: [Color(0xFFFFB15C), Color(0xFF7A45FF)],
-              )
-            : const LinearGradient(
-                colors: [Color(0xFF4C367A), Color(0xFF7548FF)],
-              ),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            'PRO',
-            style: AppTypography.navTitle.copyWith(
-              color: AppColors.textInverse,
-              height: 1,
-            ),
-          ),
-          if (!isActive) ...[
-            const SizedBox(width: 5),
-            const ClayIcon(
-              Icons.lock_outline,
-              size: 13,
-              color: AppColors.white,
-            ),
-          ],
-        ],
-      ),
-    );
-  }
+  Widget build(BuildContext context) => ProBadgeSurface(isActive: isActive);
 }
 
 class ProfileGlassCard extends StatelessWidget {

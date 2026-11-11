@@ -1,3 +1,5 @@
+import 'package:asteria_app/core/ui_kit/widgets/pro_badge_surface.dart';
+import 'package:asteria_app/features/monetization/presentation/monetization_provider.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/routing/app_route.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
@@ -15,31 +17,12 @@ class SubscriptionWidget extends StatelessWidget {
   final TextStyle? labelStyle;
   final String originSurface;
 
-  static const _gradient = LinearGradient(
-    begin: Alignment.centerLeft,
-    end: Alignment.centerRight,
-    colors: [Color(0xFFF3B76A), Color(0xFF8A6BFF), Color(0xFF5A3FD1)],
-    stops: [0, 0.50032, 1],
-  );
-
   @override
   Widget build(BuildContext context) {
-    final badge = Transform.translate(
-      offset: const Offset(0, -2),
-      child: Container(
-        width: 76,
-        height: 28,
-        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-        decoration: BoxDecoration(
-          gradient: _gradient,
-          borderRadius: BorderRadius.circular(100),
-        ),
-        alignment: Alignment.center,
-        child: Text(
-          'PRO',
-          style: labelStyle ?? context.textTheme.inversePlayfairSemiBold17,
-        ),
-      ),
+    final active = MonetizationProvider.maybeOf(context)?.effectivePro ?? false;
+    final badge = ProBadgeSurface(
+      isActive: active,
+      labelStyle: labelStyle ?? context.textTheme.inversePlayfairSemiBold17,
     );
 
     return Semantics(

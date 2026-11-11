@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/pro_badge_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
@@ -10,7 +11,6 @@ import 'package:asteria_app/core/analytics/product_analytics_service.dart';
 import 'package:asteria_app/core/di/di.dart';
 import 'package:asteria_app/core/routing/app_route.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
-import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 import 'package:asteria_app/features/affirmation/widgets/affirmation_category_widget.dart';
 import 'package:asteria_app/features/monetization/presentation/monetization_provider.dart';
 import 'package:flutter/material.dart';
@@ -232,43 +232,12 @@ class _AffirmationProBadge extends StatelessWidget {
       label: isActive
           ? context.l10n.subscriptionActive
           : context.l10n.offerProTitle,
-      child: Container(
-        width: 76,
-        height: 28,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(100),
-          color: isActive ? null : AppColors.textSecondary,
-          image: isActive
-              ? const DecorationImage(
-                  image: AssetImage('assets/background/pro_gradient.webp'),
-                  fit: BoxFit.cover,
-                )
-              : null,
-        ),
-        child: LotusTap(
-          behavior: HitTestBehavior.opaque,
-          onTap: isActive ? null : () => _openSubscriptionFromProBadge(context),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                'PRO',
-                style: context.textTheme.inversePlayfairSemiBold17.copyWith(
-                  height: 1.2,
-                  letterSpacing: -0.408,
-                ),
-              ),
-              if (!isActive) ...[
-                const SizedBox(width: 4),
-                const ClayIcon(
-                  Icons.lock_outline,
-                  size: 12,
-                  color: AppColors.textInverse,
-                ),
-              ],
-            ],
-          ),
+      child: LotusTap(
+        behavior: HitTestBehavior.opaque,
+        onTap: isActive ? null : () => _openSubscriptionFromProBadge(context),
+        child: ProBadgeSurface(
+          isActive: isActive,
+          labelStyle: context.textTheme.inversePlayfairSemiBold17,
         ),
       ),
     );
