@@ -72,7 +72,6 @@ class PaywallFeaturesCard extends StatelessWidget {
         builder: (context, constraints) {
           final isCompact = constraints.maxWidth < 300;
           final wandWidth = isCompact ? 82.0 : 105.0;
-          final wandHeight = wandWidth * 157 / 105;
 
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -86,10 +85,10 @@ class PaywallFeaturesCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 16),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              Stack(
                 children: [
-                  Expanded(
+                  Padding(
+                    padding: EdgeInsets.only(right: wandWidth + 12),
                     child: Column(
                       children: [
                         for (var i = 0; i < features.length; i++) ...[
@@ -99,13 +98,13 @@ class PaywallFeaturesCard extends StatelessWidget {
                       ],
                     ),
                   ),
-                  const SizedBox(width: 12),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 24),
+                  Positioned(
+                    right: 0,
+                    top: 0,
+                    bottom: 0,
+                    width: wandWidth,
                     child: Image.asset(
                       'assets/images/home/natal_paywall_wand.webp',
-                      width: wandWidth,
-                      height: wandHeight,
                       fit: BoxFit.contain,
                       excludeFromSemantics: true,
                     ),

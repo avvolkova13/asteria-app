@@ -1,5 +1,6 @@
 import 'package:asteria_app/core/localization/localization.dart';
 import 'package:asteria_app/core/ui_kit/theme/theme.dart';
+import 'package:asteria_app/features/monetization/presentation/paywall_features_card.dart';
 import 'package:asteria_app/features/natal_card/widgets/natal_card_empty_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -85,11 +86,9 @@ void main() {
             reason: 'The illustration must not overlap any feature text',
           );
         }
-        if (width == 390) {
-          expect(wand.size, const Size(105, 157));
-          expect(card.right - wand.right, closeTo(16, 1));
-          expect(wand.top - card.top, closeTo(80, 1));
-        }
+        final items = find.byType(PaywallFeatureItem);
+        expect(wand.top, closeTo(tester.getTopLeft(items.first).dy, 0.1));
+        expect(wand.bottom, closeTo(tester.getBottomLeft(items.last).dy, 0.1));
         expect(tester.takeException(), isNull);
       });
     }
