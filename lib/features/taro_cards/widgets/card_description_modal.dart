@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/modal_glass_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/app/data/models/tarot_card/tarot_card_model.dart';
 import 'package:asteria_app/core/localization/tarot_card_asset_resolver.dart';
@@ -54,14 +55,8 @@ class TarotLayoutCardDescriptionModal extends StatelessWidget {
 
     return SizedBox(
       height: sheetHeight,
-      child: DecoratedBox(
-        decoration: const BoxDecoration(
-          color: _TarotLayoutCardModalColors.surface,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(24),
-            topRight: Radius.circular(24),
-          ),
-        ),
+      child: ModalGlassSurface(
+        color: _TarotLayoutCardModalColors.surface,
         child: SafeArea(
           top: false,
           child: Column(

@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/modal_glass_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
@@ -94,19 +95,13 @@ class _PurchaseModalSheetState extends State<PurchaseModalSheet> {
         final requestedHeight = baseHeight + ((textScale - 1) * scaleAllowance);
         final maximumHeight = MediaQuery.sizeOf(context).height * 0.92;
 
-        return Container(
+        return ModalGlassSurface(
           height: showNotEnoughContent
               ? null
               : requestedHeight.clamp(0.0, maximumHeight).toDouble(),
-          decoration: BoxDecoration(
-            color: showNotEnoughContent
-                ? const Color(0xFF110628)
-                : _purchaseModalBackground,
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(24),
-              topRight: Radius.circular(24),
-            ),
-          ),
+          color: showNotEnoughContent
+              ? const Color(0xFF110628)
+              : _purchaseModalBackground,
           child: SafeArea(
             top: false,
             child: showNotEnoughContent

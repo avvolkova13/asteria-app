@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/modal_glass_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/app/data/models/rune_of_day/rune_of_day_model.dart';
@@ -423,14 +424,8 @@ class _RuneDescriptionModal extends StatelessWidget {
 
     return SizedBox(
       height: sheetHeight,
-      child: DecoratedBox(
-        decoration: const BoxDecoration(
-          color: _RunesBlockColors.modalSurface,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(24),
-            topRight: Radius.circular(24),
-          ),
-        ),
+      child: ModalGlassSurface(
+        color: _RunesBlockColors.modalSurface,
         child: SafeArea(
           top: false,
           child: Column(

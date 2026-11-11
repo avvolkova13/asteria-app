@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/modal_glass_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/app/data/models/user/user_model.dart';
@@ -94,7 +95,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (BuildContext dialogContext) {
-        return AlertDialog(
+        return ModalGlassAlert(
+          color: AppColorsDark.modal,
           title: Text(context.l10n.profileDeleteAccount),
           content: Text(context.l10n.profileDeleteAccountQuestion),
           actions: [
@@ -102,14 +104,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
               onPressed: () => Navigator.of(dialogContext).pop(false),
               child: Text(
                 context.l10n.commonNo,
-                style: context.textTheme.urbanistBold16,
+                style: context.textTheme.inverseUrbanistBold16,
               ),
             ),
             LotusButtons.text(
               onPressed: () => Navigator.of(dialogContext).pop(true),
               child: Text(
                 context.l10n.commonYes,
-                style: context.textTheme.urbanistBold16,
+                style: context.textTheme.inverseUrbanistBold16.copyWith(
+                  color: Color.lerp(AppColors.error, AppColors.white, .45),
+                ),
               ),
             ),
           ],
@@ -175,7 +179,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
+        return ModalGlassAlert(
+          color: AppColorsDark.modal,
           title: Text(context.l10n.profileLogoutTitle),
           content: Text(context.l10n.profileLogoutQuestion),
           actions: [
@@ -183,7 +188,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               onPressed: () => Navigator.of(context).pop(),
               child: Text(
                 context.l10n.commonCancel,
-                style: context.textTheme.urbanistBold16,
+                style: context.textTheme.inverseUrbanistBold16,
               ),
             ),
             LotusButtons.text(
@@ -196,7 +201,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
               },
               child: Text(
                 context.l10n.logoutButton,
-                style: context.textTheme.urbanistBold16,
+                style: context.textTheme.inverseUrbanistBold16.copyWith(
+                  color: ProfileFlowColors.accent,
+                ),
               ),
             ),
           ],

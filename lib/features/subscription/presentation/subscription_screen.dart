@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/modal_glass_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/card_radii.dart';
@@ -1133,11 +1134,8 @@ class _CancelSubscriptionButton extends StatelessWidget {
     return showDialog<bool>(
       context: context,
       builder: (dialogContext) {
-        return AlertDialog(
-          backgroundColor: const Color(0xFF221641),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
+        return ModalGlassAlert(
+          color: AppColorsDark.modal,
           titlePadding: const EdgeInsets.fromLTRB(24, 18, 24, 4),
           contentPadding: const EdgeInsets.fromLTRB(24, 0, 24, 18),
           actionsPadding: EdgeInsets.zero,

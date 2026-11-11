@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/modal_glass_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
@@ -57,11 +58,8 @@ class _DateTimePickerBottomSheetState extends State<DateTimePickerBottomSheet> {
 
     return SizedBox(
       height: sheetHeight,
-      child: DecoratedBox(
-        decoration: const BoxDecoration(
-          color: Color(0xFF0F0A1A),
-          borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
-        ),
+      child: ModalGlassSurface(
+        color: Color(0xFF0F0A1A),
         child: SafeArea(
           top: false,
           child: Padding(
@@ -160,15 +158,9 @@ class _DateTimePickerBottomSheetState extends State<DateTimePickerBottomSheet> {
   }
 
   Widget _buildLightSheet(BuildContext context) {
-    return Container(
+    return ModalGlassSurface(
       height: 400,
-      decoration: BoxDecoration(
-        color: context.colors.surface,
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(16),
-          topRight: Radius.circular(16),
-        ),
-      ),
+      color: context.colors.surface,
       child: SafeArea(
         child: Column(
           children: AsteriaEntrance.sections([

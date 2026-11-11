@@ -1,7 +1,7 @@
+import 'package:asteria_app/core/ui_kit/widgets/modal_glass_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
-import 'dart:ui' as ui;
 import 'package:asteria_app/app/data/models/user/user_model.dart';
 import 'package:asteria_app/app/providers/content_provider.dart';
 import 'package:asteria_app/app/providers/user_provider.dart';
@@ -282,53 +282,43 @@ class _CityConfirmationSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final style = AppTypography.text1.copyWith(color: AppColors.textInverse);
-    return ClipRRect(
+    return ModalGlassSurface(
       key: const ValueKey('city-confirmation-sheet'),
-      borderRadius: BorderRadius.circular(34),
-      child: BackdropFilter(
-        filter: ui.ImageFilter.blur(sigmaX: 16, sigmaY: 16),
-        child: Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: const Color(0x809A7DB8),
-            borderRadius: BorderRadius.circular(34),
-            border: Border.all(
-              color: AppColors.white.withValues(alpha: 0.24),
-              strokeAlign: BorderSide.strokeAlignInside,
+      color: const Color(0xFF443552),
+      sheet: false,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: AsteriaEntrance.sections([
+            Text.rich(
+              TextSpan(
+                style: style,
+                children: [
+                  TextSpan(
+                    text: location.location.split(',').first.trim(),
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(
+                    text: ',\n${context.l10n.cityConfirmationQuestion}',
+                  ),
+                ],
+              ),
             ),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: AsteriaEntrance.sections([
-              Text.rich(
-                TextSpan(
-                  style: style,
-                  children: [
-                    TextSpan(
-                      text: location.location.split(',').first.trim(),
-                      style: const TextStyle(fontWeight: FontWeight.w600),
-                    ),
-                    TextSpan(
-                      text: ',\n${context.l10n.cityConfirmationQuestion}',
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 16),
-              _CityConfirmationButton(
-                text: context.l10n.citySelectionConfirm,
-                filled: true,
-                onPressed: onConfirm,
-              ),
-              const SizedBox(height: 8),
-              _CityConfirmationButton(
-                text: context.l10n.citySelectionChange,
-                filled: false,
-                onPressed: onChange,
-              ),
-            ]),
-          ),
+            const SizedBox(height: 16),
+            _CityConfirmationButton(
+              text: context.l10n.citySelectionConfirm,
+              filled: true,
+              onPressed: onConfirm,
+            ),
+            const SizedBox(height: 8),
+            _CityConfirmationButton(
+              text: context.l10n.citySelectionChange,
+              filled: false,
+              onPressed: onChange,
+            ),
+          ]),
         ),
       ),
     );

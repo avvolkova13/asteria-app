@@ -52,6 +52,7 @@ class AppColors {
 
 class AppColorsDark {
   static const Color homeCanvas = Color(0xFF0F0A1A);
+  static const Color modal = Color(0xFF35253E);
   static const Color primary = Color(0xFF6C63FF);
   static const Color secondary = Color(0xFF2C2C2C);
   static const Color accent = Color(0xFF00D4FF);

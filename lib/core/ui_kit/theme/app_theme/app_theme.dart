@@ -3,6 +3,8 @@ import 'package:flutter/cupertino.dart'
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../app_typography.dart';
+import '../../widgets/card_lens_decoration.dart';
+import '../../widgets/modal_glass_surface.dart';
 import '../theme_data/colors_theme_data.dart';
 import '../theme_data/corners_theme_data.dart';
 import '../theme_data/spacing_theme_data.dart';
@@ -1085,12 +1087,23 @@ abstract class AppTheme {
         thickness: 1,
         space: spacingThemeData.medium,
       ),
+      tooltipTheme: TooltipThemeData(
+        decoration: CardLensDecoration(
+          borderRadius: BorderRadius.circular(16),
+          color: colorSchemeData.surface.withValues(alpha: .94),
+          intensity: .54,
+        ),
+        textStyle: textThemeData.urbanistRegular14.copyWith(
+          color: colorSchemeData.textPrimary,
+        ),
+      ),
       snackBarTheme: SnackBarThemeData(
-        backgroundColor: colorSchemeData.surface,
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: colorSchemeData.surface.withValues(alpha: .94),
         contentTextStyle: textThemeData.urbanistRegular16.copyWith(
           color: colorSchemeData.textPrimary,
         ),
-        shape: RoundedRectangleBorder(borderRadius: cornersThemeData.small),
+        shape: const ModalLensBorder(),
       ),
     );
   }

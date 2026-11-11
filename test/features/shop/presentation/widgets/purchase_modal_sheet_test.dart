@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/modal_glass_surface.dart';
 import 'package:asteria_app/app/data/models/shop_item/shop_item_model.dart';
 import 'package:asteria_app/app/data/models/user/user_model.dart';
 import 'package:asteria_app/app/data/repositories/user/user_repository.dart';
@@ -38,7 +39,7 @@ void main() {
     monetizationProvider.dispose();
   });
 
-  testWidgets('matches the compact dark purchase popup from Figma', (
+  testWidgets('shows the compact purchase on a dark glass surface', (
     tester,
   ) async {
     await tester.binding.setSurfaceSize(const Size(390, 844));
@@ -76,21 +77,15 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    final sheetContainer = tester.widget<Container>(
-      find.byWidgetPredicate(
-        (widget) =>
-            widget is Container &&
-            widget.constraints == const BoxConstraints.tightFor(height: 329),
-      ),
-    );
-    final decoration = sheetContainer.decoration! as BoxDecoration;
-    expect(decoration.color, const Color(0xFF12052A));
+    final surface = find.byType(ModalGlassSurface);
+    expect(tester.getSize(surface).height, 329);
     expect(
-      decoration.borderRadius,
-      const BorderRadius.only(
-        topLeft: Radius.circular(24),
-        topRight: Radius.circular(24),
-      ),
+      tester.widget<ModalGlassSurface>(surface).color,
+      const Color(0xFF12052A),
+    );
+    expect(
+      find.descendant(of: surface, matching: find.byType(BackdropFilter)),
+      findsOneWidget,
     );
 
     expect(

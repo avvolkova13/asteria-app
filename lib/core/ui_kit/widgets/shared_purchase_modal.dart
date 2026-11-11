@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/modal_glass_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
@@ -135,15 +136,9 @@ class _SharedPurchaseModalState extends State<SharedPurchaseModal> {
     final isNotEnoughModal = _state == PurchaseModalState.notEnoughBalance;
     final isSuccessModal = _state == PurchaseModalState.success;
 
-    return Container(
+    return ModalGlassSurface(
       height: _getModalHeight(isNotEnoughModal, isSuccessModal),
-      decoration: BoxDecoration(
-        color: isNotEnoughModal ? const Color(0xFF110628) : _modalBackground,
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(24),
-          topRight: Radius.circular(24),
-        ),
-      ),
+      color: isNotEnoughModal ? const Color(0xFF110628) : _modalBackground,
       child: SafeArea(
         top: false,
         child: Builder(

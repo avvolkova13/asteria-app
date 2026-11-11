@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/modal_glass_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:flutter/material.dart';
@@ -19,14 +20,8 @@ class HowToUseLoveDeck extends StatelessWidget {
 
     return SizedBox(
       height: sheetHeight,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: _HowToUseLoveDeckColors.surface,
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(24),
-            topRight: Radius.circular(24),
-          ),
-        ),
+      child: ModalGlassSurface(
+        color: _HowToUseLoveDeckColors.surface,
         child: SafeArea(
           top: false,
           child: Padding(

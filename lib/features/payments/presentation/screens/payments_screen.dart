@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/modal_glass_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/ui_kit/card_radii.dart';
@@ -432,7 +433,8 @@ class _PaymentsScreenState extends State<PaymentsScreen>
   Future<void> _confirmAbandon() async {
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (dialogContext) => AlertDialog(
+      builder: (dialogContext) => ModalGlassAlert(
+        color: AppColors.modal,
         title: Text(context.l10n.paymentLeaveQuestion),
         content: Text(context.l10n.paymentLeaveDescription),
         actions: [

@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/modal_glass_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:flutter/material.dart';
@@ -23,14 +24,8 @@ class HowToUseKeltDeck extends StatelessWidget {
 
     return SizedBox(
       height: sheetHeight,
-      child: DecoratedBox(
-        decoration: const BoxDecoration(
-          color: _HowToUseKeltDeckColors.surface,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(24),
-            topRight: Radius.circular(24),
-          ),
-        ),
+      child: ModalGlassSurface(
+        color: _HowToUseKeltDeckColors.surface,
         child: SafeArea(
           top: false,
           child: Padding(

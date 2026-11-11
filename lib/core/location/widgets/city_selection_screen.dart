@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/modal_glass_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
@@ -202,10 +203,10 @@ class _CitySelectionScreenState extends State<CitySelectionScreen> {
   @override
   Widget build(BuildContext context) {
     if (widget.asSheet) {
-      return ClipRRect(
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+      return ModalGlassSurface(
+        color: const Color(0xFF110823),
         child: Scaffold(
-          backgroundColor: const Color(0xFF110823),
+          backgroundColor: Colors.transparent,
           body: SafeArea(
             top: false,
             child: Padding(
