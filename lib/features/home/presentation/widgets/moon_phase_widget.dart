@@ -74,8 +74,8 @@ class MoonPhaseWidget extends StatefulWidget {
 class _MoonPhaseWidgetState extends State<MoonPhaseWidget> {
   static const _minSwipeVelocity = 100.0;
   static const _dayStripWidth = 418.0;
-  static const _dayTileWidth = 46.0;
-  static const _dayTileHeight = 102.0;
+  static const _dayTileWidth = 58.0;
+  static const _dayTileHeight = 114.0;
   static const _dayTileGap = 16.0;
   static const _accentOrange = Color(0xFFE6994D);
   static const _accentOrangeLight = Color(0xFFF3B76A);
@@ -822,9 +822,9 @@ class _MoonDayTile extends StatelessWidget {
               curve: Curves.easeInOut,
               width: _MoonPhaseWidgetState._dayTileWidth,
               height: _MoonPhaseWidgetState._dayTileHeight,
-              padding: const EdgeInsets.all(4),
+              padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 6),
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(24),
+                borderRadius: BorderRadius.circular(29),
                 gradient: LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,

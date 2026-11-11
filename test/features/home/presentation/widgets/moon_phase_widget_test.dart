@@ -457,6 +457,11 @@ void main() {
       ).replaceAll('.', '');
       final today = find.text(todayLabel);
       final next = find.text(nextDayLabel);
+      final chip = find
+          .ancestor(of: today, matching: find.byType(AnimatedContainer))
+          .first;
+      expect(tester.getSize(chip), const Size(58, 114));
+      expect(tester.widget<Text>(today).style?.fontSize, 12);
       final selectedX = tester.getCenter(today).dx;
       final initialDistance = (tester.getCenter(next).dx - selectedX).abs();
       await tester.tap(next);

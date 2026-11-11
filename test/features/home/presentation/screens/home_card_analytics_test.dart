@@ -17,6 +17,7 @@ import 'package:asteria_app/core/utils/enums.dart';
 import 'package:asteria_app/features/home/presentation/cubit/home_cubit.dart';
 import 'package:asteria_app/features/home/presentation/cubit/home_state.dart';
 import 'package:asteria_app/features/home/presentation/screens/main_screen.dart';
+import 'package:asteria_app/features/home/presentation/widgets/daily_symbol_of_the_day_widget.dart';
 import 'package:asteria_app/features/home/presentation/screens/personal_screen.dart';
 import 'package:asteria_app/features/monetization/presentation/monetization_provider.dart';
 import 'package:flutter/material.dart';
@@ -123,6 +124,54 @@ void main() {
   void showTab(int index) {
     tab.value = index;
     observer.homeTab(index);
+  }
+
+  for (final width in [320.0, 393.0]) {
+    testWidgets(
+      'the last home block stays in place while dragging at ${width}pt',
+      (tester) async {
+        tester.view.devicePixelRatio = 1;
+        tester.view.physicalSize = Size(width, 780);
+        addTearDown(tester.view.resetDevicePixelRatio);
+        addTearDown(tester.view.resetPhysicalSize);
+        await mount(tester, initialTab: 0);
+        final viewport = find.descendant(
+          of: find.byType(MainScreen),
+          matching: find.byType(CustomScrollView),
+        );
+        final symbols = find.byType(DailySymbolOfTheDayWidget);
+        final position = Scrollable.of(tester.element(symbols)).position;
+        for (final showRune in [false, true]) {
+          if (showRune) {
+            final runeTab = find.descendant(
+              of: symbols,
+              matching: find.text('Руна'),
+            );
+            await tester.ensureVisible(runeTab);
+            await tester.tap(runeTab);
+            await tester.pump(const Duration(milliseconds: 700));
+          }
+          position.jumpTo(position.maxScrollExtent);
+          await tester.pump();
+          final gesture = await tester.startGesture(tester.getCenter(viewport));
+          await gesture.moveBy(const Offset(0, -180));
+          await tester.pump();
+          await gesture.moveBy(const Offset(0, -120));
+          await tester.pump();
+          expect(position.pixels, position.maxScrollExtent);
+          expect(
+            tester.getBottomLeft(viewport).dy -
+                tester.getBottomLeft(symbols).dy,
+            closeTo(24, .5),
+          );
+          await gesture.up();
+          await tester.pump(const Duration(milliseconds: 600));
+        }
+        expect(tester.takeException(), isNull);
+        await tester.pumpWidget(const SizedBox.shrink());
+      },
+      variant: TargetPlatformVariant.only(TargetPlatform.iOS),
+    );
   }
 
   testWidgets('home has one calendar entry and opens the lunar tab', (

@@ -57,6 +57,17 @@ void main() {
       await tester.pumpWidget(_testApp(router));
       expect(find.text('Аффирмация дня'), findsOneWidget);
       expect(calls, isEmpty);
+      final all = find.text('Все аффирмации');
+      final play = find.bySemanticsLabel('Воспроизвести');
+      final linkTarget = find.ancestor(
+        of: all,
+        matching: find.byType(TextButton),
+      );
+      expect(tester.getSize(linkTarget).shortestSide, greaterThanOrEqualTo(44));
+      expect(
+        tester.getBottomRight(all).dy,
+        closeTo(tester.getBottomLeft(play).dy, .5),
+      );
       PlayerArtwork art() => tester.widget(find.byType(PlayerArtwork));
       expect(art().playing, isFalse);
       await tester.tapAt(tester.getCenter(find.byType(PlayerArtwork)));

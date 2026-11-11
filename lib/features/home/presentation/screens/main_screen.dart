@@ -155,6 +155,10 @@ class _MainScreenState extends State<MainScreen> {
             child: SafeArea(
               bottom: false,
               child: CustomScrollView(
+                physics: const ClampingScrollPhysics(),
+                scrollBehavior: ScrollConfiguration.of(context).copyWith(
+                  overscroll: false,
+                ),
                 slivers: [
                   PinnedHeaderSliver(
                     child: HomeAccountBar(

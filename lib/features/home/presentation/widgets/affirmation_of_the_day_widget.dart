@@ -98,6 +98,7 @@ class _AffirmationOfTheDayState extends State<AffirmationOfTheDayWidget> {
     final player = _player;
     final playing = player?.isPlaying ?? false;
     final strings = context.l10n;
+    const linkColor = Color(0xFFE2BDFF);
     const radius = BorderRadius.all(Radius.circular(AsteriaCardRadii.card));
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -139,8 +140,8 @@ class _AffirmationOfTheDayState extends State<AffirmationOfTheDayWidget> {
                           Color(0x70291B36),
                           Color(0x00291B36),
                           Color(0x00291B36),
-                          Color(0x88291B36),
-                          Color(0x80291B36),
+                          Color(0x99291B36),
+                          Color(0xB3291B36),
                         ],
                         stops: [0, .16, .42, .58, .84, 1],
                       ),
@@ -167,6 +168,7 @@ class _AffirmationOfTheDayState extends State<AffirmationOfTheDayWidget> {
                     ),
                     const SizedBox(height: 94),
                     Row(
+                      crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         PlayerPebble(
                           primary: true,
@@ -187,7 +189,10 @@ class _AffirmationOfTheDayState extends State<AffirmationOfTheDayWidget> {
                               onPressed: _openCollection,
                               style: TextButton.styleFrom(
                                 minimumSize: const Size(44, 44),
-                                foregroundColor: AppColors.textInverse,
+                                visualDensity: VisualDensity.standard,
+                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                alignment: Alignment.bottomRight,
+                                foregroundColor: linkColor,
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: 6,
                                 ),
@@ -203,7 +208,7 @@ class _AffirmationOfTheDayState extends State<AffirmationOfTheDayWidget> {
                                       strings.allAffirmations,
                                       textAlign: TextAlign.end,
                                       style: AppTypography.link.copyWith(
-                                        color: AppColors.textInverse,
+                                        color: linkColor,
                                         shadows: const [
                                           Shadow(
                                             color: Color(0x99402A55),
