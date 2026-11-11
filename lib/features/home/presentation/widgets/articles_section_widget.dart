@@ -68,6 +68,7 @@ class _ArticlesSectionWidgetState extends State<ArticlesSectionWidget> {
           .where((article) => article.id != widget.excludeArticleId)
           .toList();
     }
+    if (articles.isEmpty) return const SizedBox.shrink();
     return Container(
       width: double.infinity,
       color: isMainSection ? AppColors.textPrimary : null,

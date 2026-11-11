@@ -55,10 +55,10 @@ class AppLocalizations {
     return Localizations.of<AppLocalizations>(context, AppLocalizations);
   }
 
-  /// `Asteria\nYour universe of\nforecasts and signs`
+  /// `Asteria\nThe Moon and\nyour daily rhythm`
   String get onboardingPage1Title {
     return Intl.message(
-      'Asteria\nYour universe of\nforecasts and signs',
+      'Asteria\nThe Moon and\nyour daily rhythm',
       name: 'onboardingPage1Title',
       desc: '',
       args: [],
@@ -125,10 +125,10 @@ class AppLocalizations {
     );
   }
 
-  /// `Your birth chart, compatibility,\nand personal forecasts`
+  /// `Your birth chart and compatibility\nwith the people in your life`
   String get onboardingPage4Description {
     return Intl.message(
-      'Your birth chart, compatibility,\nand personal forecasts',
+      'Your birth chart and compatibility\nwith the people in your life',
       name: 'onboardingPage4Description',
       desc: '',
       args: [],
@@ -630,10 +630,10 @@ class AppLocalizations {
     );
   }
 
-  /// `A subscription provides access to Asteria's advanced features:\n• Unlimited Dream Dictionary, Tarot, and AI Astrologer requests\n• A complete personal horoscope\n• Detailed Lunar Calendar insights\n• Full compatibility reports\n• Unlimited affirmations\nPayment is charged to your App Store or Google Play account after confirmation. The subscription renews automatically unless auto-renew is turned off at least 24 hours before the end of the current period. You can manage or cancel it in your store account settings. Payments are not refunded for unused time. See the Terms of Use for details.`
+  /// `A subscription provides access to Asteria's advanced features:\n• Unlimited Dream Dictionary, Tarot, and AI Astrologer requests\n• Detailed Lunar Calendar insights\n• Full compatibility reports\n• Unlimited affirmations\nPayment is charged to your App Store or Google Play account after confirmation. The subscription renews automatically unless auto-renew is turned off at least 24 hours before the end of the current period. You can manage or cancel it in your store account settings. Payments are not refunded for unused time. See the Terms of Use for details.`
   String get subscriptionInfoDescription {
     return Intl.message(
-      'A subscription provides access to Asteria\'s advanced features:\n• Unlimited Dream Dictionary, Tarot, and AI Astrologer requests\n• A complete personal horoscope\n• Detailed Lunar Calendar insights\n• Full compatibility reports\n• Unlimited affirmations\nPayment is charged to your App Store or Google Play account after confirmation. The subscription renews automatically unless auto-renew is turned off at least 24 hours before the end of the current period. You can manage or cancel it in your store account settings. Payments are not refunded for unused time. See the Terms of Use for details.',
+      'A subscription provides access to Asteria\'s advanced features:\n• Unlimited Dream Dictionary, Tarot, and AI Astrologer requests\n• Detailed Lunar Calendar insights\n• Full compatibility reports\n• Unlimited affirmations\nPayment is charged to your App Store or Google Play account after confirmation. The subscription renews automatically unless auto-renew is turned off at least 24 hours before the end of the current period. You can manage or cancel it in your store account settings. Payments are not refunded for unused time. See the Terms of Use for details.',
       name: 'subscriptionInfoDescription',
       desc: '',
       args: [],
@@ -650,10 +650,10 @@ class AppLocalizations {
     );
   }
 
-  /// `Full access to Dream Dictionary, Tarot, AI Astrologer, horoscope, and Lunar Calendar`
+  /// `Full access to Dream Dictionary, Tarot, AI Astrologer, and Lunar Calendar`
   String get homeProSubscriptionDescription {
     return Intl.message(
-      'Full access to Dream Dictionary, Tarot, AI Astrologer, horoscope, and Lunar Calendar',
+      'Full access to Dream Dictionary, Tarot, AI Astrologer, and Lunar Calendar',
       name: 'homeProSubscriptionDescription',
       desc: '',
       args: [],
@@ -1700,6 +1700,16 @@ class AppLocalizations {
     return Intl.message(
       'Nothing here yet. Earn or spend star credits to see your history!',
       name: 'balanceHistoryEmpty',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Balance transaction`
+  String get balanceLegacyOperation {
+    return Intl.message(
+      'Balance transaction',
+      name: 'balanceLegacyOperation',
       desc: '',
       args: [],
     );
@@ -5446,10 +5456,10 @@ class AppLocalizations {
     );
   }
 
-  /// `Enough for a couple of readings`
+  /// `For your first card readings`
   String get coinPackageDescription30 {
     return Intl.message(
-      'Enough for a couple of readings',
+      'For your first card readings',
       name: 'coinPackageDescription30',
       desc: '',
       args: [],
@@ -6775,10 +6785,10 @@ class AppLocalizations {
     );
   }
 
-  /// ` is the in-app currency. Use it for spreads, forecasts, and chats with the AI Astrologer.`
+  /// ` is the in-app currency for card readings, dream interpretations, and questions for Anakra.`
   String get balanceCurrencyDescription {
     return Intl.message(
-      ' is the in-app currency. Use it for spreads, forecasts, and chats with the AI Astrologer.',
+      ' is the in-app currency for card readings, dream interpretations, and questions for Anakra.',
       name: 'balanceCurrencyDescription',
       desc: '',
       args: [],
@@ -7020,10 +7030,10 @@ class AppLocalizations {
     );
   }
 
-  /// `Discover Asteria—horoscopes, Tarot, and the lunar calendar: {link}`
+  /// `Explore Tarot and the lunar calendar with Asteria: {link}`
   String rewardShareText(String link) {
     return Intl.message(
-      'Discover Asteria—horoscopes, Tarot, and the lunar calendar: $link',
+      'Explore Tarot and the lunar calendar with Asteria: $link',
       name: 'rewardShareText',
       desc: '',
       args: [link],

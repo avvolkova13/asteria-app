@@ -42,6 +42,35 @@ Widget historyApp(
 );
 
 void main() {
+  testWidgets('legacy horoscope charge keeps its amount and ledger entry', (
+    tester,
+  ) async {
+    final entry = WalletHistoryEntryModel.fromJson({
+      'entry_id': 'legacy-debit',
+      'sequence': 3,
+      'amount': -30,
+      'balance_after': 12,
+      'created_at': '2026-08-30T14:00:00Z',
+      'description': 'Покупка гороскопа на неделю',
+    });
+    final controller = BalanceHistoryController(
+      loadPage: ({required filter, beforeSequence}) async =>
+          WalletHistoryPageModel(
+            items: [entry],
+            nextBeforeSequence: null,
+            hasEntries: true,
+          ),
+    );
+    addTearDown(controller.dispose);
+    controller.setAccount('a');
+    await tester.pumpWidget(historyApp(controller));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const ValueKey('legacy-debit')), findsOneWidget);
+    expect(find.text('Операция по балансу'), findsOneWidget);
+    expect(find.text('-30'), findsOneWidget);
+    expect(find.text(entry.description), findsNothing);
+    expect(entry.description, 'Покупка гороскопа на неделю');
+  });
   testWidgets('scrolling loads next page and retry retains existing rows', (
     tester,
   ) async {

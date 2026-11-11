@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/config/app_feature_visibility.dart';
 import 'dart:async';
 import 'package:asteria_app/app/data/models/horoscope/horoscope_day_model.dart';
 import 'package:asteria_app/app/data/models/kelt_deck/kelt_deck_model.dart';
@@ -355,6 +356,7 @@ class UserProvider extends ChangeNotifier {
   }
 
   Future<void> onOpenDayHoroscope(DayHoroscopeOpenEnum type) async {
+    if (!AppFeatureVisibility.horoscopes) return;
     if (_currentUser?.horoscopeDay == null) return;
     final userId = _currentUser!.id;
 

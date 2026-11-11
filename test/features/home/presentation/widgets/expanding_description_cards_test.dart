@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/config/app_feature_visibility.dart';
 import '../../../compatibility/support/selection_test_support.dart';
 
 import 'dart:async';
@@ -323,6 +324,13 @@ void main() {
 
       await tester.binding.setSurfaceSize(const Size(390, 2000));
       await tester.pumpAndSettle();
+      if (!AppFeatureVisibility.horoscopes) {
+        expect(find.text('Стихия'), findsNothing);
+        expect(find.text('На неделю'), findsNothing);
+        expect(find.text('Натальная карта'), findsOneWidget);
+        expect(cardFinder, findsOneWidget);
+        return;
+      }
       final elementY = tester.getCenter(find.text('Стихия')).dy;
       expect(tester.getCenter(find.text('Планета')).dy, closeTo(elementY, 1));
       expect(tester.getCenter(find.text('Характер')).dy, closeTo(elementY, 1));
@@ -485,6 +493,13 @@ void main() {
           findsOneWidget,
         );
 
+        if (!AppFeatureVisibility.horoscopes) {
+          expect(find.text('Влияние на сферы'), findsNothing);
+          expect(find.text('Совет на день'), findsNothing);
+          expect(find.text('Натальная карта'), findsOneWidget);
+          expect(find.text('Астрология про вас двоих'), findsOneWidget);
+          continue;
+        }
         expect(find.text('Влияние на сферы'), findsOneWidget);
         expect(find.text('Совет на день'), findsOneWidget);
 
@@ -589,6 +604,18 @@ void main() {
     await tester.pump();
 
     expect(find.text('Тема отношений'), findsNothing);
+    if (!AppFeatureVisibility.horoscopes) {
+      expect(find.text('Глубокое описание отношений'), findsNothing);
+      expect(
+        find.byKey(const ValueKey('personal-day-love-panel')),
+        findsNothing,
+      );
+      expect(
+        find.byKey(const ValueKey('personal-day-weakness-panel')),
+        findsNothing,
+      );
+      return;
+    }
     expect(find.text('Глубокое описание отношений'), findsOneWidget);
     expect(find.text('Любовь\nи отношения'), findsOneWidget);
     expect(find.text('Слабые места'), findsOneWidget);
@@ -698,6 +725,17 @@ void main() {
       expect(contentProvider.calls, isEmpty);
       active.value = true;
       await tester.pump();
+      if (!AppFeatureVisibility.horoscopes) {
+        expect(contentProvider.calls, isEmpty);
+        active.value = false;
+        await tester.pump();
+        active.value = true;
+        await tester.pumpAndSettle();
+        expect(contentProvider.calls, isEmpty);
+        expect(find.text('Совет на день'), findsNothing);
+        expect(find.text('Натальная карта'), findsOneWidget);
+        return;
+      }
       expect(contentProvider.calls, hasLength(1));
       expect(find.text('Открыть бесплатно'), findsNothing);
       expect(find.byType(CircularProgressIndicator), findsOneWidget);

@@ -9,9 +9,9 @@
 	<key>FlutterDeepLinkingEnabled</key>
 	<false/>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Астрологический прогноз учитывает ваш регион, поэтому Asteria может использовать местоположение для подбора локального контента.</string>
+	<string>Asteria использует местоположение, чтобы показать время восхода Луны и начало лунного дня для вашего города.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>Астрологический прогноз учитывает ваш регион, поэтому Asteria может использовать местоположение для подбора локального контента.</string>
+	<string>Asteria использует местоположение, чтобы показать время восхода Луны и начало лунного дня для вашего города.</string>
 	<key>NSLocalNetworkUsageDescription</key>
 	<string>Asteria использует локальную сеть для подключения к локальному серверу разработки.</string>
 	<key>NSAppTransportSecurity</key>
@@ -20,7 +20,7 @@
 		<true/>
 	</dict>
 	<key>NSUserTrackingUsageDescription</key>
-	<string>Asteria использует эти данные, чтобы понимать, какие функции полезны вам, и улучшать персональные прогнозы. Мы никогда не передаём ваши личные данные третьим лицам без вашего согласия.</string>
+	<string>Asteria использует эти данные, чтобы понимать, какие функции вам полезны, и улучшать приложение. Мы никогда не передаём ваши личные данные третьим лицам без вашего согласия.</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleLocalizations</key>

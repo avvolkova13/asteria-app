@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/config/app_feature_visibility.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/modal_glass_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
@@ -995,11 +996,13 @@ class _SubscriptionInfoCard extends StatelessWidget {
             iconPath: 'assets/icons/sub/moon_icon.svg',
             title: context.l10n.subscriptionBenefitUnlimited,
           ),
-          const SizedBox(height: 12),
-          _BenefitsItem(
-            iconPath: 'assets/icons/sub/lock_icon.svg',
-            title: context.l10n.subscriptionBenefitHoroscope,
-          ),
+          if (AppFeatureVisibility.horoscopes) ...[
+            const SizedBox(height: 12),
+            _BenefitsItem(
+              iconPath: 'assets/icons/sub/lock_icon.svg',
+              title: context.l10n.subscriptionBenefitHoroscope,
+            ),
+          ],
           const SizedBox(height: 12),
           _BenefitsItem(
             iconPath: 'assets/icons/sub/calendar_icon.svg',

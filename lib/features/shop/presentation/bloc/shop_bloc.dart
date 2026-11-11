@@ -1,3 +1,4 @@
+import 'package:asteria_app/features/monetization/domain/purchase_visibility.dart';
 import 'package:asteria_app/app/data/models/shop_item/shop_item_model.dart';
 import 'package:asteria_app/features/monetization/presentation/monetization_provider.dart';
 import 'package:asteria_app/features/shop/domain/shop_repository.dart';
@@ -34,13 +35,15 @@ class ShopBloc extends Bloc<ShopEvent, ShopState> {
       await _monetizationProvider.ensureLoaded();
 
       // Обновляем purchasedQuantity для request-pack товаров из Mongo quota.
-      final productsWithPurchaseInfo = products.map((product) {
-        final feature = product.purchase?.featureKey;
-        final purchasedQuantity = feature == null
-            ? 0
-            : _monetizationProvider.requestQuota(feature).paidRemaining;
-        return product.copyWith(purchasedQuantity: purchasedQuantity);
-      }).toList();
+      final productsWithPurchaseInfo = products.where(isShopProductVisible).map(
+        (product) {
+          final feature = product.purchase?.featureKey;
+          final purchasedQuantity = feature == null
+              ? 0
+              : _monetizationProvider.requestQuota(feature).paidRemaining;
+          return product.copyWith(purchasedQuantity: purchasedQuantity);
+        },
+      ).toList();
 
       emit(ShopLoaded(products: productsWithPurchaseInfo));
     } catch (e) {

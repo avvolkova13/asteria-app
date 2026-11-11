@@ -1,3 +1,5 @@
+import 'package:asteria_app/core/config/app_feature_visibility.dart';
+import 'package:go_router/go_router.dart';
 import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/ui_kit/card_radii.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
@@ -51,6 +53,12 @@ class _HoroscopeScreenState extends State<HoroscopeScreen> {
   @override
   void initState() {
     super.initState();
+    if (!AppFeatureVisibility.horoscopes) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) GoRouter.maybeOf(context)?.go(HomeRoute.routeName);
+      });
+      return;
+    }
     final productAnalytics = di.get<ProductAnalyticsService>();
     productAnalytics.trackMoonStart(entrySurface: EntrySurface.home);
     // Annual horoscope = the "year" tab in the moon/horoscope funnel taxonomy.
@@ -198,6 +206,7 @@ class _HoroscopeScreenState extends State<HoroscopeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (!AppFeatureVisibility.horoscopes) return const SizedBox.shrink();
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle.light,
       child: Scaffold(

@@ -16,7 +16,7 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   test(
-    'loads purchased request-pack quantities from fresh quota state',
+    'loads fresh request-pack quantities and omits horoscope offers',
     () async {
       final userProvider = UserProvider(
         userRepository: _FakeUserRepository(),
@@ -99,6 +99,25 @@ class _FakeMonetizationApi extends MonetizationApi {
 class _FakeShopRepository implements ShopRepository {
   @override
   Future<List<ShopItemModel>> getShopItems() async => const [
+    ShopItemModel(
+      id: 'archived',
+      title: 'Персональный прогноз на год',
+      category: 'Покупки',
+      description: '',
+      price: 30,
+    ),
+    ShopItemModel(
+      id: 'older',
+      title: 'Разбор',
+      category: 'Покупки',
+      description: '',
+      price: 10,
+      purchase: ShopItemPurchaseModel(
+        type: 'feature_credit',
+        featureKey: 'weekly_horoscope',
+        creditQuantity: 1,
+      ),
+    ),
     ShopItemModel(
       id: 'shop-sonnik',
       title: 'Сонник',

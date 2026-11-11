@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/config/app_feature_visibility.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/card_radii.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
@@ -189,7 +190,8 @@ class _SonnikProBenefits extends StatelessWidget {
   Widget build(BuildContext context) {
     final benefits = [
       context.l10n.subscriptionBenefitUnlimited,
-      context.l10n.subscriptionBenefitHoroscope,
+      if (AppFeatureVisibility.horoscopes)
+        context.l10n.subscriptionBenefitHoroscope,
       context.l10n.subscriptionBenefitMoon,
       context.l10n.subscriptionBenefitCompatibility,
       context.l10n.subscriptionBenefitAffirmations,
@@ -226,7 +228,11 @@ class _BenefitRow extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        ClayIcon(Icons.check_circle_rounded, color: SonnikPalette.gold, size: 18),
+        ClayIcon(
+          Icons.check_circle_rounded,
+          color: SonnikPalette.gold,
+          size: 18,
+        ),
         const SizedBox(width: 10),
         Expanded(
           child: Text(

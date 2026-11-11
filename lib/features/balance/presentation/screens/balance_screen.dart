@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/config/app_feature_visibility.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/card_radii.dart';
@@ -48,7 +49,9 @@ class _BalanceScreenState extends State<BalanceScreen> {
                 const SizedBox(height: 28),
                 const _IntroText().withEntrance(),
                 const SizedBox(height: 24),
-                _HistoryButton(onTap: () => BalanceHistoryRoute.push(context)).withEntrance(),
+                _HistoryButton(
+                  onTap: () => BalanceHistoryRoute.push(context),
+                ).withEntrance(),
                 const SizedBox(height: 24),
                 const _WhereToSpend().withEntrance(),
                 const SizedBox(height: 16),
@@ -162,11 +165,12 @@ class _WhereToSpend extends StatelessWidget {
       text: context.l10n.balanceServiceTarot,
       price: PricingCatalog.paidTarotSpread,
     ),
-    _SpendItemData(
-      icon: 'assets/icons/sub/lock_icon.svg',
-      text: context.l10n.balanceServiceYearForecast,
-      price: PricingCatalog.yearlyHoroscope,
-    ),
+    if (AppFeatureVisibility.horoscopes)
+      _SpendItemData(
+        icon: 'assets/icons/sub/lock_icon.svg',
+        text: context.l10n.balanceServiceYearForecast,
+        price: PricingCatalog.yearlyHoroscope,
+      ),
     _SpendItemData(
       icon: 'assets/icons/sphere_icon/ic_award.svg',
       text: context.l10n.balanceServiceNatal,
@@ -267,7 +271,11 @@ class _PricePill extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 3),
-          LotusRasterIcon('assets/icons/star_coin_icon.png', width: 12, height: 12),
+          LotusRasterIcon(
+            'assets/icons/star_coin_icon.png',
+            width: 12,
+            height: 12,
+          ),
         ],
       ),
     );

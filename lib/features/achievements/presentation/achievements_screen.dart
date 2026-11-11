@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/config/app_feature_visibility.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
@@ -57,16 +58,18 @@ class AchievementsScreen extends StatelessWidget {
                       totalCount: 5,
                     ),
                     const SizedBox(height: 16),
-                    AchievementCard(
-                      key: const ValueKey('achievement-horoscope'),
-                      id: 'horoscope',
-                      imageAsset:
-                          'assets/images/achievements/achievement-horoscope-figma.webp',
-                      title: context.l10n.achievementHoroscope,
-                      completedCount: statistics.horoscopeOpened,
-                      totalCount: 3,
-                    ),
-                    const SizedBox(height: 16),
+                    if (AppFeatureVisibility.horoscopes) ...[
+                      AchievementCard(
+                        key: const ValueKey('achievement-horoscope'),
+                        id: 'horoscope',
+                        imageAsset:
+                            'assets/images/achievements/achievement-horoscope-figma.webp',
+                        title: context.l10n.achievementHoroscope,
+                        completedCount: statistics.horoscopeOpened,
+                        totalCount: 3,
+                      ),
+                      const SizedBox(height: 16),
+                    ],
                     AchievementCard(
                       key: const ValueKey('achievement-runes'),
                       id: 'runes',
@@ -108,7 +111,11 @@ class _AchievementsHeader extends StatelessWidget {
       children: [
         Text('$balance', style: style),
         const SizedBox(width: 3),
-        LotusRasterIcon('assets/icons/star_coin_icon.png', width: 13, height: 13),
+        LotusRasterIcon(
+          'assets/icons/star_coin_icon.png',
+          width: 13,
+          height: 13,
+        ),
         const SizedBox(width: 10),
         ProfileProPill(isActive: hasPro),
       ],

@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/config/app_feature_visibility.dart';
 import 'dart:math' as math;
 
 import 'package:asteria_app/core/localization/generated/l10n.dart';
@@ -85,16 +86,17 @@ class OnboardingPersonalVisual extends StatelessWidget {
               excludeFromSemantics: true,
             ),
           ),
-          Positioned(
-            left: 224,
-            top: 190,
-            width: 150,
-            height: 44,
-            child: _StatePreview(
-              label: l10n.horoscopeWellbeing,
-              description: l10n.onboardPreviewPersonalState,
+          if (AppFeatureVisibility.horoscopes)
+            Positioned(
+              left: 224,
+              top: 190,
+              width: 150,
+              height: 44,
+              child: _StatePreview(
+                label: l10n.horoscopeWellbeing,
+                description: l10n.onboardPreviewPersonalState,
+              ),
             ),
-          ),
           const Positioned(
             left: 209,
             top: 323.3,

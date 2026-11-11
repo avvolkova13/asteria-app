@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/config/app_feature_visibility.dart';
 import 'package:flutter/foundation.dart';
 
 enum GlobalLoaderType { compatibility, horoscope, natalCard }
@@ -18,6 +19,10 @@ class GlobalLoaderService extends ChangeNotifier {
   }
 
   void showWithSpheres(GlobalLoaderType type) {
+    if (type == GlobalLoaderType.horoscope &&
+        !AppFeatureVisibility.horoscopes) {
+      return;
+    }
     if (_isLoading) return;
     _isLoading = true;
     _loaderType = type;

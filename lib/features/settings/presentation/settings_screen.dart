@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/config/app_feature_visibility.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/app/providers/user_provider.dart';
 import 'package:asteria_app/core/di/di.dart';
@@ -30,11 +31,13 @@ class SettingsScreen extends StatelessWidget {
                 const SizedBox(height: 32),
                 const _CurrentLocationSettingsCard(),
                 const SizedBox(height: 16),
-                _SettingsListTile(
-                  title: context.l10n.settingsDailyHoroscope,
-                  value: true,
-                ),
-                const SizedBox(height: 16),
+                if (AppFeatureVisibility.horoscopes) ...[
+                  _SettingsListTile(
+                    title: context.l10n.settingsDailyHoroscope,
+                    value: true,
+                  ),
+                  const SizedBox(height: 16),
+                ],
                 _SettingsListTile(
                   title: context.l10n.settingsLunarCalendar,
                   value: false,

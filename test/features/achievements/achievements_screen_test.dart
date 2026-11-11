@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/config/app_feature_visibility.dart';
 import 'package:asteria_app/features/achievements/presentation/widgets/achievement_card.dart';
 import 'package:asteria_app/app/data/models/user/user_model.dart';
 import 'package:asteria_app/app/data/repositories/user/user_repository.dart';
@@ -28,7 +29,14 @@ void main() {
   ) async {
     await pumpAchievements(tester);
     expect(find.text('Осталось 3 из 5'), findsOneWidget);
-    expect(find.text('Осталось 1 из 3'), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('achievement-horoscope')),
+      AppFeatureVisibility.horoscopes ? findsOneWidget : findsNothing,
+    );
+    expect(
+      find.text('Осталось 1 из 3'),
+      AppFeatureVisibility.horoscopes ? findsOneWidget : findsNothing,
+    );
     expect(find.text('Осталось 3 из 3'), findsOneWidget);
     final semantics = tester.ensureSemantics();
     try {
@@ -36,7 +44,11 @@ void main() {
     } finally {
       semantics.dispose();
     }
-    for (final entry in [('tarot', 2), ('horoscope', 2), ('runes', 0)]) {
+    for (final entry in [
+      ('tarot', 2),
+      if (AppFeatureVisibility.horoscopes) ('horoscope', 2),
+      ('runes', 0),
+    ]) {
       final segments = tester.widgetList<DecoratedBox>(
         find.descendant(
           of: find.byKey(ValueKey('achievement-progress-${entry.$1}')),
@@ -63,7 +75,10 @@ void main() {
     );
     await tester.pumpAndSettle();
     expect(find.text('Осталось 1 из 5'), findsOneWidget);
-    expect(find.text('Осталось 0 из 3'), findsOneWidget);
+    expect(
+      find.text('Осталось 0 из 3'),
+      AppFeatureVisibility.horoscopes ? findsOneWidget : findsNothing,
+    );
     expect(
       tester
           .widget<AchievementCard>(
@@ -79,7 +94,10 @@ void main() {
     );
     await tester.pumpAndSettle();
     expect(find.text('Осталось 5 из 5'), findsOneWidget);
-    expect(find.text('Осталось 3 из 3'), findsNWidgets(2));
+    expect(
+      find.text('Осталось 3 из 3'),
+      findsNWidgets(AppFeatureVisibility.horoscopes ? 2 : 1),
+    );
     expect(
       tester
           .widget<AchievementCard>(
@@ -94,7 +112,10 @@ void main() {
     );
     await tester.pumpAndSettle();
     expect(find.text('Осталось 0 из 5'), findsOneWidget);
-    expect(find.text('Осталось 0 из 3'), findsNWidgets(2));
+    expect(
+      find.text('Осталось 0 из 3'),
+      findsNWidgets(AppFeatureVisibility.horoscopes ? 2 : 1),
+    );
   });
 
   testWidgets('each achievement unlocks independently after its first action', (
@@ -128,6 +149,10 @@ void main() {
         await tester.pumpAndSettle();
         for (var i = 0; i < ids.length; i++) {
           final card = find.byKey(ValueKey('achievement-${ids[i]}'));
+          if (ids[i] == 'horoscope' && !AppFeatureVisibility.horoscopes) {
+            expect(card, findsNothing);
+            continue;
+          }
           final locked = counts[i] == 0;
           expect(
             find.descendant(of: card, matching: find.byType(BackdropFilter)),
@@ -160,7 +185,7 @@ void main() {
     await pumpAchievements(tester);
     final cards = [
       'tarot',
-      'horoscope',
+      if (AppFeatureVisibility.horoscopes) 'horoscope',
       'runes',
     ].map((id) => find.byKey(ValueKey('achievement-$id'))).toList();
     for (final card in cards) {
@@ -171,10 +196,12 @@ void main() {
       tester.getTopLeft(cards[1]).dy - tester.getBottomLeft(cards[0]).dy,
       16,
     );
-    expect(
-      tester.getTopLeft(cards[2]).dy - tester.getBottomLeft(cards[1]).dy,
-      16,
-    );
+    if (cards.length > 2) {
+      expect(
+        tester.getTopLeft(cards[2]).dy - tester.getBottomLeft(cards[1]).dy,
+        16,
+      );
+    }
   });
 
   for (final locale in ['ru', 'en']) {

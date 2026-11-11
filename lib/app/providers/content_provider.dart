@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/config/app_feature_visibility.dart';
 import 'package:asteria_app/features/achievements/data/achievement_recorder.dart';
 import 'package:asteria_app/features/achievements/domain/achievement_event.dart';
 import 'dart:async';
@@ -50,6 +51,7 @@ import 'package:crypto/crypto.dart';
 
 class ContentProvider extends ChangeNotifier with WidgetsBindingObserver {
   final DateTime Function() _now;
+  final bool _horoscopesEnabled;
   final AchievementRecorder? _achievementRecorder;
   final ContentRepository _contentRepository;
   final PersonalizedLunarCalendarRepository?
@@ -64,6 +66,7 @@ class ContentProvider extends ChangeNotifier with WidgetsBindingObserver {
 
   ContentProvider({
     DateTime Function()? now,
+    bool horoscopesEnabled = AppFeatureVisibility.horoscopes,
     AchievementRecorder? achievementRecorder,
     ContentRepository? contentRepository,
     PersonalizedLunarCalendarRepository? personalizedLunarCalendarRepository,
@@ -76,6 +79,7 @@ class ContentProvider extends ChangeNotifier with WidgetsBindingObserver {
     AppLocaleService? localeService,
     CurrentLocationResolver? currentLocationResolver,
   }) : _now = now ?? DateTime.now,
+       _horoscopesEnabled = horoscopesEnabled,
        _achievementRecorder = achievementRecorder,
        _contentRepository = contentRepository ?? di.get<ContentRepository>(),
        _personalizedLunarCalendarRepository =
@@ -415,7 +419,19 @@ class ContentProvider extends ChangeNotifier with WidgetsBindingObserver {
         _loadContentList<ArticleModel>(
           debugName: 'статей',
           load: _contentRepository.getArticles,
-          apply: (items) => _articles = items,
+          apply: (items) => _articles = _horoscopesEnabled
+              ? items
+              : items
+                    .where(
+                      (article) => ![
+                        article.title,
+                        article.category,
+                        article.intro,
+                        article.text,
+                        article.conclusion,
+                      ].any(AppFeatureVisibility.containsHoroscope),
+                    )
+                    .toList(),
         ),
         _loadContentList<AffirmationModel>(
           debugName: 'аффирмаций',
@@ -1532,6 +1548,7 @@ class ContentProvider extends ChangeNotifier with WidgetsBindingObserver {
     HoroscopeTypeEnum horoscopeType, {
     bool requirePro = false,
   }) async {
+    if (!_horoscopesEnabled) throw StateError('Feature is unavailable');
     try {
       final currentUser = _userProvider.currentUser;
       if (currentUser == null) {

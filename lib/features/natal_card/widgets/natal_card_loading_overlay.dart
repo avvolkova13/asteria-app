@@ -59,19 +59,22 @@ class _NatalCardLoadingOverlayState extends State<NatalCardLoadingOverlay> {
             fit: StackFit.expand,
             children: [
               // Figma 4313:4983: background extends 10 px beyond each edge.
-              if (ScenarioSkyScope.of(context)) const ScenarioSky() else Positioned(
-                top: -10,
-                bottom: -10,
-                left: 0,
-                right: 0,
-                child: Opacity(
-                  opacity: 0.3,
-                  child: Image.asset(
-                    'assets/images/home/natal_card_figma_background.webp',
-                    fit: BoxFit.fill,
+              if (ScenarioSkyScope.of(context))
+                const ScenarioSky()
+              else
+                Positioned(
+                  top: -10,
+                  bottom: -10,
+                  left: 0,
+                  right: 0,
+                  child: Opacity(
+                    opacity: 0.3,
+                    child: Image.asset(
+                      'assets/images/home/natal_card_figma_background.webp',
+                      fit: BoxFit.fill,
+                    ),
                   ),
                 ),
-              ),
               SafeArea(
                 bottom: false,
                 child: SingleChildScrollView(
@@ -83,11 +86,16 @@ class _NatalCardLoadingOverlayState extends State<NatalCardLoadingOverlay> {
                           padding: const EdgeInsets.symmetric(horizontal: 16),
                           child: Row(
                             children: [
-                              const ExcludeSemantics(child: Opacity(opacity: .45, child: LotusArrowBubble(back: true))),
+                              const ExcludeSemantics(
+                                child: Opacity(
+                                  opacity: .45,
+                                  child: LotusArrowBubble(back: true),
+                                ),
+                              ),
                               const SizedBox(width: 10),
                               Expanded(
                                 child: Text(
-                                  context.l10n.horoscopeTitle,
+                                  context.l10n.natalChartTitle,
                                   style: context
                                       .textTheme
                                       .inversePlayfairSemiBold17

@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/config/app_feature_visibility.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/ui_kit/card_radii.dart';
@@ -70,7 +71,7 @@ const _compatibilityBackgroundImage =
 const _compatibilityVector51 = 'assets/icons/compatibility_vector_51.svg';
 const _compatibilityVector52 = 'assets/icons/compatibility_vector_52.svg';
 
-/// Экран гороскопа
+/// Personal tools, including the natal chart and compatibility.
 class PersonalScreen extends StatefulWidget {
   const PersonalScreen({super.key});
 
@@ -279,61 +280,11 @@ class _PersonalScreenState extends State<PersonalScreen> {
   }
 
   Widget _buildContent(BuildContext context, UserProvider userProvider) {
-    final locale = Localizations.localeOf(context);
-    final birthDate =
-        userProvider.currentUser?.personalInfo?.birthDate?.birthDate ??
-        DateTime.now();
-    final zodiacInfo = ZodiacInfoEntity(
-      zodiacAsset: birthDate.getZodiacSignAsset(),
-      birthDate: birthDate,
-      elementString: birthDate.getElement(languageCode: locale.languageCode),
-      planetString: birthDate.getPlanet(languageCode: locale.languageCode),
-      characterString: birthDate.getCharacter(
-        languageCode: locale.languageCode,
-      ),
-    );
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          context.l10n.personalYourHoroscope,
-          style: context.textTheme.inversePlayfairSemiBold32.copyWith(
-            height: 1.2,
-          ),
-        ).withEntrance(),
-        const SizedBox(height: 14),
-        _ZodiacInfoCards(zodiacInfo: zodiacInfo).withEntrance(),
-        const SizedBox(height: 24),
-        SegmentedPicker.indexed(
-          surfaceBrightness: Brightness.dark,
-          titles: [
-            context.l10n.personalTodayTab,
-            context.l10n.personalWeekTab,
-            context.l10n.personalMonthTab,
-          ],
-          selectedIndex: _selectedTabIndex,
-          onTabSelected: (index) {
-            setState(() {
-              _selectedTabIndex = index;
-            });
-          },
-        ).withEntrance(),
-        const SizedBox(height: 16),
-        KeyedSubtree(
-          key: ValueKey(_selectedTabIndex),
-          child: _buildTabContent(
-            _buildTodayContent(context, userProvider),
-            _buildWeekContent(context, userProvider),
-            _buildMonthContent(context, userProvider),
-          ),
-        ),
-        const SizedBox(height: 16),
-        _PersonalGradientButton(
-          text: context.l10n.personalYearForecast,
-          onPressed: _onHoroscopePressed,
-        ).withEntrance(),
-        const SizedBox(height: 24),
+        if (AppFeatureVisibility.horoscopes)
+          ..._horoscopeSection(context, userProvider),
         CardAdvertisementWidget(
           horizontalMargin: 0,
           variant: CardAdvertisementVariant.natalCardBanner,
@@ -349,6 +300,66 @@ class _PersonalScreenState extends State<PersonalScreen> {
         const SizedBox(height: 24),
       ],
     );
+  }
+
+  List<Widget> _horoscopeSection(
+    BuildContext context,
+    UserProvider userProvider,
+  ) {
+    final locale = Localizations.localeOf(context);
+    final birthDate =
+        userProvider.currentUser?.personalInfo?.birthDate?.birthDate ??
+        DateTime.now();
+    final zodiacInfo = ZodiacInfoEntity(
+      zodiacAsset: birthDate.getZodiacSignAsset(),
+      birthDate: birthDate,
+      elementString: birthDate.getElement(languageCode: locale.languageCode),
+      planetString: birthDate.getPlanet(languageCode: locale.languageCode),
+      characterString: birthDate.getCharacter(
+        languageCode: locale.languageCode,
+      ),
+    );
+
+    return [
+      Text(
+        context.l10n.personalYourHoroscope,
+        style: context.textTheme.inversePlayfairSemiBold32.copyWith(
+          height: 1.2,
+        ),
+      ).withEntrance(),
+      const SizedBox(height: 14),
+      _ZodiacInfoCards(zodiacInfo: zodiacInfo).withEntrance(),
+      const SizedBox(height: 24),
+      SegmentedPicker.indexed(
+        surfaceBrightness: Brightness.dark,
+        titles: [
+          context.l10n.personalTodayTab,
+          context.l10n.personalWeekTab,
+          context.l10n.personalMonthTab,
+        ],
+        selectedIndex: _selectedTabIndex,
+        onTabSelected: (index) {
+          setState(() {
+            _selectedTabIndex = index;
+          });
+        },
+      ).withEntrance(),
+      const SizedBox(height: 16),
+      KeyedSubtree(
+        key: ValueKey(_selectedTabIndex),
+        child: _buildTabContent(
+          _buildTodayContent(context, userProvider),
+          _buildWeekContent(context, userProvider),
+          _buildMonthContent(context, userProvider),
+        ),
+      ),
+      const SizedBox(height: 16),
+      _PersonalGradientButton(
+        text: context.l10n.personalYearForecast,
+        onPressed: _onHoroscopePressed,
+      ).withEntrance(),
+      const SizedBox(height: 24),
+    ];
   }
 
   Widget _buildTodayContent(BuildContext context, UserProvider userProvider) {

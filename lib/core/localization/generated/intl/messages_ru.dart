@@ -144,7 +144,7 @@ class MessageLookup extends MessageLookupByLibrary {
   static String m53(count, total) => "Осталось запросов: ${count} из ${total}";
 
   static String m54(link) =>
-      "Открой для себя Asteria — гороскопы, Таро и лунный календарь: ${link}";
+      "Открой для себя Asteria, Таро и лунный календарь: ${link}";
 
   static String m55(title) => "Руна ${title} закрыта";
 
@@ -372,7 +372,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Выбрать подписку",
     ),
     "balanceCurrencyDescription": MessageLookupByLibrary.simpleMessage(
-      " — внутренняя валюта. Трать их на расклады, прогнозы и чат с Астро-ботом.",
+      " — внутренняя валюта. Трать их на расклады, толкование снов и вопросы Анакре.",
     ),
     "balanceDeposits": MessageLookupByLibrary.simpleMessage("Начисления"),
     "balanceHistoryEmpty": MessageLookupByLibrary.simpleMessage(
@@ -394,6 +394,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "История баланса",
     ),
     "balanceLabel": MessageLookupByLibrary.simpleMessage("Баланс"),
+    "balanceLegacyOperation": MessageLookupByLibrary.simpleMessage(
+      "Операция по балансу",
+    ),
     "balanceRewardRetry": MessageLookupByLibrary.simpleMessage("Повторить"),
     "balanceServiceAnakra": MessageLookupByLibrary.simpleMessage(
       "Чат с Астро-ботом — 1 вопрос",
@@ -478,7 +481,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Хватит надолго",
     ),
     "coinPackageDescription30": MessageLookupByLibrary.simpleMessage(
-      "Хватит на пару прогнозов",
+      "Для первых раскладов",
     ),
     "coinPackageDescription300": MessageLookupByLibrary.simpleMessage(
       "Для всех желаний",
@@ -780,7 +783,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Попробовать 7 дней бесплатно",
     ),
     "homeProSubscriptionDescription": MessageLookupByLibrary.simpleMessage(
-      "Полный доступ к соннику, Таро, AI-астрологу, гороскопу и лунному календарю",
+      "Полный доступ к соннику, Таро, AI-астрологу и лунному календарю",
     ),
     "homeProSubscriptionTitle": MessageLookupByLibrary.simpleMessage(
       "Больше знаков\nот звёзд",
@@ -1322,7 +1325,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Луна, таро, натальная карта\nи персональные подсказки каждый день",
     ),
     "onboardingPage1Title": MessageLookupByLibrary.simpleMessage(
-      "Asteria\nТвоя вселенная\nпрогнозов и знаков",
+      "Asteria\nЛуна, символы\nи ритм дня",
     ),
     "onboardingPage2Description": MessageLookupByLibrary.simpleMessage(
       "Фазы луны, энергия дня,\nудачные периоды и подсказки",
@@ -1337,7 +1340,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Получай ответы\nчерез таро\nи AI-астролога",
     ),
     "onboardingPage4Description": MessageLookupByLibrary.simpleMessage(
-      "Натальная карта,\nсовместимость и личные прогнозы",
+      "Натальная карта и совместимость\nс близкими людьми",
     ),
     "onboardingPage4Title": MessageLookupByLibrary.simpleMessage(
       "Узнай больше\nо себе и своей\nэнергии",
@@ -2176,7 +2179,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Расширенные функции\nс PRO — подключайте\nи отключайте в любой\nмомент.",
     ),
     "subscriptionInfoDescription": MessageLookupByLibrary.simpleMessage(
-      "Подписка предоставляет доступ к расширенным функциям приложения:\n• Безлимитные запросы в Сонник, Таро и АИ-Астролога\n• Полный персональный гороскоп без ограничений\n• Подробные разборы в Лунном календаре\n• Полный доступ к совместимости\n• Неограниченные аффирмации\nОплата списывается с вашей учётной записи App Store или Google Play после подтверждения покупки. Подписка продлевается автоматически, если автопродление не отключено как минимум за 24 часа до окончания текущего периода. Управлять подпиской можно в настройках учётной записи магазина. Платежи не возвращаются за неиспользованный период. Подробнее см. в Пользовательском соглашении.",
+      "Подписка предоставляет доступ к расширенным функциям приложения:\n• Безлимитные запросы в Сонник, Таро и АИ-Астролога\n• Подробные разборы в Лунном календаре\n• Полный доступ к совместимости\n• Неограниченные аффирмации\nОплата списывается с вашей учётной записи App Store или Google Play после подтверждения покупки. Подписка продлевается автоматически, если автопродление не отключено как минимум за 24 часа до окончания текущего периода. Управлять подпиской можно в настройках учётной записи магазина. Платежи не возвращаются за неиспользованный период. Подробнее см. в Пользовательском соглашении.",
     ),
     "subscriptionInfoTitle": MessageLookupByLibrary.simpleMessage(
       "Информация о подписке",

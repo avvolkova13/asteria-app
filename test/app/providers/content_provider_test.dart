@@ -156,6 +156,60 @@ void main() {
     },
   );
 
+  test(
+    'hidden horoscopes cannot be requested or purchased for any period',
+    () async {
+      final provider = _contentProvider(_FakeContentRepository());
+      addTearDown(provider.dispose);
+      for (final period in HoroscopeTypeEnum.values) {
+        await expectLater(
+          provider.buyHoroscope(period),
+          throwsA(
+            isA<StateError>().having(
+              (error) => error.message,
+              'reason',
+              'Feature is unavailable',
+            ),
+          ),
+        );
+      }
+    },
+  );
+
+  test(
+    'catalog and direct article lookup hide both languages, including body text',
+    () async {
+      const plain = ArticleModel(
+        id: 'visible',
+        title: 'Фазы Луны',
+        category: 'Луна',
+        intro: 'Moonlight',
+        text: 'Как наблюдать Луну',
+        conclusion: 'Продолжить',
+        timeToRead: 1,
+      );
+      final repository = _FakeContentRepository(
+        articles: [
+          plain,
+          plain.copyWith(id: 'ru-title', title: 'Кратко о гороскопах'),
+          plain.copyWith(id: 'en-category', category: 'Weekly HOROSCOPES'),
+          plain.copyWith(id: 'ru-intro', intro: 'Как читать гороскоп?'),
+          plain.copyWith(id: 'en-body', text: 'See the horoscope for more.'),
+          plain.copyWith(id: 'en-conclusion', conclusion: 'Your horoscope'),
+        ],
+      );
+      final provider = _contentProvider(repository);
+      addTearDown(provider.dispose);
+      await provider.loadContent();
+      expect(provider.articles.map((item) => item.id), ['visible']);
+      expect(provider.getArticleById('visible'), same(plain));
+      for (final hidden in repository.articles.skip(1)) {
+        expect(provider.getArticleById(hidden.id), isNull);
+      }
+      expect(repository.articles.length, 6);
+    },
+  );
+
   test('continues loading affirmations when tarot loading fails', () async {
     final repository = _FakeContentRepository(
       failTarot: true,
@@ -462,6 +516,7 @@ void main() {
       );
       final achievements = _AchievementRecorder();
       final provider = ContentProvider(
+        horoscopesEnabled: true,
         achievementRecorder: achievements,
         contentRepository: _FakeContentRepository(),
         userProvider: userProvider,
@@ -514,6 +569,7 @@ void main() {
       );
       final achievements = _AchievementRecorder();
       final provider = ContentProvider(
+        horoscopesEnabled: true,
         achievementRecorder: achievements,
         contentRepository: _FakeContentRepository(),
         userProvider: userProvider,
@@ -559,6 +615,7 @@ void main() {
       );
       final achievements = _AchievementRecorder();
       final provider = ContentProvider(
+        horoscopesEnabled: true,
         achievementRecorder: achievements,
         contentRepository: _FakeContentRepository(),
         userProvider: userProvider,
@@ -1090,6 +1147,7 @@ class _FakeContentRepository implements ContentRepository {
     this.failAll = false,
     this.tarotCards = const [],
     this.runes = const [],
+    this.articles = const [],
     this.affirmations = const [],
     this.tarotLoad,
   });
@@ -1103,6 +1161,7 @@ class _FakeContentRepository implements ContentRepository {
   List<TarotCardModel> tarotCards;
   List<RuneOfDayModel> runes;
   List<AffirmationModel> affirmations;
+  final List<ArticleModel> articles;
   final Completer<List<TarotCardModel>>? tarotLoad;
   Completer<void>? tarotReloaded;
 
@@ -1139,7 +1198,7 @@ class _FakeContentRepository implements ContentRepository {
     if (failAll) {
       throw Exception('articles unavailable');
     }
-    return [];
+    return articles;
   }
 
   @override

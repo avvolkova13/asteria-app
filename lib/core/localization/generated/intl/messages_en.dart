@@ -146,7 +146,7 @@ class MessageLookup extends MessageLookupByLibrary {
   static String m53(count, total) => "${count} of ${total} requests left";
 
   static String m54(link) =>
-      "Discover Asteria—horoscopes, Tarot, and the lunar calendar: ${link}";
+      "Explore Tarot and the lunar calendar with Asteria: ${link}";
 
   static String m55(title) => "${title} is locked";
 
@@ -374,7 +374,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Choose a subscription",
     ),
     "balanceCurrencyDescription": MessageLookupByLibrary.simpleMessage(
-      " is the in-app currency. Use it for spreads, forecasts, and chats with the AI Astrologer.",
+      " is the in-app currency for card readings, dream interpretations, and questions for Anakra.",
     ),
     "balanceDeposits": MessageLookupByLibrary.simpleMessage("Credits"),
     "balanceHistoryEmpty": MessageLookupByLibrary.simpleMessage(
@@ -396,6 +396,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "Balance history",
     ),
     "balanceLabel": MessageLookupByLibrary.simpleMessage("Balance"),
+    "balanceLegacyOperation": MessageLookupByLibrary.simpleMessage(
+      "Balance transaction",
+    ),
     "balanceRewardRetry": MessageLookupByLibrary.simpleMessage("Try again"),
     "balanceServiceAnakra": MessageLookupByLibrary.simpleMessage(
       "AI Astrologer chat — 1 question",
@@ -474,7 +477,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "A lasting supply",
     ),
     "coinPackageDescription30": MessageLookupByLibrary.simpleMessage(
-      "Enough for a couple of readings",
+      "For your first card readings",
     ),
     "coinPackageDescription300": MessageLookupByLibrary.simpleMessage(
       "For every wish",
@@ -772,7 +775,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Try 7 days free",
     ),
     "homeProSubscriptionDescription": MessageLookupByLibrary.simpleMessage(
-      "Full access to Dream Dictionary, Tarot, AI Astrologer, horoscope, and Lunar Calendar",
+      "Full access to Dream Dictionary, Tarot, AI Astrologer, and Lunar Calendar",
     ),
     "homeProSubscriptionTitle": MessageLookupByLibrary.simpleMessage(
       "More signs\nfrom the stars",
@@ -1302,7 +1305,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Moon phases, tarot, your birth chart,\nand personal guidance every day",
     ),
     "onboardingPage1Title": MessageLookupByLibrary.simpleMessage(
-      "Asteria\nYour universe of\nforecasts and signs",
+      "Asteria\nThe Moon and\nyour daily rhythm",
     ),
     "onboardingPage2Description": MessageLookupByLibrary.simpleMessage(
       "Moon phases, daily energy,\nfavorable periods, and guidance",
@@ -1317,7 +1320,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Find answers\nthrough tarot\nand an AI astrologer",
     ),
     "onboardingPage4Description": MessageLookupByLibrary.simpleMessage(
-      "Your birth chart, compatibility,\nand personal forecasts",
+      "Your birth chart and compatibility\nwith the people in your life",
     ),
     "onboardingPage4Title": MessageLookupByLibrary.simpleMessage(
       "Learn more\nabout yourself and\nyour energy",
@@ -2134,7 +2137,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Unlock advanced PRO\nfeatures and cancel\nany time.",
     ),
     "subscriptionInfoDescription": MessageLookupByLibrary.simpleMessage(
-      "A subscription provides access to Asteria\'s advanced features:\n• Unlimited Dream Dictionary, Tarot, and AI Astrologer requests\n• A complete personal horoscope\n• Detailed Lunar Calendar insights\n• Full compatibility reports\n• Unlimited affirmations\nPayment is charged to your App Store or Google Play account after confirmation. The subscription renews automatically unless auto-renew is turned off at least 24 hours before the end of the current period. You can manage or cancel it in your store account settings. Payments are not refunded for unused time. See the Terms of Use for details.",
+      "A subscription provides access to Asteria\'s advanced features:\n• Unlimited Dream Dictionary, Tarot, and AI Astrologer requests\n• Detailed Lunar Calendar insights\n• Full compatibility reports\n• Unlimited affirmations\nPayment is charged to your App Store or Google Play account after confirmation. The subscription renews automatically unless auto-renew is turned off at least 24 hours before the end of the current period. You can manage or cancel it in your store account settings. Payments are not refunded for unused time. See the Terms of Use for details.",
     ),
     "subscriptionInfoTitle": MessageLookupByLibrary.simpleMessage(
       "Subscription information",

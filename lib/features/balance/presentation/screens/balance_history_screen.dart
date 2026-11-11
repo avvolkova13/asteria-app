@@ -1,3 +1,4 @@
+import 'package:asteria_app/features/monetization/domain/purchase_visibility.dart';
 import 'package:asteria_app/core/ui_kit/card_radii.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
@@ -411,7 +412,9 @@ class _HistoryItem extends StatelessWidget {
             final dateText = Text(date, style: BalanceHistoryStyle.body);
             final amountText = Text(amount, style: amountStyle);
             final description = Text(
-              item.description,
+              isHiddenHoroscopePurchase(item.description)
+                  ? context.l10n.balanceLegacyOperation
+                  : item.description,
               style: BalanceHistoryStyle.body,
             );
             final groupWidth = (dateWidth + amountWidth + 16).clamp(
