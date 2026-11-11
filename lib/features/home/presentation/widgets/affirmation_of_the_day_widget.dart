@@ -98,7 +98,7 @@ class _AffirmationOfTheDayState extends State<AffirmationOfTheDayWidget> {
     final player = _player;
     final playing = player?.isPlaying ?? false;
     final strings = context.l10n;
-    const linkColor = Color(0xFF6330A0);
+    const linkColor = AppColorsDark.homeCanvas;
     const radius = BorderRadius.all(Radius.circular(AsteriaCardRadii.card));
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -202,12 +202,13 @@ class _AffirmationOfTheDayState extends State<AffirmationOfTheDayWidget> {
                                       dimension: 20,
                                       child: CircularProgressIndicator(
                                         strokeWidth: 2,
+                                        color: linkColor,
                                       ),
                                     )
                                   : Text(
                                       strings.allAffirmations,
                                       textAlign: TextAlign.end,
-                                      style: AppTypography.link.copyWith(
+                                      style: AppTypography.text1SemiBold.copyWith(
                                         color: linkColor,
                                       ),
                                     ),
