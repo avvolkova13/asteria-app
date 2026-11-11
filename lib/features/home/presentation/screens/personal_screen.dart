@@ -701,43 +701,119 @@ class _ZodiacInfoCards extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final attributes = [
+      (context.l10n.personalElement, zodiacInfo.elementString),
+      (context.l10n.personalPlanet, zodiacInfo.planetString),
+      (context.l10n.personalCharacter, zodiacInfo.characterString),
+    ];
+    final titleStyle = context.textTheme.tertiaryPlayfairMedium20.copyWith(
+      height: 1.1,
+    );
+    final valueStyle = context.textTheme.inverseUrbanistRegular16.copyWith(
+      height: 1.2,
+      letterSpacing: -0.408,
+    );
     return Column(
       children: [
-        Row(
-          children: [
-            Expanded(
-              child: _ConstellationCard(assetName: zodiacInfo.zodiacAsset),
-            ),
-            const SizedBox(width: 8),
-            Expanded(child: _ZodiacSignCard(birthDate: zodiacInfo.birthDate)),
-          ],
+        IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Expanded(
+                child: _ConstellationCard(assetName: zodiacInfo.zodiacAsset),
+              ),
+              const SizedBox(width: 8),
+              Expanded(child: _ZodiacSignCard(birthDate: zodiacInfo.birthDate)),
+            ],
+          ),
         ),
         const SizedBox(height: 8),
-        Row(
+        _FittingTileRow(
+          gap: 8,
+          minTileWidth:
+              attributes
+                  .map(
+                    (attribute) => math.max(
+                      _labelWidth(context, attribute.$1, titleStyle),
+                      _labelWidth(context, attribute.$2, valueStyle),
+                    ),
+                  )
+                  .reduce(math.max) +
+              10, // 4 pt padding and 1 pt border per edge.
           children: [
-            Expanded(
-              child: _ZodiacAttributeCard(
-                title: context.l10n.personalElement,
-                value: zodiacInfo.elementString,
+            for (final (title, value) in attributes)
+              _ZodiacAttributeCard(
+                title: title,
+                value: value,
+                titleStyle: titleStyle,
+                valueStyle: valueStyle,
               ),
-            ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: _ZodiacAttributeCard(
-                title: context.l10n.personalPlanet,
-                value: zodiacInfo.planetString,
-              ),
-            ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: _ZodiacAttributeCard(
-                title: context.l10n.personalCharacter,
-                value: zodiacInfo.characterString,
-              ),
-            ),
           ],
         ),
       ],
+    );
+  }
+}
+
+double _labelWidth(BuildContext context, String label, TextStyle style) {
+  return TextPainter.computeWidth(
+    text: TextSpan(
+      text: label,
+      style: DefaultTextStyle.of(context).style.merge(style),
+    ),
+    textDirection: Directionality.of(context),
+    textScaler: MediaQuery.textScalerOf(context),
+    locale: Localizations.localeOf(context),
+  ).ceilToDouble();
+}
+
+/// Keeps equal-width tiles together only while their labels fit in full.
+class _FittingTileRow extends StatelessWidget {
+  const _FittingTileRow({
+    required this.minTileWidth,
+    required this.children,
+    this.gap = 0,
+    this.useIntermediateColumns = true,
+  });
+
+  final double minTileWidth;
+  final double gap;
+  final bool useIntermediateColumns;
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final capacity = ((constraints.maxWidth + gap) / (minTileWidth + gap))
+            .floor()
+            .clamp(1, children.length);
+        final columns = useIntermediateColumns || capacity == children.length
+            ? capacity
+            : 1;
+        return Column(
+          children: [
+            for (var start = 0; start < children.length; start += columns) ...[
+              if (start > 0) SizedBox(height: gap),
+              IntrinsicHeight(
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    for (
+                      var i = start;
+                      i < math.min(start + columns, children.length);
+                      i++
+                    ) ...[
+                      if (i > start) SizedBox(width: gap),
+                      Expanded(child: children[i]),
+                    ],
+                  ],
+                ),
+              ),
+            ],
+          ],
+        );
+      },
     );
   }
 }
@@ -779,13 +855,15 @@ class _ZodiacSignCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final locale = Localizations.localeOf(context);
     return Container(
-      height: 67,
+      constraints: const BoxConstraints(minHeight: 67),
+      padding: const EdgeInsets.all(4),
       decoration: _zodiacCardDecoration,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           _GradientText(
             birthDate.getZodiacSignName(languageCode: locale.languageCode),
+            textAlign: TextAlign.center,
             style: context.textTheme.inversePlayfairSemiBold24.copyWith(
               height: 1,
             ),
@@ -793,8 +871,7 @@ class _ZodiacSignCard extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             birthDate.toLocalizedDate(locale),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.center,
             style: context.textTheme.inverseUrbanistRegular16.copyWith(
               height: 1.2,
               letterSpacing: -0.408,
@@ -810,34 +887,28 @@ class _ZodiacAttributeCard extends StatelessWidget {
   final String title;
   final String value;
 
-  const _ZodiacAttributeCard({required this.title, required this.value});
+  final TextStyle titleStyle;
+  final TextStyle valueStyle;
+
+  const _ZodiacAttributeCard({
+    required this.title,
+    required this.value,
+    required this.titleStyle,
+    required this.valueStyle,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 67,
+      constraints: const BoxConstraints(minHeight: 67),
+      padding: const EdgeInsets.all(4),
       decoration: _zodiacCardDecoration,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(
-            title,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: context.textTheme.tertiaryPlayfairMedium20.copyWith(
-              height: 1.1,
-            ),
-          ),
+          Text(title, textAlign: TextAlign.center, style: titleStyle),
           const SizedBox(height: 4),
-          Text(
-            value,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: context.textTheme.inverseUrbanistRegular16.copyWith(
-              height: 1.2,
-              letterSpacing: -0.408,
-            ),
-          ),
+          Text(value, textAlign: TextAlign.center, style: valueStyle),
         ],
       ),
     );
@@ -866,22 +937,30 @@ class _PersonalSegmentedPicker extends StatelessWidget {
       context.l10n.personalWeekTab,
       context.l10n.personalMonthTab,
     ];
+    final labelStyle = context.textTheme.urbanistSemiBold12.copyWith(
+      fontSize: 13,
+      height: 1.2,
+      letterSpacing: -0.08,
+    );
     return Container(
-      height: 32,
       padding: const EdgeInsets.all(2),
       decoration: BoxDecoration(
         color: _selectedTabBackground,
         borderRadius: BorderRadius.circular(8),
       ),
-      child: Row(
+      child: _FittingTileRow(
+        useIntermediateColumns: false,
+        minTileWidth:
+            labels
+                .map((label) => _labelWidth(context, label, labelStyle))
+                .reduce(math.max) +
+            14, // 6 pt padding and 1 pt selected border per edge.
         children: [
           for (var index = 0; index < labels.length; index++)
-            Expanded(
-              child: _SegmentedOption(
-                label: labels[index],
-                isSelected: selectedIndex == index,
-                onTap: () => onSelected(index),
-              ),
+            _SegmentedOption(
+              label: labels[index],
+              isSelected: selectedIndex == index,
+              onTap: () => onSelected(index),
             ),
         ],
       ),
@@ -904,8 +983,6 @@ class _SegmentedOption extends StatelessWidget {
   Widget build(BuildContext context) {
     final text = Text(
       label,
-      maxLines: 1,
-      overflow: TextOverflow.ellipsis,
       textAlign: TextAlign.center,
       style:
           (isSelected
@@ -917,12 +994,12 @@ class _SegmentedOption extends StatelessWidget {
     return Semantics(
       button: true,
       selected: isSelected,
-      label: label,
       child: LotusTap(
         onTap: onTap,
         behavior: HitTestBehavior.opaque,
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 160),
+          constraints: const BoxConstraints(minHeight: 44),
           alignment: Alignment.center,
           decoration: BoxDecoration(
             color: isSelected ? AppColors.white.withValues(alpha: 0.08) : null,
@@ -932,8 +1009,14 @@ class _SegmentedOption extends StatelessWidget {
                 : null,
           ),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 6),
-            child: isSelected ? _GradientText(label, style: text.style!) : text,
+            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+            child: isSelected
+                ? _GradientText(
+                    label,
+                    style: text.style!,
+                    textAlign: TextAlign.center,
+                  )
+                : text,
           ),
         ),
       ),

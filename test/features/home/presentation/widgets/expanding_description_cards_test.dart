@@ -1,4 +1,5 @@
 import '../../../compatibility/support/selection_test_support.dart';
+
 import 'dart:async';
 
 import 'package:asteria_app/app/data/models/affirmation/affirmation_model.dart';
@@ -24,6 +25,8 @@ import 'package:asteria_app/features/home/presentation/screens/personal_screen.d
 import 'package:asteria_app/features/home/presentation/widgets/card_advertisement_widget.dart';
 import 'package:asteria_app/features/home/presentation/widgets/energy_of_the_day_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -208,6 +211,9 @@ void main() {
       final userProvider = UserProvider(userRepository: _FakeUserRepository());
       userProvider.applyServerUserSnapshot(
         UserModel.empty().copyWith(
+          personalInfo: PersonalInfoModel(
+            birthDate: BirthDateModel(birthDate: DateTime(1991, 5, 13)),
+          ),
           compatibilityHistory: [_savedCompatibility()],
         ),
       );
@@ -230,6 +236,15 @@ void main() {
         await di.reset();
       });
 
+      for (final family in ['Lora', 'Onest']) {
+        final loader = FontLoader(family)
+          ..addFont(
+            rootBundle.load(
+              'assets/fonts/${family.toLowerCase()}/$family-VariableFont_wght.ttf',
+            ),
+          );
+        await loader.load();
+      }
       await tester.pumpWidget(
         MaterialApp(
           locale: const Locale('ru'),
@@ -301,6 +316,67 @@ void main() {
       await tester.binding.setSurfaceSize(const Size(320, 2000));
       await tester.pump();
       expect(tester.getSize(cardFinder).height, greaterThan(315));
+      expect(tester.takeException(), isNull);
+
+      await tester.binding.setSurfaceSize(const Size(390, 2000));
+      await tester.pumpAndSettle();
+      final elementY = tester.getCenter(find.text('Стихия')).dy;
+      expect(tester.getCenter(find.text('Планета')).dy, closeTo(elementY, 1));
+      expect(tester.getCenter(find.text('Характер')).dy, closeTo(elementY, 1));
+
+      final date = find.textContaining('1991');
+      final dateHeight = tester.getSize(date).height;
+      tester.platformDispatcher.textScaleFactorTestValue = 2;
+      addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+      await tester.binding.setSurfaceSize(const Size(320, 2000));
+      await tester.pumpAndSettle();
+      expect(tester.getSize(date).height, greaterThan(dateHeight));
+      expect(tester.widget<Text>(date).maxLines, isNull);
+
+      for (final label in [
+        'Стихия',
+        'Планета',
+        'Характер',
+        'Земля',
+        'Венера',
+        'Устойчивый',
+        'На сегодня',
+        'На неделю',
+        'На месяц',
+      ]) {
+        final paragraph = tester.renderObject<RenderParagraph>(
+          find.text(label),
+        );
+        final lastLetter = paragraph
+            .getBoxesForSelection(
+              TextSelection(
+                baseOffset: label.length - 1,
+                extentOffset: label.length,
+              ),
+            )
+            .single;
+        final firstLetter = paragraph
+            .getBoxesForSelection(
+              const TextSelection(baseOffset: 0, extentOffset: 1),
+            )
+            .single;
+        expect(lastLetter.top, firstLetter.top, reason: label);
+        expect(
+          lastLetter.right,
+          lessThanOrEqualTo(paragraph.size.width + 0.1),
+          reason: label,
+        );
+      }
+      for (final period in ['неделю', 'месяц']) {
+        final tab = find.text('На $period');
+        await tester.ensureVisible(tab);
+        await tester.tap(tab);
+        await tester.pumpAndSettle();
+        expect(
+          find.textContaining('гороскоп на $period доступен'),
+          findsOneWidget,
+        );
+      }
       expect(tester.takeException(), isNull);
     },
   );
