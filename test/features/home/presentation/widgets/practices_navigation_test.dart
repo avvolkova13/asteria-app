@@ -1,5 +1,4 @@
 import 'package:asteria_app/app/data/models/article/article_model.dart';
-import 'package:asteria_app/app/data/models/energy_of_day/energy_of_day_model.dart';
 import 'package:asteria_app/app/data/models/user/user_model.dart';
 import 'package:asteria_app/app/providers/content_provider.dart';
 import 'package:asteria_app/app/providers/user_provider.dart';
@@ -54,7 +53,9 @@ void main() {
     );
     await tester.pumpAndSettle();
     final context = tester.element(find.byType(PracticesScreen));
-    final profileLabel = AppLocalizations.of(context).navProfile;
+    final labels = AppLocalizations.of(context);
+    expect(find.text(labels.energyOfDay), findsNothing);
+    final profileLabel = labels.navProfile;
     final avatar = find.byTooltip(profileLabel);
     expect(find.text(profileLabel), findsNothing);
     expect(tester.getSize(avatar), const Size(44, 44));
@@ -79,8 +80,6 @@ class _Content extends ChangeNotifier implements ContentProvider {
   List<ArticleModel> get articles => const [];
   @override
   bool get isLoadingContent => false;
-  @override
-  EnergyOfDayModel? getTodayEnergyOfDay() => null;
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }

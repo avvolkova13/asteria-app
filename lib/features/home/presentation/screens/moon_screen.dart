@@ -187,6 +187,8 @@ class _MoonScreenState extends State<MoonScreen> {
                                 context.l10n.lunarCalendarTitle,
                               ),
                               const SizedBox(height: 16),
+                              const CalendarPlanningEntry(),
+                              const SizedBox(height: 16),
                               _MoonScreenAdvice(
                                 state: state,
                                 recommendation: recommendation,
@@ -195,7 +197,6 @@ class _MoonScreenState extends State<MoonScreen> {
                               const SphereSelectionWidget(),
                               const SizedBox(height: 24),
                               const MoonCalendarWidget(),
-                              const CalendarPlansButton(),
                               const SizedBox(height: 16),
                               CalendarStatusesWidget(
                                 visible: state.selectedSphere != null,

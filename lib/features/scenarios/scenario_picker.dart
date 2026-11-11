@@ -47,10 +47,7 @@ class _ScenarioPickerState extends State<ScenarioPicker> {
         onPressed: () => _choose(() async => scenarioHome(context)),
         child: Text(
           context.l10n.scenarioGoHome,
-          style: AppTypography.text1SemiBold.copyWith(
-            fontSize: 24,
-            color: const Color(0xFFFFD88A),
-          ),
+          style: AppTypography.h2.copyWith(color: const Color(0xFFFFD88A)),
         ),
       ),
       child: ScenarioCardGrid(

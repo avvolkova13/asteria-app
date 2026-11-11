@@ -272,7 +272,7 @@ class _MoonPhaseWidgetState extends State<MoonPhaseWidget> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          HomeSectionHeading(context.l10n.moonPhaseTitle),
+          const _MoonPhaseHeader(),
           const SizedBox(height: 16),
           Container(
             width: double.infinity,
@@ -334,20 +334,7 @@ class _MoonPhaseWidgetState extends State<MoonPhaseWidget> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Padding(
-          padding: inset,
-          child: OverflowBar(
-            alignment: MainAxisAlignment.spaceBetween,
-            overflowAlignment: OverflowBarAlignment.start,
-            spacing: 8,
-            children: [
-              HomeSectionHeading(context.l10n.moonPhaseTitle),
-              _MoonCalendarButton(
-                onPressed: () => context.read<HomeCubit>().changeTab(2),
-              ),
-            ],
-          ),
-        ),
+        Padding(padding: inset, child: const _MoonPhaseHeader()),
         const SizedBox(height: 16),
         GestureDetector(
           behavior: HitTestBehavior.opaque,
@@ -413,7 +400,7 @@ class _MoonPhaseWidgetState extends State<MoonPhaseWidget> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          HomeSectionHeading(context.l10n.moonPhaseTitle),
+          const _MoonPhaseHeader(),
           const SizedBox(height: 16),
           Container(
             width: double.infinity,
@@ -1177,6 +1164,25 @@ class _LocationBlock extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _MoonPhaseHeader extends StatelessWidget {
+  const _MoonPhaseHeader();
+
+  @override
+  Widget build(BuildContext context) {
+    return OverflowBar(
+      alignment: MainAxisAlignment.spaceBetween,
+      overflowAlignment: OverflowBarAlignment.start,
+      spacing: 8,
+      children: [
+        HomeSectionHeading(context.l10n.moonPhaseTitle),
+        _MoonCalendarButton(
+          onPressed: () => context.read<HomeCubit>().changeTab(2),
+        ),
+      ],
     );
   }
 }

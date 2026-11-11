@@ -43,8 +43,24 @@ String _statusLabel(BuildContext c, RecommendationStatus status) =>
       RecommendationStatus.neutral => c.l10n.dayNeutral,
     };
 
-Future<T?> _open<T>(BuildContext c, Widget page) =>
-    Navigator.of(c).push(MaterialPageRoute<T>(builder: (_) => page));
+// Carry the originating tab route through the planner so finishing a plan
+// can pop back to the same calendar instance, including its scroll position.
+class _PlannerPage<T> extends MaterialPageRoute<T> {
+  _PlannerPage(BuildContext context, Widget page, {bool fromTab = false})
+    : tab = fromTab ? ModalRoute.of(context) : tabOf(context),
+      super(builder: (_) => page);
+
+  final ModalRoute<dynamic>? tab;
+
+  static ModalRoute<dynamic>? tabOf(BuildContext context) {
+    final route = ModalRoute.of(context);
+    return route is _PlannerPage ? route.tab : null;
+  }
+}
+
+Future<void> _open(BuildContext c, Widget page, {bool fromTab = false}) async {
+  await Navigator.of(c).push(_PlannerPage<void>(c, page, fromTab: fromTab));
+}
 
 class CalendarScenarioScreen extends StatefulWidget {
   const CalendarScenarioScreen({super.key});
@@ -474,9 +490,7 @@ class _SavePlanState extends State<_SavePlan> {
       await CalendarPlans.save(plan);
       if (!mounted) return;
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute<void>(
-          builder: (_) => _PlanDetails(plan: plan, saved: true),
-        ),
+        _PlannerPage<void>(context, _PlanDetails(plan: plan, saved: true)),
       );
     } catch (_) {
       if (mounted) {
@@ -531,8 +545,17 @@ class _PlanDetails extends StatelessWidget {
         _Recommendation(plan.recommendation),
         const SizedBox(height: 16),
         AuthGradientButton(
-          text: c.l10n.scenarioGoHome,
-          onPressed: () => scenarioHome(c),
+          text: _PlannerPage.tabOf(c) == null
+              ? c.l10n.scenarioGoHome
+              : c.l10n.scenarioCalendarBackToCalendar,
+          onPressed: () {
+            final tab = _PlannerPage.tabOf(c);
+            if (tab != null && tab.isActive) {
+              Navigator.of(c).popUntil((route) => identical(route, tab));
+            } else {
+              scenarioHome(c);
+            }
+          },
         ),
       ],
     ),
@@ -540,13 +563,14 @@ class _PlanDetails extends StatelessWidget {
 }
 
 class CalendarPlansButton extends StatelessWidget {
-  const CalendarPlansButton({super.key});
+  const CalendarPlansButton({super.key, this.fromTab = false});
+  final bool fromTab;
   @override
   Widget build(BuildContext c) => CustomButton(
     type: CustomButtonType.text,
     textColor: AppColors.cardTinted,
     text: c.l10n.scenarioCalendarMyPlans,
-    onPressed: () => _open(c, const _PlansScreen()),
+    onPressed: () => _open(c, const _PlansScreen(), fromTab: fromTab),
   );
 }
 
@@ -582,40 +606,38 @@ class _PlansScreen extends StatelessWidget {
   );
 }
 
-class CalendarPlanHomeEntry extends StatelessWidget {
-  const CalendarPlanHomeEntry({super.key});
+class CalendarPlanningEntry extends StatelessWidget {
+  const CalendarPlanningEntry({super.key});
   @override
-  Widget build(BuildContext c) => Padding(
-    padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        AuthGradientButton(
-          text: c.l10n.scenarioCalendarFindDate,
-          onPressed: () => _open(c, const CalendarScenarioScreen()),
-        ),
-        _SavedPlans(
-          compact: true,
-          builder: (c, plans) {
-            final next = plans
-                .where(
-                  (plan) => !plan.day.isBefore(calendarDay(DateTime.now())),
-                )
-                .firstOrNull;
-            return next == null
-                ? const SizedBox.shrink()
-                : Padding(
-                    padding: const EdgeInsets.only(top: 8),
-                    child: ScenarioTile(
-                      title: next.title,
-                      subtitle: _dateLabel(c, next.day),
-                      onTap: () => _open(c, _PlanDetails(plan: next)),
-                    ),
-                  );
-          },
-        ),
-      ],
-    ),
+  Widget build(BuildContext c) => Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      AuthGradientButton(
+        text: c.l10n.scenarioCalendarFindDate,
+        onPressed: () =>
+            _open(c, const CalendarScenarioScreen(), fromTab: true),
+      ),
+      const CalendarPlansButton(fromTab: true),
+      _SavedPlans(
+        compact: true,
+        builder: (c, plans) {
+          final next = plans
+              .where((plan) => !plan.day.isBefore(calendarDay(DateTime.now())))
+              .firstOrNull;
+          return next == null
+              ? const SizedBox.shrink()
+              : Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: ScenarioTile(
+                    title: next.title,
+                    subtitle: _dateLabel(c, next.day),
+                    onTap: () =>
+                        _open(c, _PlanDetails(plan: next), fromTab: true),
+                  ),
+                );
+        },
+      ),
+    ],
   );
 }
 

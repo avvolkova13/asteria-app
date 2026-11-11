@@ -343,7 +343,7 @@ void main() {
         expect(_assetImagesAtSize(icon, 14), findsOneWidget);
         expect(_assetImagesAtSize(icon, 16), findsOneWidget);
         expect(find.text(entry.value), findsOneWidget);
-        final calendar = tester.getCenter(find.text('В календарь'));
+        final calendar = tester.getCenter(find.text('Выбрать день'));
         expect(
           calendar.dy,
           closeTo(tester.getCenter(find.text('Фаза луны')).dy, 2),
@@ -495,6 +495,7 @@ void main() {
     await tester.pump();
 
     expect(find.text('Загружаем фазу луны'), findsOneWidget);
+    expect(find.text('Выбрать день').hitTestable(), findsOneWidget);
     expect(
       _assetImagesAtSize('assets/icons/day_status_neutral_star.png', 25),
       findsNothing,

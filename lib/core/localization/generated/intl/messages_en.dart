@@ -763,7 +763,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "homeLoadError": MessageLookupByLibrary.simpleMessage(
       "Unable to load data",
     ),
-    "homeOpenCalendar": MessageLookupByLibrary.simpleMessage("Calendar"),
+    "homeOpenCalendar": MessageLookupByLibrary.simpleMessage("Pick a day"),
     "homeProSubscriptionCta": MessageLookupByLibrary.simpleMessage(
       "Try 7 days free",
     ),
@@ -1333,7 +1333,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Open compatibility",
     ),
     "openLunarCalendarLabel": MessageLookupByLibrary.simpleMessage(
-      "View Lunar Calendar",
+      "Pick a day in the lunar calendar",
     ),
     "openSubscription": MessageLookupByLibrary.simpleMessage(
       "View subscription options",
@@ -1759,6 +1759,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "savings": MessageLookupByLibrary.simpleMessage("Save"),
     "scenarioCalendarActivityName": MessageLookupByLibrary.simpleMessage(
       "Activity name",
+    ),
+    "scenarioCalendarBackToCalendar": MessageLookupByLibrary.simpleMessage(
+      "Back to calendar",
     ),
     "scenarioCalendarChangeDate": MessageLookupByLibrary.simpleMessage(
       "Change date",

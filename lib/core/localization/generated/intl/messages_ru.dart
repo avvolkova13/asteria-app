@@ -771,7 +771,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "homeLoadError": MessageLookupByLibrary.simpleMessage(
       "Не удалось загрузить данные",
     ),
-    "homeOpenCalendar": MessageLookupByLibrary.simpleMessage("В календарь"),
+    "homeOpenCalendar": MessageLookupByLibrary.simpleMessage("Выбрать день"),
     "homeProSubscriptionCta": MessageLookupByLibrary.simpleMessage(
       "Попробовать 7 дней бесплатно",
     ),
@@ -1353,7 +1353,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Открыть совместимость",
     ),
     "openLunarCalendarLabel": MessageLookupByLibrary.simpleMessage(
-      "Посмотреть лунный календарь",
+      "Выбрать день в лунном календаре",
     ),
     "openSubscription": MessageLookupByLibrary.simpleMessage(
       "Перейти к подписке",
@@ -1795,6 +1795,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "savings": MessageLookupByLibrary.simpleMessage("Выгода"),
     "scenarioCalendarActivityName": MessageLookupByLibrary.simpleMessage(
       "Название дела",
+    ),
+    "scenarioCalendarBackToCalendar": MessageLookupByLibrary.simpleMessage(
+      "Вернуться в календарь",
     ),
     "scenarioCalendarChangeDate": MessageLookupByLibrary.simpleMessage(
       "Заменить дату",

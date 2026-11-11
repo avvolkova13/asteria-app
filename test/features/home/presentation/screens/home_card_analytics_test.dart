@@ -125,6 +125,20 @@ void main() {
     observer.homeTab(index);
   }
 
+  testWidgets('home has one calendar entry and opens the lunar tab', (
+    tester,
+  ) async {
+    await mount(tester, initialTab: 0);
+    expect(find.text('С чего начнём?'), findsNothing);
+    expect(find.text('Подобрать день для дела'), findsNothing);
+    final entry = find.text('Выбрать день').hitTestable();
+    expect(entry, findsOneWidget);
+    await tester.tap(entry);
+    await tester.pump();
+    expect(home.selectedTab, 2);
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
+
   testWidgets('main header stays below the status bar inset', (tester) async {
     tester.view.devicePixelRatio = 1;
     tester.view.padding = const FakeViewPadding(top: 62);
@@ -321,6 +335,9 @@ class _User extends ChangeNotifier implements UserProvider {
 
 class _Home extends Cubit<HomeState> implements HomeCubit {
   _Home() : super(const HomeLoaded());
+  int? selectedTab;
+  @override
+  void changeTab(int index) => selectedTab = index;
   @override
   Future<void> loadDailySelection() async {}
   @override

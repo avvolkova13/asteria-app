@@ -57,7 +57,9 @@ void main() {
           findsOneWidget,
         );
       }
-      expect(find.text('На главную').hitTestable(), findsOneWidget);
+      final homeAction = find.text('На главную').hitTestable();
+      expect(homeAction, findsOneWidget);
+      expect(tester.widget<Text>(homeAction).style?.fontFamily, 'Lora');
       expect(tester.takeException(), isNull);
     });
   }

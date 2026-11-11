@@ -28,8 +28,6 @@ class PracticesScreen extends StatelessWidget {
               child: HomeSectionHeading(context.l10n.navPractices),
             ),
             const SizedBox(height: 16),
-            const EnergyOfTheDayWidget(),
-            const SizedBox(height: 32),
             const AdvertisingBlockWidget(),
             const SizedBox(height: 32),
             ListenableBuilder(

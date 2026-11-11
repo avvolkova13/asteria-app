@@ -4,7 +4,16 @@ import 'package:asteria_app/app/providers/content_provider.dart';
 import 'package:asteria_app/core/di/di.dart';
 import 'package:asteria_app/core/localization/localization.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
-import 'package:asteria_app/features/scenarios/calendar_scenario.dart';
+import 'package:asteria_app/app/providers/user_provider.dart';
+import 'package:asteria_app/app/data/models/user/user_model.dart';
+import 'package:asteria_app/core/services/hive/hive_service.dart';
+import 'package:hive/hive.dart';
+import 'package:asteria_app/app/data/repositories/user/user_repository.dart';
+import 'package:asteria_app/core/analytics/analytics_facade.dart';
+import 'package:asteria_app/core/analytics/product_analytics_service.dart';
+import 'package:asteria_app/features/home/presentation/cubit/moon_screen_cubit.dart';
+import 'package:asteria_app/features/home/presentation/screens/moon_screen.dart';
+import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -13,14 +22,38 @@ import 'package:intl/date_symbol_data_local.dart';
 
 void main() {
   testWidgets(
-    'compares dates across months and retains a selection when replacing a date without data',
+    'starts from lunar tab, compares two months, replaces missing data and returns to the tab and its saved plans',
     (tester) async {
       await initializeDateFormatting('en');
       final now = DateTime.now();
       final month = DateTime(now.year, now.month);
       final next = DateTime(now.year, now.month + 1);
-      di.registerSingleton<ContentProvider>(_Calendar());
-      addTearDown(() => di.unregister<ContentProvider>());
+      final calendar = _Calendar();
+      final analytics = _SilentAnalytics();
+      final user = UserProvider(userRepository: _UnusedUserRepository())
+        ..applyServerUserSnapshot(
+          UserModel.empty().copyWith(id: 'test-calendar-user'),
+        );
+      await Hive.openBox<Map>(HiveBoxNames.appSettings, bytes: Uint8List(0));
+      await Hive.openBox<Map>('calendar_plans_v1', bytes: Uint8List(0));
+      di.registerSingleton<UserProvider>(user);
+      di.registerSingleton<ContentProvider>(calendar);
+      di.registerFactory<MoonScreenCubit>(
+        () => MoonScreenCubit(contentProvider: calendar),
+      );
+      di.registerSingleton<AnalyticsFacade>(analytics);
+      di.registerSingleton<ProductAnalyticsService>(
+        ProductAnalyticsService(analytics),
+      );
+      addTearDown(() async {
+        await di.unregister<ContentProvider>();
+        await di.unregister<MoonScreenCubit>();
+        await di.unregister<AnalyticsFacade>();
+        await di.unregister<ProductAnalyticsService>();
+        await di.unregister<UserProvider>();
+        await Hive.close();
+        user.dispose();
+      });
       final messenger = tester.binding.defaultBinaryMessenger;
       const channel = MethodChannel('asteria/calendar');
       messenger.setMockMethodCallHandler(channel, (call) async {
@@ -42,7 +75,10 @@ void main() {
           ],
           builder: (c, child) =>
               Theme(data: AppThemeDark.instance.getThemeData(c), child: child!),
-          home: const CalendarScenarioScreen(),
+          home: ChangeNotifierProvider<UserProvider>.value(
+            value: user,
+            child: const MoonScreen(),
+          ),
         ),
       );
       await tester.pumpAndSettle();
@@ -53,6 +89,11 @@ void main() {
         await tester.pumpAndSettle();
       }
 
+      final start = find.text('Find a day for an activity');
+      expect(start.hitTestable(), findsOneWidget);
+      expect(find.text('My plans').hitTestable(), findsOneWidget);
+      await tap(start);
+      expect(find.text('What are you planning?'), findsOneWidget);
       await tap(find.text('Repotting plants'));
       await tap(find.text('12').first);
       await tap(find.byTooltip('Next month'));
@@ -74,12 +115,56 @@ void main() {
       );
       expect(find.text('Repotting on ${month.month}/12'), findsOneWidget);
       expect(find.text('Repotting on ${next.month}/12'), findsOneWidget);
+      Future<void> back() async {
+        await tester.binding.handlePopRoute();
+        await tester.pumpAndSettle();
+      }
+
+      await back(); // Comparison → selected dates.
+      expect(find.text('Compare dates'), findsOneWidget);
+      await back(); // Dates → activity.
+      expect(find.text('What are you planning?'), findsOneWidget);
+      await back(); // Activity → original lunar tab.
+      expect(find.text('Lunar calendar'), findsOneWidget);
+      await tap(find.text('My plans'));
+      expect(
+        find.text('Activities you schedule will appear here.'),
+        findsOneWidget,
+      );
+      await back();
+      expect(start.hitTestable(), findsOneWidget);
+      final originalTab = tester.state(find.byType(MoonScreen));
+      await tap(start);
+      await tap(find.text('Repotting plants'));
+      await tap(find.text('12').first);
+      await tap(find.text('View this day'));
+      await tap(find.text('Choose this day'));
+      await tester.enterText(find.byType(TextField), 'Repot the ficus');
+      await tap(find.text('Save'));
+      expect(find.text('Plan saved'), findsOneWidget);
+      await tap(find.text('Back to calendar'));
+      expect(tester.state(find.byType(MoonScreen)), same(originalTab));
+      await tap(find.text('My plans'));
+      await tap(find.text('Repot the ficus'));
+      expect(find.text('Repotting on ${month.month}/12'), findsOneWidget);
+      await tap(find.text('Back to calendar'));
+      expect(tester.state(find.byType(MoonScreen)), same(originalTab));
+      expect(Navigator.of(tester.element(start)).canPop(), isFalse);
       expect(tester.takeException(), isNull);
     },
   );
 }
 
+class _SilentAnalytics extends Fake implements AnalyticsFacade {
+  @override
+  Future<void> trackEvent(String name, {Map<String, dynamic>? params}) async {}
+}
+
+class _UnusedUserRepository extends Fake implements UserRepository {}
+
 class _Calendar extends Fake implements ContentProvider {
+  @override
+  LunarDayModel? getPersonalizedLunarDayByDate(DateTime date) => null;
   @override
   Future<LunarMonthModel> loadPersonalizedLunarMonth(
     DateTime month, {

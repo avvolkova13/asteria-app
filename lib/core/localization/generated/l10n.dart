@@ -1545,10 +1545,10 @@ class AppLocalizations {
     return Intl.message('lunar day', name: 'lunarDay', desc: '', args: []);
   }
 
-  /// `View Lunar Calendar`
+  /// `Pick a day in the lunar calendar`
   String get openLunarCalendarLabel {
     return Intl.message(
-      'View Lunar Calendar',
+      'Pick a day in the lunar calendar',
       name: 'openLunarCalendarLabel',
       desc: '',
       args: [],
@@ -4221,10 +4221,10 @@ class AppLocalizations {
     );
   }
 
-  /// `Calendar`
+  /// `Pick a day`
   String get homeOpenCalendar {
     return Intl.message(
-      'Calendar',
+      'Pick a day',
       name: 'homeOpenCalendar',
       desc: '',
       args: [],
@@ -8023,6 +8023,16 @@ class AppLocalizations {
   /// `Go home`
   String get scenarioGoHome {
     return Intl.message('Go home', name: 'scenarioGoHome', desc: '', args: []);
+  }
+
+  /// `Back to calendar`
+  String get scenarioCalendarBackToCalendar {
+    return Intl.message(
+      'Back to calendar',
+      name: 'scenarioCalendarBackToCalendar',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `My plans`
