@@ -118,9 +118,24 @@ void main() {
         expect(boxes[2].bottom, closeTo(boxes[3].bottom, .01));
       } else {
         expect(boxes.map((r) => r.left).toSet(), hasLength(1));
-        await tester.ensureVisible(find.text('В чём моя сила?'));
+        final fourthCard = find.byWidgetPredicate(
+          (w) => w is ScenarioCard && w.mood == ScenarioMood.strength,
+        );
+        final title = find.descendant(
+          of: fourthCard,
+          matching: find.text(
+            AppLocalizations.of(
+              tester.element(fourthCard),
+            ).scenarioStrengthTitle,
+          ),
+        );
+        await tester.ensureVisible(title);
         await tester.pumpAndSettle();
-        expect(find.text('В чём моя сила?').hitTestable(), findsOneWidget);
+        expect(title.hitTestable(), findsOneWidget);
+        final cardBounds = tester.getRect(fourthCard);
+        final titleBounds = tester.getRect(title);
+        expect(cardBounds.contains(titleBounds.topLeft), isTrue);
+        expect(cardBounds.contains(titleBounds.bottomRight), isTrue);
       }
       final homeAction = find.text('На главную').hitTestable();
       expect(homeAction, findsOneWidget);

@@ -157,8 +157,9 @@ void main() {
     await mount(tester);
     router.push('/relationships');
     await tester.pumpAndSettle();
-    await tester.tap(find.text('После спора трудно начать разговор'));
+    await tester.tap(find.text('Напряжение и разногласия'));
     await tester.pumpAndSettle();
+    await tester.ensureVisible(find.text('Открыть разбор пары'));
     await tester.tap(find.text('Открыть разбор пары'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('42%'));
@@ -189,8 +190,9 @@ void main() {
       await mount(tester);
       router.push('/relationships');
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Мы по-разному проявляем чувства'));
+      await tester.tap(find.text('Отношения с партнёром'));
       await tester.pumpAndSettle();
+      await tester.ensureVisible(find.text('Открыть разбор пары'));
       await tester.tap(find.text('Открыть разбор пары'));
       await tester.pumpAndSettle();
       expect(find.byType(CreateCompatibilityInitialScreen), findsOneWidget);

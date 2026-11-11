@@ -76,7 +76,7 @@ class BottomTabBarWidget extends StatelessWidget {
                         child: LotusTap(
                           onTap: onAiAstrologerPressed,
                           behavior: HitTestBehavior.opaque,
-                          child: _AnakraIdleMotion(
+                          child: AnakraIdleBadge(
                             assetPath: aiAstrologerAsset,
                           ),
                         ),
@@ -95,16 +95,16 @@ class BottomTabBarWidget extends StatelessWidget {
 }
 
 /// Only the portrait and its light move. The chat target and shell stay still.
-class _AnakraIdleMotion extends StatefulWidget {
-  const _AnakraIdleMotion({required this.assetPath});
+class AnakraIdleBadge extends StatefulWidget {
+  const AnakraIdleBadge({super.key, required this.assetPath});
 
   final String assetPath;
 
   @override
-  State<_AnakraIdleMotion> createState() => _AnakraIdleMotionState();
+  State<AnakraIdleBadge> createState() => _AnakraIdleMotionState();
 }
 
-class _AnakraIdleMotionState extends State<_AnakraIdleMotion>
+class _AnakraIdleMotionState extends State<AnakraIdleBadge>
     with WidgetsBindingObserver {
   static const _interval = Duration(milliseconds: 40);
   static const _cycleTicks = 140;

@@ -274,12 +274,12 @@ class _TarotSymbolContent extends StatelessWidget {
                   behavior: HitTestBehavior.opaque,
                   onTap: activate,
                   child: symbol == null
-                      ? const _TarotCardBack()
-                      : _FlipContent(
+                      ? const DailyTarotCardFace()
+                      : DailySymbolFlip(
                           animation: flipAnimation,
                           startsFaceDown: true,
-                          back: const _TarotCardBack(),
-                          front: _TarotCardFront(tarotCard: symbol),
+                          back: const DailyTarotCardFace(),
+                          front: DailyTarotCardFace(card: symbol),
                         ),
                 ),
               ),
@@ -381,7 +381,7 @@ class _RuneSymbolContent extends StatelessWidget {
                   onTap: activate,
                   child: symbol == null
                       ? const _RuneBack()
-                      : _FlipContent(
+                      : DailySymbolFlip(
                           animation: flipAnimation,
                           back: const _RuneBack(),
                           front: _RuneFront(rune: symbol),
@@ -477,8 +477,9 @@ class _SectionTitleRow extends StatelessWidget {
   }
 }
 
-class _FlipContent extends StatelessWidget {
-  const _FlipContent({
+class DailySymbolFlip extends StatelessWidget {
+  const DailySymbolFlip({
+    super.key,
     required this.animation,
     required this.back,
     required this.front,
@@ -519,55 +520,35 @@ class _FlipContent extends StatelessWidget {
   }
 }
 
-class _TarotCardBack extends StatelessWidget {
-  const _TarotCardBack();
+class DailyTarotCardFace extends StatelessWidget {
+  const DailyTarotCardFace({
+    super.key,
+    this.card,
+    this.width = _DailySymbolOfTheDayWidgetState._cardWidth,
+    this.height = _DailySymbolOfTheDayWidgetState._cardHeight,
+  });
+  final TarotCardModel? card;
+  final double width;
+  final double height;
 
   @override
   Widget build(BuildContext context) {
+    final symbol = card;
+    final asset = symbol == null
+        ? 'assets/images/home/daily_symbol_tarot_back.webp'
+        : TarotCardAssetResolver.resolve(
+            imageName: symbol.imageName,
+            languageCode: Localizations.localeOf(context).languageCode,
+          );
     return ClipRRect(
       borderRadius: BorderRadius.circular(16),
       child: Image.asset(
-        'assets/images/home/daily_symbol_tarot_back.webp',
-        width: _DailySymbolOfTheDayWidgetState._cardWidth,
-        height: _DailySymbolOfTheDayWidgetState._cardHeight,
+        asset,
+        width: width,
+        height: height,
         fit: BoxFit.cover,
-        errorBuilder: (context, error, stackTrace) {
-          return const _ImageFallback(
-            width: _DailySymbolOfTheDayWidgetState._cardWidth,
-            height: _DailySymbolOfTheDayWidgetState._cardHeight,
-            radius: 16,
-          );
-        },
-      ),
-    );
-  }
-}
-
-class _TarotCardFront extends StatelessWidget {
-  const _TarotCardFront({required this.tarotCard});
-
-  final TarotCardModel tarotCard;
-
-  @override
-  Widget build(BuildContext context) {
-    final imagePath = TarotCardAssetResolver.resolve(
-      imageName: tarotCard.imageName,
-      languageCode: Localizations.localeOf(context).languageCode,
-    );
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(16),
-      child: Image.asset(
-        imagePath,
-        width: _DailySymbolOfTheDayWidgetState._cardWidth,
-        height: _DailySymbolOfTheDayWidgetState._cardHeight,
-        fit: BoxFit.cover,
-        errorBuilder: (context, error, stackTrace) {
-          return const _ImageFallback(
-            width: _DailySymbolOfTheDayWidgetState._cardWidth,
-            height: _DailySymbolOfTheDayWidgetState._cardHeight,
-            radius: 16,
-          );
-        },
+        errorBuilder: (context, error, stackTrace) =>
+            _ImageFallback(width: width, height: height, radius: 16),
       ),
     );
   }

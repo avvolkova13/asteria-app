@@ -247,8 +247,9 @@ void main() {
           ),
         );
         await tester.pumpAndSettle();
-        await tester.tap(find.text('Хочу разобраться в своих чувствах'));
+        await tester.tap(find.text('Мои чувства и желания'));
         await tester.pumpAndSettle();
+        await tester.ensureVisible(find.text('Начать любовный расклад'));
         await tester.tap(find.text('Начать любовный расклад'));
         await tester.pumpAndSettle();
         expect(find.text('Вопрос для размышления'), findsNothing);

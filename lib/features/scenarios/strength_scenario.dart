@@ -1,19 +1,22 @@
-import 'package:asteria_app/features/scenarios/scenario_sky.dart';
-import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'dart:convert';
-
-import 'package:asteria_app/app/providers/user_provider.dart';
+import 'package:asteria_app/app/data/models/anakra_chat/anakra_chat_message_model.dart';
+import 'package:asteria_app/app/data/models/tarot_card/tarot_card_model.dart';
+import 'package:asteria_app/app/providers/content_provider.dart';
 import 'package:asteria_app/core/di/di.dart';
-import 'package:asteria_app/core/services/hive/hive_service.dart';
+import 'package:asteria_app/app/providers/user_provider.dart';
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
+import 'package:asteria_app/features/home/presentation/widgets/daily_symbol_of_the_day_widget.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
-import 'package:asteria_app/core/utils/enums.dart';
-import 'package:asteria_app/core/utils/horoscope_parsers/horoscope_request_helper.dart';
-import 'package:asteria_app/features/home/presentation/widgets/home_glass_surface.dart';
-import 'package:asteria_app/features/natal_card/natal_card_screen.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
+import 'package:asteria_app/features/anakra_chat/presentation/widgets/anakra_chat_message.dart';
+import 'package:asteria_app/features/auth/presentation/widgets/auth_flow_widgets.dart';
+import 'package:asteria_app/features/home/presentation/widgets/bottom_tab_bar_widget.dart';
+import 'package:flutter/cupertino.dart' show CupertinoPageRoute;
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 
+import 'guidance_situation.dart';
+import 'scenario_sky.dart';
 import 'scenario_ui.dart';
 import 'strength_guidance.dart';
 
@@ -44,325 +47,283 @@ class StrengthTipStore {
   bool contains(StrengthTip tip) => box.containsKey('$_prefix${tip.id}');
 }
 
-Future<void> _open(BuildContext context, Widget child) => Navigator.of(
-  context,
-).push<void>(CupertinoPageRoute<void>(builder: (_) => ScenarioSkyScope(child: child)));
-
 class StrengthScenarioScreen extends StatelessWidget {
   const StrengthScenarioScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final users = di.get<UserProvider>();
-    final ru = Localizations.localeOf(context).languageCode == 'ru';
-    return ListenableBuilder(
-      listenable: users,
-      builder: (context, _) {
-        final owner = users.currentUser?.id ?? '';
-        final store = StrengthTipStore(HiveService.appSettingsBox, owner);
-        return ScenarioPage(
-          title: context.l10n.scenarioStrengthChooseArea,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: AsteriaEntrance.sections([
-              for (final area in StrengthArea.values)
-                ScenarioTile(
-                  title: area.label(ru),
-                  onTap: () =>
-                      _open(context, _StrengthTasks(area: area, owner: owner)),
-                ),
-              StreamBuilder<BoxEvent>(
-                stream: store.box.watch(),
-                builder: (context, _) => store.read().isEmpty
-                    ? const SizedBox.shrink()
-                    : ScenarioTile(
-                        title: context.l10n.scenarioStrengthSavedTips,
-                        onTap: () =>
-                            _open(context, _SavedStrengthTips(owner: owner)),
-                      ),
-              ),
-            ]),
-          ),
-        );
-      },
-    );
-  }
-}
-
-class _StrengthTasks extends StatelessWidget {
-  const _StrengthTasks({required this.area, required this.owner});
-  final StrengthArea area;
-  final String owner;
-  @override
-  Widget build(BuildContext context) {
     final ru = Localizations.localeOf(context).languageCode == 'ru';
     return ScenarioPage(
-      title: context.l10n.scenarioStrengthChooseSituation,
+      title: context.l10n.scenarioStrengthChooseArea,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: AsteriaEntrance.sections([
-          for (final task in StrengthTask.values.where(
-            (task) => task.area == area,
-          ))
-            ScenarioTile(
-              title: task.label(ru),
-              onTap: () =>
-                  _open(context, _StrengthResult(task: task, owner: owner)),
-            ),
+          ScenarioChoiceHero(
+            description: ru
+                ? 'Выберите ситуацию. Анакра предложит первый шаг, а карта дня поможет взглянуть на него иначе.'
+                : 'Choose a situation. Anakra will suggest a first step, and your daily card will offer another perspective.',
+            art: 'assets/images/year_animals/horse.webp',
+          ),
+          const SizedBox(height: 20),
+          ScenarioChoiceGrid(
+            children: [
+              for (final situation in GuidanceSituation.values)
+                ScenarioChoiceCard(
+                  title: situation.title(ru),
+                  art: situation.art,
+                  onTap: () => Navigator.of(context).push<void>(
+                    CupertinoPageRoute<void>(
+                      builder: (_) => ScenarioSkyScope(
+                        child: _GuidanceConversation(situation: situation),
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
         ]),
       ),
     );
   }
 }
 
-class _StrengthResult extends StatefulWidget {
-  const _StrengthResult({this.task, this.saved, required this.owner})
-    : assert((task == null) != (saved == null));
-  final StrengthTask? task;
-  final StrengthTip? saved;
-  final String owner;
+class _GuidanceConversation extends StatefulWidget {
+  const _GuidanceConversation({required this.situation});
+  final GuidanceSituation situation;
   @override
-  State<_StrengthResult> createState() => _StrengthResultState();
+  State<_GuidanceConversation> createState() => _GuidanceConversationState();
 }
 
-class _StrengthResultState extends State<_StrengthResult> {
-  bool _expanded = false;
-  bool _saving = false;
-  Future<void> _save(StrengthTip tip, StrengthTipStore store) async {
-    if (_saving || di.get<UserProvider>().currentUser?.id != widget.owner) {
-      return;
+class _GuidanceConversationState extends State<_GuidanceConversation>
+    with WidgetsBindingObserver, SingleTickerProviderStateMixin {
+  late final ContentProvider _content = di.get<ContentProvider>();
+  late final UserProvider _users = di.get<UserProvider>();
+  late final String? _owner;
+  late final AnimationController _flip = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 540),
+  );
+  final _answer = GlobalKey();
+  bool _accountChanged = false;
+
+  void _checkOwner() {
+    if (_users.currentUser?.id != _owner && !_accountChanged) {
+      setState(() {
+        _accountChanged = true;
+        _card = null;
+      });
     }
-    setState(() => _saving = true);
+  }
+
+  final DateTime _started = DateTime.now();
+  TarotCardModel? _card;
+  bool _busy = false;
+  bool _failed = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _owner = _users.currentUser?.id;
+    _users.addListener(_checkOwner);
+    _restore();
+  }
+
+  void _restore() {
+    if (_accountChanged) return;
     try {
-      await store.save(tip);
+      if (!_content.isTodayTarotCardOpened()) {
+        _card = null;
+        _flip.value = 0;
+      } else if (_content.tarotCards.isNotEmpty) {
+        _card = _content.getTodayTarotCard();
+        _flip.value = 1;
+      } else {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted && !_accountChanged) _reveal();
+        });
+      }
     } catch (_) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(context.l10n.scenarioStrengthSaveError)),
+      _card = null;
+      _failed = true;
+    }
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed && !_busy && mounted) {
+      setState(_restore);
+    }
+  }
+
+  @override
+  void dispose() {
+    _users.removeListener(_checkOwner);
+    _flip.dispose();
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  Future<void> _reveal() async {
+    if (_busy || _accountChanged) return;
+    setState(() {
+      _busy = true;
+      _failed = false;
+    });
+    try {
+      if (_content.tarotCards.isEmpty) await _content.loadContent();
+      if (!mounted || _accountChanged) return;
+      final today = _content.getTodayTarotCard();
+      if (!_content.isTodayTarotCardOpened()) {
+        await _content.setTodayTarotCardOpened();
+      }
+      if (!mounted || _accountChanged) return;
+      _content.setDailySymbolTarotOpened();
+      setState(() => _card = today);
+      final reduced = MediaQuery.disableAnimationsOf(context);
+      if (reduced) {
+        _flip.value = 1;
+      } else {
+        await _flip.forward(from: 0).orCancel;
+      }
+      if (!mounted || _accountChanged) return;
+      await WidgetsBinding.instance.endOfFrame;
+      if (!mounted || _accountChanged) return;
+      final answer = _answer.currentContext;
+      if (answer != null && answer.mounted) {
+        await Scrollable.ensureVisible(
+          answer,
+          alignment: .75,
+          duration: reduced ? Duration.zero : const Duration(milliseconds: 270),
+          curve: Curves.easeOutCubic,
         );
       }
+    } catch (_) {
+      if (mounted) setState(() => _failed = true);
     } finally {
-      if (mounted) setState(() => _saving = false);
+      if (mounted) setState(() => _busy = false);
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final users = di.get<UserProvider>();
-    final ru = Localizations.localeOf(context).languageCode == 'ru';
-    final lang = ru ? 'ru' : 'en';
-    return ListenableBuilder(
-      listenable: users,
-      builder: (context, _) {
-        final user = users.currentUser;
-        if (user == null || user.id.isEmpty || user.id != widget.owner) {
-          return _accountChanged(context);
-        }
-        final chart = user.natalCard;
-        final reading = chart?.interpretations[lang];
-        final day = user.horoscopeDay;
-        final validDay =
-            day != null &&
-            users.showHoroscope(HoroscopeTypeEnum.day) &&
-            isAiContentLocalized(day.focus, lang);
-        final tip =
-            widget.saved ??
-            buildStrengthTip(
-              task: widget.task!,
-              language: lang,
-              date: DateTime.now(),
-              reading: reading,
-              todayFocus: validDay ? day.focus : null,
-            );
-        final store = StrengthTipStore(
-          HiveService.appSettingsBox,
-          widget.owner,
-        );
-        final saved = widget.saved != null || store.contains(tip);
-        final archive = widget.saved != null;
-        return ScenarioPage(
-          title: tip.situation,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: AsteriaEntrance.sections([
-              if (archive)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: Text(
-                    MaterialLocalizations.of(
-                      context,
-                    ).formatMediumDate(tip.date),
-                    style: context.textTheme.inverseUrbanistRegular16,
-                  ),
-                ),
-              _ReadingPanel(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      tip.title,
-                      style: context.textTheme.inversePlayfairSemiBold24,
-                    ),
-                    if (tip.natalSource != null &&
-                        tip.natalSource != tip.title) ...[
-                      const SizedBox(height: 8),
-                      Text(
-                        tip.natalSource!,
-                        style: context.textTheme.inverseUrbanistRegular16,
-                      ),
-                    ],
-                    const SizedBox(height: 20),
-                    Text(
-                      tip.daySource == null
-                          ? context.l10n.scenarioStrengthTry
-                          : context.l10n.scenarioStrengthTryToday,
-                      style: context.textTheme.inversePlayfairMedium18,
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      tip.action,
-                      style: context.textTheme.inverseUrbanistRegular16,
-                    ),
-                  ],
-                ),
-              ),
-              if (!archive && tip.natalSource == null) ...[
-                const SizedBox(height: 16),
-                Text(
-                  reading == null
-                      ? context.l10n.scenarioStrengthNeedsReading
-                      : context.l10n.scenarioStrengthNoPersonalMatch,
-                  style: context.textTheme.inverseUrbanistRegular16,
-                ),
-                if (reading == null)
-                  ScenarioTile(
-                    title: context.l10n.scenarioStrengthOpenChart,
-                    onTap: () => _open(context, const NatalCardScreen()),
-                  ),
-              ],
-              if (tip.natalSource != null) ...[
-                ScenarioTile(
-                  title: context.l10n.scenarioStrengthExplanation,
-                  onTap: () => setState(() => _expanded = !_expanded),
-                ),
-                if (_expanded)
-                  _ReadingPanel(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          context.l10n.scenarioStrengthChartSource,
-                          style: context.textTheme.inversePlayfairMedium18,
-                        ),
-                        Text(
-                          tip.natalSource!,
-                          style: context.textTheme.inverseUrbanistRegular16,
-                        ),
-                        if (tip.daySource != null) ...[
-                          const SizedBox(height: 12),
-                          Text(
-                            context.l10n.scenarioStrengthForecastSource,
-                            style: context.textTheme.inversePlayfairMedium18,
-                          ),
-                          Text(
-                            tip.daySource!,
-                            style: context.textTheme.inverseUrbanistRegular16,
-                          ),
-                        ],
-                        if (reading != null)
-                          CustomButton(
-                            type: CustomButtonType.text,
-                            text: context.l10n.scenarioStrengthFullReading,
-                            onPressed: () =>
-                                _open(context, const NatalCardScreen()),
-                          ),
-                      ],
-                    ),
-                  ),
-              ],
-              const SizedBox(height: 20),
-              if (!archive) ...[
-                if (saved)
-                  Semantics(
-                    liveRegion: true,
-                    child: Text(
-                      context.l10n.scenarioStrengthSaved,
-                      style: context.textTheme.inverseUrbanistRegular16,
-                    ),
-                  ),
-                CustomButton(
-                  text: saved
-                      ? context.l10n.scenarioStrengthViewSaved
-                      : context.l10n.scenarioStrengthSave,
-                  isLoading: _saving,
-                  onPressed: saved
-                      ? () => _open(
-                          context,
-                          _SavedStrengthTips(owner: widget.owner),
-                        )
-                      : () => _save(tip, store),
-                ),
-              ],
-              CustomButton(
-                type: CustomButtonType.text,
-                text: context.l10n.scenarioGoHome,
-                onPressed: () => scenarioHome(context),
-              ),
-            ]),
-          ),
-        );
-      },
-    );
-  }
-}
-
-Widget _accountChanged(BuildContext context) => ScenarioPage(
-  title: context.l10n.scenarioStrengthSavedTips,
-  child: CustomButton(
-    text: context.l10n.scenarioGoHome,
-    onPressed: () => scenarioHome(context),
-  ),
-);
-
-class _SavedStrengthTips extends StatelessWidget {
-  const _SavedStrengthTips({required this.owner});
-  final String owner;
-  @override
-  Widget build(BuildContext context) {
-    final users = di.get<UserProvider>();
-    return ListenableBuilder(
-      listenable: users,
-      builder: (context, _) {
-        if (users.currentUser?.id != owner || owner.isEmpty) {
-          return _accountChanged(context);
-        }
-        final tips = StrengthTipStore(HiveService.appSettingsBox, owner).read();
-        return ScenarioPage(
-          title: context.l10n.scenarioStrengthSavedTips,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: AsteriaEntrance.sections([
-              for (final tip in tips)
-                ScenarioTile(
-                  title: tip.title,
-                  subtitle:
-                      '${tip.situation} · ${MaterialLocalizations.of(context).formatMediumDate(tip.date)}',
-                  onTap: () =>
-                      _open(context, _StrengthResult(saved: tip, owner: owner)),
-                ),
-            ]),
-          ),
-        );
-      },
-    );
-  }
-}
-
-class _ReadingPanel extends StatelessWidget {
-  const _ReadingPanel({required this.child});
-  final Widget child;
-  @override
-  Widget build(BuildContext context) => HomeGlassSurface(
-    child: Padding(padding: const EdgeInsets.all(16), child: child),
+  Widget _reply(String text, bool ru) => AnakraChatMessage(
+    message: AnakraChatMessageModel(
+      text: text,
+      isUser: false,
+      timestamp: _started,
+      locale: ru ? 'ru' : 'en',
+    ),
   );
+
+  @override
+  Widget build(BuildContext context) {
+    final language = Localizations.localeOf(context).languageCode;
+    final ru = language == 'ru';
+    final card = _card;
+    if (_accountChanged) {
+      return ScenarioPage(
+        title: widget.situation.title(ru),
+        child: Text(
+          ru
+              ? 'Вы вошли в другой аккаунт. Вернитесь к выбору ситуации.'
+              : 'Your account has changed. Go back to choose a situation.',
+        ),
+      );
+    }
+    final revealLabel = ru ? 'Вытянуть карту дня' : 'Draw my daily card';
+    return ScenarioPage(
+      title: widget.situation.title(ru),
+      footer: card == null
+          ? AuthGradientButton(
+              text: _failed ? context.l10n.commonRetry : revealLabel,
+              onPressed: _busy ? null : _reveal,
+              isLoading: _busy,
+            )
+          : AuthGradientButton(
+              text: context.l10n.scenarioGoHome,
+              onPressed: () => scenarioHome(context),
+            ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: AsteriaEntrance.sections([
+          Align(
+            alignment: Alignment.centerLeft,
+            child: SizedBox.square(
+              dimension: 112,
+              child: FittedBox(
+                child: const AnakraIdleBadge(
+                  assetPath: 'assets/images/year_animals/horse.webp',
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
+          _reply(widget.situation.opening(ru), ru),
+          Center(
+            child: LotusFeedback(
+              keyboard: true,
+              onActivate: card == null && !_busy ? _reveal : null,
+              builder: (activate) => Semantics(
+                label: card?.title ?? revealLabel,
+                button: card == null,
+                onTap: activate,
+                child: ExcludeSemantics(
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: activate,
+                    child: DailySymbolFlip(
+                      animation: _flip,
+                      startsFaceDown: true,
+                      back: const DailyTarotCardFace(width: 140, height: 208),
+                      front: DailyTarotCardFace(
+                        card: card,
+                        width: 140,
+                        height: 208,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+          if (card == null)
+            Text(
+              _failed
+                  ? (ru
+                        ? 'Карты пока не загрузились. Попробуем ещё раз?'
+                        : 'The cards haven’t loaded yet. Try again?')
+                  : (ru
+                        ? 'Одна карта на сегодня. Её можно снова открыть на главной.'
+                        : 'One card for today. You can find it again on Home.'),
+              textAlign: TextAlign.center,
+              style: AppTypography.text2.copyWith(color: AppColors.cardTinted),
+            )
+          else ...[
+            Text(
+              card.title,
+              textAlign: TextAlign.center,
+              style: context.textTheme.inversePlayfairSemiBold24,
+            ),
+            const SizedBox(height: 14),
+            KeyedSubtree(key: _answer, child: _reply(_advice(card, ru), ru)),
+          ],
+        ]),
+      ),
+    );
+  }
+
+  String _advice(TarotCardModel card, bool ru) {
+    final description = [
+      card.cardOfDayDescription,
+      card.shortDescription,
+      card.generalDescription,
+    ].map((s) => s.trim()).firstWhere((s) => s.isNotEmpty, orElse: () => '');
+    final firstSentence = RegExp(
+      r'^[^.!?\n]+[.!?…]?',
+    ).firstMatch(description)?.group(0)?.trim();
+    return [
+      if (firstSentence != null && firstSentence.isNotEmpty) firstSentence,
+      widget.situation.nextStep(card, ru),
+    ].join('\n\n');
+  }
 }

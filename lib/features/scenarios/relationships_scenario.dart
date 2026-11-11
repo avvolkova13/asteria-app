@@ -24,6 +24,12 @@ enum RelationshipSituation {
   disagreement,
   ownFeelings;
 
+  String get art => switch (this) {
+    care => 'assets/images/scenarios/conversation.webp',
+    disagreement => 'assets/images/home/personal_week_balance_harmony.webp',
+    ownFeelings => 'assets/images/home/hand_with_star.webp',
+  };
+
   bool get forPair => this != ownFeelings;
 
   String title(BuildContext context) => switch (this) {
@@ -51,9 +57,10 @@ enum RelationshipSituation {
   };
 }
 
-Future<T?> _open<T>(BuildContext context, Widget screen) => Navigator.of(
-  context,
-).push<T>(CupertinoPageRoute<T>(builder: (_) => ScenarioSkyScope(child: screen)));
+Future<T?> _open<T>(BuildContext context, Widget screen) =>
+    Navigator.of(context).push<T>(
+      CupertinoPageRoute<T>(builder: (_) => ScenarioSkyScope(child: screen)),
+    );
 
 class RelationshipsScenarioScreen extends StatefulWidget {
   const RelationshipsScenarioScreen({super.key});
@@ -105,6 +112,17 @@ class _RelationshipsScenarioScreenState
     }
   }
 
+  Widget _choice(RelationshipSituation situation, {bool wide = false}) =>
+      ScenarioChoiceCard(
+        art: situation.art,
+        title: situation.title(context),
+        selected: _selected == situation,
+        wide: wide,
+        onTap: () {
+          if (!_opening) setState(() => _selected = situation);
+        },
+      );
+
   @override
   Widget build(BuildContext context) {
     final choice = _selected;
@@ -113,27 +131,30 @@ class _RelationshipsScenarioScreenState
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: AsteriaEntrance.sections([
-          for (final item in RelationshipSituation.values) ...[
+          _choice(RelationshipSituation.care, wide: true),
+          const SizedBox(height: 12),
+          ScenarioChoiceGrid(
+            children: [
+              _choice(RelationshipSituation.disagreement),
+              _choice(RelationshipSituation.ownFeelings),
+            ],
+          ),
+          if (choice != null) ...[
+            const SizedBox(height: 20),
             Semantics(
-              selected: choice == item,
-              child: ScenarioTile(
-                title: item.title(context),
-                subtitle: choice == item ? item.recommendation(context) : null,
-                onTap: () {
-                  if (!_opening) setState(() => _selected = item);
-                },
+              liveRegion: true,
+              child: Text(
+                choice.recommendation(context),
+                style: context.textTheme.inverseUrbanistRegular16,
               ),
             ),
-            if (choice == item) ...[
-              const SizedBox(height: 8),
-              CustomButton(
-                text: item.forPair
-                    ? context.l10n.scenarioRelationshipOpenPair
-                    : context.l10n.scenarioRelationshipOpenSpread,
-                onPressed: _opening ? null : () => _start(item),
-              ),
-            ],
             const SizedBox(height: 12),
+            CustomButton(
+              text: choice.forPair
+                  ? context.l10n.scenarioRelationshipOpenPair
+                  : context.l10n.scenarioRelationshipOpenSpread,
+              onPressed: _opening ? null : () => _start(choice),
+            ),
           ],
         ]),
       ),

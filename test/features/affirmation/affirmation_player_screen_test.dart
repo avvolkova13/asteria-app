@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:ui' show SemanticsAction, Tristate;
 
@@ -14,6 +15,7 @@ class _Audio extends PracticePlaybackController {
   Duration elapsed = Duration.zero;
   bool active = false;
   bool loop = false;
+  Completer<void>? loading;
 
   @override
   Duration get position => elapsed;
@@ -22,7 +24,10 @@ class _Audio extends PracticePlaybackController {
   @override
   bool get isLooping => loop;
   @override
-  Future<void> initialize() async {}
+  Future<void> initialize() async {
+    await loading?.future;
+  }
+
   @override
   Future<void> toggle() async {
     active = !active;
@@ -58,11 +63,13 @@ void main() {
     WidgetTester tester,
     Size size, {
     double textScale = 1,
+    bool autoPlay = false,
+    Completer<void>? loading,
   }) async {
     tester.view.devicePixelRatio = 1;
     tester.view.physicalSize = size;
     addTearDown(tester.view.reset);
-    final audio = _Audio();
+    final audio = _Audio()..loading = loading;
     addTearDown(audio.dispose);
     await tester.pumpWidget(
       MaterialApp(
@@ -79,12 +86,47 @@ void main() {
           ),
           child: child!,
         ),
-        home: AffirmationPlayerScreen(controller: audio),
+        home: AffirmationPlayerScreen(controller: audio, autoPlay: autoPlay),
       ),
     );
     await tester.pumpAndSettle();
     return audio;
   }
+
+  testWidgets('scenario autoplay starts when the recording is ready', (
+    tester,
+  ) async {
+    final loading = Completer<void>();
+    final audio = await show(
+      tester,
+      const Size(393, 852),
+      autoPlay: true,
+      loading: loading,
+    );
+    expect(audio.isPlaying, isFalse);
+    loading.complete();
+    await tester.pump();
+    expect(audio.isPlaying, isTrue);
+    await tester.pump();
+    expect(find.bySemanticsLabel('Пауза'), findsOneWidget);
+  });
+
+  testWidgets('leaving during loading cannot start audio afterwards', (
+    tester,
+  ) async {
+    final loading = Completer<void>();
+    final audio = await show(
+      tester,
+      const Size(393, 852),
+      autoPlay: true,
+      loading: loading,
+    );
+    await tester.pumpWidget(const SizedBox.shrink());
+    loading.complete();
+    await tester.pump();
+    expect(audio.isPlaying, isFalse);
+    expect(tester.takeException(), isNull);
+  });
 
   testWidgets(
     'scrubbing provides one selection on commit and stays silent during the drag',

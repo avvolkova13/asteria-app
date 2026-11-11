@@ -16,51 +16,41 @@ void main() {
   }
 
   testWidgets(
-    'one recording still asks how the visitor feels and offers a way back',
+    'each mood opens the available recording directly and back restores the mood choices',
     (tester) async {
       final played = <String>[];
       await start(tester, [
-        _fixture(played, 'Slow practice', PracticeMood.slowDown),
+        ScenarioPractice(
+          id: 'available',
+          mood: PracticeMood.slowDown,
+          title: 'Available',
+          duration: const Duration(seconds: 75),
+          open: (context) async {
+            played.add('available');
+            await Navigator.of(context).push<void>(
+              MaterialPageRoute(
+                builder: (_) =>
+                    Scaffold(appBar: AppBar(title: const Text('Player'))),
+              ),
+            );
+          },
+        ),
+        _fixture(played, 'Restricted', PracticeMood.focus, available: false),
       ]);
-      expect(find.text('How are you feeling right now?'), findsOneWidget);
-      expect(played, isEmpty);
-      await tester.tap(find.text('I feel rushed'));
-      await tester.pumpAndSettle();
-      expect(played, ['Slow practice']);
+      for (final mood in ['Find calm', 'Gather my thoughts', 'Unwind']) {
+        expect(find.text('What do you need right now?'), findsOneWidget);
+        await tester.ensureVisible(find.text(mood));
+        await tester.tap(find.text(mood));
+        await tester.pumpAndSettle();
+        expect(find.text('Player'), findsOneWidget);
+        await tester.pageBack();
+        await tester.pumpAndSettle();
+        expect(find.text(mood), findsOneWidget);
+      }
+      expect(played, ['available', 'available', 'available']);
       await tester.tap(find.byTooltip('Back'));
       await tester.pumpAndSettle();
       expect(find.text('Start'), findsOneWidget);
-    },
-  );
-
-  testWidgets(
-    'a missing match offers an explicitly optional alternative and preserves the return path',
-    (tester) async {
-      final played = <String>[];
-      await start(tester, [
-        _fixture(played, 'Available recording', PracticeMood.slowDown),
-        _fixture(
-          played,
-          'Restricted recording',
-          PracticeMood.focus,
-          available: false,
-        ),
-      ]);
-      await tester.tap(find.text('I find it hard to focus'));
-      await tester.pumpAndSettle();
-      expect(played, isEmpty);
-      expect(
-        find.textContaining('There isn’t a recording for this feeling yet.'),
-        findsOneWidget,
-      );
-      expect(find.text('Restricted recording'), findsNothing);
-      expect(find.text('Listen · 1:15'), findsOneWidget);
-      await tester.tap(find.text('Available recording'));
-      await tester.pumpAndSettle();
-      expect(played, ['Available recording']);
-      await tester.tap(find.byTooltip('Back'));
-      await tester.pumpAndSettle();
-      expect(find.text('I find it hard to focus'), findsOneWidget);
     },
   );
 
@@ -75,7 +65,7 @@ void main() {
       _fixture(played, 'Locked', PracticeMood.focus, available: false),
     ]);
     for (var i = 0; i < 3; ++i) {
-      await tester.tap(find.text('I find it hard to focus'));
+      await tester.tap(find.text('Gather my thoughts'));
       await tester.pumpAndSettle();
     }
     expect(played, [

@@ -68,38 +68,64 @@ class CalendarScenarioScreen extends StatelessWidget {
   const CalendarScenarioScreen({super.key});
 
   @override
-  Widget build(BuildContext context) => ScenarioPage(
-    title: context.l10n.scenarioCalendarChooseActivity,
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: AsteriaEntrance.sections([
-        Text(
-          context.l10n.scenarioCalendarActivityIntro,
-          style: AppTypography.text1.copyWith(color: AppColors.cardTinted),
-        ),
-        for (final sphere in ['beauty', 'gardening']) ...[
-          const SizedBox(height: 20),
-          Text(
-            sphere == 'beauty'
-                ? context.l10n.sphereBeauty
-                : context.l10n.sphereGarden,
-            style: AppTypography.text1SemiBold.copyWith(
-              color: AppColors.textInverse,
-            ),
+  Widget build(BuildContext context) {
+    Widget activityCard(CalendarActivity activity, {bool wide = false}) {
+      final image = switch (activity) {
+        CalendarActivity.haircut => 'beauty_haircut',
+        CalendarActivity.coloring => 'beauty_hair_coloring',
+        CalendarActivity.transplant => 'gardening_transplanting_pricking',
+        CalendarActivity.planting => 'gardening_sowing_planting',
+        CalendarActivity.watering => 'gardening_watering_fertilizing',
+      };
+      return ScenarioChoiceCard(
+        title: _activityLabel(context, activity),
+        art: 'assets/images/prediction_images/moon_card_$image.webp',
+        tint: activity.sphere == 'beauty'
+            ? const Color(0xFFE4AFCC)
+            : const Color(0xFF95C2AA),
+        wide: wide,
+        onTap: () => _open(context, _DaySelection(activity: activity)),
+      );
+    }
+
+    Widget heading(String title) => Padding(
+      padding: const EdgeInsets.only(top: 24, bottom: 12),
+      child: Text(
+        title,
+        style: AppTypography.h3.copyWith(color: AppColors.textInverse),
+      ),
+    );
+    return ScenarioPage(
+      title: context.l10n.scenarioCalendarChooseActivity,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: AsteriaEntrance.sections([
+          ScenarioChoiceHero(
+            description: context.l10n.scenarioCalendarActivityIntro,
+            art: 'assets/images/scenarios/calendar.webp',
           ),
-          const SizedBox(height: 10),
-          for (final task in CalendarActivity.values.where(
-            (task) => task.sphere == sphere,
-          ))
-            ScenarioTile(
-              title: _activityLabel(context, task),
-              onTap: () => _open(context, _DaySelection(activity: task)),
-            ),
-        ],
-        const CalendarPlansButton(),
-      ]),
-    ),
-  );
+          heading(context.l10n.sphereBeauty),
+          ScenarioChoiceGrid(
+            children: [
+              activityCard(CalendarActivity.haircut),
+              activityCard(CalendarActivity.coloring),
+            ],
+          ),
+          heading(context.l10n.sphereGarden),
+          activityCard(CalendarActivity.transplant, wide: true),
+          const SizedBox(height: 12),
+          ScenarioChoiceGrid(
+            children: [
+              activityCard(CalendarActivity.planting),
+              activityCard(CalendarActivity.watering),
+            ],
+          ),
+          const SizedBox(height: 12),
+          const CalendarPlansButton(),
+        ]),
+      ),
+    );
+  }
 }
 
 class _Retry extends StatelessWidget {

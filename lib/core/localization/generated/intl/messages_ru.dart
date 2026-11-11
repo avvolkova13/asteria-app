@@ -156,25 +156,23 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m59(title) => "Открыть значение руны настоящего ${title}";
 
-  static String m60(duration) => "Послушать · ${duration}";
+  static String m60(count) => "${count} шт.";
 
-  static String m61(count) => "${count} шт.";
+  static String m61(price) => "цена за 1 = ${price}";
 
-  static String m62(price) => "цена за 1 = ${price}";
+  static String m62(date) => "Следующее списание\nбудет произведено\n${date}";
 
-  static String m63(date) => "Следующее списание\nбудет произведено\n${date}";
+  static String m63(count) => "Восстановлено покупок: ${count}";
 
-  static String m64(count) => "Восстановлено покупок: ${count}";
+  static String m64(title) => "Карта ${title} закрыта";
 
-  static String m65(title) => "Карта ${title} закрыта";
+  static String m65(title) => "Открыть карту ${title}";
 
-  static String m66(title) => "Открыть карту ${title}";
+  static String m66(position) => "Открыть карту ${position} из 3";
 
-  static String m67(position) => "Открыть карту ${position} из 3";
+  static String m67(position, card) => "Карта ${position} из 3: ${card}";
 
-  static String m68(position, card) => "Карта ${position} из 3: ${card}";
-
-  static String m69(price) =>
+  static String m68(price) =>
       "Твой персональный гороскоп\nна год за ${price} звёздочётов";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
@@ -1887,24 +1885,14 @@ class MessageLookup extends MessageLookupByLibrary {
       "Лунных подсказок для выбранного занятия пока нет. Вы можете сравнить фазы Луны и сохранить удобную дату.",
     ),
     "scenarioGoHome": MessageLookupByLibrary.simpleMessage("На главную"),
-    "scenarioPracticeAlternativeOffered": MessageLookupByLibrary.simpleMessage(
-      "Для этого состояния пока нет отдельной записи. Хотите попробовать аффирмацию, чтобы замедлиться?",
-    ),
-    "scenarioPracticeAlternativeTitle": MessageLookupByLibrary.simpleMessage(
-      "Минутка передышки",
-    ),
     "scenarioPracticeChooseMood": MessageLookupByLibrary.simpleMessage(
-      "Как вы сейчас себя чувствуете?",
+      "Что вам сейчас нужно?",
     ),
     "scenarioPracticeFocus": MessageLookupByLibrary.simpleMessage(
-      "Сложно сосредоточиться",
-    ),
-    "scenarioPracticeListen": m60,
-    "scenarioPracticeNoMatch": MessageLookupByLibrary.simpleMessage(
-      "Для этого состояния пока нет записи. Можно вернуться и выбрать другое.",
+      "Собраться с мыслями",
     ),
     "scenarioPracticeSlowDown": MessageLookupByLibrary.simpleMessage(
-      "Всё время спешу",
+      "Успокоиться",
     ),
     "scenarioPracticeSubtitle": MessageLookupByLibrary.simpleMessage(
       "Аффирмации под ваше настроение.",
@@ -1915,29 +1903,27 @@ class MessageLookup extends MessageLookupByLibrary {
     "scenarioPracticeUnavailable": MessageLookupByLibrary.simpleMessage(
       "Сейчас нет доступных аудиопрактик.",
     ),
-    "scenarioPracticeUnwind": MessageLookupByLibrary.simpleMessage(
-      "День выдался тяжёлым",
-    ),
+    "scenarioPracticeUnwind": MessageLookupByLibrary.simpleMessage("Отдохнуть"),
     "scenarioRelationshipCare": MessageLookupByLibrary.simpleMessage(
-      "Мы по-разному проявляем чувства",
+      "Отношения с партнёром",
     ),
     "scenarioRelationshipCareOffer": MessageLookupByLibrary.simpleMessage(
-      "Выберите сохранённую пару или добавьте данные партнёра. Посмотрим, как вы выражаете заботу, и найдём вопрос для разговора.",
+      "Посмотрите, как вы проявляете заботу, и получите вопрос для разговора.",
     ),
     "scenarioRelationshipCareQuestion": MessageLookupByLibrary.simpleMessage(
       "По какой мелочи ты понимаешь, что я о тебе забочусь?",
     ),
     "scenarioRelationshipChooseSituation": MessageLookupByLibrary.simpleMessage(
-      "Что вас сейчас волнует?",
+      "Что хочется лучше понять?",
     ),
     "scenarioRelationshipConversationLabel":
         MessageLookupByLibrary.simpleMessage("Для разговора вдвоём"),
     "scenarioRelationshipDisagreement": MessageLookupByLibrary.simpleMessage(
-      "После спора трудно начать разговор",
+      "Напряжение и разногласия",
     ),
     "scenarioRelationshipDisagreementOffer":
         MessageLookupByLibrary.simpleMessage(
-          "Выберите сохранённую пару или добавьте данные партнёра. Откроем разбор разногласий и предложим первую фразу для разговора.",
+          "Узнайте, как вы реагируете на разногласия и с чего начать разговор.",
         ),
     "scenarioRelationshipDisagreementQuestion":
         MessageLookupByLibrary.simpleMessage(
@@ -1953,7 +1939,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Начать любовный расклад",
     ),
     "scenarioRelationshipOwnFeelings": MessageLookupByLibrary.simpleMessage(
-      "Хочу разобраться в своих чувствах",
+      "Мои чувства и желания",
     ),
     "scenarioRelationshipReflectionLabel": MessageLookupByLibrary.simpleMessage(
       "Вопрос для размышления",
@@ -1966,7 +1952,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Поделиться вопросом",
     ),
     "scenarioRelationshipSpreadOffer": MessageLookupByLibrary.simpleMessage(
-      "Любовный расклад поможет посмотреть на ситуацию с нескольких сторон. Его можно пройти самостоятельно.",
+      "Вытяните карты и прислушайтесь к тому, чего хочется вам.",
     ),
     "scenarioRelationshipsSubtitle": MessageLookupByLibrary.simpleMessage(
       "Выберите, что вас волнует в отношениях. Asteria подскажет, с чего начать.",
@@ -1982,7 +1968,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Из натальной карты",
     ),
     "scenarioStrengthChooseArea": MessageLookupByLibrary.simpleMessage(
-      "В какой ситуации вам пригодится подсказка?",
+      "Что сейчас занимает ваши мысли?",
     ),
     "scenarioStrengthChooseSituation": MessageLookupByLibrary.simpleMessage(
       "Что вам предстоит?",
@@ -2018,10 +2004,10 @@ class MessageLookup extends MessageLookupByLibrary {
       "Мои подсказки",
     ),
     "scenarioStrengthSubtitle": MessageLookupByLibrary.simpleMessage(
-      "Что вам предстоит? Подскажем первый шаг.",
+      "Получите подсказку Анакры и откройте карту дня.",
     ),
     "scenarioStrengthTitle": MessageLookupByLibrary.simpleMessage(
-      "В чём моя сила?",
+      "Разобраться в ситуации",
     ),
     "scenarioStrengthTry": MessageLookupByLibrary.simpleMessage("Попробуйте"),
     "scenarioStrengthTryToday": MessageLookupByLibrary.simpleMessage(
@@ -2057,7 +2043,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "shopIncreaseQuantity": MessageLookupByLibrary.simpleMessage(
       "Увеличить количество",
     ),
-    "shopItemCount": m61,
+    "shopItemCount": m60,
     "shopItemSuffix": MessageLookupByLibrary.simpleMessage("шт"),
     "shopItemsLeft": MessageLookupByLibrary.simpleMessage("Осталось"),
     "shopLoadError": MessageLookupByLibrary.simpleMessage(
@@ -2080,7 +2066,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "shopTitle": MessageLookupByLibrary.simpleMessage("Магазин"),
     "shopUnitPrice": MessageLookupByLibrary.simpleMessage("цена за 1"),
-    "shopUnitPriceValue": m62,
+    "shopUnitPriceValue": m61,
     "specialReadingsTitle": MessageLookupByLibrary.simpleMessage(
       "Особые расклады",
     ),
@@ -2204,7 +2190,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "subscriptionNextPaymentInline": MessageLookupByLibrary.simpleMessage(
       "Следующее списание будет\nпроизведено ",
     ),
-    "subscriptionNextPaymentOn": m63,
+    "subscriptionNextPaymentOn": m62,
     "subscriptionNoPurchasesToRestore": MessageLookupByLibrary.simpleMessage(
       "Покупки для восстановления не найдены",
     ),
@@ -2217,7 +2203,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "subscriptionPlansUnavailable": MessageLookupByLibrary.simpleMessage(
       "Подписки пока недоступны. Попробуйте позже.",
     ),
-    "subscriptionPurchasesRestored": m64,
+    "subscriptionPurchasesRestored": m63,
     "subscriptionRestoreInProgress": MessageLookupByLibrary.simpleMessage(
       "Восстанавливаем покупки…",
     ),
@@ -2245,10 +2231,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "tarotLoadError": MessageLookupByLibrary.simpleMessage(
       "Не удалось загрузить карты Таро.",
     ),
-    "tarotLockedCardLabel": m65,
-    "tarotOpenCardLabel": m66,
-    "tarotOpenSpreadCard": m67,
-    "tarotOpenedSpreadCard": m68,
+    "tarotLockedCardLabel": m64,
+    "tarotOpenCardLabel": m65,
+    "tarotOpenSpreadCard": m66,
+    "tarotOpenedSpreadCard": m67,
     "tarotRefreshSubscriptionRequired": MessageLookupByLibrary.simpleMessage(
       "Обновление карты Таро доступно только по подписке. Оформите подписку, чтобы получать новую карту каждый день.",
     ),
@@ -2295,6 +2281,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "yearHoroscopeIntro": MessageLookupByLibrary.simpleMessage(
       "Открой карту своей судьбы и загляни в будущее, которое ждёт именно тебя.",
     ),
-    "yearHoroscopePriceTitle": m69,
+    "yearHoroscopePriceTitle": m68,
   };
 }

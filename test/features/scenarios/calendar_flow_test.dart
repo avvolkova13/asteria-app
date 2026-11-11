@@ -122,8 +122,8 @@ void main() {
 
       await back(); // Comparison → selected dates.
       expect(find.text('Compare dates'), findsOneWidget);
-      await back(); // Dates → activity.
-      expect(find.text('What are you planning?'), findsOneWidget);
+      await back(); // Dates → the same activity list and scroll position.
+      expect(find.text('Repotting plants').hitTestable(), findsOneWidget);
       await back(); // Activity → original lunar tab.
       expect(find.text('Lunar calendar'), findsOneWidget);
       await tap(find.text('My plans'));

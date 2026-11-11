@@ -12,6 +12,13 @@ enum PracticeMood {
   focus,
   unwind;
 
+  String get art => switch (this) {
+    slowDown => 'assets/images/scenarios/lotus.webp',
+    focus => 'assets/images/home/energy_focus.webp',
+    unwind =>
+      'assets/images/prediction_images/moon_card_health_sleep_recovery.webp',
+  };
+
   String label(BuildContext context) => switch (this) {
     slowDown => context.l10n.scenarioPracticeSlowDown,
     focus => context.l10n.scenarioPracticeFocus,
@@ -52,7 +59,9 @@ const availablePracticeRecordings = [
 Future<void> _openBundledPractice(BuildContext context) =>
     Navigator.of(context).push<void>(
       CupertinoPageRoute(
-        builder: (_) => const ScenarioSkyScope(child: AffirmationPlayerScreen(showBack: true)),
+        builder: (_) => const ScenarioSkyScope(
+          child: AffirmationPlayerScreen(showBack: true, autoPlay: true),
+        ),
       ),
     );
 
@@ -77,27 +86,21 @@ class _PracticeMoodsState extends State<_PracticeMoods> {
 
   Future<void> _choose(PracticeMood mood) async {
     if (_opening) return;
-    final available = widget.recordings.where(
-      (item) => item.available(context),
-    );
+    final available = widget.recordings
+        .where((item) => item.available(context))
+        .toList();
+    if (available.isEmpty) {
+      setState(() {});
+      return;
+    }
     final matches = available.where((item) => item.mood == mood).toList();
+    final candidates = matches.isEmpty ? available : matches;
     _opening = true;
     try {
-      if (matches.isEmpty) {
-        final alternative = available
-            .where((item) => item.mood == PracticeMood.slowDown)
-            .firstOrNull;
-        await Navigator.of(context).push<void>(
-          CupertinoPageRoute(
-            builder: (_) => _PracticeAlternative(recording: alternative),
-          ),
-        );
-        return;
-      }
-      final lastIndex = matches.indexWhere(
+      final lastIndex = candidates.indexWhere(
         (item) => item.id == _lastPlayed[mood],
       );
-      final next = matches[(lastIndex + 1) % matches.length];
+      final next = candidates[(lastIndex + 1) % candidates.length];
       await next.open(context);
       _lastPlayed[mood] = next.id;
     } finally {
@@ -105,77 +108,30 @@ class _PracticeMoodsState extends State<_PracticeMoods> {
     }
   }
 
+  Widget _choice(PracticeMood mood, {bool wide = false}) => ScenarioChoiceCard(
+    title: mood.label(context),
+    art: mood.art,
+    wide: wide,
+    onTap: () => _choose(mood),
+  );
+
   @override
   Widget build(BuildContext context) => ScenarioPage(
     title: context.l10n.scenarioPracticeChooseMood,
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: AsteriaEntrance.sections([
-        if (!widget.recordings.any((item) => item.available(context)))
-          Text(context.l10n.scenarioPracticeUnavailable)
-        else
-          for (final mood in PracticeMood.values)
-            ScenarioTile(
-              title: mood.label(context),
-              onTap: () => _choose(mood),
-            ),
-      ]),
-    ),
-  );
-}
-
-class _PracticeAlternative extends StatefulWidget {
-  const _PracticeAlternative({required this.recording});
-  final ScenarioPractice? recording;
-
-  @override
-  State<_PracticeAlternative> createState() => _PracticeAlternativeState();
-}
-
-class _PracticeAlternativeState extends State<_PracticeAlternative> {
-  bool _opening = false;
-
-  Future<void> _play(ScenarioPractice item) async {
-    if (_opening) return;
-    if (!item.available(context)) {
-      setState(() {});
-      return;
-    }
-    _opening = true;
-    try {
-      await item.open(context);
-    } finally {
-      _opening = false;
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final item = widget.recording;
-    final canPlay = item != null && item.available(context);
-    return ScenarioPage(
-      title: context.l10n.scenarioPracticeAlternativeTitle,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: AsteriaEntrance.sections([
-          Text(
-            canPlay
-                ? context.l10n.scenarioPracticeAlternativeOffered
-                : context.l10n.scenarioPracticeNoMatch,
-          ),
-          if (canPlay) ...[
-            const SizedBox(height: 16),
-            ScenarioTile(
-              art: 'assets/images/scenarios/lotus.webp',
-              title: item.title,
-              subtitle: context.l10n.scenarioPracticeListen(
-                '${item.duration.inMinutes}:${(item.duration.inSeconds % 60).toString().padLeft(2, '0')}',
+    child: !widget.recordings.any((item) => item.available(context))
+        ? Text(context.l10n.scenarioPracticeUnavailable)
+        : Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: AsteriaEntrance.sections([
+              _choice(PracticeMood.slowDown, wide: true),
+              const SizedBox(height: 12),
+              ScenarioChoiceGrid(
+                children: [
+                  _choice(PracticeMood.focus),
+                  _choice(PracticeMood.unwind),
+                ],
               ),
-              onTap: () => _play(item),
-            ),
-          ],
-        ]),
-      ),
-    );
-  }
+            ]),
+          ),
+  );
 }

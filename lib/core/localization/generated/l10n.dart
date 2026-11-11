@@ -8085,60 +8085,60 @@ class AppLocalizations {
     );
   }
 
-  /// `We show affection differently`
+  /// `My relationship`
   String get scenarioRelationshipCare {
     return Intl.message(
-      'We show affection differently',
+      'My relationship',
       name: 'scenarioRelationshipCare',
       desc: '',
       args: [],
     );
   }
 
-  /// `It is hard to talk after an argument`
+  /// `Tension and disagreements`
   String get scenarioRelationshipDisagreement {
     return Intl.message(
-      'It is hard to talk after an argument',
+      'Tension and disagreements',
       name: 'scenarioRelationshipDisagreement',
       desc: '',
       args: [],
     );
   }
 
-  /// `I want to understand my feelings`
+  /// `My feelings and wishes`
   String get scenarioRelationshipOwnFeelings {
     return Intl.message(
-      'I want to understand my feelings',
+      'My feelings and wishes',
       name: 'scenarioRelationshipOwnFeelings',
       desc: '',
       args: [],
     );
   }
 
-  /// `Choose a saved pair or enter your partner’s details. Explore how you show care and find a question to discuss.`
+  /// `Explore how you show care and find a question to discuss together.`
   String get scenarioRelationshipCareOffer {
     return Intl.message(
-      'Choose a saved pair or enter your partner’s details. Explore how you show care and find a question to discuss.',
+      'Explore how you show care and find a question to discuss together.',
       name: 'scenarioRelationshipCareOffer',
       desc: '',
       args: [],
     );
   }
 
-  /// `Choose a saved pair or enter your partner’s details. Explore disagreements and find a way to start talking.`
+  /// `Explore how you handle disagreements and find a way to start talking.`
   String get scenarioRelationshipDisagreementOffer {
     return Intl.message(
-      'Choose a saved pair or enter your partner’s details. Explore disagreements and find a way to start talking.',
+      'Explore how you handle disagreements and find a way to start talking.',
       name: 'scenarioRelationshipDisagreementOffer',
       desc: '',
       args: [],
     );
   }
 
-  /// `Explore your feelings from several angles with a love spread. You can do this on your own.`
+  /// `Draw the cards and reflect on what you want.`
   String get scenarioRelationshipSpreadOffer {
     return Intl.message(
-      'Explore your feelings from several angles with a love spread. You can do this on your own.',
+      'Draw the cards and reflect on what you want.',
       name: 'scenarioRelationshipSpreadOffer',
       desc: '',
       args: [],
@@ -8175,10 +8175,10 @@ class AppLocalizations {
     );
   }
 
-  /// `What is on your mind?`
+  /// `What would you like to explore?`
   String get scenarioRelationshipChooseSituation {
     return Intl.message(
-      'What is on your mind?',
+      'What would you like to explore?',
       name: 'scenarioRelationshipChooseSituation',
       desc: '',
       args: [],
@@ -8245,10 +8245,10 @@ class AppLocalizations {
     );
   }
 
-  /// `Where could you use some guidance?`
+  /// `What’s on your mind?`
   String get scenarioStrengthChooseArea {
     return Intl.message(
-      'Where could you use some guidance?',
+      'What’s on your mind?',
       name: 'scenarioStrengthChooseArea',
       desc: '',
       args: [],
@@ -8475,103 +8475,63 @@ class AppLocalizations {
     );
   }
 
-  /// `What’s my strength?`
+  /// `Find a way forward`
   String get scenarioStrengthTitle {
     return Intl.message(
-      'What’s my strength?',
+      'Find a way forward',
       name: 'scenarioStrengthTitle',
       desc: '',
       args: [],
     );
   }
 
-  /// `What’s ahead? Get a first step to try.`
+  /// `Get a suggestion from Anakra and reveal your daily card.`
   String get scenarioStrengthSubtitle {
     return Intl.message(
-      'What’s ahead? Get a first step to try.',
+      'Get a suggestion from Anakra and reveal your daily card.',
       name: 'scenarioStrengthSubtitle',
       desc: '',
       args: [],
     );
   }
 
-  /// `I feel rushed`
+  /// `Find calm`
   String get scenarioPracticeSlowDown {
     return Intl.message(
-      'I feel rushed',
+      'Find calm',
       name: 'scenarioPracticeSlowDown',
       desc: '',
       args: [],
     );
   }
 
-  /// `I find it hard to focus`
+  /// `Gather my thoughts`
   String get scenarioPracticeFocus {
     return Intl.message(
-      'I find it hard to focus',
+      'Gather my thoughts',
       name: 'scenarioPracticeFocus',
       desc: '',
       args: [],
     );
   }
 
-  /// `It’s been a hard day`
+  /// `Unwind`
   String get scenarioPracticeUnwind {
     return Intl.message(
-      'It’s been a hard day',
+      'Unwind',
       name: 'scenarioPracticeUnwind',
       desc: '',
       args: [],
     );
   }
 
-  /// `How are you feeling right now?`
+  /// `What do you need right now?`
   String get scenarioPracticeChooseMood {
     return Intl.message(
-      'How are you feeling right now?',
+      'What do you need right now?',
       name: 'scenarioPracticeChooseMood',
       desc: '',
       args: [],
-    );
-  }
-
-  /// `A moment to pause`
-  String get scenarioPracticeAlternativeTitle {
-    return Intl.message(
-      'A moment to pause',
-      name: 'scenarioPracticeAlternativeTitle',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `There isn’t a recording for this feeling yet. Would you like to try an affirmation for slowing down?`
-  String get scenarioPracticeAlternativeOffered {
-    return Intl.message(
-      'There isn’t a recording for this feeling yet. Would you like to try an affirmation for slowing down?',
-      name: 'scenarioPracticeAlternativeOffered',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `There isn’t a recording for this feeling yet. Go back to choose another.`
-  String get scenarioPracticeNoMatch {
-    return Intl.message(
-      'There isn’t a recording for this feeling yet. Go back to choose another.',
-      name: 'scenarioPracticeNoMatch',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Listen · {duration}`
-  String scenarioPracticeListen(Object duration) {
-    return Intl.message(
-      'Listen · $duration',
-      name: 'scenarioPracticeListen',
-      desc: '',
-      args: [duration],
     );
   }
 

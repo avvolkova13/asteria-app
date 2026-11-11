@@ -45,9 +45,11 @@ class AffirmationPlayerScreen extends StatefulWidget {
     super.key,
     this.controller,
     this.showBack = false,
+    this.autoPlay = false,
   });
 
   final bool showBack;
+  final bool autoPlay;
 
   /// An injected controller belongs to its caller.
   final PracticePlaybackController? controller;
@@ -68,6 +70,7 @@ class _AffirmationPlayerScreenState extends State<AffirmationPlayerScreen> {
   bool _favorite = false;
   bool _savingFavorite = false;
   bool _sharing = false;
+  bool _playbackPressed = false;
   double? _seekPreview;
   Box<bool>? _favorites;
 
@@ -76,7 +79,16 @@ class _AffirmationPlayerScreenState extends State<AffirmationPlayerScreen> {
     super.initState();
     _scroll.addListener(_updateReadingProgress);
     _readFavorite();
-    _perform(_player.initialize);
+    _perform(() async {
+      await _player.initialize();
+      if (mounted &&
+          widget.autoPlay &&
+          !_playbackPressed &&
+          !_player.isPlaying &&
+          ModalRoute.of(context)?.isCurrent != false) {
+        await _player.toggle();
+      }
+    });
   }
 
   Future<void> _readFavorite() async {
@@ -493,7 +505,10 @@ class _AffirmationPlayerScreenState extends State<AffirmationPlayerScreen> {
                       ? strings.playerReplay
                       : strings.playerPlay,
                   value: _player.isPlaying,
-                  onTap: () => _perform(_player.toggle),
+                  onTap: () {
+                    _playbackPressed = true;
+                    _perform(_player.toggle);
+                  },
                 ),
               ),
               const SizedBox(width: 16),
