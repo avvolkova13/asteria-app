@@ -275,7 +275,7 @@ class _BootstrapApp extends StatelessWidget {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      home: AsteriaEntrance(child: child),
+      home: child is SplashScreen ? child : AsteriaEntrance(child: child),
     );
   }
 }
