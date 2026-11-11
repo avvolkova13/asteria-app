@@ -28,6 +28,7 @@ const authGoldGradient = LinearGradient(
 
 class AuthFlowScaffold extends StatelessWidget {
   final Widget child;
+  final Widget? background;
   final bool showBackButton;
   final bool resizeToAvoidBottomInset;
   final String backgroundAsset;
@@ -37,6 +38,7 @@ class AuthFlowScaffold extends StatelessWidget {
   const AuthFlowScaffold({
     super.key,
     required this.child,
+    this.background,
     this.showBackButton = false,
     this.resizeToAvoidBottomInset = true,
     this.backgroundAsset = _authBackgroundAsset,
@@ -60,30 +62,34 @@ class AuthFlowScaffold extends StatelessWidget {
         body: Stack(
           fit: StackFit.expand,
           children: [
-            ColoredBox(
-              color: _authBackdrop,
-              child: Opacity(
-                opacity: backgroundOpacity,
-                child: FractionallySizedBox(
-                  widthFactor: 1,
-                  heightFactor: backgroundHeightFactor,
-                  alignment: Alignment.center,
-                  child: Image.asset(
-                    backgroundAsset,
-                    fit: BoxFit.cover,
+            if (background != null)
+              background!
+            else ...[
+              ColoredBox(
+                color: _authBackdrop,
+                child: Opacity(
+                  opacity: backgroundOpacity,
+                  child: FractionallySizedBox(
+                    widthFactor: 1,
+                    heightFactor: backgroundHeightFactor,
                     alignment: Alignment.center,
+                    child: Image.asset(
+                      backgroundAsset,
+                      fit: BoxFit.cover,
+                      alignment: Alignment.center,
+                    ),
                   ),
                 ),
               ),
-            ),
-            const Align(
-              alignment: Alignment.topCenter,
-              child: _AuthTopGradient(),
-            ),
-            const Align(
-              alignment: Alignment.bottomCenter,
-              child: _AuthBottomGradient(),
-            ),
+              const Align(
+                alignment: Alignment.topCenter,
+                child: _AuthTopGradient(),
+              ),
+              const Align(
+                alignment: Alignment.bottomCenter,
+                child: _AuthBottomGradient(),
+              ),
+            ],
             child,
             if (showBackButton)
               SafeArea(

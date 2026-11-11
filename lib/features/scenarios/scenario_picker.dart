@@ -43,6 +43,12 @@ class _ScenarioPickerState extends State<ScenarioPicker> {
     return ScenarioPage(
       title: context.l10n.scenarioStartTitle,
       showBack: false,
+      background: Image.asset(
+        'assets/images/scenarios/picker_sky.webp',
+        fit: BoxFit.cover,
+        alignment: Alignment.bottomCenter,
+        excludeFromSemantics: true,
+      ),
       footer: LotusButtons.text(
         onPressed: () => _choose(() async => scenarioHome(context)),
         child: Text(

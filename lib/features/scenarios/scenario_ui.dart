@@ -22,12 +22,14 @@ class ScenarioPage extends StatelessWidget {
     super.key,
     required this.title,
     required this.child,
+    this.background,
     this.scrollable = true,
     this.footer,
     this.showBack = true,
   });
   final String title;
   final Widget child;
+  final Widget? background;
   final bool scrollable;
   final Widget? footer;
   final bool showBack;
@@ -49,6 +51,7 @@ class ScenarioPage extends StatelessWidget {
     return Theme(
       data: darkTheme,
       child: AuthFlowScaffold(
+        background: background,
         backgroundOpacity: .25,
         child: SafeArea(
           child: Padding(
