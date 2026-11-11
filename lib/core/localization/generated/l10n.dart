@@ -8604,6 +8604,106 @@ class AppLocalizations {
       args: [phase, date],
     );
   }
+
+  /// `Avatar`
+  String get avatarScreenTitle {
+    return Intl.message(
+      'Avatar',
+      name: 'avatarScreenTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Choose your avatar`
+  String get avatarChooseTitle {
+    return Intl.message(
+      'Choose your avatar',
+      name: 'avatarChooseTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Change avatar`
+  String get avatarChange {
+    return Intl.message(
+      'Change avatar',
+      name: 'avatarChange',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Choose avatar`
+  String get avatarSave {
+    return Intl.message(
+      'Choose avatar',
+      name: 'avatarSave',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Could not save your avatar. Please try again.`
+  String get avatarSaveError {
+    return Intl.message(
+      'Could not save your avatar. Please try again.',
+      name: 'avatarSaveError',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Sorceress`
+  String get avatarSorceress {
+    return Intl.message(
+      'Sorceress',
+      name: 'avatarSorceress',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Sorcerer`
+  String get avatarSorcerer {
+    return Intl.message('Sorcerer', name: 'avatarSorcerer', desc: '', args: []);
+  }
+
+  /// `Unicorn`
+  String get avatarUnicorn {
+    return Intl.message('Unicorn', name: 'avatarUnicorn', desc: '', args: []);
+  }
+
+  /// `Elf woman`
+  String get avatarElfWoman {
+    return Intl.message(
+      'Elf woman',
+      name: 'avatarElfWoman',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Elf man`
+  String get avatarElfMan {
+    return Intl.message('Elf man', name: 'avatarElfMan', desc: '', args: []);
+  }
+
+  /// `Dragon`
+  String get avatarDragon {
+    return Intl.message('Dragon', name: 'avatarDragon', desc: '', args: []);
+  }
+
+  /// `Raven`
+  String get avatarRaven {
+    return Intl.message('Raven', name: 'avatarRaven', desc: '', args: []);
+  }
+
+  /// `Phoenix`
+  String get avatarPhoenix {
+    return Intl.message('Phoenix', name: 'avatarPhoenix', desc: '', args: []);
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<AppLocalizations> {

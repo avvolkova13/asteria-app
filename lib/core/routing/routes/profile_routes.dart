@@ -7,11 +7,35 @@ class HomeProfileRoute extends AppRoute {
     : super(
         name: routeName,
         path: 'profile',
+        routes: [ProfileAvatarRoute()],
         pageBuilder: (context, state) => AsteriaPage<void>(
           name: routeName,
           key: state.pageKey,
           child: const ProfileScreen(canPop: true),
         ),
+      );
+
+  static void push(BuildContext context) => context.pushNamed(routeName);
+}
+
+class ProfileAvatarRoute extends AppRoute {
+  static const routeName = '/home/profile/avatar';
+
+  ProfileAvatarRoute()
+    : super(
+        name: routeName,
+        path: 'avatar',
+        pageBuilder: (context, state) {
+          final user = context.read<UserProvider>().currentUser;
+          return AsteriaPage<void>(
+            name: routeName,
+            key: state.pageKey,
+            child: AvatarPickerScreen(
+              userId: user?.id ?? '',
+              gender: user?.personalInfo?.gender,
+            ),
+          );
+        },
       );
 
   static void push(BuildContext context) => context.pushNamed(routeName);

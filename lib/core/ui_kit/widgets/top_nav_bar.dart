@@ -67,11 +67,15 @@ class TopNavBar extends StatelessWidget {
       case TopNavBarType.payment:
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Row(children: [
-            Expanded(child: _TopNavBarTitle(userName: userName, canPop: canPop)),
-            const SizedBox(width: 12),
-            const _MoonTopNavBarActions(),
-          ]),
+          child: Row(
+            children: [
+              Expanded(
+                child: _TopNavBarTitle(userName: userName, canPop: canPop),
+              ),
+              const SizedBox(width: 12),
+              const _MoonTopNavBarActions(),
+            ],
+          ),
         );
       case TopNavBarType.moon:
         return _MoonTopNavBarWidget(userName: userName, canPop: canPop);
@@ -248,7 +252,9 @@ class TopNavBarDelegate extends SliverPersistentHeaderDelegate {
                     Flexible(
                       child: Text(
                         userName,
-                        style: AppTypography.navTitle.copyWith(color: AppColors.textInverse),
+                        style: AppTypography.navTitle.copyWith(
+                          color: AppColors.textInverse,
+                        ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ).withEntrance(),
@@ -397,7 +403,9 @@ class _TopNavBarTitle extends StatelessWidget {
               userName,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: AppTypography.navTitle.copyWith(color: AppColors.textInverse),
+              style: AppTypography.navTitle.copyWith(
+                color: AppColors.textInverse,
+              ),
             ).withEntrance(),
           ),
         ],
@@ -446,7 +454,13 @@ class HomeAccountBar extends StatelessWidget {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        ProfileAvatar(size: 36, gender: gender),
+                        ProfileAvatar(
+                          size: 36,
+                          gender: gender,
+                          userId: context.select<UserProvider, String?>(
+                            (provider) => provider.currentUser?.id,
+                          ),
+                        ),
                         const SizedBox(width: 8),
                         Flexible(
                           child: Text(
@@ -580,7 +594,9 @@ class _HomeTopNavBarWidget extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   // Left title with optional back button
-                  Expanded(child: _TopNavBarTitle(userName: userName, canPop: canPop)),
+                  Expanded(
+                    child: _TopNavBarTitle(userName: userName, canPop: canPop),
+                  ),
                   // Right content (coins and PRO)
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -640,9 +656,11 @@ class _HomeTopNavBarWidget extends StatelessWidget {
                         ),
                       ),
                       child: isMoonScreen
-                          ? const AsteriaEntrance(child: ClipOval(
-                              child: SizedBox(height: 100, width: 100),
-                            ))
+                          ? const AsteriaEntrance(
+                              child: ClipOval(
+                                child: SizedBox(height: 100, width: 100),
+                              ),
+                            )
                           : ClipOval(
                               child: Image.asset(
                                 type.getImagePath(
@@ -817,7 +835,9 @@ class _ProfileTopNavBarWidget extends StatelessWidget {
                     offset: const Offset(0, -2),
                     child: Text(
                       userName,
-                      style: AppTypography.navTitle.copyWith(color: AppColors.textInverse),
+                      style: AppTypography.navTitle.copyWith(
+                        color: AppColors.textInverse,
+                      ),
                     ).withEntrance(),
                   ),
                   // Right content (coins and PRO)
@@ -929,7 +949,9 @@ class _TransparentTopNavBar extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   // Left title with optional back button
-                  Expanded(child: _TopNavBarTitle(userName: userName, canPop: canPop)),
+                  Expanded(
+                    child: _TopNavBarTitle(userName: userName, canPop: canPop),
+                  ),
                   // Right content (coins and PRO)
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -1018,7 +1040,12 @@ class _AppBarButton extends StatelessWidget {
           child: ClayAssetIcon('assets/icons/$icon.svg', width: 24, height: 24),
         ),
         const SizedBox(height: 4),
-        Text(label, style: AppTypography.text1SemiBold.copyWith(color: AppColors.textInverse)),
+        Text(
+          label,
+          style: AppTypography.text1SemiBold.copyWith(
+            color: AppColors.textInverse,
+          ),
+        ),
       ],
     );
   }

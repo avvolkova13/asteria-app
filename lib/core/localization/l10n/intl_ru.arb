@@ -976,5 +976,18 @@
   "scenarioCalendarUnratedDates": "Лунных подсказок для выбранного занятия пока нет. Вы можете сравнить фазы Луны и сохранить удобную дату.",
   "moonDayDetailsUnavailable": "Лунная подсказка для этой даты пока недоступна. Вы можете посмотреть другие дни или запланировать занятие.",
   "moonDayNumber": "Лунный день {number}",
-  "moonNextPhaseDate": "Следующая фаза — {phase}, {date}."
+  "moonNextPhaseDate": "Следующая фаза — {phase}, {date}.",
+  "avatarScreenTitle": "Образ",
+  "avatarChooseTitle": "Выберите свой образ",
+  "avatarChange": "Изменить образ",
+  "avatarSave": "Выбрать образ",
+  "avatarSaveError": "Не удалось сохранить образ. Попробуйте ещё раз.",
+  "avatarSorceress": "Волшебница",
+  "avatarSorcerer": "Волшебник",
+  "avatarUnicorn": "Единорог",
+  "avatarElfWoman": "Эльфийка",
+  "avatarElfMan": "Эльф",
+  "avatarDragon": "Дракон",
+  "avatarRaven": "Ворон",
+  "avatarPhoenix": "Феникс"
 }

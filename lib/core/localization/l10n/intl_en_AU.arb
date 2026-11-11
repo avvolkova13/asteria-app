@@ -11,5 +11,18 @@
   "googleSubscriptionTrialTerms": "7 days free, then {price}. Renews automatically. Cancel anytime.",
   "@googleSubscriptionTrialTerms": {"placeholders": {"price": {"type": "String"}}},
   "googleSubscriptionRecurringTerms": "{price}. Renews automatically. Cancel anytime.",
-  "@googleSubscriptionRecurringTerms": {"placeholders": {"price": {"type": "String"}}}
+  "@googleSubscriptionRecurringTerms": {"placeholders": {"price": {"type": "String"}}},
+  "avatarScreenTitle": "Avatar",
+  "avatarChooseTitle": "Choose your avatar",
+  "avatarChange": "Change avatar",
+  "avatarSave": "Choose avatar",
+  "avatarSaveError": "Could not save your avatar. Please try again.",
+  "avatarSorceress": "Sorceress",
+  "avatarSorcerer": "Sorcerer",
+  "avatarUnicorn": "Unicorn",
+  "avatarElfWoman": "Elf woman",
+  "avatarElfMan": "Elf man",
+  "avatarDragon": "Dragon",
+  "avatarRaven": "Raven",
+  "avatarPhoenix": "Phoenix"
 }

@@ -33,6 +33,23 @@ class MessageLookup extends MessageLookupByLibrary {
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
+    "avatarChange": MessageLookupByLibrary.simpleMessage("Change avatar"),
+    "avatarChooseTitle": MessageLookupByLibrary.simpleMessage(
+      "Choose your avatar",
+    ),
+    "avatarDragon": MessageLookupByLibrary.simpleMessage("Dragon"),
+    "avatarElfMan": MessageLookupByLibrary.simpleMessage("Elf man"),
+    "avatarElfWoman": MessageLookupByLibrary.simpleMessage("Elf woman"),
+    "avatarPhoenix": MessageLookupByLibrary.simpleMessage("Phoenix"),
+    "avatarRaven": MessageLookupByLibrary.simpleMessage("Raven"),
+    "avatarSave": MessageLookupByLibrary.simpleMessage("Choose avatar"),
+    "avatarSaveError": MessageLookupByLibrary.simpleMessage(
+      "Could not save your avatar. Please try again.",
+    ),
+    "avatarScreenTitle": MessageLookupByLibrary.simpleMessage("Avatar"),
+    "avatarSorcerer": MessageLookupByLibrary.simpleMessage("Sorcerer"),
+    "avatarSorceress": MessageLookupByLibrary.simpleMessage("Sorceress"),
+    "avatarUnicorn": MessageLookupByLibrary.simpleMessage("Unicorn"),
     "dayFavorable": MessageLookupByLibrary.simpleMessage("Favourable\nday"),
     "googleSubscriptionPerMonth": m19,
     "googleSubscriptionPerWeek": m20,

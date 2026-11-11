@@ -74,6 +74,7 @@ flutter:
     - assets/images/affirmation/
     - assets/images/onboarding/
     - assets/images/home/
+    - assets/images/home/avatars/
     - assets/images/scenarios/
     - assets/images/year_animals/
     - assets/images/cards/

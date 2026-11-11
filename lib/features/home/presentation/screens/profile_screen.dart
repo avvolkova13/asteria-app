@@ -254,7 +254,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     const SizedBox(height: 32),
                     _ProfileHeroCard(
                       name: name,
+                      userId: user?.id,
                       gender: user?.personalInfo?.gender,
+                      onAvatarTap: user == null
+                          ? null
+                          : () => ProfileAvatarRoute.push(context),
                     ),
                     const SizedBox(height: 8),
                     ScenarioTile(
@@ -342,12 +346,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
 }
 
 class _ProfileHeroCard extends StatelessWidget {
-  const _ProfileHeroCard({required this.name, required this.gender});
+  const _ProfileHeroCard({
+    required this.name,
+    required this.gender,
+    this.userId,
+    this.onAvatarTap,
+  });
 
   static const _cardColor = Color(0x3D72418A);
 
   final String name;
   final Gender? gender;
+  final String? userId;
+  final VoidCallback? onAvatarTap;
 
   @override
   Widget build(BuildContext context) {
@@ -358,7 +369,35 @@ class _ProfileHeroCard extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
       child: Column(
         children: [
-          ProfileAvatar(size: avatarHeight, gender: gender),
+          Semantics(
+            button: true,
+            label: context.l10n.avatarChange,
+            child: LotusTap(
+              onTap: onAvatarTap,
+              child: SizedBox.square(
+                dimension: avatarHeight + 12,
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    ProfileAvatar(
+                      size: avatarHeight,
+                      gender: gender,
+                      userId: userId,
+                    ),
+                    const Positioned(
+                      right: 0,
+                      bottom: 0,
+                      child: ProfileIconBox(
+                        icon: Icons.edit_rounded,
+                        size: 28,
+                        iconSize: 15,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
           const SizedBox(height: 7),
           Text(
             name,

@@ -364,6 +364,23 @@ class MessageLookup extends MessageLookupByLibrary {
     "authUserNotInitialized": MessageLookupByLibrary.simpleMessage(
       "Профиль ещё не готов. Вернитесь на предыдущий шаг и попробуйте снова.",
     ),
+    "avatarChange": MessageLookupByLibrary.simpleMessage("Изменить образ"),
+    "avatarChooseTitle": MessageLookupByLibrary.simpleMessage(
+      "Выберите свой образ",
+    ),
+    "avatarDragon": MessageLookupByLibrary.simpleMessage("Дракон"),
+    "avatarElfMan": MessageLookupByLibrary.simpleMessage("Эльф"),
+    "avatarElfWoman": MessageLookupByLibrary.simpleMessage("Эльфийка"),
+    "avatarPhoenix": MessageLookupByLibrary.simpleMessage("Феникс"),
+    "avatarRaven": MessageLookupByLibrary.simpleMessage("Ворон"),
+    "avatarSave": MessageLookupByLibrary.simpleMessage("Выбрать образ"),
+    "avatarSaveError": MessageLookupByLibrary.simpleMessage(
+      "Не удалось сохранить образ. Попробуйте ещё раз.",
+    ),
+    "avatarScreenTitle": MessageLookupByLibrary.simpleMessage("Образ"),
+    "avatarSorcerer": MessageLookupByLibrary.simpleMessage("Волшебник"),
+    "avatarSorceress": MessageLookupByLibrary.simpleMessage("Волшебница"),
+    "avatarUnicorn": MessageLookupByLibrary.simpleMessage("Единорог"),
     "balanceAllOperations": MessageLookupByLibrary.simpleMessage(
       "Все операции",
     ),

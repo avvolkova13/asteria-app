@@ -1,3 +1,6 @@
+import 'package:asteria_app/app/providers/user_provider.dart';
+import 'package:provider/provider.dart';
+import 'package:asteria_app/features/profile_avatar/avatar_picker_screen.dart';
 import 'package:asteria_app/core/config/app_feature_visibility.dart';
 import 'package:asteria_app/features/monetization/presentation/contextual_purchase_page.dart';
 import 'package:asteria_app/features/about_us/about_us_screen.dart';
