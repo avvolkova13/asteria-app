@@ -640,6 +640,7 @@ class _GeneralInfoSection extends StatelessWidget {
                   _GeneralInfoItem(
                     title: context.l10n.birthPlaceLabel,
                     value: birthPlace.split(',').first.trim(),
+                    valueMaxLines: 1,
                   ),
                 ],
               ),
@@ -663,7 +664,13 @@ class _GeneralInfoItem extends StatelessWidget {
   final String title;
   final String value;
 
-  const _GeneralInfoItem({required this.title, required this.value});
+  final int? valueMaxLines;
+
+  const _GeneralInfoItem({
+    required this.title,
+    required this.value,
+    this.valueMaxLines,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -694,6 +701,8 @@ class _GeneralInfoItem extends StatelessWidget {
             shaderCallback: _NatalCardColors.goldGradient.createShader,
             child: Text(
               value,
+              maxLines: valueMaxLines,
+              overflow: valueMaxLines == null ? null : TextOverflow.ellipsis,
               style: context.textTheme.urbanistRegular16.copyWith(
                 fontFamily: 'Onest',
                 color: Colors.white,

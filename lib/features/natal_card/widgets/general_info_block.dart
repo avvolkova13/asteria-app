@@ -46,6 +46,7 @@ class GeneralInfoBlock extends StatelessWidget {
                 child: _GeneralInfoItem(
                   title: context.l10n.commonBirthPlace,
                   value: birthPlace.split(',').first.trim(),
+                  valueMaxLines: 1,
                 ),
               ),
             ],
@@ -59,8 +60,12 @@ class GeneralInfoBlock extends StatelessWidget {
 class _GeneralInfoItem extends StatelessWidget {
   final String title;
   final String value;
-  const _GeneralInfoItem({Key? key, required this.title, required this.value})
-    : super(key: key);
+  final int valueMaxLines;
+  const _GeneralInfoItem({
+    required this.title,
+    required this.value,
+    this.valueMaxLines = 2,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -85,7 +90,7 @@ class _GeneralInfoItem extends StatelessWidget {
             style: context.textTheme.urbanistRegular16.copyWith(
               color: AppColors.secondary,
             ),
-            maxLines: 2,
+            maxLines: valueMaxLines,
             overflow: TextOverflow.ellipsis,
             textAlign: TextAlign.start,
           ),

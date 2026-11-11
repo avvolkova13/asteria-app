@@ -46,6 +46,14 @@ void main() {
     });
   }
 
+  testWidgets('long birth city is ellipsized on one line', (tester) async {
+    await _pumpChart(tester, 390, 'Описание позиции.');
+    final city = tester.renderObject<RenderParagraph>(find.text('Еманжелинск'));
+    expect(city.maxLines, 1);
+    expect(city.overflow, TextOverflow.ellipsis);
+    expect(city.didExceedMaxLines, isTrue);
+  });
+
   testWidgets('birth labels keep whole words on each line', (tester) async {
     await _pumpChart(tester, 390, 'Описание позиции.');
     final paragraph = tester.renderObject<RenderParagraph>(
@@ -162,7 +170,7 @@ UserModel _user(String description, String language) => UserModel(
       birthTime: DateTime(1995, 5, 13, 14, 58),
     ),
     birthPlace: const BirthPlaceModel(
-      location: 'Москва',
+      location: 'Еманжелинск, Россия',
       latitude: 55,
       longitude: 37,
     ),
