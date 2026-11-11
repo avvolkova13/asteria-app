@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/features/scenarios/first_session.dart';
 import 'package:go_router/go_router.dart';
 import 'package:asteria_app/app/data/models/user/user_model.dart';
@@ -197,7 +198,7 @@ class _PersonalInfoInputScreenState extends State<PersonalInfoInputScreen> {
                                   .saveButtonLoadingText(context),
                               onPressed: () =>
                                   context.read<AuthCubit>().saveUser(),
-                            ),
+                            ).withEntrance(),
                             const SizedBox(height: 40),
                           ],
                         ),

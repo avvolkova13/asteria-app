@@ -1,3 +1,5 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
+import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:flutter/material.dart';
 
@@ -16,7 +18,7 @@ class GeneralInfoBlock extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
+      children: AsteriaEntrance.sections([
         Text(
           context.l10n.natalGeneralData,
           style: context.textTheme.playfairSemiBold24,
@@ -49,7 +51,7 @@ class GeneralInfoBlock extends StatelessWidget {
             ],
           ),
         ),
-      ],
+      ]),
     );
   }
 }
@@ -64,7 +66,7 @@ class _GeneralInfoItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 10),
-      decoration: BoxDecoration(
+      decoration: CardLensDecoration(
         borderRadius: BorderRadius.circular(8),
         color: AppColors.cardTinted,
       ),

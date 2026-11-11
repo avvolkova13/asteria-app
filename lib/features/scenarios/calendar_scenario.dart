@@ -113,10 +113,10 @@ class _CalendarScenarioScreenState extends State<CalendarScenarioScreen> {
               if (snapshot.error is CurrentLocationRequiredException) {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+                  children: AsteriaEntrance.sections([
                     Text(c.l10n.moonLocationSetupDescription),
                     CurrentLocationControls(onLocationUpdated: _retry),
-                  ],
+                  ]),
                 );
               }
               final month = snapshot.data;
@@ -135,7 +135,7 @@ class _CalendarScenarioScreenState extends State<CalendarScenarioScreen> {
               }
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
+                children: AsteriaEntrance.sections([
                   for (final task in available)
                     Padding(
                       padding: const EdgeInsets.only(bottom: 8),
@@ -151,12 +151,12 @@ class _CalendarScenarioScreenState extends State<CalendarScenarioScreen> {
                         ),
                       ),
                     ),
-                ],
+                ]),
               );
             },
           ),
           const SizedBox(height: 16),
-          const CalendarPlansButton(),
+          const CalendarPlansButton().withEntrance(),
         ],
       ),
     );
@@ -170,11 +170,11 @@ class _Retry extends StatelessWidget {
 
   @override
   Widget build(BuildContext c) => Column(
-    children: [
+    children: AsteriaEntrance.sections([
       Text(text),
       const SizedBox(height: 8),
       AuthGradientButton(text: c.l10n.retry, onPressed: onRetry),
-    ],
+    ]),
   );
 }
 
@@ -274,7 +274,7 @@ class _DaySelectionState extends State<_DaySelection> {
       title: context.l10n.scenarioCalendarChooseDates,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
+        children: AsteriaEntrance.sections([
           Text(
             _activityLabel(context, widget.activity),
             style: context.textTheme.playfairSemiBold20.copyWith(
@@ -329,7 +329,7 @@ class _DaySelectionState extends State<_DaySelection> {
                     ),
             ),
           ],
-        ],
+        ]),
       ),
     );
   }
@@ -357,7 +357,7 @@ class _Comparison extends StatelessWidget {
           : _activityLabel(c, activity),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
+        children: AsteriaEntrance.sections([
           if (tied)
             Padding(
               padding: const EdgeInsets.only(bottom: 12),
@@ -404,7 +404,7 @@ class _Comparison extends StatelessWidget {
                 ],
               ),
             ),
-        ],
+        ]),
       ),
     );
   }
@@ -509,7 +509,7 @@ class _SavePlanState extends State<_SavePlan> {
     title: c.l10n.scenarioCalendarSavePlan,
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
+      children: AsteriaEntrance.sections([
         Text(_dateLabel(c, widget.date)),
         Text(_activityLabel(c, widget.activity)),
         const SizedBox(height: 16),
@@ -525,7 +525,7 @@ class _SavePlanState extends State<_SavePlan> {
           isLoading: _saving,
           onPressed: _name.text.trim().isEmpty ? null : _save,
         ),
-      ],
+      ]),
     ),
   );
 }
@@ -539,7 +539,7 @@ class _PlanDetails extends StatelessWidget {
     title: saved ? c.l10n.scenarioCalendarSaved : plan.title,
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
+      children: AsteriaEntrance.sections([
         if (saved) Text(plan.title, style: c.textTheme.playfairSemiBold20),
         Text(_dateLabel(c, plan.day)),
         Text(_activityLabel(c, plan.activity)),
@@ -559,7 +559,7 @@ class _PlanDetails extends StatelessWidget {
             }
           },
         ),
-      ],
+      ]),
     ),
   );
 }
@@ -584,7 +584,7 @@ class _PlansScreen extends StatelessWidget {
     child: _SavedPlans(
       builder: (c, plans) => Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
+        children: AsteriaEntrance.sections([
           if (plans.isEmpty) ...[
             Text(c.l10n.scenarioCalendarEmptyPlans),
             const SizedBox(height: 12),
@@ -602,7 +602,7 @@ class _PlansScreen extends StatelessWidget {
                 onTap: () => _open(c, _PlanDetails(plan: plan)),
               ),
             ),
-        ],
+        ]),
       ),
     ),
   );
@@ -618,8 +618,8 @@ class CalendarPlanningEntry extends StatelessWidget {
         text: c.l10n.scenarioCalendarFindDate,
         onPressed: () =>
             _open(c, const CalendarScenarioScreen(), fromTab: true),
-      ),
-      const CalendarPlansButton(fromTab: true),
+      ).withEntrance(),
+      const CalendarPlansButton(fromTab: true).withEntrance(),
       _SavedPlans(
         compact: true,
         builder: (c, plans) {

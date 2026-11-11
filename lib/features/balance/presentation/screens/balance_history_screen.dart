@@ -127,7 +127,7 @@ class _BalanceHistoryViewState extends State<BalanceHistoryView> {
         child: SafeArea(
           bottom: false,
           child: Column(
-            children: [
+            children: AsteriaEntrance.sections([
               _HistoryHeader(
                 balance: widget.balance,
                 hasPro: widget.hasPro,
@@ -258,7 +258,7 @@ class _BalanceHistoryViewState extends State<BalanceHistoryView> {
                   },
                 ),
               ),
-            ],
+            ]),
           ),
         ),
       ),
@@ -649,10 +649,10 @@ class _LoadingHistory extends StatelessWidget {
       child: SizedBox(
         width: 24,
         height: 24,
-        child: CircularProgressIndicator(
+        child: AsteriaEntrance(child: CircularProgressIndicator(
           strokeWidth: 2,
           color: Color(0xFFF3B76A),
-        ),
+        )),
       ),
     ),
   );
@@ -670,7 +670,7 @@ class _HistoryError extends StatelessWidget {
   Widget build(BuildContext context) => Padding(
     padding: const EdgeInsets.all(16),
     child: Column(
-      children: [
+      children: AsteriaEntrance.sections([
         Text(
           message,
           textAlign: TextAlign.center,
@@ -682,7 +682,7 @@ class _HistoryError extends StatelessWidget {
           style: TextButton.styleFrom(foregroundColor: const Color(0xFFF3B76A)),
           label: Text(context.l10n.retry),
         ),
-      ],
+      ]),
     ),
   );
 }

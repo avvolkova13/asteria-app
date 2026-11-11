@@ -1,6 +1,6 @@
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 const _tile = SizedBox.square(
@@ -75,6 +75,95 @@ void main() {
     await tester.pumpAndSettle();
     expect(_fades(tester), isEmpty);
     expect(tester.getRect(find.byKey(target)), layout);
+  });
+
+  testWidgets(
+    'visible groups reveal in reading order with overlapping motion',
+    (tester) async {
+      await tester.pumpWidget(
+        _screen(
+          const Column(
+            children: [
+              AsteriaEntrance(child: _tile),
+              SizedBox(height: 150),
+              AsteriaEntrance(child: _tile),
+              SizedBox(height: 150),
+              AsteriaEntrance(child: _tile),
+            ],
+          ),
+        ),
+      );
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 190));
+      final layers = _fades(tester)
+        ..sort((a, b) => a.offset.dy.compareTo(b.offset.dy));
+      expect(layers, hasLength(3));
+      expect(layers[0].alpha!, greaterThan(layers[1].alpha! + 8));
+      expect(layers[1].alpha!, greaterThan(layers[2].alpha! + 8));
+      expect(layers[2].alpha!, greaterThan(15));
+      await tester.pumpAndSettle();
+      expect(_fades(tester), isEmpty);
+    },
+  );
+
+  testWidgets(
+    'returning to a kept-alive tab replays visible content in place',
+    (tester) async {
+      final enabled = ValueNotifier(true);
+      addTearDown(enabled.dispose);
+      const section = AsteriaEntrance(child: _tile);
+      await tester.pumpWidget(
+        _screen(
+          ValueListenableBuilder<bool>(
+            valueListenable: enabled,
+            child: section,
+            builder: (_, active, child) =>
+                TickerMode(enabled: active, child: child!),
+          ),
+        ),
+      );
+      final node = tester.element(find.byType(AsteriaEntrance));
+      await tester.pumpAndSettle();
+      enabled.value = false;
+      await tester.pumpAndSettle();
+      expect(_fades(tester), isEmpty);
+      enabled.value = true;
+      await tester.pump();
+      expect(tester.element(find.byType(AsteriaEntrance)), same(node));
+      expect(_fades(tester).single.alpha, lessThan(120));
+      await tester.pumpAndSettle();
+      expect(_fades(tester), isEmpty);
+    },
+  );
+
+  testWidgets('return from a covering page replays the original groups', (
+    tester,
+  ) async {
+    final nav = GlobalKey<NavigatorState>();
+    const group = ValueKey('original group');
+    await tester.pumpWidget(
+      CupertinoApp(
+        navigatorKey: nav,
+        home: const CupertinoPageScaffold(
+          child: AsteriaEntrance(key: group, child: _tile),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    nav.currentState!.push(
+      CupertinoPageRoute<void>(
+        builder: (_) => const CupertinoPageScaffold(child: _tile),
+      ),
+    );
+    await tester.pumpAndSettle();
+    nav.currentState!.pop();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 30));
+    final fading = tester.renderObject(find.byKey(group)).debugLayer;
+    expect(fading, isA<OpacityLayer>());
+    expect((fading! as OpacityLayer).alpha, lessThan(225));
+    await tester.pumpAndSettle();
+    expect(tester.renderObject(find.byKey(group)).debugLayer, isNull);
   });
 
   testWidgets('coalesces nested reveals, then allows a later child to enter', (

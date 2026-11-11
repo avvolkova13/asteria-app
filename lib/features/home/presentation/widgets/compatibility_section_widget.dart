@@ -1,3 +1,5 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
+import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/ui_kit/card_radii.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'dart:math' as math;
@@ -30,7 +32,7 @@ class CompatibilitySectionWidget extends StatelessWidget {
           child: hasCompatibility
               ? Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+                  children: AsteriaEntrance.sections([
                     Row(
                       children: [
                         Expanded(
@@ -90,7 +92,7 @@ class CompatibilitySectionWidget extends StatelessWidget {
                           compatibilityHistory.first.compatibilityData.phrase,
                       onPressed: onPressed,
                     ),
-                  ],
+                  ]),
                 )
               : Column(
                   children: [
@@ -184,121 +186,127 @@ class _CompatibilityHistoryWidget extends StatelessWidget {
           child: ClipRRect(
             borderRadius: BorderRadius.circular(AsteriaCardRadii.card),
             child: DecoratedBox(
-              decoration: const BoxDecoration(color: Color(0xFF171026)),
-              child: LayoutBuilder(
-                builder: (context, constraints) {
-                  final cardWidth = constraints.maxWidth;
-                  final rightColumnLeft =
-                      cardWidth - _horizontalPadding - _zodiacColumnWidth;
+              position: DecorationPosition.foreground,
+              decoration: CardLensDecoration(
+                borderRadius: BorderRadius.circular(AsteriaCardRadii.card),
+              ),
+              child: DecoratedBox(
+                decoration: const BoxDecoration(color: Color(0xFF171026)),
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    final cardWidth = constraints.maxWidth;
+                    final rightColumnLeft =
+                        cardWidth - _horizontalPadding - _zodiacColumnWidth;
 
-                  return Stack(
-                    clipBehavior: Clip.none,
-                    children: [
-                      Positioned.fill(
-                        child: Image.asset(
-                          'assets/images/home/compatibility_background.webp',
-                          fit: BoxFit.cover,
-                          alignment: const Alignment(0, 0.08),
-                          opacity: const AlwaysStoppedAnimation(0.5),
-                        ),
-                      ),
-                      Positioned(
-                        left: _horizontalPadding,
-                        top: 24,
-                        width: _zodiacColumnWidth,
-                        child: _ZodiacPersonColumn(
-                          name: firstZodiacSign,
-                          birthdate: firstBirthdate.toLocalizedShortDate(
-                            Localizations.localeOf(context),
+                    return Stack(
+                      clipBehavior: Clip.none,
+                      children: [
+                        Positioned.fill(
+                          child: Image.asset(
+                            'assets/images/home/compatibility_background.webp',
+                            fit: BoxFit.cover,
+                            alignment: const Alignment(0, 0.08),
+                            opacity: const AlwaysStoppedAnimation(0.5),
                           ),
-                          assetName: firstBirthdate.getZodiacSignAsset(),
-                          angle: -20,
-                          nameStyle: nameStyle,
-                          dateStyle: dateStyle,
-                          gradient: _accentGradient,
                         ),
-                      ),
-                      Positioned(
-                        left: rightColumnLeft,
-                        top: 24,
-                        width: _zodiacColumnWidth,
-                        child: _ZodiacPersonColumn(
-                          name: secondZodiacSign,
-                          birthdate: secondBirthdate.toLocalizedShortDate(
-                            Localizations.localeOf(context),
-                          ),
-                          assetName: secondBirthdate.getZodiacSignAsset(),
-                          angle: 20,
-                          nameStyle: nameStyle,
-                          dateStyle: dateStyle,
-                          gradient: _accentGradient,
-                        ),
-                      ),
-                      Positioned.fill(
-                        child: CustomPaint(
-                          painter: _CompatibilityLinePainter(),
-                        ),
-                      ),
-                      Positioned(
-                        left: 0,
-                        right: 0,
-                        top: 116,
-                        child: Center(
-                          child: _GradientText(
-                            '$compatibilityPercentage%',
+                        Positioned(
+                          left: _horizontalPadding,
+                          top: 24,
+                          width: _zodiacColumnWidth,
+                          child: _ZodiacPersonColumn(
+                            name: firstZodiacSign,
+                            birthdate: firstBirthdate.toLocalizedShortDate(
+                              Localizations.localeOf(context),
+                            ),
+                            assetName: firstBirthdate.getZodiacSignAsset(),
+                            angle: -20,
+                            nameStyle: nameStyle,
+                            dateStyle: dateStyle,
                             gradient: _accentGradient,
-                            style: percentageStyle,
                           ),
                         ),
-                      ),
-                      Positioned(
-                        left: _horizontalPadding,
-                        right: _horizontalPadding,
-                        top: 198,
-                        height: 60,
-                        child: FittedBox(
-                          fit: BoxFit.scaleDown,
-                          alignment: Alignment.topCenter,
-                          child: SizedBox(
-                            width: cardWidth - _horizontalPadding * 2,
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                _GradientText(
-                                  phrase,
-                                  gradient: _accentGradient,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  textAlign: TextAlign.center,
-                                  style: bodyStyle,
-                                ),
-                                Text(
-                                  compatibilityDescription,
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                  textAlign: TextAlign.center,
-                                  style: bodyStyle,
-                                ),
-                              ],
+                        Positioned(
+                          left: rightColumnLeft,
+                          top: 24,
+                          width: _zodiacColumnWidth,
+                          child: _ZodiacPersonColumn(
+                            name: secondZodiacSign,
+                            birthdate: secondBirthdate.toLocalizedShortDate(
+                              Localizations.localeOf(context),
+                            ),
+                            assetName: secondBirthdate.getZodiacSignAsset(),
+                            angle: 20,
+                            nameStyle: nameStyle,
+                            dateStyle: dateStyle,
+                            gradient: _accentGradient,
+                          ),
+                        ),
+                        Positioned.fill(
+                          child: CustomPaint(
+                            painter: _CompatibilityLinePainter(),
+                          ),
+                        ),
+                        Positioned(
+                          left: 0,
+                          right: 0,
+                          top: 116,
+                          child: Center(
+                            child: _GradientText(
+                              '$compatibilityPercentage%',
+                              gradient: _accentGradient,
+                              style: percentageStyle,
                             ),
                           ),
                         ),
-                      ),
-                      Positioned(
-                        left: _horizontalPadding,
-                        right: _horizontalPadding,
-                        bottom: 24,
-                        child: Center(
-                          child: _GradientText(
-                            context.l10n.compatibilityReadMore,
-                            gradient: _accentGradient,
-                            style: linkStyle,
+                        Positioned(
+                          left: _horizontalPadding,
+                          right: _horizontalPadding,
+                          top: 198,
+                          height: 60,
+                          child: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            alignment: Alignment.topCenter,
+                            child: SizedBox(
+                              width: cardWidth - _horizontalPadding * 2,
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  _GradientText(
+                                    phrase,
+                                    gradient: _accentGradient,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    textAlign: TextAlign.center,
+                                    style: bodyStyle,
+                                  ),
+                                  Text(
+                                    compatibilityDescription,
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    textAlign: TextAlign.center,
+                                    style: bodyStyle,
+                                  ),
+                                ],
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                    ],
-                  );
-                },
+                        Positioned(
+                          left: _horizontalPadding,
+                          right: _horizontalPadding,
+                          bottom: 24,
+                          child: Center(
+                            child: _GradientText(
+                              context.l10n.compatibilityReadMore,
+                              gradient: _accentGradient,
+                              style: linkStyle,
+                            ),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                ),
               ),
             ),
           ),

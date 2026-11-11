@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'dart:async';
 import 'dart:math' as math;
 
@@ -267,7 +268,7 @@ class _AffirmationPlayerScreenState extends State<AffirmationPlayerScreen> {
             position: _player.position,
             duration: _player.duration,
             playing: _player.isPlaying,
-          ),
+          ).withEntrance(),
         ),
         ValueListenableBuilder<double>(
           valueListenable: _readingProgress,
@@ -461,7 +462,7 @@ class _AffirmationPlayerScreenState extends State<AffirmationPlayerScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Column(
         mainAxisSize: MainAxisSize.min,
-        children: [
+        children: AsteriaEntrance.sections([
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -582,7 +583,7 @@ class _AffirmationPlayerScreenState extends State<AffirmationPlayerScreen> {
               },
             ),
           ),
-        ],
+        ]),
       ),
     );
   }
@@ -599,7 +600,7 @@ class _AffirmationPlayerScreenState extends State<AffirmationPlayerScreen> {
             final time = _player.position.inMilliseconds / 1000;
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+              children: AsteriaEntrance.sections([
                 for (int i = 0; i < _transcript.length; i++)
                   Padding(
                     padding: EdgeInsets.only(
@@ -628,7 +629,7 @@ class _AffirmationPlayerScreenState extends State<AffirmationPlayerScreen> {
                       ),
                     ),
                   ),
-              ],
+              ]),
             );
           },
         ),
@@ -660,7 +661,7 @@ class _PlayerHeader extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 3),
             child: Column(
-              children: [
+              children: AsteriaEntrance.sections([
                 Padding(
                   padding: const EdgeInsets.fromLTRB(51, 12, 51, 0),
                   child: Row(
@@ -697,7 +698,7 @@ class _PlayerHeader extends StatelessWidget {
                   textAlign: TextAlign.center,
                   style: AppTypography.text2.copyWith(color: _headerInk, shadows: shadow),
                 ),
-              ],
+              ]),
             ),
           ),
           Positioned(
@@ -707,9 +708,9 @@ class _PlayerHeader extends StatelessWidget {
               glyph: ClayGlyph.close,
               label: strings.playerClose,
               onTap: onExit,
-            ),
+            ).withEntrance(order: 0),
           ),
-          Positioned(top: 0, right: 0, child: repeatButton),
+          Positioned(top: 0, right: 0, child: repeatButton.withEntrance(order: 1)),
         ],
       ),
     );

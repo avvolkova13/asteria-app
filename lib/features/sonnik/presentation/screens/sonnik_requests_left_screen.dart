@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/card_radii.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
@@ -46,7 +47,7 @@ class SonnikRequestsLeftScreen extends StatelessWidget {
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+      children: AsteriaEntrance.sections([
         Text(
           title,
           style: context.textTheme.inversePlayfairSemiBold24.copyWith(
@@ -73,7 +74,7 @@ class SonnikRequestsLeftScreen extends StatelessWidget {
             color: SonnikPalette.white.withValues(alpha: 0.62),
           ),
         ),
-      ],
+      ]),
     );
   }
 }

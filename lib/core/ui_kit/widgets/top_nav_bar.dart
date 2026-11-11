@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
@@ -247,7 +248,7 @@ class TopNavBarDelegate extends SliverPersistentHeaderDelegate {
                         style: AppTypography.navTitle.copyWith(color: AppColors.textInverse),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                      ),
+                      ).withEntrance(),
                     ),
                   ],
                 ),
@@ -268,7 +269,7 @@ class TopNavBarDelegate extends SliverPersistentHeaderDelegate {
                               '${MonetizationProvider.maybeOf(context)?.balance ?? 0} ',
                               style:
                                   context.textTheme.inverseUrbanistSemiBold17,
-                            ),
+                            ).withEntrance(),
                           );
                         },
                       ),
@@ -401,7 +402,7 @@ class _TopNavBarTitle extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: AppTypography.navTitle.copyWith(color: AppColors.textInverse),
-            ),
+            ).withEntrance(),
           ),
         ],
       ),
@@ -608,7 +609,7 @@ class _HomeTopNavBarWidget extends StatelessWidget {
                           style: AppTypography.navTitle.copyWith(
                             color: AppColors.textInverse,
                           ),
-                        ),
+                        ).withEntrance(),
                       ],
                     ),
                   ),
@@ -630,7 +631,7 @@ class _HomeTopNavBarWidget extends StatelessWidget {
                                     style: context
                                         .textTheme
                                         .inverseUrbanistSemiBold17,
-                                  ),
+                                  ).withEntrance(),
                                 );
                               },
                             ),
@@ -671,9 +672,9 @@ class _HomeTopNavBarWidget extends StatelessWidget {
                         ),
                       ),
                       child: isMoonScreen
-                          ? const ClipOval(
+                          ? const AsteriaEntrance(child: ClipOval(
                               child: SizedBox(height: 100, width: 100),
-                            )
+                            ))
                           : ClipOval(
                               child: Image.asset(
                                 type.getImagePath(
@@ -686,7 +687,7 @@ class _HomeTopNavBarWidget extends StatelessWidget {
                                 height: 100,
                                 width: 100,
                               ),
-                            ),
+                            ).withEntrance(),
                     );
                   },
                 ),
@@ -849,7 +850,7 @@ class _ProfileTopNavBarWidget extends StatelessWidget {
                     child: Text(
                       userName,
                       style: AppTypography.navTitle.copyWith(color: AppColors.textInverse),
-                    ),
+                    ).withEntrance(),
                   ),
                   // Right content (coins and PRO)
                   Row(
@@ -867,7 +868,7 @@ class _ProfileTopNavBarWidget extends StatelessWidget {
                                   style: context
                                       .textTheme
                                       .inverseUrbanistSemiBold17,
-                                );
+                                ).withEntrance();
                               },
                             ),
                             Padding(
@@ -983,7 +984,7 @@ class _TransparentTopNavBar extends StatelessWidget {
                         Text(
                           userName,
                           style: context.textTheme.inversePlayfairSemiBold17,
-                        ),
+                        ).withEntrance(),
                       ],
                     ),
                   ),
@@ -1005,7 +1006,7 @@ class _TransparentTopNavBar extends StatelessWidget {
                                     style: context
                                         .textTheme
                                         .inverseUrbanistSemiBold17,
-                                  ),
+                                  ).withEntrance(),
                                 );
                               },
                             ),

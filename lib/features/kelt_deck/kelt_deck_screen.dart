@@ -160,14 +160,14 @@ class _KeltDeckScreenState extends State<KeltDeckScreen> {
                     const SizedBox(height: 22),
                     if (_isRefreshing)
                       const Center(
-                        child: CircularProgressIndicator(
+                        child: AsteriaEntrance(child: CircularProgressIndicator(
                           color: AppColors.primary,
-                        ),
+                        )),
                       )
                     else
                       _KeltDeckContent(
                         onRefresh: onRefreshPressed,
-                      ).withEntrance(),
+                      ),
                     const SizedBox(height: 100),
                   ],
                 ),
@@ -228,7 +228,7 @@ class _KeltDeckContent extends StatelessWidget {
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+          children: AsteriaEntrance.sections([
             _KeltDeckTitle(onRefresh: onRefresh),
             const SizedBox(height: 16),
             if (isAllOpened) ...[
@@ -263,7 +263,7 @@ class _KeltDeckContent extends StatelessWidget {
                 Text(interpretation, style: _bodyStyle(context)).withEntrance(),
             ],
             const SizedBox(height: 64),
-          ],
+          ]),
         );
       },
     );

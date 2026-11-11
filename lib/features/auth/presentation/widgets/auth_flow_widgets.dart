@@ -1,4 +1,3 @@
-import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
@@ -84,7 +83,7 @@ class AuthFlowScaffold extends StatelessWidget {
               alignment: Alignment.bottomCenter,
               child: _AuthBottomGradient(),
             ),
-            AsteriaEntrance(child: child),
+            child,
             if (showBackButton)
               SafeArea(
                 bottom: false,

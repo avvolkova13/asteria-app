@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/app/data/models/tarot_card/tarot_card_model.dart';
 import 'package:asteria_app/core/localization/tarot_card_asset_resolver.dart';
@@ -99,7 +100,7 @@ class _TarotCardOfTheDayWidgetState extends State<TarotCardOfTheDayWidget>
           context.l10n.dailyTarotTitle,
           textAlign: TextAlign.center,
           style: context.textTheme.playfairSemiBold32,
-        ),
+        ).withEntrance(),
         Semantics(
           button: true,
           label: context.l10n.refreshDailyTarotLabel,
@@ -128,7 +129,7 @@ class _TarotCardOfTheDayWidgetState extends State<TarotCardOfTheDayWidget>
                 color: AppColors.white,
                 height: 1.0,
               ),
-            ),
+            ).withEntrance(),
           ),
           Semantics(
             button: true,
@@ -174,7 +175,7 @@ class _TarotCardOfTheDayWidgetState extends State<TarotCardOfTheDayWidget>
 
   Widget _buildClosedCardContent(BuildContext context) {
     return Column(
-      children: [
+      children: AsteriaEntrance.sections([
         // Показываем закрытую карту
         Center(
           child: Semantics(
@@ -188,13 +189,13 @@ class _TarotCardOfTheDayWidgetState extends State<TarotCardOfTheDayWidget>
         const SizedBox(height: 16),
         // Описание для закрытой карты
         _buildClosedDescription(context),
-      ],
+      ]),
     );
   }
 
   Widget _buildLoadingContent() {
     return Column(
-      children: [
+      children: AsteriaEntrance.sections([
         const SizedBox(height: 328, child: Center(child: LoadingWidget())),
         const SizedBox(height: 16),
         Text(
@@ -205,13 +206,13 @@ class _TarotCardOfTheDayWidgetState extends State<TarotCardOfTheDayWidget>
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 32),
-      ],
+      ]),
     );
   }
 
   Widget _buildTarotContent(BuildContext context, TarotCardModel tarotCard) {
     return Column(
-      children: [
+      children: AsteriaEntrance.sections([
         // Animated tarot card
         Center(
           child: Semantics(
@@ -262,7 +263,7 @@ class _TarotCardOfTheDayWidgetState extends State<TarotCardOfTheDayWidget>
             isFullWidth: true,
           ),
         ],
-      ],
+      ]),
     );
   }
 

@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/extensions/datetime_extensions.dart';
 import 'package:asteria_app/core/extensions/string_extensions.dart';
@@ -32,7 +33,7 @@ class CompatibilityWidget extends StatelessWidget {
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
+        decoration: CardLensDecoration(
           borderRadius: BorderRadius.circular(16),
           image: const DecorationImage(
             image: AssetImage(
@@ -54,7 +55,9 @@ class CompatibilityWidget extends StatelessWidget {
                   children: [
                     Text(
                       firstZodiacSign,
-                      style: AppTypography.h4.copyWith(color: AppColors.textInverse),
+                      style: AppTypography.h4.copyWith(
+                        color: AppColors.textInverse,
+                      ),
                     ),
                     const SizedBox(height: 4),
                     Text(
@@ -87,7 +90,9 @@ class CompatibilityWidget extends StatelessWidget {
                   children: [
                     Text(
                       secondZodiacSign,
-                      style: AppTypography.h4.copyWith(color: AppColors.textInverse),
+                      style: AppTypography.h4.copyWith(
+                        color: AppColors.textInverse,
+                      ),
                     ),
                     const SizedBox(height: 4),
                     Text(

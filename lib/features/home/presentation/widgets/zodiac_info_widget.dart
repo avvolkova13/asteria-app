@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/extensions/datetime_extensions.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/app/data/entities/zodiac_info_entity.dart';
@@ -67,7 +68,7 @@ class ZodiacInfoWidget extends StatelessWidget {
     final locale = Localizations.localeOf(context);
     return Container(
       padding: const EdgeInsets.all(8),
-      decoration: BoxDecoration(
+      decoration: CardLensDecoration(
         color: AppColors.cardTinted,
         borderRadius: BorderRadius.circular(12),
       ),
@@ -93,7 +94,7 @@ class ZodiacInfoWidget extends StatelessWidget {
   Widget _buildAttributeCard(String title, String value, BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 10),
-      decoration: BoxDecoration(
+      decoration: CardLensDecoration(
         color: AppColors.cardTinted,
         borderRadius: BorderRadius.circular(12),
       ),

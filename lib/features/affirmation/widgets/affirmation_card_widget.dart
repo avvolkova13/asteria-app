@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/app/data/models/affirmation/affirmation_model.dart';
 import 'package:asteria_app/core/ui_kit/card_radii.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
@@ -50,7 +51,7 @@ class AffirmationCardWidget extends StatelessWidget {
     return ClipRRect(
       borderRadius: BorderRadius.circular(AsteriaCardRadii.card),
       child: Container(
-        foregroundDecoration: BoxDecoration(
+        foregroundDecoration: CardLensDecoration(
           borderRadius: BorderRadius.circular(AsteriaCardRadii.card),
           border: Border.all(
             color: AppColors.white.withValues(alpha: borderOpacity),

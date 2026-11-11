@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/routing/app_route.dart';
 import 'package:asteria_app/app/data/models/affirmation/affirmation_model.dart';
@@ -98,7 +99,7 @@ class AffirmationCategoryWidget extends StatelessWidget {
               ),
             ),
           ),
-        ),
+        ).withEntrance(),
         if (showAffirmations && affirmations.isNotEmpty) ...[
           const SizedBox(height: 16),
           AffirmationCardStack(

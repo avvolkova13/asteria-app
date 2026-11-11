@@ -171,7 +171,7 @@ class _MainScreenState extends State<MainScreen> {
                         return Column(
                           children: [
                             const SizedBox(height: 26),
-                            const AsteriaEntrance(child: MoonPhaseWidget()),
+                            const MoonPhaseWidget(),
                             const SizedBox(height: 24),
                             _buildSubscriptionPromoSection(),
                             AsteriaEntrance(child: _buildAffirmationCard()),
@@ -309,58 +309,53 @@ class _MainScreenState extends State<MainScreen> {
                 // Keep HomeState fallback when ContentProvider is still warming up.
               }
 
-              return AsteriaEntrance(
-                replayKey: (tarotCard != null, rune != null),
-                child: DailySymbolOfTheDayWidget(
-                  tarotCard: tarotCard,
-                  rune: rune,
-                  isTarotLoading: false,
-                  isRuneLoading: false,
-                  isTarotOpened: _contentProvider.isDailySymbolTarotOpened(),
-                  isRuneOpened: _contentProvider.isDailySymbolRuneOpened(),
-                  onTarotRefresh: handleTarotRefresh,
-                  onRuneRefresh: handleRuneRefresh,
-                  onRuneTabSelected: _trackRuneCardViewOnce,
-                  onCardTap: tarotCard == null
-                      ? null
-                      : () {
-                          _contentProvider.setDailySymbolTarotOpened();
-                          di.get<ProductAnalyticsService>().trackHomeCardClick(
-                            funnelType: FunnelType.tarot,
-                            entryPointId: 'home_tarot_card',
-                            position: 1,
-                            ctaName: 'reveal_tarot_card',
-                          );
-                          context.read<HomeCubit>().onTarotCardTapped();
-                        },
-                  onRuneTap: rune == null
-                      ? null
-                      : () {
-                          _contentProvider.setDailySymbolRuneOpened();
-                          di.get<ProductAnalyticsService>().trackHomeCardClick(
-                            funnelType: FunnelType.runes,
-                            entryPointId: 'home_rune_card',
-                            position: 2,
-                            ctaName: 'reveal_rune',
-                          );
-                          context.read<HomeCubit>().onRuneTapped();
-                        },
-                ),
-              );
-            }
-
-            return AsteriaEntrance(
-              child: DailySymbolOfTheDayWidget(
-                tarotCard: null,
-                rune: null,
-                isTarotLoading: true,
-                isRuneLoading: true,
-                isTarotOpened: false,
-                isRuneOpened: false,
+              return DailySymbolOfTheDayWidget(
+                tarotCard: tarotCard,
+                rune: rune,
+                isTarotLoading: false,
+                isRuneLoading: false,
+                isTarotOpened: _contentProvider.isDailySymbolTarotOpened(),
+                isRuneOpened: _contentProvider.isDailySymbolRuneOpened(),
                 onTarotRefresh: handleTarotRefresh,
                 onRuneRefresh: handleRuneRefresh,
                 onRuneTabSelected: _trackRuneCardViewOnce,
-              ),
+                onCardTap: tarotCard == null
+                    ? null
+                    : () {
+                        _contentProvider.setDailySymbolTarotOpened();
+                        di.get<ProductAnalyticsService>().trackHomeCardClick(
+                          funnelType: FunnelType.tarot,
+                          entryPointId: 'home_tarot_card',
+                          position: 1,
+                          ctaName: 'reveal_tarot_card',
+                        );
+                        context.read<HomeCubit>().onTarotCardTapped();
+                      },
+                onRuneTap: rune == null
+                    ? null
+                    : () {
+                        _contentProvider.setDailySymbolRuneOpened();
+                        di.get<ProductAnalyticsService>().trackHomeCardClick(
+                          funnelType: FunnelType.runes,
+                          entryPointId: 'home_rune_card',
+                          position: 2,
+                          ctaName: 'reveal_rune',
+                        );
+                        context.read<HomeCubit>().onRuneTapped();
+                      },
+              );
+            }
+
+            return DailySymbolOfTheDayWidget(
+              tarotCard: null,
+              rune: null,
+              isTarotLoading: true,
+              isRuneLoading: true,
+              isTarotOpened: false,
+              isRuneOpened: false,
+              onTarotRefresh: handleTarotRefresh,
+              onRuneRefresh: handleRuneRefresh,
+              onRuneTabSelected: _trackRuneCardViewOnce,
             );
           },
         );

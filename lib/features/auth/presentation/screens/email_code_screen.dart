@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/features/scenarios/first_session.dart';
 import 'package:go_router/go_router.dart';
 import 'package:asteria_app/core/localization/localization.dart';
@@ -86,7 +87,7 @@ class EmailCodeScreen extends StatelessWidget {
                         };
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
+                          children: AsteriaEntrance.sections([
                             SizedBox(height: isCompact ? 58 : 68),
                             Text(
                               l10n.emailCodeSentText,
@@ -143,7 +144,7 @@ class EmailCodeScreen extends StatelessWidget {
                               onTap: () => Navigator.pop(context),
                             ),
                             const SizedBox(height: 18),
-                          ],
+                          ]),
                         );
                       },
                     ),

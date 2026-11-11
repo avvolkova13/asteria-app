@@ -1,3 +1,5 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
+import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
 import 'package:asteria_app/core/analytics/dictionaries/offer_type.dart';
@@ -51,7 +53,7 @@ class _SharedBuyRequestsScreenState extends State<SharedBuyRequestsScreen> {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
+      children: AsteriaEntrance.sections([
         Text(
           widget.title,
           textAlign: TextAlign.center,
@@ -84,7 +86,7 @@ class _SharedBuyRequestsScreenState extends State<SharedBuyRequestsScreen> {
               ? () => _handlePurchase(context)
               : null,
         ),
-      ],
+      ]),
     );
   }
 
@@ -149,7 +151,7 @@ class _PackageItem extends StatelessWidget {
           child: Container(
             height: 61,
             padding: const EdgeInsets.fromLTRB(16, 10, 14, 10),
-            decoration: BoxDecoration(
+            decoration: CardLensDecoration(
               color: const Color(0x339A7DB8),
               borderRadius: BorderRadius.circular(16),
               border: isSelected
@@ -232,7 +234,9 @@ class _GradientBuyButton extends StatelessWidget {
             ),
             child: Text(
               text,
-              style: AppTypography.text1SemiBold.copyWith(color: AppColors.textInverse),
+              style: AppTypography.text1SemiBold.copyWith(
+                color: AppColors.textInverse,
+              ),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),

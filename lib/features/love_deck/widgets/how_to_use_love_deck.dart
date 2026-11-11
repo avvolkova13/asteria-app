@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:flutter/material.dart';
 
@@ -32,7 +33,7 @@ class HowToUseLoveDeck extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+              children: AsteriaEntrance.sections([
                 const SizedBox(height: 16),
                 Center(
                   child: Container(
@@ -59,7 +60,7 @@ class HowToUseLoveDeck extends StatelessWidget {
                   child: SingleChildScrollView(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
+                      children: AsteriaEntrance.sections([
                         _InstructionRow(
                           icon: _InstructionIcon.star,
                           text: context.l10n.loveDeckHowToIntroduction,
@@ -72,11 +73,11 @@ class HowToUseLoveDeck extends StatelessWidget {
                           text: context.l10n.loveDeckHowToClosing,
                         ),
                         const SizedBox(height: 16),
-                      ],
+                      ]),
                     ),
                   ),
                 ),
-              ],
+              ]),
             ),
           ),
         ),

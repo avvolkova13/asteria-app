@@ -1,3 +1,5 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
+import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/core/ui_kit/widgets/top_nav_bar.dart';
 import 'package:flutter/material.dart';
@@ -24,7 +26,7 @@ class PaymentsSettingsScreen extends StatelessWidget {
               padding: const EdgeInsets.all(24),
               child: Container(
                 padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
+                decoration: CardLensDecoration(
                   color: AppColors.cardBackground,
                   borderRadius: BorderRadius.circular(16),
                 ),
@@ -33,7 +35,7 @@ class PaymentsSettingsScreen extends StatelessWidget {
                   style: context.textTheme.urbanistRegular16,
                   textAlign: TextAlign.center,
                 ),
-              ),
+              ).withEntrance(),
             ),
           ),
         ],

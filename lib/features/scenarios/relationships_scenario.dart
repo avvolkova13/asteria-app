@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/app/data/models/saved_compatibility/saved_compatibility_model.dart';
 import 'package:asteria_app/app/providers/user_provider.dart';
@@ -110,7 +111,7 @@ class _RelationshipsScenarioScreenState
       title: context.l10n.scenarioRelationshipChooseSituation,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
+        children: AsteriaEntrance.sections([
           for (final item in RelationshipSituation.values) ...[
             Semantics(
               selected: choice == item,
@@ -133,7 +134,7 @@ class _RelationshipsScenarioScreenState
             ],
             const SizedBox(height: 12),
           ],
-        ],
+        ]),
       ),
     );
   }
@@ -217,7 +218,7 @@ class RelationshipPairResult extends StatelessWidget {
       showRequestsBadge: false,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
+        children: AsteriaEntrance.sections([
           Text(
             '${pair.firstBirthdate.getZodiacSignName(languageCode: locale.languageCode)} + ${pair.secondBirthdate.getZodiacSignName(languageCode: locale.languageCode)}',
             style: context.textTheme.tertiaryUrbanistRegular16,
@@ -277,7 +278,7 @@ class RelationshipPairResult extends StatelessWidget {
             onPressed: () => scenarioHome(context),
             child: Text(context.l10n.scenarioGoHome),
           ),
-        ],
+        ]),
       ),
     );
   }
@@ -289,7 +290,7 @@ class _Reflection extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,
-    children: [
+    children: AsteriaEntrance.sections([
       CompatibilityGlassCard(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -310,6 +311,6 @@ class _Reflection extends StatelessWidget {
         onPressed: () => scenarioHome(context),
         child: Text(context.l10n.scenarioGoHome),
       ),
-    ],
+    ]),
   );
 }

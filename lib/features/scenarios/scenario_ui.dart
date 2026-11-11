@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
@@ -78,7 +79,7 @@ class ScenarioPage extends StatelessWidget {
                       ? ListView(
                           padding: const EdgeInsets.symmetric(vertical: 12),
                           children: [
-                            HomeSectionHeading(title),
+                            HomeSectionHeading(title).withEntrance(),
                             const SizedBox(height: 24),
                             child,
                           ],
@@ -86,7 +87,7 @@ class ScenarioPage extends StatelessWidget {
                       : Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            HomeSectionHeading(title),
+                            HomeSectionHeading(title).withEntrance(),
                             const SizedBox(height: 12),
                             Expanded(child: child),
                           ],

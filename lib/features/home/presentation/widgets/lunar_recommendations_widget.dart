@@ -1,3 +1,5 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
+import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/app/data/models/lunar_calendar/lunar_recommendation_models.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/features/home/presentation/widgets/lunar_card_image.dart';
@@ -30,10 +32,14 @@ class LunarRecommendationsWidget extends StatelessWidget {
         children: [
           for (final task in tasks) ...[
             if (task.key != tasks.first.key) const SizedBox(width: 16),
-            _LunarRecommendationCard(
-              title: _taskTitle(context, task.key),
-              assetName: LunarCardAsset.forTaskKey(task.key),
-              recommendation: task.value,
+            AsteriaEntrance(
+              key: ValueKey(task.key),
+              replayKey: task.value,
+              child: _LunarRecommendationCard(
+                title: _taskTitle(context, task.key),
+                assetName: LunarCardAsset.forTaskKey(task.key),
+                recommendation: task.value,
+              ),
             ),
           ],
         ],
@@ -136,7 +142,7 @@ class _LunarRecommendationCard extends StatelessWidget {
         _ => 325,
       },
       padding: const EdgeInsets.all(_padding),
-      decoration: BoxDecoration(
+      decoration: CardLensDecoration(
         color: MoonDesignTokens.cardSurface.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: AppColors.white.withValues(alpha: 0.12)),

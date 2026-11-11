@@ -26,7 +26,7 @@ class CompatibilityHistoryScreen extends StatelessWidget {
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
+      children: AsteriaEntrance.sections([
         Text(
           context.l10n.compatibilityHistoryTitle,
           style: context.textTheme.inversePlayfairSemiBold32,
@@ -66,7 +66,7 @@ class CompatibilityHistoryScreen extends StatelessWidget {
           text: context.l10n.compatibilityNewPair,
           onPressed: onNewPairPressed,
         ),
-      ],
+      ]),
     );
   }
 }

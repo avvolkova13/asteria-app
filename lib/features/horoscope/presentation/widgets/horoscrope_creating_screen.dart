@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'dart:async';
 
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
@@ -60,7 +61,7 @@ class _HoroscropeCreatingScreenState extends State<HoroscropeCreatingScreen> {
           height: contentHeight,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
+            children: AsteriaEntrance.sections([
               SizedBox(height: contentHeight * 0.17),
               SizedBox(
                 height: 116,
@@ -89,7 +90,7 @@ class _HoroscropeCreatingScreenState extends State<HoroscropeCreatingScreen> {
                 fit: BoxFit.contain,
               ),
               const Spacer(),
-            ],
+            ]),
           ),
         ),
       ),

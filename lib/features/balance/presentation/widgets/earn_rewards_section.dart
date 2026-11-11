@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/card_radii.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
@@ -18,7 +19,7 @@ class EarnRewardsSection extends StatelessWidget {
       builder: (context, provider, child) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+          children: AsteriaEntrance.sections([
             Row(
               children: [
                 Expanded(
@@ -64,7 +65,7 @@ class EarnRewardsSection extends StatelessWidget {
               if (index != provider.items.length - 1)
                 const SizedBox(height: 16),
             ],
-          ],
+          ]),
         );
       },
     );

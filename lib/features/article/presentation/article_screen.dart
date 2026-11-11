@@ -1,3 +1,5 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
+import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
 import 'dart:async';
@@ -90,7 +92,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
               delegate: const _ArticleTopBarDelegate(),
             ),
             SliverFillRemaining(
-              child: Center(child: Text(context.l10n.articleNotFound)),
+              child: Center(child: Text(context.l10n.articleNotFound).withEntrance()),
             ),
           ],
         ),
@@ -129,9 +131,9 @@ class _ArticleScreenState extends State<ArticleScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const SizedBox(height: 22),
-                    _ArticleHero(article: article),
+                    _ArticleHero(article: article).withEntrance(),
                     const SizedBox(height: 16),
-                    _ArticleContentCard(article: article),
+                    _ArticleContentCard(article: article).withEntrance(),
                     SizedBox(key: _articleEndKey, height: 24),
                     ArticlesSectionWidget(excludeArticleId: article.id),
                     const SizedBox(height: 64),
@@ -173,7 +175,9 @@ class _ArticleTopBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final navTextStyle = AppTypography.navTitle.copyWith(color: AppColors.white);
+    final navTextStyle = AppTypography.navTitle.copyWith(
+      color: AppColors.white,
+    );
 
     return ColoredBox(
       color: _ArticlePageColors.background,
@@ -209,7 +213,7 @@ class _ArticleTopBar extends StatelessWidget {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: navTextStyle,
-                        ),
+                        ).withEntrance(),
                       ),
                     ],
                   ),
@@ -228,7 +232,7 @@ class _ArticleTopBar extends StatelessWidget {
                           child: Text(
                             '${MonetizationProvider.maybeOf(context)?.balance ?? 0} ',
                             style: navTextStyle,
-                          ),
+                          ).withEntrance(),
                         );
                       },
                     ),
@@ -296,7 +300,7 @@ class _ArticleContentCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DecoratedBox(
-      decoration: BoxDecoration(
+      decoration: CardLensDecoration(
         color: _ArticlePageColors.cardBackground,
         borderRadius: BorderRadius.circular(32),
       ),
@@ -315,7 +319,9 @@ class _ArticleContentCard extends StatelessWidget {
             const SizedBox(height: 16),
             _ArticleParagraphs(
               text: article.intro,
-              style: AppTypography.text1SemiBold.copyWith(color: AppColors.white),
+              style: AppTypography.text1SemiBold.copyWith(
+                color: AppColors.white,
+              ),
             ),
             const SizedBox(height: 8),
             _ArticleParagraphs(
@@ -325,7 +331,9 @@ class _ArticleContentCard extends StatelessWidget {
             const SizedBox(height: 8),
             _ArticleParagraphs(
               text: article.conclusion,
-              style: AppTypography.text1SemiBold.copyWith(color: AppColors.white),
+              style: AppTypography.text1SemiBold.copyWith(
+                color: AppColors.white,
+              ),
             ),
           ],
         ),

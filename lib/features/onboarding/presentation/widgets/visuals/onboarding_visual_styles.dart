@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:flutter/material.dart';
 
 /// Figma onboarding miniature tokens. Sizes are in the 390 × 426 design canvas.
@@ -79,7 +80,7 @@ class OnboardingMiniCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Container(
     padding: padding,
-    decoration: BoxDecoration(
+    decoration: CardLensDecoration(
       color: color,
       borderRadius: BorderRadius.circular(radius),
       border: glow ? Border.all(color: const Color(0x1AF1B266)) : null,

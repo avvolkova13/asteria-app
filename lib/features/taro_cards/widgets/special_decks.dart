@@ -1,3 +1,5 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
+import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/ui_kit/card_radii.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
@@ -28,7 +30,7 @@ class SpecialDecks extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+      children: AsteriaEntrance.sections([
         Text(
           context.l10n.specialReadingsTitle,
           style: context.textTheme.playfairSemiBold24.copyWith(
@@ -52,7 +54,7 @@ class SpecialDecks extends StatelessWidget {
           onPressed: onBuyKeltDeckPressed,
           price: PurchaseProductsConst.keltDeck.price,
         ),
-      ],
+      ]),
     );
   }
 }
@@ -87,9 +89,11 @@ class _SpecialDeckItem extends StatelessWidget {
               children: [
                 Expanded(
                   child: DecoratedBox(
-                    decoration: BoxDecoration(
+                    decoration: CardLensDecoration(
                       color: _SpecialDecksColors.cardBackground,
-                      borderRadius: BorderRadius.circular(AsteriaCardRadii.tile),
+                      borderRadius: BorderRadius.circular(
+                        AsteriaCardRadii.tile,
+                      ),
                     ),
                     child: Padding(
                       padding: const EdgeInsets.all(8),
@@ -203,7 +207,9 @@ class _SpecialDeckDetails extends StatelessWidget {
             Flexible(
               child: _GoldGradientText(
                 text: context.l10n.buyForPrice(price.toString()),
-                style: AppTypography.text1SemiBold.copyWith(color: _SpecialDecksColors.gold),
+                style: AppTypography.text1SemiBold.copyWith(
+                  color: _SpecialDecksColors.gold,
+                ),
               ),
             ),
             const SizedBox(width: 4),

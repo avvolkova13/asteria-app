@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/extensions/build_context_extensions.dart';
 import 'package:asteria_app/core/routing/app_route.dart';
 import 'package:asteria_app/features/affirmation/player/practice_link.dart';
@@ -100,7 +101,7 @@ class _PracticeMoodsState extends State<_PracticeMoods> {
       title: c.l10n.scenarioPracticeChooseMood,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
+        children: AsteriaEntrance.sections([
           if (groups.isEmpty) Text(c.l10n.scenarioPracticeUnavailable),
           for (final entry in groups.entries)
             Builder(
@@ -123,7 +124,7 @@ class _PracticeMoodsState extends State<_PracticeMoods> {
                 );
               },
             ),
-        ],
+        ]),
       ),
     );
   }

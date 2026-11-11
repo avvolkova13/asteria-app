@@ -1,3 +1,5 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
+import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'dart:async';
 import 'dart:math' as math;
 
@@ -93,7 +95,7 @@ class _ScenarioCardGridState extends State<ScenarioCardGrid>
               for (final card in widget.cards)
                 Padding(
                   padding: const EdgeInsets.only(bottom: gap),
-                  child: card,
+                  child: card.withEntrance(),
                 ),
             ],
           );
@@ -103,9 +105,12 @@ class _ScenarioCardGridState extends State<ScenarioCardGrid>
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Expanded(flex: topFlex, child: widget.cards[top]),
+              Expanded(flex: topFlex, child: widget.cards[top].withEntrance()),
               const SizedBox(height: gap),
-              Expanded(flex: 5 - topFlex, child: widget.cards[bottom]),
+              Expanded(
+                flex: 5 - topFlex,
+                child: widget.cards[bottom].withEntrance(),
+              ),
             ],
           ),
         );
@@ -364,30 +369,24 @@ class _GlassArtwork extends CustomPainter {
         stops: const [0, .44, 1],
       ).createShader(rect);
     canvas.drawRect(rect, veil);
-    // A blurred stroke clipped at its centre builds an inward luminous lip.
+    // Retain the colored, diffused inner light of each scenario under the
+    // common glass reflection. The existing clip keeps every halo inside.
     canvas.drawRRect(
-      shape,
+      shape.deflate(1),
       Paint()
         ..style = PaintingStyle.stroke
-        ..strokeWidth = 8
-        ..color = rim.withValues(alpha: .64)
-        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 5),
+        ..strokeWidth = 9
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 5)
+        ..color = rim.withValues(alpha: .67),
     );
-    final edge = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 2.1
-      ..shader = LinearGradient(
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-        colors: [
-          shade(rim, AppColors.white, .52),
-          rim.withValues(alpha: .65),
-          rim.withValues(alpha: .16),
-          rim.withValues(alpha: .70),
-        ],
-        stops: const [0, .25, .64, 1],
-      ).createShader(rect);
-    canvas.drawRRect(shape.deflate(.5), edge);
+    canvas.drawRRect(
+      shape.deflate(1),
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1.4
+        ..color = rim.withValues(alpha: .48),
+    );
+    CardLensDecoration.paintFinish(canvas, shape);
     canvas.restore();
   }
 

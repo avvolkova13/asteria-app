@@ -1,5 +1,6 @@
 import 'package:asteria_app/core/localization/localization.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/features/scenarios/scenario_card_grid.dart';
 import 'package:asteria_app/features/scenarios/scenario_picker.dart';
 import 'package:flutter/material.dart';
@@ -92,6 +93,19 @@ void main() {
       await tester.pumpAndSettle();
       final cards = find.byType(ScenarioCard);
       expect(cards, findsNWidgets(4));
+      final entrances = cards.evaluate().map(
+        (element) => element.findAncestorWidgetOfExactType<AsteriaEntrance>(),
+      );
+      expect(entrances, isNot(contains(null)));
+      expect(entrances.toSet(), hasLength(4));
+      // A common outer entrance would consume the four individual reveals.
+      expect(
+        find.ancestor(
+          of: find.byType(ScenarioCardGrid),
+          matching: find.byType(AsteriaEntrance),
+        ),
+        findsNothing,
+      );
       final boxes = [
         for (final mood in ScenarioMood.values)
           tester.getRect(

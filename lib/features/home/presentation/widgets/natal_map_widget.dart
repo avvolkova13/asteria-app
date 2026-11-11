@@ -1,3 +1,5 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
+import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/app/data/models/natal_card/natal_card_model.dart';
 import 'package:asteria_app/app/data/models/user/user_model.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
@@ -25,7 +27,7 @@ class NatalMapWidget extends StatelessWidget {
     final hasPositions = planets.isNotEmpty;
 
     return Column(
-      children: [
+      children: AsteriaEntrance.sections([
         Text(
           context.l10n.natalChartTitle,
           style: context.textTheme.playfairSemiBold32,
@@ -74,7 +76,7 @@ class NatalMapWidget extends StatelessWidget {
               : context.l10n.natalGetInterpretation,
           onPressed: onPressed,
         ),
-      ],
+      ]),
     );
   }
 
@@ -114,7 +116,7 @@ class _NatalMapPositionItem extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(right: 16),
       width: 207,
-      decoration: BoxDecoration(
+      decoration: CardLensDecoration(
         image: DecorationImage(
           image: AssetImage('assets/images/home/month_widget_bg.webp'),
           fit: BoxFit.cover,

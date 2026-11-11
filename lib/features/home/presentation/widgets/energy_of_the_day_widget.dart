@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/app/providers/content_provider.dart';
 import 'package:asteria_app/core/di/di.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
@@ -149,75 +150,79 @@ class _EnergyCard extends StatelessWidget {
       key: ValueKey('energy-card-${type.name}'),
       borderRadius: BorderRadius.circular(16),
       child: DecoratedBox(
-        decoration: const BoxDecoration(color: _cardBackground),
-        child: Padding(
-          padding: const EdgeInsets.all(8),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _isFocus
-                            ? _GradientText(
-                                text: title,
-                                gradient: _orangeGradient,
-                                style: titleStyle,
-                              )
-                            : Text(
-                                title,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: titleStyle,
-                              ),
-                        const SizedBox(height: 4),
-                        Text(
-                          progressText,
-                          maxLines: 3,
-                          overflow: TextOverflow.ellipsis,
-                          style: phraseStyle,
-                        ),
-                        const SizedBox(height: 4),
-                        _GradientText(
-                          text: progress == null ? '—' : '$progress%',
-                          gradient: _orangeGradient,
-                          style: percentageStyle,
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 4),
-                  SizedBox(
-                    width: imageWidth,
-                    height: imageHeight,
-                    child: ClipRect(
-                      child: Image.asset(
-                        _imagePath,
-                        fit: BoxFit.contain,
-                        errorBuilder: (context, error, stackTrace) {
-                          return const SizedBox.shrink();
-                        },
+        position: DecorationPosition.foreground,
+        decoration: CardLensDecoration(borderRadius: BorderRadius.circular(16)),
+        child: DecoratedBox(
+          decoration: const BoxDecoration(color: _cardBackground),
+          child: Padding(
+            padding: const EdgeInsets.all(8),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _isFocus
+                              ? _GradientText(
+                                  text: title,
+                                  gradient: _orangeGradient,
+                                  style: titleStyle,
+                                )
+                              : Text(
+                                  title,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: titleStyle,
+                                ),
+                          const SizedBox(height: 4),
+                          Text(
+                            progressText,
+                            maxLines: 3,
+                            overflow: TextOverflow.ellipsis,
+                            style: phraseStyle,
+                          ),
+                          const SizedBox(height: 4),
+                          _GradientText(
+                            text: progress == null ? '—' : '$progress%',
+                            gradient: _orangeGradient,
+                            style: percentageStyle,
+                          ),
+                        ],
                       ),
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              if (progress != null)
-                _ProgressBar(
-                  progressValue: progress,
-                  isFocus: _isFocus,
-                  gradient: _orangeGradient,
-                )
-              else
-                const SizedBox(height: 4),
-              const SizedBox(height: 8),
-              Text(description, style: descriptionStyle),
-            ],
+                    const SizedBox(width: 4),
+                    SizedBox(
+                      width: imageWidth,
+                      height: imageHeight,
+                      child: ClipRect(
+                        child: Image.asset(
+                          _imagePath,
+                          fit: BoxFit.contain,
+                          errorBuilder: (context, error, stackTrace) {
+                            return const SizedBox.shrink();
+                          },
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                if (progress != null)
+                  _ProgressBar(
+                    progressValue: progress,
+                    isFocus: _isFocus,
+                    gradient: _orangeGradient,
+                  )
+                else
+                  const SizedBox(height: 4),
+                const SizedBox(height: 8),
+                Text(description, style: descriptionStyle),
+              ],
+            ),
           ),
         ),
       ),

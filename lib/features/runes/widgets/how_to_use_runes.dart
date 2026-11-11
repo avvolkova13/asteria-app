@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:flutter/material.dart';
@@ -35,7 +36,7 @@ class HowToUseRunes extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Column(
-              children: [
+              children: AsteriaEntrance.sections([
                 const SizedBox(height: 16),
                 Container(
                   height: 4,
@@ -60,7 +61,7 @@ class HowToUseRunes extends StatelessWidget {
                   child: SingleChildScrollView(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
+                      children: AsteriaEntrance.sections([
                         Text(
                           context.l10n.runesHowToIntroduction,
                           style: context.textTheme.urbanistRegular16.copyWith(
@@ -117,11 +118,11 @@ class HowToUseRunes extends StatelessWidget {
                           ],
                         ),
                         const SizedBox(height: 16),
-                      ],
+                      ]),
                     ),
                   ),
                 ),
-              ],
+              ]),
             ),
           ),
         ),

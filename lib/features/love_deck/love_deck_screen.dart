@@ -163,16 +163,16 @@ class _LoveDeckScreenState extends State<LoveDeckScreen> {
                         const Center(
                           child: Padding(
                             padding: EdgeInsets.symmetric(vertical: 32),
-                            child: CircularProgressIndicator(
+                            child: AsteriaEntrance(child: CircularProgressIndicator(
                               color: AppColors.primary,
-                            ),
+                            )),
                           ),
                         )
                       else
                         _LoveDeckContent(
                           onRefresh: onRefreshPressed,
                           afterReading: widget.afterReading,
-                        ).withEntrance(),
+                        ),
                       const SizedBox(height: 100),
                     ],
                   ),
@@ -241,7 +241,7 @@ class _LoveDeckContent extends StatelessWidget {
             );
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+          children: AsteriaEntrance.sections([
             _LoveDeckHeader(onRefresh: onRefresh),
             const SizedBox(height: 12),
             _GradientText(
@@ -297,7 +297,7 @@ class _LoveDeckContent extends StatelessWidget {
                 userProvider.isAllCardsOpened('love_deck'))
               afterReading!,
             const SizedBox(height: 16),
-          ],
+          ]),
         );
       },
     );

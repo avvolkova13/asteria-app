@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:flutter/material.dart';
 
@@ -27,7 +28,7 @@ class SonnikScoreBars extends StatelessWidget {
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
+      children: AsteriaEntrance.sections([
         _ScoreBarRow(label: loveLabel ?? context.l10n.compatibilityLove, percent: love.clamp(0, 100), color: secondary, backgroundColor: AppColors.uiDisabled),
         const SizedBox(height: 12),
         _ScoreBarRow(
@@ -43,7 +44,7 @@ class SonnikScoreBars extends StatelessWidget {
           color: secondary,
           backgroundColor: AppColors.uiDisabled,
         ),
-      ],
+      ]),
     );
   }
 }

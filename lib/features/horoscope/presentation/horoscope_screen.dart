@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/ui_kit/card_radii.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
@@ -237,7 +238,7 @@ class _HoroscopeScreenState extends State<HoroscopeScreen> {
                             onBuyPressed: _showPurchaseModalSheet,
                           )
                         else
-                          const AsteriaEntrance(child: _HoroscopeContent()),
+                          const _HoroscopeContent(),
                       ],
                     ),
                   ),
@@ -291,7 +292,7 @@ class _HoroscopeContentState extends State<_HoroscopeContent> {
               _selectedTabIndex = index;
             });
           },
-        ),
+        ).withEntrance(),
         const SizedBox(height: 24),
         _buildTabContent(),
       ],
@@ -312,7 +313,7 @@ class _HoroscopeYourEssence extends StatelessWidget {
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+      children: AsteriaEntrance.sections([
         Text(
           context.l10n.horoscopeEssence,
           style: _HoroscopeDesign.h1(context),
@@ -355,7 +356,7 @@ class _HoroscopeYourEssence extends StatelessWidget {
         ),
         const SizedBox(height: 24),
         _MetaphorCard(description: horoscopeYear.astroMetaphor),
-      ],
+      ]),
     );
   }
 }
@@ -373,7 +374,7 @@ class _HoroscopeLifeSpheres extends StatelessWidget {
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+      children: AsteriaEntrance.sections([
         Text(
           context.l10n.horoscopeLifeAreas,
           style: _HoroscopeDesign.h1(context),
@@ -408,7 +409,7 @@ class _HoroscopeLifeSpheres extends StatelessWidget {
           description: horoscopeYear.finance.general,
           imagePath: 'assets/images/horoscope/year_finance.webp',
         ),
-      ],
+      ]),
     );
   }
 }
@@ -426,7 +427,7 @@ class _HoroscopeYourEvolution extends StatelessWidget {
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+      children: AsteriaEntrance.sections([
         Text(
           context.l10n.horoscopeEvolution,
           style: _HoroscopeDesign.h1(context),
@@ -455,7 +456,7 @@ class _HoroscopeYourEvolution extends StatelessWidget {
               )
               .toList(),
         ),
-      ],
+      ]),
     );
   }
 }
@@ -575,7 +576,7 @@ class _HoroscopeTopBar extends StatelessWidget {
                 Text(
                   context.l10n.horoscopeTitle,
                   style: context.textTheme.inversePlayfairSemiBold17,
-                ),
+                ).withEntrance(),
                 const Spacer(),
                 LotusFeedback(
                   onActivate: () => BalanceRoute.push(context),
@@ -599,7 +600,7 @@ class _HoroscopeTopBar extends StatelessWidget {
                                     style: context
                                         .textTheme
                                         .inverseUrbanistSemiBold17,
-                                  ),
+                                  ).withEntrance(),
                                   LotusRasterIcon(
                                     'assets/icons/star_coin_icon.png',
                                     width: 16,
@@ -1058,7 +1059,7 @@ class _LabeledCard extends StatelessWidget {
     return Container(
       width: fullWidth ? double.infinity : 293,
       constraints: const BoxConstraints(minHeight: 74),
-      decoration: BoxDecoration(
+      decoration: CardLensDecoration(
         color: _HoroscopeDesign.cardAlt,
         borderRadius: BorderRadius.circular(AsteriaCardRadii.tile),
       ),
@@ -1162,7 +1163,7 @@ class _MetaphorCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      decoration: BoxDecoration(
+      decoration: CardLensDecoration(
         color: const Color(0xFF151028),
         borderRadius: BorderRadius.circular(AsteriaCardRadii.card),
         image: const DecorationImage(
@@ -1227,7 +1228,7 @@ class _GlassCard extends StatelessWidget {
     return Container(
       key: containerKey,
       width: double.infinity,
-      decoration: BoxDecoration(
+      decoration: CardLensDecoration(
         color: _HoroscopeDesign.card.withValues(alpha: 0.82),
         borderRadius: BorderRadius.circular(AsteriaCardRadii.tile),
         border: Border.all(color: _HoroscopeDesign.cardBorder, width: 0.7),

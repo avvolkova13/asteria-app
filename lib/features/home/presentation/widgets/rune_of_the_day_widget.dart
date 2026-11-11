@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/app/data/models/rune_of_day/rune_of_day_model.dart';
 import 'package:asteria_app/core/routing/app_route.dart';
@@ -91,7 +92,7 @@ class _RuneOfTheDayWidgetState extends State<RuneOfTheDayWidget>
                     color: widget.isDarkLayout ? AppColors.white : null,
                     height: 1.2,
                   ),
-                ),
+                ).withEntrance(),
               ),
               const SizedBox(width: 8),
               // Refresh icon
@@ -140,7 +141,7 @@ class _RuneOfTheDayWidgetState extends State<RuneOfTheDayWidget>
 
   Widget _buildClosedCardContent(BuildContext context) {
     return Column(
-      children: [
+      children: AsteriaEntrance.sections([
         // Показываем закрытую карту
         Center(
           child: LotusTap(
@@ -151,13 +152,13 @@ class _RuneOfTheDayWidgetState extends State<RuneOfTheDayWidget>
         const SizedBox(height: 16),
         // Описание для закрытой карты
         _buildClosedDescription(context),
-      ],
+      ]),
     );
   }
 
   Widget _buildLoadingContent() {
     return Column(
-      children: [
+      children: AsteriaEntrance.sections([
         SizedBox(
           height: widget.isDarkLayout ? 306 : 328,
           child: const Center(child: LoadingWidget()),
@@ -171,13 +172,13 @@ class _RuneOfTheDayWidgetState extends State<RuneOfTheDayWidget>
           ),
         ),
         const SizedBox(height: 32),
-      ],
+      ]),
     );
   }
 
   Widget _buildRuneContent(BuildContext context, RuneOfDayModel rune) {
     return Column(
-      children: [
+      children: AsteriaEntrance.sections([
         // Animated rune
         Center(
           child: LotusTap(
@@ -222,7 +223,7 @@ class _RuneOfTheDayWidgetState extends State<RuneOfTheDayWidget>
             },
             isFullWidth: true,
           ),
-      ],
+      ]),
     );
   }
 

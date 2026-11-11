@@ -4,6 +4,7 @@ import 'package:asteria_app/core/analytics/product_analytics_service.dart';
 import 'package:asteria_app/core/di/di.dart';
 import 'package:asteria_app/core/routing/app_route.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/features/anakra_chat/presentation/provider/anakra_chat_provider.dart';
 import 'package:asteria_app/features/home/localization/home_localization_contract.dart';
 import 'package:asteria_app/features/home/presentation/cubit/home_cubit.dart';
@@ -169,7 +170,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
 /// Each tab keeps its scroll and form state. During a handoff only the new
 /// tab can receive input or run its own tickers.
-class HomeTabContents extends StatelessWidget {
+class HomeTabContents extends StatefulWidget {
   const HomeTabContents({
     super.key,
     required this.index,
@@ -180,37 +181,105 @@ class HomeTabContents extends StatelessWidget {
   final List<Widget> children;
 
   @override
+  State<HomeTabContents> createState() => _HomeTabContentsState();
+}
+
+class _HomeTabContentsState extends State<HomeTabContents>
+    with SingleTickerProviderStateMixin {
+  late final _controller = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 320),
+    value: 1,
+  );
+  List<double> _from = [];
+  bool _replay = true;
+
+  double _weight(int tab, int selected) {
+    final target = tab == selected ? 1.0 : 0.0;
+    final prior = tab < _from.length ? _from[tab] : 0.0;
+    final t = Curves.easeInOut.transform(_controller.value);
+    return prior * (1 - t) + target * t;
+  }
+
+  @override
+  void didUpdateWidget(HomeTabContents oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.index == widget.index) return;
+    _from = List.generate(
+      widget.children.length,
+      (i) => _weight(i, oldWidget.index),
+    );
+    _replay = _from[widget.index] < .02;
+    if (MediaQuery.disableAnimationsOf(context)) {
+      _controller.value = 1;
+    } else {
+      _controller.forward(from: 0);
+    }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (MediaQuery.disableAnimationsOf(context)) _controller.value = 1;
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final duration = MediaQuery.disableAnimationsOf(context)
-        ? Duration.zero
-        : const Duration(milliseconds: 300);
-    return Stack(
-      fit: StackFit.expand,
-      children: [
-        for (var i = 0; i < children.length; i++)
-          TweenAnimationBuilder<double>(
-            tween: Tween<double>(
-              begin: i == index ? 1 : 0,
-              end: i == index ? 1 : 0,
-            ),
-            duration: duration,
-            curve: Curves.easeInOut,
-            builder: (context, opacity, child) => Offstage(
-              offstage: opacity == 0,
-              child: Opacity(opacity: opacity, child: child),
-            ),
-            child: IgnorePointer(
-              ignoring: i != index,
-              child: ExcludeSemantics(
-                excluding: i != index,
-                child: ExcludeFocus(
-                  excluding: i != index,
-                  child: TickerMode(enabled: i == index, child: children[i]),
-                ),
+    final selected = widget.index;
+    final pages = [
+      for (var i = 0; i < widget.children.length; i++)
+        IgnorePointer(
+          ignoring: i != selected,
+          child: ExcludeSemantics(
+            excluding: i != selected,
+            child: ExcludeFocus(
+              excluding: i != selected,
+              child: TickerMode(
+                enabled: i == selected,
+                child: widget.children[i],
               ),
             ),
           ),
-      ],
+        ),
+    ];
+    final order = [
+      for (var i = 0; i < pages.length; i++)
+        if (i != selected) i,
+      selected,
+    ];
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, _) {
+        // Normalize the alpha of each layer against those underneath. Two
+        // independently fading opaque pages would expose the dark canvas.
+        var weightBelow = 0.0;
+        final layers = <Widget>[];
+        for (final i in order) {
+          final weight = _weight(i, selected);
+          weightBelow += weight;
+          final alpha = weightBelow == 0 ? 0.0 : weight / weightBelow;
+          layers.add(
+            Offstage(
+              key: ValueKey(i),
+              offstage: weight == 0 && i != selected,
+              child: Opacity(
+                opacity: alpha,
+                child: AsteriaEntranceReplay(
+                  enabled: i != selected || _replay || _controller.isCompleted,
+                  child: pages[i],
+                ),
+              ),
+            ),
+          );
+        }
+        return Stack(fit: StackFit.expand, children: layers);
+      },
     );
   }
 }

@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'dart:ui' as ui;
 import 'package:asteria_app/app/data/models/user/user_model.dart';
@@ -231,7 +232,7 @@ class _CurrentLocationControlsState extends State<CurrentLocationControls> {
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
+      children: AsteriaEntrance.sections([
         if (currentLocation != null) ...[
           Text(
             currentLocation.location,
@@ -261,7 +262,7 @@ class _CurrentLocationControlsState extends State<CurrentLocationControls> {
           icon: CupertinoIcons.search,
           onPressed: _openCitySelection,
         ),
-      ],
+      ]),
     );
   }
 }
@@ -298,7 +299,7 @@ class _CityConfirmationSheet extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
+            children: AsteriaEntrance.sections([
               Text.rich(
                 TextSpan(
                   style: style,
@@ -325,7 +326,7 @@ class _CityConfirmationSheet extends StatelessWidget {
                 filled: false,
                 onPressed: onChange,
               ),
-            ],
+            ]),
           ),
         ),
       ),

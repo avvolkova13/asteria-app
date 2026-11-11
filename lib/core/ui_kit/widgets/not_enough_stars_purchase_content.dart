@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
 import 'package:asteria_app/core/extensions/build_context_extensions.dart';
@@ -57,7 +58,7 @@ class NotEnoughStarsPurchaseContent extends StatelessWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
+                children: AsteriaEntrance.sections([
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: _TitleRow(),
@@ -68,7 +69,9 @@ class NotEnoughStarsPurchaseContent extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 12),
                     child: Text(
                       description ?? context.l10n.purchaseNotEnoughGeneric,
-                      style: AppTypography.h3.copyWith(color: AppColors.textInverse),
+                      style: AppTypography.h3.copyWith(
+                        color: AppColors.textInverse,
+                      ),
                       textAlign: TextAlign.center,
                     ),
                   ),
@@ -80,7 +83,7 @@ class NotEnoughStarsPurchaseContent extends StatelessWidget {
                       requiredAmount: requiredAmount,
                     ),
                   ),
-                ],
+                ]),
               ),
             ),
           ),
@@ -180,11 +183,15 @@ class _AmountLabel extends StatelessWidget {
               children: [
                 TextSpan(
                   text: '$label ',
-                  style: AppTypography.text1.copyWith(color: AppColors.textInverse),
+                  style: AppTypography.text1.copyWith(
+                    color: AppColors.textInverse,
+                  ),
                 ),
                 TextSpan(
                   text: '$amount',
-                  style: AppTypography.text1SemiBold.copyWith(color: AppColors.textInverse),
+                  style: AppTypography.text1SemiBold.copyWith(
+                    color: AppColors.textInverse,
+                  ),
                 ),
               ],
             ),

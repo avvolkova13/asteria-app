@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/ui_kit/card_radii.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/routing/app_route.dart';
@@ -40,89 +41,95 @@ class AdvertisingBlockWidget extends StatelessWidget {
 
           return ClipRRect(
             borderRadius: BorderRadius.circular(AsteriaCardRadii.card),
-            child: SizedBox(
-              height: 243,
-              child: Stack(
-                clipBehavior: Clip.hardEdge,
-                children: [
-                  const Positioned.fill(
-                    child: ColoredBox(color: _cardBackground),
-                  ),
-                  Positioned.fill(
-                    child: Opacity(
-                      opacity: 0.25,
-                      child: Image.asset(_backgroundAsset, fit: BoxFit.cover),
+            child: DecoratedBox(
+              position: DecorationPosition.foreground,
+              decoration: CardLensDecoration(
+                borderRadius: BorderRadius.circular(AsteriaCardRadii.card),
+              ),
+              child: SizedBox(
+                height: 243,
+                child: Stack(
+                  clipBehavior: Clip.hardEdge,
+                  children: [
+                    const Positioned.fill(
+                      child: ColoredBox(color: _cardBackground),
                     ),
-                  ),
-                  Positioned(
-                    bottom: 0,
-                    right: imageRight,
-                    width: imageWidth,
-                    height: imageHeight,
-                    child: Image.asset(
-                      _liveyaAsset,
-                      fit: BoxFit.contain,
-                      alignment: Alignment.bottomCenter,
+                    Positioned.fill(
+                      child: Opacity(
+                        opacity: 0.25,
+                        child: Image.asset(_backgroundAsset, fit: BoxFit.cover),
+                      ),
                     ),
-                  ),
-                  Positioned(
-                    top: 16,
-                    left: 16,
-                    right: 16,
-                    child: FittedBox(
-                      alignment: Alignment.centerLeft,
-                      fit: BoxFit.scaleDown,
-                      child: Text(
-                        context.l10n.adDreamTitle,
-                        maxLines: 1,
-                        style: context.textTheme.inversePlayfairSemiBold24
+                    Positioned(
+                      bottom: 0,
+                      right: imageRight,
+                      width: imageWidth,
+                      height: imageHeight,
+                      child: Image.asset(
+                        _liveyaAsset,
+                        fit: BoxFit.contain,
+                        alignment: Alignment.bottomCenter,
+                      ),
+                    ),
+                    Positioned(
+                      top: 16,
+                      left: 16,
+                      right: 16,
+                      child: FittedBox(
+                        alignment: Alignment.centerLeft,
+                        fit: BoxFit.scaleDown,
+                        child: Text(
+                          context.l10n.adDreamTitle,
+                          maxLines: 1,
+                          style: context.textTheme.inversePlayfairSemiBold24
+                              .copyWith(
+                                fontFamily: 'Lora',
+                                height: 1,
+                                letterSpacing: 0,
+                              ),
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      top: 56,
+                      left: 16,
+                      width: subtitleWidth,
+                      child: _AdvertisingSubtitle(
+                        textStyle: context.textTheme.inverseUrbanistSemiBold16
                             .copyWith(
-                              fontFamily: 'Lora',
-                              height: 1,
-                              letterSpacing: 0,
+                              fontFamily: 'Onest',
+                              height: 1.2,
+                              letterSpacing: -0.408,
                             ),
                       ),
                     ),
-                  ),
-                  Positioned(
-                    top: 56,
-                    left: 16,
-                    width: subtitleWidth,
-                    child: _AdvertisingSubtitle(
-                      textStyle: context.textTheme.inverseUrbanistSemiBold16
-                          .copyWith(
-                            fontFamily: 'Onest',
-                            height: 1.2,
-                            letterSpacing: -0.408,
-                          ),
+                    Positioned(
+                      top: 110,
+                      left: 16,
+                      width: descriptionWidth,
+                      child: Text(
+                        context.l10n.adDreamDescription,
+                        style: context.textTheme.tertiaryUrbanistRegular16
+                            .copyWith(
+                              fontFamily: 'Onest',
+                              height: 1.2,
+                              letterSpacing: -0.408,
+                              color: _descriptionColor,
+                            ),
+                      ),
                     ),
-                  ),
-                  Positioned(
-                    top: 110,
-                    left: 16,
-                    width: descriptionWidth,
-                    child: Text(
-                      context.l10n.adDreamDescription,
-                      style: context.textTheme.tertiaryUrbanistRegular16
-                          .copyWith(
-                            fontFamily: 'Onest',
-                            height: 1.2,
-                            letterSpacing: -0.408,
-                            color: _descriptionColor,
-                          ),
+                    Positioned(
+                      left: 16,
+                      bottom: 16,
+                      width: buttonWidth,
+                      child: _AdvertisingCtaButton(
+                        onTap: () {
+                          CreateSonnikInitialRoute.push(context);
+                        },
+                      ),
                     ),
-                  ),
-                  Positioned(
-                    left: 16,
-                    bottom: 16,
-                    width: buttonWidth,
-                    child: _AdvertisingCtaButton(
-                      onTap: () {
-                        CreateSonnikInitialRoute.push(context);
-                      },
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           );

@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
 import 'package:asteria_app/core/analytics/analytics_events.dart';
@@ -123,7 +124,7 @@ class _CompatibilityPackagesContentState
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
+      children: AsteriaEntrance.sections([
         Text(
           context.l10n.choosePackageTitle,
           style: context.textTheme.inversePlayfairSemiBold32,
@@ -155,7 +156,7 @@ class _CompatibilityPackagesContentState
               ? null
               : () => _handlePurchase(context),
         ),
-      ],
+      ]),
     );
   }
 

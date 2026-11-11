@@ -1,3 +1,5 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
+import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
@@ -22,7 +24,7 @@ class SharedRequestsLeftContent extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+      children: AsteriaEntrance.sections([
         if (requestsLeft == 0)
           Text(
             context.l10n.requestsExhausted,
@@ -59,7 +61,7 @@ class SharedRequestsLeftContent extends StatelessWidget {
           style: context.textTheme.tertiaryUrbanistRegular16,
         ),
         const SizedBox(height: 300),
-      ],
+      ]),
     );
   }
 }
@@ -154,7 +156,7 @@ class _PurchaseBlock extends StatelessWidget {
         onTap: onPressed,
         child: Container(
           padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
+          decoration: CardLensDecoration(
             borderRadius: BorderRadius.circular(16),
             image: const DecorationImage(
               image: AssetImage('assets/images/home/birth_map_bg.webp'),

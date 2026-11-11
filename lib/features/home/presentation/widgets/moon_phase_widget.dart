@@ -1,3 +1,5 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
+import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/card_radii.dart';
 import 'package:asteria_app/app/data/models/lunar_calendar/lunar_recommendation_models.dart';
@@ -291,7 +293,7 @@ class _MoonPhaseWidgetState extends State<MoonPhaseWidget> {
           Container(
             width: double.infinity,
             padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
-            decoration: BoxDecoration(
+            decoration: CardLensDecoration(
               color: const Color(0xFF1D1429),
               borderRadius: BorderRadius.circular(AsteriaCardRadii.card),
               border: Border.all(color: const Color(0x40FFFFFF)),
@@ -363,7 +365,7 @@ class _MoonPhaseWidgetState extends State<MoonPhaseWidget> {
     return Column(
       key: const ValueKey('phase-content'),
       crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
+      children: AsteriaEntrance.sections([
         GestureDetector(
           behavior: HitTestBehavior.opaque,
           onHorizontalDragEnd: (details) =>
@@ -393,7 +395,7 @@ class _MoonPhaseWidgetState extends State<MoonPhaseWidget> {
             ),
           ),
         ),
-      ],
+      ]),
     );
   }
 
@@ -432,7 +434,7 @@ class _MoonPhaseWidgetState extends State<MoonPhaseWidget> {
           Container(
             width: double.infinity,
             padding: const EdgeInsets.fromLTRB(20, 20, 20, 22),
-            decoration: BoxDecoration(
+            decoration: CardLensDecoration(
               color: const Color(0xFF1D1429),
               borderRadius: BorderRadius.circular(AsteriaCardRadii.card),
               border: Border.all(color: const Color(0x40FFFFFF)),
@@ -446,7 +448,7 @@ class _MoonPhaseWidgetState extends State<MoonPhaseWidget> {
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+              children: AsteriaEntrance.sections([
                 Text(
                   context.l10n.moonLocationSetupTitle,
                   style: context.textTheme.playfairSemiBold24.copyWith(
@@ -466,7 +468,7 @@ class _MoonPhaseWidgetState extends State<MoonPhaseWidget> {
                   onLocationUpdateStarted: _startLocationUpdate,
                   onLocationUpdated: _finishLocationUpdate,
                 ),
-              ],
+              ]),
             ),
           ),
         ],
@@ -690,7 +692,7 @@ class _MoonPhaseWidgetState extends State<MoonPhaseWidget> {
         const Padding(
           padding: EdgeInsets.symmetric(horizontal: 16),
           child: _MoonPhaseHeader(),
-        ),
+        ).withEntrance(),
         const SizedBox(height: 16),
         Consumer<UserProvider>(
           builder: (context, userProvider, _) {

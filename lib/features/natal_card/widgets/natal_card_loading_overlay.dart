@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
 import 'dart:async';
 import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
@@ -74,7 +75,7 @@ class _NatalCardLoadingOverlayState extends State<NatalCardLoadingOverlay> {
                 bottom: false,
                 child: SingleChildScrollView(
                   child: Column(
-                    children: [
+                    children: AsteriaEntrance.sections([
                       SizedBox(
                         height: 44,
                         child: Padding(
@@ -153,7 +154,7 @@ class _NatalCardLoadingOverlayState extends State<NatalCardLoadingOverlay> {
                         fit: BoxFit.contain,
                       ),
                       SizedBox(height: media.padding.bottom),
-                    ],
+                    ]),
                   ),
                 ),
               ),

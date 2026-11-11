@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:flutter/material.dart';
 
@@ -9,7 +10,7 @@ class ErrorScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: [
+      children: AsteriaEntrance.sections([
         Text(
           context.l10n.genericSomethingWrong,
           style: context.textTheme.playfairSemiBold24,
@@ -23,7 +24,7 @@ class ErrorScreen extends StatelessWidget {
         ),
         Image.asset('assets/background/error_image.webp', height: 300),
         const SizedBox(height: 150),
-      ],
+      ]),
     );
   }
 }

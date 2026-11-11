@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/app/data/models/natal_card/natal_card_model.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/core/localization/localized_display_names.dart';
@@ -49,7 +50,7 @@ class _WeaknessItem extends StatelessWidget {
     return Container(
       margin: EdgeInsets.only(right: isFullWidth ? 0 : 16),
       width: width,
-      decoration: BoxDecoration(
+      decoration: CardLensDecoration(
         image: DecorationImage(
           image: AssetImage('assets/images/home/month_widget_bg.webp'),
           fit: BoxFit.cover,

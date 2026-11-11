@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/features/auth/presentation/widgets/auth_flow_widgets.dart';
@@ -66,7 +67,7 @@ class _DateTimePickerBottomSheetState extends State<DateTimePickerBottomSheet> {
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+              children: AsteriaEntrance.sections([
                 Center(
                   child: Container(
                     width: 64,
@@ -149,7 +150,7 @@ class _DateTimePickerBottomSheetState extends State<DateTimePickerBottomSheet> {
                     ),
                   ],
                 ),
-              ],
+              ]),
             ),
           ),
         ),
@@ -169,7 +170,7 @@ class _DateTimePickerBottomSheetState extends State<DateTimePickerBottomSheet> {
       ),
       child: SafeArea(
         child: Column(
-          children: [
+          children: AsteriaEntrance.sections([
             Container(
               margin: const EdgeInsets.symmetric(vertical: 8),
               height: 4,
@@ -225,7 +226,7 @@ class _DateTimePickerBottomSheetState extends State<DateTimePickerBottomSheet> {
                 ],
               ),
             ),
-          ],
+          ]),
         ),
       ),
     );

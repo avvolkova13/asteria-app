@@ -38,9 +38,14 @@ void main() {
     expect(TickerMode.valuesOf(first).enabled, isFalse);
     expect(TickerMode.valuesOf(second).enabled, isTrue);
     await tester.pump(const Duration(milliseconds: 125));
-    expect(opacity(first), inExclusiveRange(0, 1));
+    expect(opacity(first), 1);
     expect(opacity(second), inExclusiveRange(0, 1));
+    final secondShare = opacity(second);
     index.value = 0;
+    await tester.pump();
+    // Retarget the same composite without flashing either page or the canvas.
+    expect(opacity(second), 1);
+    expect(opacity(first), closeTo(1 - secondShare, .001));
     await tester.pumpAndSettle();
     expect(tester.element(find.byKey(const Key('first'))), same(first));
     expect(find.text('saved value'), findsOneWidget);

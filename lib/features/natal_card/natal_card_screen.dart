@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/features/horoscope/presentation/horoscope_core_position_assets.dart';
 import 'package:asteria_app/core/ui_kit/card_radii.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
@@ -383,7 +384,7 @@ class _NatalCardScreenState extends State<NatalCardScreen> {
                         onBuyPressed: _openNatalCard,
                       ),
                     ] else
-                      const AsteriaEntrance(child: _NatalCardContent()),
+                      const _NatalCardContent(),
                     const SizedBox(height: 100),
                   ],
                 ),
@@ -454,7 +455,7 @@ class _NatalCardContentState extends State<_NatalCardContent> {
           onChanged: (tab) => setState(() {
             _selectedTab = tab;
           }),
-        ),
+        ).withEntrance(),
         const SizedBox(height: 24),
         AnimatedSwitcher(
           duration: const Duration(milliseconds: 180),
@@ -603,7 +604,7 @@ class _GeneralInfoSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+      children: AsteriaEntrance.sections([
         Text(
           context.l10n.natalGeneralData,
           style: context.textTheme.inversePlayfairSemiBold32.copyWith(
@@ -647,7 +648,7 @@ class _GeneralInfoSection extends StatelessWidget {
             ),
           ],
         ),
-      ],
+      ]),
     );
   }
 }
@@ -664,7 +665,7 @@ class _GeneralInfoItem extends StatelessWidget {
       width: double.infinity,
       // Figma's 114 px card contains a 100 px label starting 8 px from the left.
       padding: const EdgeInsets.fromLTRB(8, 8, 6, 8),
-      decoration: BoxDecoration(
+      decoration: CardLensDecoration(
         color: _NatalCardColors.figmaPurple.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(AsteriaCardRadii.compact),
       ),
@@ -864,7 +865,7 @@ class _PositionsTab extends StatelessWidget {
     return Column(
       key: key,
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+      children: AsteriaEntrance.sections([
         Text(
           context.l10n.natalMainPositions,
           style: context.textTheme.inversePlayfairSemiBold24.copyWith(
@@ -887,7 +888,7 @@ class _PositionsTab extends StatelessWidget {
           _PlanetCardsRow(planets: group.planets),
           const SizedBox(height: 16),
         ],
-      ],
+      ]),
     );
   }
 
@@ -944,7 +945,7 @@ class _PlanetPositionCard extends StatelessWidget {
       width: 325,
       constraints: const BoxConstraints(minHeight: 104),
       clipBehavior: Clip.antiAlias,
-      decoration: BoxDecoration(
+      decoration: CardLensDecoration(
         color: _NatalCardColors.figmaPurple.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(AsteriaCardRadii.tile),
       ),
@@ -1001,7 +1002,7 @@ class _HousesTab extends StatelessWidget {
     return Column(
       key: key,
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+      children: AsteriaEntrance.sections([
         Text(
           context.l10n.natalHousesThemes,
           style: context.textTheme.inversePlayfairSemiBold24.copyWith(
@@ -1027,7 +1028,7 @@ class _HousesTab extends StatelessWidget {
             description: houses[2].description,
           ),
         ],
-      ],
+      ]),
     );
   }
 }
@@ -1043,7 +1044,7 @@ class _HouseThemeCard extends StatelessWidget {
     return Container(
       width: double.infinity,
       clipBehavior: Clip.antiAlias,
-      decoration: BoxDecoration(
+      decoration: CardLensDecoration(
         color: _NatalCardColors.cardSolid,
         borderRadius: BorderRadius.circular(AsteriaCardRadii.tile),
       ),
@@ -1092,7 +1093,7 @@ class _ElementsTab extends StatelessWidget {
     return Column(
       key: key,
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+      children: AsteriaEntrance.sections([
         Text(
           context.l10n.natalElementsModalities,
           style: context.textTheme.inversePlayfairSemiBold24.copyWith(
@@ -1142,7 +1143,7 @@ class _ElementsTab extends StatelessWidget {
         ),
         const SizedBox(height: 24),
         _MagicConclusionCard(description: finalConclusion),
-      ],
+      ]),
     );
   }
 
@@ -1239,7 +1240,7 @@ class _MagicConclusionCard extends StatelessWidget {
       width: double.infinity,
       constraints: const BoxConstraints(minHeight: 224),
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
+      decoration: CardLensDecoration(
         color: _NatalCardColors.cardSolid,
         borderRadius: BorderRadius.circular(AsteriaCardRadii.card),
         image: const DecorationImage(

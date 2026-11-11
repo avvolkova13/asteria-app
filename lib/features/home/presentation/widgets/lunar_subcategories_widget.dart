@@ -1,3 +1,5 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
+import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/app/data/models/lunar_calendar/content_model.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/features/home/presentation/widgets/lunar_card_image.dart';
@@ -36,7 +38,7 @@ class LunarSubcategoriesWidget extends StatelessWidget {
                 title: subcategory.title,
                 description: subcategory.description,
                 assetName: subcategory.assetName,
-              ),
+              ).withEntrance(),
             ],
           ],
         ),
@@ -313,7 +315,7 @@ class _MoonSubcategoryCard extends StatelessWidget {
       width: _width,
       constraints: const BoxConstraints(minHeight: minHeight),
       padding: const EdgeInsets.all(_padding),
-      decoration: BoxDecoration(
+      decoration: CardLensDecoration(
         color: MoonDesignTokens.cardSurface.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: AppColors.white.withValues(alpha: 0.12)),

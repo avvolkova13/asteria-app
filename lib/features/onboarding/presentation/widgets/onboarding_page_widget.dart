@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:asteria_app/core/ui_kit/app_typography.dart';
@@ -68,7 +69,7 @@ class OnboardingPageWidget extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
+              children: AsteriaEntrance.sections([
                 if (isHero)
                   Text.rich(
                     TextSpan(
@@ -89,7 +90,7 @@ class OnboardingPageWidget extends StatelessWidget {
                   Text(page.title, style: _titleStyle),
                 const SizedBox(height: 16),
                 Text(page.description, style: _descriptionStyle),
-              ],
+              ]),
             ),
           );
           return Stack(

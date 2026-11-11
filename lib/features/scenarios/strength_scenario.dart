@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'dart:convert';
 
 import 'package:asteria_app/app/providers/user_provider.dart';
@@ -62,7 +63,7 @@ class StrengthScenarioScreen extends StatelessWidget {
           title: context.l10n.scenarioStrengthChooseArea,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
+            children: AsteriaEntrance.sections([
               for (final area in StrengthArea.values)
                 ScenarioTile(
                   title: area.label(ru),
@@ -79,7 +80,7 @@ class StrengthScenarioScreen extends StatelessWidget {
                             _open(context, _SavedStrengthTips(owner: owner)),
                       ),
               ),
-            ],
+            ]),
           ),
         );
       },
@@ -98,7 +99,7 @@ class _StrengthTasks extends StatelessWidget {
       title: context.l10n.scenarioStrengthChooseSituation,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
+        children: AsteriaEntrance.sections([
           for (final task in StrengthTask.values.where(
             (task) => task.area == area,
           ))
@@ -107,7 +108,7 @@ class _StrengthTasks extends StatelessWidget {
               onTap: () =>
                   _open(context, _StrengthResult(task: task, owner: owner)),
             ),
-        ],
+        ]),
       ),
     );
   }
@@ -182,7 +183,7 @@ class _StrengthResultState extends State<_StrengthResult> {
           title: tip.situation,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
+            children: AsteriaEntrance.sections([
               if (archive)
                 Padding(
                   padding: const EdgeInsets.only(bottom: 8),
@@ -306,7 +307,7 @@ class _StrengthResultState extends State<_StrengthResult> {
                 text: context.l10n.scenarioGoHome,
                 onPressed: () => scenarioHome(context),
               ),
-            ],
+            ]),
           ),
         );
       },
@@ -339,7 +340,7 @@ class _SavedStrengthTips extends StatelessWidget {
           title: context.l10n.scenarioStrengthSavedTips,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
+            children: AsteriaEntrance.sections([
               for (final tip in tips)
                 ScenarioTile(
                   title: tip.title,
@@ -348,7 +349,7 @@ class _SavedStrengthTips extends StatelessWidget {
                   onTap: () =>
                       _open(context, _StrengthResult(saved: tip, owner: owner)),
                 ),
-            ],
+            ]),
           ),
         );
       },

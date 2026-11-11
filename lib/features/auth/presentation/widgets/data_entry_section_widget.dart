@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/app/data/models/user/user_model.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
@@ -77,7 +78,7 @@ class DataEntrySectionWidget extends StatelessWidget {
           },
           labelBuilder: (gender) =>
               authLocalization.genderLabel(context, gender),
-        ),
+        ).withEntrance(),
         const SizedBox(height: 12),
         InputsSectionWidget(
           currentUser: currentUser,

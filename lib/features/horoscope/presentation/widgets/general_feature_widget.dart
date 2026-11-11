@@ -1,3 +1,5 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
+import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/app/data/models/horoscope/horoscope_year_model.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/features/horoscope/presentation/horoscope_core_position_assets.dart';
@@ -10,7 +12,7 @@ class GeneralFeatureWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      children: [
+      children: AsteriaEntrance.sections([
         Align(
           alignment: Alignment.centerLeft,
           child: Text(
@@ -41,7 +43,7 @@ class GeneralFeatureWidget extends StatelessWidget {
           description:
               horoscopeYear.coreDescription.ascendantInSign.description,
         ),
-      ],
+      ]),
     );
   }
 }
@@ -61,7 +63,7 @@ class _GeneralFeatureItem extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(8),
       margin: const EdgeInsets.only(bottom: 16),
-      decoration: BoxDecoration(
+      decoration: CardLensDecoration(
         borderRadius: BorderRadius.circular(16),
         color: AppColors.cardTinted,
       ),

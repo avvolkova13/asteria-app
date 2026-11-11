@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:flutter/material.dart';
@@ -22,12 +23,19 @@ class FeaturesListBlock extends StatelessWidget {
     required this.description3,
   }) : super(key: key);
 
-  Widget _buildFeatureItem(BuildContext context, String title, String description) {
+  Widget _buildFeatureItem(
+    BuildContext context,
+    String title,
+    String description,
+  ) {
     return RichText(
       text: TextSpan(
         children: [
           TextSpan(text: title, style: context.textTheme.urbanistSemiBold16),
-          TextSpan(text: description, style: context.textTheme.urbanistRegular16),
+          TextSpan(
+            text: description,
+            style: context.textTheme.urbanistRegular16,
+          ),
         ],
       ),
     );
@@ -37,7 +45,10 @@ class FeaturesListBlock extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(borderRadius: BorderRadius.circular(16), color: AppColors.cardTinted),
+      decoration: CardLensDecoration(
+        borderRadius: BorderRadius.circular(16),
+        color: AppColors.cardTinted,
+      ),
       child: Column(
         children: [
           Row(

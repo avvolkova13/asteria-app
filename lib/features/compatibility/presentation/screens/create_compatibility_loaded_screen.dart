@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/analytics/analytics_events.dart';
 import 'package:asteria_app/core/analytics/analytics_facade.dart';
 import 'package:asteria_app/core/analytics/event_params.dart';
@@ -42,7 +43,7 @@ class _CreateCompatibilityLoadedScreenState
           child: Text(
             context.l10n.compatibilityNoData,
             style: context.textTheme.inverseUrbanistRegular16,
-          ),
+          ).withEntrance(),
         ),
       );
     }

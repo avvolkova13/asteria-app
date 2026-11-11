@@ -372,7 +372,7 @@ class _AnakraChatScreenState extends State<AnakraChatScreen> {
                     onSend: () => _sendMessage(provider),
                   ),
                 ),
-              ),
+              ).withEntrance(),
             ],
           );
         },

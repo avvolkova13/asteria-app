@@ -452,7 +452,7 @@ class _RuneDescriptionModal extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+                    children: AsteriaEntrance.sections([
                       Container(
                         alignment: Alignment.centerLeft,
                         child: Text(
@@ -484,7 +484,7 @@ class _RuneDescriptionModal extends StatelessWidget {
                         textAlign: TextAlign.left,
                       ),
                       const SizedBox(height: 32),
-                    ],
+                    ]),
                   ),
                 ),
               ),

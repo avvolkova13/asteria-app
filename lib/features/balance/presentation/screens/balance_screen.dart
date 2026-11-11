@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/card_radii.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
 import 'package:asteria_app/core/const/pricing_catalog.dart';
@@ -42,18 +43,18 @@ class _BalanceScreenState extends State<BalanceScreen> {
                 ProfileFlowHeader(
                   title: context.l10n.balanceTitle,
                   canPop: true,
-                ),
+                ).withEntrance(),
                 const SizedBox(height: 28),
-                const _IntroText(),
+                const _IntroText().withEntrance(),
                 const SizedBox(height: 24),
-                _HistoryButton(onTap: () => BalanceHistoryRoute.push(context)),
+                _HistoryButton(onTap: () => BalanceHistoryRoute.push(context)).withEntrance(),
                 const SizedBox(height: 24),
-                const _WhereToSpend(),
+                const _WhereToSpend().withEntrance(),
                 const SizedBox(height: 16),
                 ProfilePrimaryButton(
                   onPressed: () => CoinsPaywallRoute.push(context),
                   text: context.l10n.balanceBuy,
-                ),
+                ).withEntrance(),
                 const SizedBox(height: 24),
                 CardAdvertisementWidget(
                   horizontalMargin: 0,
@@ -67,7 +68,7 @@ class _BalanceScreenState extends State<BalanceScreen> {
                       originSurface: 'balance_subscription_banner',
                     ),
                   ),
-                ),
+                ).withEntrance(),
                 const SizedBox(height: 24),
                 const EarnRewardsSection(),
               ],

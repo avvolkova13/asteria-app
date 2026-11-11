@@ -1,3 +1,5 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
+import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
 import 'package:asteria_app/core/ui_kit/card_radii.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
@@ -17,7 +19,7 @@ class HoroscopeEmptyScreen extends StatelessWidget {
         constraints: const BoxConstraints(maxWidth: _HoroscopePaywall.maxWidth),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
+          children: AsteriaEntrance.sections([
             Text(
               context.l10n.yearHoroscopePriceTitle(
                 HoroscopeTypeEnum.year.price,
@@ -60,7 +62,7 @@ class HoroscopeEmptyScreen extends StatelessWidget {
                 letterSpacing: 0,
               ),
             ),
-          ],
+          ]),
         ),
       ),
     );
@@ -94,7 +96,7 @@ class _InsideCard extends StatelessWidget {
     return Container(
       constraints: const BoxConstraints(minHeight: 258),
       padding: const EdgeInsets.fromLTRB(16, 15, 12, 14),
-      decoration: BoxDecoration(
+      decoration: CardLensDecoration(
         color: _HoroscopePaywall.glass,
         borderRadius: BorderRadius.circular(AsteriaCardRadii.card),
         border: Border.all(color: _HoroscopePaywall.glassBorder, width: 0.7),
@@ -239,7 +241,7 @@ class _ChapterIncludesList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      children: [
+      children: AsteriaEntrance.sections([
         _ChapterItem(text: context.l10n.horoscopeGeneral, isStrong: true),
         const SizedBox(height: 8),
         _ChapterItem(text: context.l10n.horoscopeWeakPoints, isStrong: true),
@@ -250,7 +252,7 @@ class _ChapterIncludesList extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         _ChapterItem(text: context.l10n.horoscopeLifetimeDescription),
-      ],
+      ]),
     );
   }
 }

@@ -25,7 +25,7 @@ class CreateSonnikHistoryScreen extends StatelessWidget {
           return ListView(
             physics: const ClampingScrollPhysics(),
             padding: const EdgeInsets.fromLTRB(16, 24, 16, 40),
-            children: [
+            children: AsteriaEntrance.sections([
               Text(
                 context.l10n.dreamHistoryTitle,
                 style: context.textTheme.inversePlayfairSemiBold32,
@@ -57,7 +57,7 @@ class CreateSonnikHistoryScreen extends StatelessWidget {
                     ),
                   );
                 }),
-            ],
+            ]),
           );
         },
       ),

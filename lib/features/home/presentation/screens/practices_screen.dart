@@ -23,7 +23,7 @@ class PracticesScreen extends StatelessWidget {
             const HomeAccountBar(
               showAccountActions: false,
               backgroundColor: AppColors.textPrimary,
-            ),
+            ).withEntrance(),
             const SizedBox(height: 26),
             AsteriaEntrance(
               child: Padding(
@@ -36,10 +36,7 @@ class PracticesScreen extends StatelessWidget {
             const SizedBox(height: 32),
             ListenableBuilder(
               listenable: content,
-              builder: (context, _) => AsteriaEntrance(
-                replayKey: content.articles.isNotEmpty,
-                child: ArticlesSectionWidget(),
-              ),
+              builder: (context, _) => ArticlesSectionWidget(),
             ),
             const SizedBox(height: 16),
           ],

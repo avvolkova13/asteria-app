@@ -1,3 +1,5 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
+import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/ui_kit/card_radii.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
@@ -37,7 +39,7 @@ class CompatibilityLayout extends StatelessWidget {
         body: Stack(
           fit: StackFit.expand,
           children: [
-            const _CompatibilityStarBackground(),
+            const _CompatibilityStarBackground().withEntrance(),
             CustomScrollView(
               physics: physics,
               slivers: [
@@ -60,7 +62,7 @@ class CompatibilityLayout extends StatelessWidget {
                           const Align(
                             alignment: Alignment.centerLeft,
                             child: CompatibilityRequestsBadge(),
-                          ),
+                          ).withEntrance(),
                           const SizedBox(height: 28),
                         ],
                         child,
@@ -254,7 +256,9 @@ class CompatibilityGlassCard extends StatelessWidget {
     required this.child,
     this.padding = const EdgeInsets.all(14),
     this.border,
-    this.borderRadius = const BorderRadius.all(Radius.circular(AsteriaCardRadii.tile)),
+    this.borderRadius = const BorderRadius.all(
+      Radius.circular(AsteriaCardRadii.tile),
+    ),
     this.gradient,
   });
 
@@ -262,7 +266,7 @@ class CompatibilityGlassCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: padding,
-      decoration: BoxDecoration(
+      decoration: CardLensDecoration(
         borderRadius: borderRadius,
         gradient:
             gradient ??

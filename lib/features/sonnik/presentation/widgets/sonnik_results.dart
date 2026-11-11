@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/app/data/models/sonnik/sonnik_model.dart';
 import 'package:asteria_app/core/routing/app_route.dart';
@@ -19,7 +20,7 @@ class SonnikResults extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+      children: AsteriaEntrance.sections([
         Text(
           sonnik.title,
           style: context.textTheme.inversePlayfairSemiBold24,
@@ -56,7 +57,7 @@ class SonnikResults extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 60),
-      ],
+      ]),
     );
   }
 }

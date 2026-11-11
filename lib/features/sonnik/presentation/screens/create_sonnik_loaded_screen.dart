@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/analytics/analytics_events.dart';
 import 'package:asteria_app/core/analytics/analytics_facade.dart';
 import 'package:asteria_app/core/analytics/event_params.dart';
@@ -41,7 +42,7 @@ class _CreateSonnikLoadedScreenState extends State<CreateSonnikLoadedScreen> {
           child: Text(
             context.l10n.dreamNoData,
             style: context.textTheme.inverseUrbanistRegular16,
-          ),
+          ).withEntrance(),
         ),
       );
     }

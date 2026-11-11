@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:flutter/material.dart';
@@ -20,7 +21,7 @@ class HowToUseTaroCards extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Column(
-            children: [
+            children: AsteriaEntrance.sections([
               const SizedBox(height: 16),
               // Drag indicator
               Container(
@@ -70,7 +71,7 @@ class HowToUseTaroCards extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 16),
-            ],
+            ]),
           ),
         ),
       ),

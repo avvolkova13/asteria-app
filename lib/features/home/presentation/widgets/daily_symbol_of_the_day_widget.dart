@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'dart:math' as math;
 import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
@@ -147,13 +148,13 @@ class _DailySymbolOfTheDayWidgetState extends State<DailySymbolOfTheDayWidget>
                   height: 1,
                   letterSpacing: 0,
                 ),
-              ),
+              ).withEntrance(),
               const SizedBox(height: 16),
               _SegmentedPicker(
                 selectedTab: _selectedTab,
                 onChanged: _selectTab,
                 orangeGradient: _orangeGradient,
-              ),
+              ).withEntrance(),
               const SizedBox(height: 9),
               AnimatedSwitcher(
                 duration: const Duration(milliseconds: 180),
@@ -364,7 +365,7 @@ class _TarotSymbolContent extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       key: key,
-      children: [
+      children: AsteriaEntrance.sections([
         _SectionTitleRow(
           title: context.l10n.dailyTarotTitle,
           refreshSemanticLabel: context.l10n.refreshDailyTarotLabel,
@@ -372,7 +373,7 @@ class _TarotSymbolContent extends StatelessWidget {
         ),
         const SizedBox(height: 9),
         _buildContent(context),
-      ],
+      ]),
     );
   }
 
@@ -472,7 +473,7 @@ class _RuneSymbolContent extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       key: key,
-      children: [
+      children: AsteriaEntrance.sections([
         _SectionTitleRow(
           title: context.l10n.dailyRuneTitle,
           refreshSemanticLabel: context.l10n.refreshDailyRuneLabel,
@@ -480,7 +481,7 @@ class _RuneSymbolContent extends StatelessWidget {
         ),
         const SizedBox(height: 9),
         _buildContent(context),
-      ],
+      ]),
     );
   }
 

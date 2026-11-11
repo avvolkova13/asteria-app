@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/ui_kit/card_radii.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'dart:async';
@@ -50,7 +51,7 @@ class CardAdvertisementWidget extends StatelessWidget {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: horizontalMargin ?? 16),
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
+      decoration: CardLensDecoration(
         borderRadius: BorderRadius.circular(AsteriaCardRadii.card),
         image: const DecorationImage(
           image: AssetImage('assets/images/home/birth_map_bg.webp'),
@@ -98,7 +99,7 @@ class CardAdvertisementWidget extends StatelessWidget {
           key: const ValueKey('natal-card-banner'),
           margin: EdgeInsets.symmetric(horizontal: horizontalMargin ?? 16),
           padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
+          decoration: CardLensDecoration(
             color: _natalCardBannerBackground,
             borderRadius: BorderRadius.circular(AsteriaCardRadii.card),
           ),
@@ -156,7 +157,7 @@ class CardAdvertisementWidget extends StatelessWidget {
           height: scaledHeight.toDouble(),
           margin: EdgeInsets.symmetric(horizontal: horizontalMargin),
           clipBehavior: Clip.antiAlias,
-          decoration: BoxDecoration(
+          decoration: CardLensDecoration(
             color: _balanceSubscriptionBackground,
             borderRadius: BorderRadius.circular(borderRadius),
           ),

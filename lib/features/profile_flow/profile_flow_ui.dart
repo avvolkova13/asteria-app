@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/ui_kit/card_radii.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
@@ -147,10 +148,7 @@ class ProfileFlowHeader extends StatelessWidget {
         ),
         if (showTitleLarge) ...[
           const SizedBox(height: 28),
-          Text(
-            title,
-            style: context.textTheme.inversePlayfairSemiBold32,
-          ),
+          Text(title, style: context.textTheme.inversePlayfairSemiBold32),
         ],
       ],
     );
@@ -189,7 +187,11 @@ class ProfileProPill extends StatelessWidget {
           ),
           if (!isActive) ...[
             const SizedBox(width: 5),
-            const ClayIcon(Icons.lock_outline, size: 13, color: AppColors.white),
+            const ClayIcon(
+              Icons.lock_outline,
+              size: 13,
+              color: AppColors.white,
+            ),
           ],
         ],
       ),
@@ -222,7 +224,7 @@ class ProfileGlassCard extends StatelessWidget {
       child: BackdropFilter(
         filter: ui.ImageFilter.blur(sigmaX: 8, sigmaY: 8),
         child: DecoratedBox(
-          decoration: BoxDecoration(
+          decoration: CardLensDecoration(
             color: color ?? ProfileFlowColors.card,
             borderRadius: radius,
             border: Border.all(color: ProfileFlowColors.border, width: 0.8),
@@ -278,9 +280,7 @@ class ProfileIconBox extends StatelessWidget {
                 iconAsset!,
                 width: iconSize,
                 height: iconSize,
-                tint: preserveAssetColors
-                    ? null
-                    : AppColors.white,
+                tint: preserveAssetColors ? null : AppColors.white,
               )
             : ClayIcon(
                 icon ?? Icons.star_rounded,
@@ -413,7 +413,11 @@ class _BalancePill extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 3),
-        LotusRasterIcon('assets/icons/star_coin_icon.png', width: 13, height: 13),
+        LotusRasterIcon(
+          'assets/icons/star_coin_icon.png',
+          width: 13,
+          height: 13,
+        ),
       ],
     );
   }

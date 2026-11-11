@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/app/data/models/tarot_card/tarot_card_model.dart';
 import 'package:asteria_app/app/providers/content_provider.dart';
@@ -152,7 +153,7 @@ class _CardDescriptionModal extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+                    children: AsteriaEntrance.sections([
                       _GradientText(
                         text: card.title,
                         gradient: _AllCardsModalColors.goldGradient,
@@ -183,7 +184,7 @@ class _CardDescriptionModal extends StatelessWidget {
                         ),
                       ],
                       const SizedBox(height: 32),
-                    ],
+                    ]),
                   ),
                 ),
               ),

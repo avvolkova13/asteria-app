@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
@@ -285,6 +286,13 @@ class _GlassPainter extends CustomPainter {
       canvas.drawPath(path, Paint()..shader = program);
     } else {
       canvas.drawPath(path, Paint()..color = tint);
+    }
+    if (pathBuilder == null) {
+      CardLensDecoration.paintFinish(
+        canvas,
+        RRect.fromRectAndRadius(Offset.zero & size, Radius.circular(radius)),
+      );
+      return;
     }
     canvas.drawPath(
       path,

@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
@@ -97,7 +98,7 @@ class MoonCalendarWidget extends StatelessWidget {
     }
 
     return DecoratedBox(
-      decoration: BoxDecoration(
+      decoration: CardLensDecoration(
         color: MoonDesignTokens.calendarSurface,
         borderRadius: BorderRadius.circular(24),
         border: Border.all(color: AppColors.white.withValues(alpha: 0.1)),

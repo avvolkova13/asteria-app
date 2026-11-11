@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/ui_kit/card_radii.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
@@ -102,121 +103,125 @@ class _AffirmationOfTheDayState extends State<AffirmationOfTheDayWidget> {
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: ClipRRect(
         borderRadius: radius,
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            Positioned.fill(
-              child: ExcludeSemantics(
-                child: ExcludeFocus(
-                  child: LotusTap(
-                    behavior: HitTestBehavior.opaque,
-                    onTap: _toggle,
-                    child: RepaintBoundary(
-                      child: PlayerArtwork(
-                        position: player?.position ?? _resumeAt,
-                        duration:
-                            player?.duration ?? const Duration(seconds: 75),
-                        playing: playing,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            const Positioned.fill(
-              child: IgnorePointer(
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        Color(0x80291B36),
-                        Color(0x70291B36),
-                        Color(0x00291B36),
-                        Color(0x00291B36),
-                        Color(0x88291B36),
-                        Color(0x80291B36),
-                      ],
-                      stops: [0, .16, .42, .58, .84, 1],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 16, 16, 12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  IgnorePointer(
-                    child: Text(
-                      strings.affirmationOfDay,
-                      style: AppTypography.h3.copyWith(
-                        color: AppColors.textInverse,
-                        shadows: const [
-                          Shadow(color: Color(0x88402A55), blurRadius: 5),
-                        ],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 94),
-                  Row(
-                    children: [
-                      PlayerPebble(
-                        primary: true,
-                        compact: true,
-                        glyph: playing ? ClayGlyph.pause : ClayGlyph.play,
-                        label: playing
-                            ? strings.playerPause
-                            : player?.isComplete == true
-                            ? strings.playerReplay
-                            : strings.playerPlay,
-                        onTap: _toggle,
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Align(
-                          alignment: Alignment.centerRight,
-                          child: LotusButtons.text(
-                            onPressed: _openCollection,
-                            style: TextButton.styleFrom(
-                              minimumSize: const Size(44, 44),
-                              foregroundColor: AppColors.textInverse,
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 6,
-                              ),
-                            ),
-                            child: _opening
-                                ? const SizedBox.square(
-                                    dimension: 20,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                    ),
-                                  )
-                                : Text(
-                                    strings.allAffirmations,
-                                    textAlign: TextAlign.end,
-                                    style: AppTypography.link.copyWith(
-                                      color: AppColors.textInverse,
-                                      shadows: const [
-                                        Shadow(
-                                          color: Color(0x99402A55),
-                                          blurRadius: 5,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                          ),
+        child: DecoratedBox(
+          position: DecorationPosition.foreground,
+          decoration: CardLensDecoration(borderRadius: radius),
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              Positioned.fill(
+                child: ExcludeSemantics(
+                  child: ExcludeFocus(
+                    child: LotusTap(
+                      behavior: HitTestBehavior.opaque,
+                      onTap: _toggle,
+                      child: RepaintBoundary(
+                        child: PlayerArtwork(
+                          position: player?.position ?? _resumeAt,
+                          duration:
+                              player?.duration ?? const Duration(seconds: 75),
+                          playing: playing,
                         ),
                       ),
-                    ],
+                    ),
                   ),
-                ],
+                ),
               ),
-            ),
-          ],
+              const Positioned.fill(
+                child: IgnorePointer(
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Color(0x80291B36),
+                          Color(0x70291B36),
+                          Color(0x00291B36),
+                          Color(0x00291B36),
+                          Color(0x88291B36),
+                          Color(0x80291B36),
+                        ],
+                        stops: [0, .16, .42, .58, .84, 1],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 16, 16, 12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IgnorePointer(
+                      child: Text(
+                        strings.affirmationOfDay,
+                        style: AppTypography.h3.copyWith(
+                          color: AppColors.textInverse,
+                          shadows: const [
+                            Shadow(color: Color(0x88402A55), blurRadius: 5),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 94),
+                    Row(
+                      children: [
+                        PlayerPebble(
+                          primary: true,
+                          compact: true,
+                          glyph: playing ? ClayGlyph.pause : ClayGlyph.play,
+                          label: playing
+                              ? strings.playerPause
+                              : player?.isComplete == true
+                              ? strings.playerReplay
+                              : strings.playerPlay,
+                          onTap: _toggle,
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Align(
+                            alignment: Alignment.centerRight,
+                            child: LotusButtons.text(
+                              onPressed: _openCollection,
+                              style: TextButton.styleFrom(
+                                minimumSize: const Size(44, 44),
+                                foregroundColor: AppColors.textInverse,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 6,
+                                ),
+                              ),
+                              child: _opening
+                                  ? const SizedBox.square(
+                                      dimension: 20,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                      ),
+                                    )
+                                  : Text(
+                                      strings.allAffirmations,
+                                      textAlign: TextAlign.end,
+                                      style: AppTypography.link.copyWith(
+                                        color: AppColors.textInverse,
+                                        shadows: const [
+                                          Shadow(
+                                            color: Color(0x99402A55),
+                                            blurRadius: 5,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

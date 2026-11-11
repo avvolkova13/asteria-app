@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/analytics/analytics_events.dart';
 import 'package:asteria_app/core/analytics/analytics_facade.dart';
@@ -101,7 +102,7 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
                             : null;
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
+                          children: AsteriaEntrance.sections([
                             SizedBox(height: isCompact ? 58 : 68),
                             Text(
                               l10n.emailAuthTitle,
@@ -162,7 +163,7 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
                                 onTap: () => Navigator.pop(context),
                               ),
                             const SizedBox(height: 18),
-                          ],
+                          ]),
                         );
                       },
                     ),

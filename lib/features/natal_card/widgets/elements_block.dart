@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/core/ui_kit/widgets/gradient_circular_progress_painter.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +11,7 @@ class ElementsBlock extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      children: [
+      children: AsteriaEntrance.sections([
         Text(
           context.l10n.natalElementsModalities.replaceAll('\n', ' '),
           style: context.textTheme.playfairSemiBold24,
@@ -31,7 +32,7 @@ class ElementsBlock extends StatelessWidget {
           style: context.textTheme.urbanistRegular16,
           textAlign: TextAlign.center,
         ),
-      ],
+      ]),
     );
   }
 }

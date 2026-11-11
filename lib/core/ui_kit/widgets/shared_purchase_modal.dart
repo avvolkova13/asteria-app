@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
 import 'package:asteria_app/core/analytics/dictionaries/failure_reason.dart';
@@ -226,7 +227,7 @@ class _SharedPurchaseModalState extends State<SharedPurchaseModal> {
         monetizationProvider?.balanceAfterSpend(widget.price) ?? 0;
     return Expanded(
       child: Column(
-        children: [
+        children: AsteriaEntrance.sections([
           Text(
             context.l10n.purchaseConfirmTitle,
             style: context.textTheme.inversePlayfairSemiBold24.copyWith(
@@ -264,7 +265,7 @@ class _SharedPurchaseModalState extends State<SharedPurchaseModal> {
               ],
             ),
           ),
-        ],
+        ]),
       ),
     );
   }
@@ -482,7 +483,7 @@ class _SuccessContent extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
-        children: [
+        children: AsteriaEntrance.sections([
           const _Grabber(),
           const SizedBox(height: 24),
           ClayAssetIcon(
@@ -508,7 +509,7 @@ class _SuccessContent extends StatelessWidget {
               onPressed: onPressed,
             ),
           ),
-        ],
+        ]),
       ),
     );
   }

@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/core/localization/localization.dart';
 import 'package:asteria_app/features/profile_flow/profile_flow_ui.dart';
@@ -25,7 +26,7 @@ class AboutUsScreen extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(12, 14, 12, 48),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
+              children: AsteriaEntrance.sections([
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 4),
                   child: ProfileFlowHeader(
@@ -82,7 +83,7 @@ class AboutUsScreen extends StatelessWidget {
                   title: context.l10n.contactsTitle,
                   shortDescription: context.l10n.contactsDescription,
                 ),
-              ],
+              ]),
             ),
           ),
         ),

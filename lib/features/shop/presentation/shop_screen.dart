@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/ui_kit/card_radii.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
@@ -119,17 +120,17 @@ class _ShopScreenState extends State<ShopScreen> {
                             context.l10n.shopTitle,
                             style: context.textTheme.inversePlayfairSemiBold32
                                 .copyWith(height: 1.2),
-                          ),
+                          ).withEntrance(),
                           const SizedBox(height: 13),
                           Text(
                             context.l10n.shopSubtitle,
                             style: context.textTheme.inverseUrbanistRegular16
                                 .copyWith(height: 1.2),
-                          ),
+                          ).withEntrance(),
                           const SizedBox(height: 16),
-                          _buildSubscriptionPromoSection(context),
-                          AsteriaEntrance(
-                            replayKey: state.runtimeType,
+                          _buildSubscriptionPromoSection(context).withEntrance(),
+                          KeyedSubtree(
+                            key: ValueKey(state.runtimeType),
                             child: _buildShopContent(context, state),
                           ),
                         ],
@@ -152,7 +153,7 @@ class _ShopScreenState extends State<ShopScreen> {
       ShopLoaded(products: final products) => _buildProductsList(products),
       ShopError() => Center(
         child: Column(
-          children: [
+          children: AsteriaEntrance.sections([
             Text(
               context.l10n.shopLoadError,
               style: context.textTheme.inverseUrbanistRegular16,
@@ -164,7 +165,7 @@ class _ShopScreenState extends State<ShopScreen> {
                   context.read<ShopBloc>().add(const ShopLoadProducts()),
               child: Text(context.l10n.commonRetry),
             ),
-          ],
+          ]),
         ),
       ),
       ShopPurchaseLoading(products: final products) => _buildProductsList(
@@ -175,7 +176,7 @@ class _ShopScreenState extends State<ShopScreen> {
           _ShopStatusBanner(
             message: context.l10n.shopPurchaseComplete,
             color: AppColors.success,
-          ),
+          ).withEntrance(),
           const SizedBox(height: 16),
           _buildProductsList(products),
         ],
@@ -185,7 +186,7 @@ class _ShopScreenState extends State<ShopScreen> {
           _ShopStatusBanner(
             message: context.l10n.shopPurchaseError,
             color: AppColors.error,
-          ),
+          ).withEntrance(),
           const SizedBox(height: 16),
           _buildProductsList(products),
         ],
@@ -234,7 +235,7 @@ class _ShopScreenState extends State<ShopScreen> {
             (product) => _ShopListItem(
               product: product,
               onTap: () => showPurchaseModalSheet(product),
-            ),
+            ).withEntrance(),
           )
           .toList(),
     );
@@ -276,9 +277,11 @@ class _ShopListItem extends StatelessWidget {
                 child: BackdropFilter(
                   filter: ui.ImageFilter.blur(sigmaX: 8, sigmaY: 8),
                   child: DecoratedBox(
-                    decoration: BoxDecoration(
+                    decoration: CardLensDecoration(
                       color: _ShopColors.card,
-                      borderRadius: BorderRadius.circular(AsteriaCardRadii.tile),
+                      borderRadius: BorderRadius.circular(
+                        AsteriaCardRadii.tile,
+                      ),
                       border: Border.all(
                         color: _ShopColors.cardBorder,
                         width: 0.6,
@@ -298,7 +301,8 @@ class _ShopListItem extends StatelessWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Row(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Expanded(
                                         child: Text(
@@ -442,7 +446,9 @@ class _ShopHeader extends StatelessWidget {
                     keyboard: true,
                     builder: (activate) => Semantics(
                       button: true,
-                      label: MaterialLocalizations.of(context).backButtonTooltip,
+                      label: MaterialLocalizations.of(
+                        context,
+                      ).backButtonTooltip,
                       onTap: activate,
                       child: ExcludeSemantics(
                         child: GestureDetector(
@@ -474,7 +480,7 @@ class _ShopHeader extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: context.textTheme.inversePlayfairSemiBold17
                           .copyWith(height: 1.2),
-                    ),
+                    ).withEntrance(),
                   ),
                 ],
               ),
@@ -503,7 +509,7 @@ class _ShopHeader extends StatelessWidget {
                             '$balance ',
                             style: context.textTheme.inversePlayfairSemiBold17
                                 .copyWith(height: 1.2),
-                          ),
+                          ).withEntrance(),
                           LotusRasterIcon(
                             'assets/icons/star_coin_icon.png',
                             width: 14,
@@ -598,7 +604,11 @@ class _ShopPrice extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 2),
-        LotusRasterIcon('assets/icons/star_coin_icon.png', width: 17, height: 17),
+        LotusRasterIcon(
+          'assets/icons/star_coin_icon.png',
+          width: 17,
+          height: 17,
+        ),
       ],
     );
   }
@@ -649,10 +659,10 @@ class _ShopLoadingState extends StatelessWidget {
     return const Padding(
       padding: EdgeInsets.only(top: 28),
       child: Center(
-        child: CircularProgressIndicator(
+        child: AsteriaEntrance(child: CircularProgressIndicator(
           color: _ShopColors.gold,
           strokeWidth: 2,
-        ),
+        )),
       ),
     );
   }
@@ -671,7 +681,7 @@ class _ShopStatusBanner extends StatelessWidget {
       child: BackdropFilter(
         filter: ui.ImageFilter.blur(sigmaX: 8, sigmaY: 8),
         child: DecoratedBox(
-          decoration: BoxDecoration(
+          decoration: CardLensDecoration(
             color: color.withValues(alpha: 0.22),
             borderRadius: BorderRadius.circular(16),
             border: Border.all(color: AppColors.white.withValues(alpha: 0.2)),

@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/app/providers/user_provider.dart';
 import 'package:asteria_app/core/di/di.dart';
 import 'package:asteria_app/core/location/widgets/current_location_controls.dart';
@@ -21,7 +22,7 @@ class SettingsScreen extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(16, 14, 16, 48),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+              children: AsteriaEntrance.sections([
                 ProfileFlowHeader(
                   title: context.l10n.settingsNotifications,
                   canPop: true,
@@ -48,7 +49,7 @@ class SettingsScreen extends StatelessWidget {
                   title: context.l10n.settingsPushNotifications,
                   value: true,
                 ),
-              ],
+              ]),
             ),
           ),
         ),

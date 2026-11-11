@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/app/data/models/prompt_response.dart';
 import 'package:asteria_app/core/extensions/datetime_extensions.dart';
@@ -28,7 +29,7 @@ class CompabilityResults extends StatelessWidget {
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
+      children: AsteriaEntrance.sections([
         _ZodiacCompatibilityHero(
           firstDate: firstDate,
           secondDate: secondDate,
@@ -85,7 +86,7 @@ class CompabilityResults extends StatelessWidget {
             ),
           ),
         ),
-      ],
+      ]),
     );
   }
 }

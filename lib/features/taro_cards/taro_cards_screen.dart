@@ -100,7 +100,7 @@ class TaroCardsScreen extends StatelessWidget {
                             return _TaroCardsContent(
                               tarotCard: tarotCard,
                               initialTab: initialTab,
-                            ).withEntrance();
+                            );
                           } catch (e) {
                             return ErrorScreenWidget(
                               error: context.l10n.tarotLoadError,
@@ -391,7 +391,7 @@ class _TaroCardsContentState extends State<_TaroCardsContent> {
               _selectedTabIndex = index;
             });
           },
-        ),
+        ).withEntrance(),
         const SizedBox(height: 24),
         _buildTabContent(
           // Карта дня
@@ -451,7 +451,7 @@ class _TaroCardsContentState extends State<_TaroCardsContent> {
                   SpecialDecks(
                     onBuyLoveDeckPressed: _onBuyLoveDeckPressed,
                     onBuyKeltDeckPressed: _onBuyKeltDeckPressed,
-                  ),
+                  ).withEntrance(),
                 ],
               );
             },
@@ -459,7 +459,7 @@ class _TaroCardsContentState extends State<_TaroCardsContent> {
           // Расклад
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+            children: AsteriaEntrance.sections([
               SizedBox(
                 height: 38,
                 child: Row(
@@ -550,7 +550,7 @@ class _TaroCardsContentState extends State<_TaroCardsContent> {
 
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
+                      children: AsteriaEntrance.sections([
                         if (!hasOpenedInsight) ...[
                           Center(
                             child: _GradientUnderlineButton(
@@ -589,7 +589,7 @@ class _TaroCardsContentState extends State<_TaroCardsContent> {
                               onPressed: _onGetInsightPressed,
                             ),
                         ],
-                      ],
+                      ]),
                     );
                   },
                 ),
@@ -598,7 +598,7 @@ class _TaroCardsContentState extends State<_TaroCardsContent> {
                 onBuyLoveDeckPressed: _onBuyLoveDeckPressed,
                 onBuyKeltDeckPressed: _onBuyKeltDeckPressed,
               ),
-            ],
+            ]),
           ),
           // Все карты
           const AllCardsTab(),
@@ -705,7 +705,7 @@ class _TarotInsightBlockState extends State<_TarotInsightBlock> {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+      children: AsteriaEntrance.sections([
         Text(
           context.l10n.tarotChooseSphere,
           style: context.textTheme.playfairMedium20.copyWith(
@@ -736,7 +736,7 @@ class _TarotInsightBlockState extends State<_TarotInsightBlock> {
             letterSpacing: -0.408,
           ),
         ),
-      ],
+      ]),
     );
   }
 }

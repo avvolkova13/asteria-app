@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/app/providers/content_provider.dart';
 import 'package:asteria_app/app/providers/user_provider.dart';
@@ -207,7 +208,7 @@ class _CreateCompatibilityInitialScreenState
       resizeToAvoidBottomInset: true,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
+        children: AsteriaEntrance.sections([
           Text(
             context.l10n.compatibilityPartnerDetailsTitle,
             style: context.textTheme.inversePlayfairSemiBold32,
@@ -253,7 +254,7 @@ class _CreateCompatibilityInitialScreenState
                 ),
               ),
             ),
-        ],
+        ]),
       ),
     );
   }

@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/card_radii.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
@@ -42,7 +43,7 @@ class AnakraRequestsLeftScreen extends StatelessWidget {
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
+      children: AsteriaEntrance.sections([
         const SizedBox(height: 62),
         if (!hasAnyRequests)
           _NoRequestsTitle(daysUntilReset: daysUntilReset)
@@ -71,7 +72,7 @@ class AnakraRequestsLeftScreen extends StatelessWidget {
             ),
           ],
         ),
-      ],
+      ]),
     );
   }
 }

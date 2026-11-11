@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:flutter/material.dart';
 
@@ -36,7 +37,7 @@ class HowToUseKeltDeck extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+              children: AsteriaEntrance.sections([
                 const SizedBox(height: 16),
                 Center(
                   child: Container(
@@ -62,7 +63,7 @@ class HowToUseKeltDeck extends StatelessWidget {
                   child: SingleChildScrollView(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
+                      children: AsteriaEntrance.sections([
                         _InstructionRow(
                           icon: _InstructionIcon.star,
                           text: context.l10n.keltDeckHowToIntroduction,
@@ -84,11 +85,11 @@ class HowToUseKeltDeck extends StatelessWidget {
                           text: context.l10n.keltDeckHowToClosing,
                         ),
                         const SizedBox(height: 16),
-                      ],
+                      ]),
                     ),
                   ),
                 ),
-              ],
+              ]),
             ),
           ),
         ),

@@ -1,3 +1,5 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
+import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
 import 'package:asteria_app/core/ui_kit/card_radii.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
@@ -18,7 +20,7 @@ class NatalCardEmptyScreen extends StatelessWidget {
         constraints: const BoxConstraints(maxWidth: _NatalPaywall.maxWidth),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
+          children: AsteriaEntrance.sections([
             Text(
               isPro
                   ? context.l10n.natalIncludedInPro
@@ -57,7 +59,7 @@ class NatalCardEmptyScreen extends StatelessWidget {
                 letterSpacing: 0,
               ),
             ),
-          ],
+          ]),
         ),
       ),
     );
@@ -91,7 +93,7 @@ class _InsideCard extends StatelessWidget {
     return Container(
       constraints: const BoxConstraints(minHeight: 260),
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
+      decoration: CardLensDecoration(
         color: _NatalPaywall.glass,
         borderRadius: BorderRadius.circular(AsteriaCardRadii.card),
         border: Border.all(color: _NatalPaywall.glassBorder, width: 0.7),

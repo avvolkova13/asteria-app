@@ -1,3 +1,5 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
+import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:flutter/material.dart';
 
@@ -47,7 +49,7 @@ class PeriodsWidgetBlock extends StatelessWidget {
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+      children: AsteriaEntrance.sections([
         Text(title, style: context.textTheme.playfairSemiBold24),
         const SizedBox(height: 16),
         SingleChildScrollView(
@@ -87,7 +89,7 @@ class PeriodsWidgetBlock extends StatelessWidget {
             ),
           ),
         ),
-      ],
+      ]),
     );
   }
 }
@@ -119,7 +121,7 @@ class _PeriodCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: double.infinity,
-      decoration: BoxDecoration(
+      decoration: CardLensDecoration(
         image: DecorationImage(
           image: AssetImage(backgroundImage),
           fit: BoxFit.cover,

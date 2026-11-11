@@ -95,7 +95,7 @@ class RunesScreen extends StatelessWidget {
                             return _RunesContent(
                               rune: rune,
                               initialTab: initialTab,
-                            ).withEntrance();
+                            );
                           } catch (e) {
                             return ErrorScreenWidget(
                               error: context.l10n.runesLoadError,
@@ -276,7 +276,7 @@ class _RunesContentState extends State<_RunesContent> {
                   _selectedTabIndex = index;
                 });
               },
-            ),
+            ).withEntrance(),
             const SizedBox(height: 24),
             _buildTabContent(
               // Руна дня
@@ -407,7 +407,7 @@ class _RuneLayoutTabState extends State<_RuneLayoutTab> {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+      children: AsteriaEntrance.sections([
         SizedBox(
           height: 38,
           child: Row(
@@ -519,7 +519,7 @@ class _RuneLayoutTabState extends State<_RuneLayoutTab> {
 
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+                children: AsteriaEntrance.sections([
                   RunesBlock(
                     rune1: widget.contentProvider.getRuneInDeck(
                       KeysConst.runeDeckLeftKey,
@@ -580,12 +580,12 @@ class _RuneLayoutTabState extends State<_RuneLayoutTab> {
                       ),
                     ),
                   ],
-                ],
+                ]),
               );
             },
           ),
         const SizedBox(height: 32),
-      ],
+      ]),
     );
   }
 }

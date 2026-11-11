@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/features/monetization/presentation/contextual_purchase_page.dart';
 import 'package:asteria_app/features/monetization/presentation/monetization_provider.dart';
@@ -58,7 +59,7 @@ class ClosedContentModal extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
-                children: [
+                children: AsteriaEntrance.sections([
                   Container(
                     margin: const EdgeInsets.only(top: 16),
                     height: 4,
@@ -105,7 +106,7 @@ class ClosedContentModal extends StatelessWidget {
                     },
                   ),
                   const SizedBox(height: 24),
-                ],
+                ]),
               ),
             ),
           ),

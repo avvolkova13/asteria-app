@@ -1,3 +1,5 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
+import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/ui_kit/card_radii.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'dart:async';
@@ -270,7 +272,7 @@ class _PaymentsScreenState extends State<PaymentsScreen>
           }
         },
         builder: (context, state) => Column(
-          children: [
+          children: AsteriaEntrance.sections([
             TopNavBar(
               userName: context.l10n.paymentTitle,
               type: TopNavBarType.payment,
@@ -282,7 +284,7 @@ class _PaymentsScreenState extends State<PaymentsScreen>
                 child: _buildContent(context, state),
               ),
             ),
-          ],
+          ]),
         ),
       ),
     );
@@ -362,7 +364,7 @@ class _PaymentsScreenState extends State<PaymentsScreen>
         child: Container(
           width: double.infinity,
           padding: const EdgeInsets.all(24),
-          decoration: BoxDecoration(
+          decoration: CardLensDecoration(
             color: AppColors.cardBackground,
             borderRadius: BorderRadius.circular(AsteriaCardRadii.card),
           ),
@@ -392,7 +394,7 @@ class _PaymentsScreenState extends State<PaymentsScreen>
 
   Widget _success(ArcPayOrder order) => Center(
     child: Column(
-      children: [
+      children: AsteriaEntrance.sections([
         Image.asset('assets/images/payment/purchase_success.png', height: 280),
         Text(
           context.l10n.paymentSuccess,
@@ -413,7 +415,7 @@ class _PaymentsScreenState extends State<PaymentsScreen>
           text: context.l10n.commonBack,
           isFullWidth: true,
         ),
-      ],
+      ]),
     ),
   );
 
@@ -452,7 +454,7 @@ class _PaymentsScreenState extends State<PaymentsScreen>
 
   Widget _abandoned(bool serverConfirmed) => Center(
     child: Column(
-      children: [
+      children: AsteriaEntrance.sections([
         Image.asset('assets/images/payment/purchase_fail.png', height: 220),
         const SizedBox(height: 24),
         Text(
@@ -476,7 +478,7 @@ class _PaymentsScreenState extends State<PaymentsScreen>
             text: context.l10n.paymentCreateNew,
             isFullWidth: true,
           ),
-      ],
+      ]),
     ),
   );
 
@@ -492,7 +494,7 @@ class _PaymentsScreenState extends State<PaymentsScreen>
 
   Widget _error(String message) => Center(
     child: Column(
-      children: [
+      children: AsteriaEntrance.sections([
         Image.asset('assets/images/payment/purchase_fail.png', height: 220),
         const SizedBox(height: 24),
         Text(
@@ -514,7 +516,7 @@ class _PaymentsScreenState extends State<PaymentsScreen>
             text: context.l10n.commonRetry,
             isFullWidth: true,
           ),
-      ],
+      ]),
     ),
   );
 }

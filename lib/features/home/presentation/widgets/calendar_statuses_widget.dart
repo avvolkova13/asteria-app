@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/features/home/presentation/models/day_status.dart';
 import 'package:asteria_app/features/home/presentation/widgets/day_status_icon.dart';
@@ -19,7 +20,7 @@ class CalendarStatusesWidget extends StatelessWidget {
           alignment: WrapAlignment.spaceBetween,
           spacing: 6,
           runSpacing: 8,
-          children: [
+          children: AsteriaEntrance.sections([
             _CalendarStatusItem(
               status: DayStatus.favorable,
               title: context.l10n.dayFavorable,
@@ -32,7 +33,7 @@ class CalendarStatusesWidget extends StatelessWidget {
               status: DayStatus.unfavorable,
               title: context.l10n.dayUnfavorable,
             ),
-          ],
+          ]),
         ),
       );
     }

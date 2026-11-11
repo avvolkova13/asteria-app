@@ -2,6 +2,27 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
 
+/// A tab that still contributes to an interrupted crossfade is already visible.
+class AsteriaEntranceReplay extends InheritedWidget {
+  const AsteriaEntranceReplay({
+    super.key,
+    required this.enabled,
+    required super.child,
+  });
+
+  final bool enabled;
+
+  static bool enabledOf(BuildContext context) =>
+      context
+          .dependOnInheritedWidgetOfExactType<AsteriaEntranceReplay>()
+          ?.enabled ??
+      true;
+
+  @override
+  bool updateShouldNotify(AsteriaEntranceReplay oldWidget) =>
+      enabled != oldWidget.enabled;
+}
+
 /// Reveals a newly visible piece of content without changing layout, hit tests
 /// or semantics. Descendants entering together share the outer movement.
 class AsteriaEntrance extends SingleChildRenderObjectWidget {
@@ -10,10 +31,15 @@ class AsteriaEntrance extends SingleChildRenderObjectWidget {
     required super.child,
     this.replayKey,
     this.animateInitially = true,
+    this.order,
   });
 
-  static const duration = Duration(milliseconds: 320);
-  static const distance = 3.0;
+  static const duration = Duration(milliseconds: 480);
+  static const distance = 16.0;
+
+  /// Override the natural top-to-bottom reading order, e.g. in a small grid.
+  /// The default uses this group's position in the visible page.
+  final int? order;
 
   /// Change only for a newly displayed page or item, never for a repaint.
   final Object? replayKey;
@@ -29,16 +55,30 @@ class AsteriaEntrance extends SingleChildRenderObjectWidget {
 
   /// For ordinary children of a section list. Keep layout-only children and
   /// parent-data widgets (such as Expanded and Positioned) in their slots.
-  static List<Widget> sections(List<Widget> children) => [
-    for (final child in children)
-      if (child is AsteriaEntrance ||
-          child is Spacer ||
+  static List<Widget> sections(List<Widget> children) {
+    var index = 0;
+    return children.map((child) {
+      if (child is Spacer ||
           child is ParentDataWidget ||
-          (child is SizedBox && child.child == null))
-        child
-      else
-        child.withEntrance(),
-  ];
+          (child is SizedBox && child.child == null)) {
+        return child;
+      }
+      // The first screenful gets distinct beats even for short text rows.
+      // Longer lists use the visible position, including after scroll restore.
+      final order = index < 5 ? index : null;
+      index++;
+      if (child is AsteriaEntrance) {
+        return AsteriaEntrance(
+          key: child.key,
+          replayKey: child.replayKey,
+          animateInitially: child.animateInitially,
+          order: child.order ?? order,
+          child: child.child,
+        );
+      }
+      return child.withEntrance(order: order);
+    }).toList();
+  }
 
   static List<ScrollPosition> _scrollsOf(BuildContext context) {
     final positions = <ScrollPosition>[];
@@ -51,12 +91,11 @@ class AsteriaEntrance extends SingleChildRenderObjectWidget {
     return positions;
   }
 
-  static bool _enabled(BuildContext c) =>
-      TickerMode.valuesOf(c).enabled && !MediaQuery.disableAnimationsOf(c);
-
   @override
   RenderObject createRenderObject(BuildContext context) => _RenderEntrance(
-    enabled: _enabled(context),
+    active: TickerMode.valuesOf(context).enabled,
+    reduced: MediaQuery.disableAnimationsOf(context),
+    order: order,
     initially: animateInitially,
     replayKey: replayKey,
     scroll: _scrollsOf(context),
@@ -65,25 +104,38 @@ class AsteriaEntrance extends SingleChildRenderObjectWidget {
   @override
   void updateRenderObject(BuildContext context, RenderObject renderObject) {
     (renderObject as _RenderEntrance).configure(
-      _enabled(context),
-      replayKey,
-      _scrollsOf(context),
+      active: TickerMode.valuesOf(context).enabled,
+      reduced: MediaQuery.disableAnimationsOf(context),
+      allowReplay:
+          AsteriaEntranceReplay.enabledOf(context) &&
+          !(Navigator.maybeOf(context)?.userGestureInProgress ?? false),
+      order: order,
+      replayKey: replayKey,
+      scroll: _scrollsOf(context),
     );
   }
 }
 
 class _RenderEntrance extends RenderProxyBox {
   _RenderEntrance({
-    required bool enabled,
+    required bool active,
+    required bool reduced,
+    required int? order,
     required bool initially,
     required Object? replayKey,
     required List<ScrollPosition> scroll,
-  }) : _enabled = enabled,
+  }) : _active = active,
+       _reduced = reduced,
+       _order = order,
        _done = !initially,
        _replayKey = replayKey,
        _scroll = scroll;
 
-  bool _enabled;
+  bool _active;
+  bool _reduced;
+  int? _order;
+  bool get _enabled => _active && !_reduced;
+  Duration _delay = Duration.zero;
   bool _done;
   Object? _replayKey;
   List<ScrollPosition> _scroll;
@@ -91,8 +143,17 @@ class _RenderEntrance extends RenderProxyBox {
   VoidCallback? _removeViewportCheck;
   Ticker? _ticker;
   double _progress = 0;
+  double _initialOpacity = .06;
 
-  void configure(bool enabled, Object? replayKey, List<ScrollPosition> scroll) {
+  void configure({
+    required bool active,
+    required bool reduced,
+    required bool allowReplay,
+    required int? order,
+    required Object? replayKey,
+    required List<ScrollPosition> scroll,
+  }) {
+    _order = order;
     if (scroll.length != _scroll.length ||
         !scroll.asMap().entries.every(
           (entry) => identical(entry.value, _scroll[entry.key]),
@@ -100,20 +161,22 @@ class _RenderEntrance extends RenderProxyBox {
       _stopWaiting();
       _scroll = scroll;
     }
-    if (replayKey != _replayKey) {
-      _replayKey = replayKey;
-      _finish();
+    final returned = !_active && active && allowReplay;
+    final replay = replayKey != _replayKey || returned;
+    if (!replay && active == _active && reduced == _reduced) return;
+    _active = active;
+    _reduced = reduced;
+    _replayKey = replayKey;
+    _finish();
+    if (_enabled && replay) {
+      // The previous page is fading away. Keep a visual foothold on the
+      // returning page while its individual groups rise into place.
+      _initialOpacity = returned ? .28 : .06;
       _done = false;
       _progress = 0;
-      markNeedsCompositingBitsUpdate();
-      markNeedsPaint();
     }
-    if (_enabled != enabled) {
-      _enabled = enabled;
-      markNeedsCompositingBitsUpdate();
-      if (!enabled && _ticker != null) _finish();
-      markNeedsPaint();
-    }
+    markNeedsCompositingBitsUpdate();
+    markNeedsPaint();
   }
 
   void _stopWaiting() {
@@ -183,9 +246,29 @@ class _RenderEntrance extends RenderProxyBox {
     return true;
   }
 
+  Duration _staggerDelay() {
+    final order = _order;
+    if (order != null) {
+      return Duration(milliseconds: order.clamp(0, 4) * 48);
+    }
+    // Resolve only once, after layout. Using the visible position instead of
+    // the list index also works when returning to a deeply scrolled screen.
+    RenderObject root = this;
+    while (root.parent != null) {
+      root = root.parent!;
+    }
+    if (root is! RenderView || root.size.isEmpty) return Duration.zero;
+    final origin = localToGlobal(Offset.zero, ancestor: root);
+    if (!origin.isFinite) return Duration.zero;
+    final row = (origin.dy / root.size.height).clamp(0.0, 1.0);
+    final column = (origin.dx / root.size.width).clamp(0.0, 1.0);
+    return Duration(milliseconds: (row * 170 + column * 42).round());
+  }
+
   void _tick(Duration elapsed) {
     _progress =
-        (elapsed.inMicroseconds / AsteriaEntrance.duration.inMicroseconds)
+        ((elapsed - _delay).inMicroseconds /
+                AsteriaEntrance.duration.inMicroseconds)
             .clamp(0, 1);
     if (_progress >= 1) _finish();
     markNeedsPaint();
@@ -204,6 +287,9 @@ class _RenderEntrance extends RenderProxyBox {
         _waitForViewport(context);
         return;
       }
+      // New rows discovered by scrolling should respond as they cross the
+      // viewport edge. Stagger siblings when a page is presented together.
+      _delay = _waitingForScroll ? Duration.zero : _staggerDelay();
       _stopWaiting();
       if (_hasAnimatingAncestor()) {
         _finish();
@@ -212,8 +298,9 @@ class _RenderEntrance extends RenderProxyBox {
       }
       _ticker = Ticker(_tick)..start();
     }
-    final eased = Curves.easeInOutSine.transform(_progress);
-    final alpha = ((.08 + .92 * eased) * 255).round();
+    final eased = const Cubic(.22, .68, .18, 1).transform(_progress);
+    final alpha = ((_initialOpacity + (1 - _initialOpacity) * eased) * 255)
+        .round();
     layer = context.pushOpacity(
       offset + Offset(0, AsteriaEntrance.distance * (1 - eased)),
       alpha,
@@ -237,7 +324,8 @@ class _RenderEntrance extends RenderProxyBox {
 /// Preserve the logical identity of a moving item without assigning its
 /// GlobalKey to a second widget. Unkeyed items keep Flutter's usual identity.
 extension AsteriaEntranceWidget on Widget {
-  Widget withEntrance() => AsteriaEntrance(
+  Widget withEntrance({int? order}) => AsteriaEntrance(
+    order: order,
     key: key == null ? null : _EntranceKey(key!),
     child: this,
   );

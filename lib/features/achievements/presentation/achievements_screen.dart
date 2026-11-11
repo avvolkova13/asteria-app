@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
 import 'dart:ui' as ui;
@@ -36,7 +37,7 @@ class AchievementsScreen extends StatelessWidget {
                 padding: const EdgeInsets.fromLTRB(16, 13, 16, 48),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+                  children: AsteriaEntrance.sections([
                     const _AchievementsHeader(),
                     const SizedBox(height: 30),
                     Text(
@@ -78,7 +79,7 @@ class AchievementsScreen extends StatelessWidget {
                       completedCount: statistics.runesOpened,
                       totalCount: 3,
                     ),
-                  ],
+                  ]),
                 ),
               ),
             ),

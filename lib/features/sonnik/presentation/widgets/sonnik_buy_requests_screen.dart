@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
 import 'package:asteria_app/core/analytics/dictionaries/offer_type.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
@@ -40,7 +41,7 @@ class _SonnikBuyRequestsScreenState extends State<SonnikBuyRequestsScreen> {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+      children: AsteriaEntrance.sections([
         Text(widget.title, style: context.textTheme.inversePlayfairSemiBold32),
         const SizedBox(height: 24),
         ...widget.packages.asMap().entries.map((entry) {
@@ -70,7 +71,7 @@ class _SonnikBuyRequestsScreenState extends State<SonnikBuyRequestsScreen> {
               ? () => _handlePurchase(context)
               : null,
         ),
-      ],
+      ]),
     );
   }
 

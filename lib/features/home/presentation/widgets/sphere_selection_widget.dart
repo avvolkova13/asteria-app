@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 import 'package:asteria_app/app/providers/user_provider.dart';
@@ -76,7 +77,7 @@ class _SphereSelectionWidgetState extends State<SphereSelectionWidget> {
                 fontFamily: 'Lora',
                 height: 1.1,
               ),
-            ),
+            ).withEntrance(),
             const SizedBox(height: 16),
             Wrap(
               spacing: 4,

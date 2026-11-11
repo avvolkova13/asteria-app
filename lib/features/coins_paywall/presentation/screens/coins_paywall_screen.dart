@@ -1,3 +1,5 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
+import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/ui_kit/card_radii.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
@@ -250,7 +252,7 @@ class _CoinsPaywallAndroidState extends State<_CoinsPaywallAndroid> {
                     ProfileFlowHeader(
                       title: context.l10n.commonBuy,
                       canPop: true,
-                    ),
+                    ).withEntrance(),
                     if (widget.storefrontDiagnostic case final diagnostic?) ...[
                       const SizedBox(height: 12),
                       diagnostic,
@@ -259,7 +261,7 @@ class _CoinsPaywallAndroidState extends State<_CoinsPaywallAndroid> {
                     Text(
                       context.l10n.choosePackageTitle,
                       style: context.textTheme.inversePlayfairSemiBold32,
-                    ),
+                    ).withEntrance(),
                     const SizedBox(height: 16),
                     _AndroidPaywallContent(
                       state: state,
@@ -281,7 +283,7 @@ class _CoinsPaywallAndroidState extends State<_CoinsPaywallAndroid> {
                       description: context.l10n.subscriptionUnlimitedAccess,
                       buttonText: context.l10n.balanceChooseSubscription,
                       onPressed: () => openSubscriptionFromCoins(context),
-                    ),
+                    ).withEntrance(),
                   ],
                 ),
               ),
@@ -362,7 +364,7 @@ class _AndroidPaywallContent extends StatelessWidget {
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
+      children: AsteriaEntrance.sections([
         ...products.asMap().entries.map((entry) {
           final index = entry.key;
           return Padding(
@@ -384,7 +386,7 @@ class _AndroidPaywallContent extends StatelessWidget {
             isLoading: isOpeningCheckout,
           ),
         ],
-      ],
+      ]),
     );
   }
 }
@@ -456,7 +458,7 @@ class _PackageItem extends StatelessWidget {
               constraints: const BoxConstraints(minHeight: 117),
               child: Ink(
                 padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
+                decoration: CardLensDecoration(
                   color: isSelected
                       ? ProfileFlowColors.cardStrong
                       : ProfileFlowColors.card,
@@ -535,9 +537,17 @@ class _PackagePriceRow extends StatelessWidget {
       children: [
         Text('$coins', style: amountStyle),
         const SizedBox(width: 6),
-        LotusRasterIcon('assets/icons/star_coin_icon.png', width: 17, height: 17),
+        LotusRasterIcon(
+          'assets/icons/star_coin_icon.png',
+          width: 17,
+          height: 17,
+        ),
         const SizedBox(width: 10),
-        LotusRasterIcon('assets/icons/right_long_arrow.png', width: 18, height: 10),
+        LotusRasterIcon(
+          'assets/icons/right_long_arrow.png',
+          width: 18,
+          height: 10,
+        ),
         const SizedBox(width: 10),
         Text(
           '$priceRubles ₽',
@@ -730,8 +740,10 @@ class _CoinsPaywallIosState extends State<_CoinsPaywallIos> {
                 action: state is PaywallAppleStatus
                     ? SnackBarAction(
                         label: context.l10n.applePurchaseCheckStatus,
-                        onPressed: LotusFeedback.action(() =>
-                            context.read<PaywallCubit>().refreshAppleStatus()),
+                        onPressed: LotusFeedback.action(
+                          () =>
+                              context.read<PaywallCubit>().refreshAppleStatus(),
+                        ),
                       )
                     : null,
               ),
@@ -751,7 +763,7 @@ class _CoinsPaywallIosState extends State<_CoinsPaywallIos> {
                     ProfileFlowHeader(
                       title: context.l10n.commonBuy,
                       canPop: true,
-                    ),
+                    ).withEntrance(),
                     if (widget.storefrontDiagnostic case final diagnostic?) ...[
                       const SizedBox(height: 12),
                       diagnostic,
@@ -760,7 +772,7 @@ class _CoinsPaywallIosState extends State<_CoinsPaywallIos> {
                     Text(
                       context.l10n.choosePackageTitle,
                       style: context.textTheme.inversePlayfairSemiBold32,
-                    ),
+                    ).withEntrance(),
                     const SizedBox(height: 16),
                     _IosPaywallContent(
                       state: state,
@@ -779,7 +791,7 @@ class _CoinsPaywallIosState extends State<_CoinsPaywallIos> {
                       description: context.l10n.subscriptionUnlimitedAccess,
                       buttonText: context.l10n.balanceChooseSubscription,
                       onPressed: () => openSubscriptionFromCoins(context),
-                    ),
+                    ).withEntrance(),
                   ],
                 ),
               ),
@@ -869,7 +881,7 @@ class _IosPaywallContent extends StatelessWidget {
 
       return Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
+        children: AsteriaEntrance.sections([
           ...products.asMap().entries.map((entry) {
             final index = entry.key;
             final product = entry.value;
@@ -883,7 +895,7 @@ class _IosPaywallContent extends StatelessWidget {
               ),
             );
           }),
-        ],
+        ]),
       );
     }
 
@@ -932,7 +944,7 @@ class _IosPackageTile extends StatelessWidget {
               constraints: const BoxConstraints(minHeight: 117),
               child: Ink(
                 padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
+                decoration: CardLensDecoration(
                   color: ProfileFlowColors.card,
                   borderRadius: radius,
                   border: Border.all(
@@ -1016,7 +1028,11 @@ class _IosPackagePriceRow extends StatelessWidget {
         if (stars != null) ...[
           Text('${stars!}', style: amountStyle),
           const SizedBox(width: 6),
-          LotusRasterIcon('assets/icons/star_coin_icon.png', width: 17, height: 17),
+          LotusRasterIcon(
+            'assets/icons/star_coin_icon.png',
+            width: 17,
+            height: 17,
+          ),
           const SizedBox(width: 10),
           LotusRasterIcon(
             'assets/icons/right_long_arrow.png',

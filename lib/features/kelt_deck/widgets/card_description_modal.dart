@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/app/data/models/tarot_card/tarot_card_model.dart';
 import 'package:asteria_app/core/localization/tarot_card_asset_resolver.dart';
 import 'package:asteria_app/core/extensions/string_extensions.dart';
@@ -107,7 +108,7 @@ class CardDescriptionModal extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+                    children: AsteriaEntrance.sections([
                       _GradientText(
                         text: context.l10n.keltCardPositionTitle(
                           cardNumber,
@@ -177,7 +178,7 @@ class CardDescriptionModal extends StatelessWidget {
                       const SizedBox(height: 8),
                       Text(_cardImpact, style: _bodyStyle(context)),
                       const SizedBox(height: 32),
-                    ],
+                    ]),
                   ),
                 ),
               ),

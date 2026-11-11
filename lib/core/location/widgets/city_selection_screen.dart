@@ -212,7 +212,7 @@ class _CitySelectionScreenState extends State<CitySelectionScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
+                children: AsteriaEntrance.sections([
                   const SizedBox(height: 16),
                   Center(
                     child: Container(
@@ -248,7 +248,7 @@ class _CitySelectionScreenState extends State<CitySelectionScreen> {
                     ),
                   const SizedBox(height: 4),
                   Expanded(child: _buildSuggestionList(context)),
-                ],
+                ]),
               ),
             ),
           ),
@@ -263,7 +263,7 @@ class _CitySelectionScreenState extends State<CitySelectionScreen> {
           padding: const EdgeInsets.fromLTRB(16, 18, 16, 0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+            children: AsteriaEntrance.sections([
               const _CitySelectionHeader(),
               const SizedBox(height: 18),
               Text(
@@ -287,7 +287,7 @@ class _CitySelectionScreenState extends State<CitySelectionScreen> {
               ],
               const SizedBox(height: 8),
               Expanded(child: _buildSuggestionList(context)),
-            ],
+            ]),
           ),
         ),
       ),

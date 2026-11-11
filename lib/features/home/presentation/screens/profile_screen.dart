@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/app/data/models/user/user_model.dart';
 import 'package:asteria_app/app/data/repositories/user/user_repository.dart';
@@ -236,7 +237,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
+                  children: AsteriaEntrance.sections([
                     ProfileFlowHeader(
                       title: context.l10n.profileTitle,
                       canPop: widget.canPop,
@@ -315,7 +316,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     _DeleteAccountButton(
                       onTap: () => _onDeleteAccountTap(context),
                     ),
-                  ],
+                  ]),
                 );
               },
             ),

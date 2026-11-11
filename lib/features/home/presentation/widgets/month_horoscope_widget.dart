@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:flutter/material.dart';
 
@@ -13,7 +14,7 @@ class MonthHoroscopeWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
+      decoration: CardLensDecoration(
         image: DecorationImage(
           image: AssetImage('assets/images/home/month_widget_bg.webp'),
           fit: BoxFit.cover,

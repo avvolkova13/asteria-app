@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/app/data/models/rune_of_day/rune_of_day_model.dart';
 import 'package:asteria_app/app/providers/content_provider.dart';
@@ -229,7 +230,7 @@ class _RuneDescriptionModal extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+                    children: AsteriaEntrance.sections([
                       _GradientText(
                         text: rune.title,
                         gradient: _AllRunesColors.goldGradient,
@@ -255,7 +256,7 @@ class _RuneDescriptionModal extends StatelessWidget {
                           body: rune.definitions.join(', '),
                         ),
                       const SizedBox(height: 32),
-                    ],
+                    ]),
                   ),
                 ),
               ),

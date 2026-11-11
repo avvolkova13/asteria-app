@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
 import 'package:asteria_app/app/data/models/shop_item/shop_item_model.dart';
@@ -143,7 +144,7 @@ class _PurchaseModalSheetState extends State<PurchaseModalSheet> {
                                   )
                                 : Expanded(
                                     child: Column(
-                                      children: [
+                                      children: AsteriaEntrance.sections([
                                         Text(
                                           widget.product.title,
                                           style: context
@@ -306,7 +307,7 @@ class _PurchaseModalSheetState extends State<PurchaseModalSheet> {
                                             ],
                                           ),
                                         ),
-                                      ],
+                                      ]),
                                     ),
                                   ),
                           ],
@@ -346,7 +347,7 @@ class _PurchaseSuccessScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: [
+      children: AsteriaEntrance.sections([
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -381,7 +382,7 @@ class _PurchaseSuccessScreen extends StatelessWidget {
           onPressed: () => Navigator.pop(context),
           text: context.l10n.commonContinue,
         ),
-      ],
+      ]),
     );
   }
 }

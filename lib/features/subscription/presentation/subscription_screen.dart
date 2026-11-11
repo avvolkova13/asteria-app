@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/card_radii.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/app/providers/user_provider.dart';
@@ -265,7 +266,7 @@ class _SubscriptionScreenContentState extends State<_SubscriptionScreenContent>
                   ProfileFlowHeader(
                     title: context.l10n.subscriptionTitle,
                     canPop: true,
-                  ),
+                  ).withEntrance(),
                   const SizedBox(height: 32),
                   _SubscriptionActiveScreen(
                     route: widget.route,
@@ -299,9 +300,9 @@ class _SubscriptionScreenContentState extends State<_SubscriptionScreenContent>
                 ProfileFlowHeader(
                   title: context.l10n.subscriptionTitle,
                   canPop: true,
-                ),
+                ).withEntrance(),
                 const SizedBox(height: 32),
-                const _SubscriptionInfoCard(isActive: false),
+                const _SubscriptionInfoCard(isActive: false).withEntrance(),
                 if (widget.route != PaymentProviderRoute.arcPay) ...[
                   const SizedBox(height: 42),
                   _IosSubscriptionPlans(onPurchase: _purchase),
@@ -467,7 +468,7 @@ class _ArcPayOneTimeProPlans extends StatelessWidget {
             return const Padding(
               padding: EdgeInsets.symmetric(vertical: 24),
               child: Center(
-                child: CircularProgressIndicator(color: AppColors.white),
+                child: AsteriaEntrance(child: CircularProgressIndicator(color: AppColors.white)),
               ),
             );
           }
@@ -517,7 +518,7 @@ class _ArcPayOneTimeProPlansList extends StatelessWidget {
     }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+      children: AsteriaEntrance.sections([
         Text(
           context.l10n.subscriptionChoosePlan,
           style: context.textTheme.inverseUrbanistSemiBold17,
@@ -549,7 +550,7 @@ class _ArcPayOneTimeProPlansList extends StatelessWidget {
           ),
           const SizedBox(height: 12),
         ],
-      ],
+      ]),
     );
   }
 
@@ -706,7 +707,7 @@ class _ArcPayPlansList extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+      children: AsteriaEntrance.sections([
         Text(
           context.l10n.subscriptionChoosePlan,
           style: context.textTheme.inverseUrbanistSemiBold17,
@@ -735,7 +736,7 @@ class _ArcPayPlansList extends StatelessWidget {
           ),
           const SizedBox(height: 12),
         ],
-      ],
+      ]),
     );
   }
 }
@@ -781,7 +782,7 @@ class _PlansList extends StatelessWidget {
     }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+      children: AsteriaEntrance.sections([
         Text(
           context.l10n.subscriptionChoosePlan,
           style: context.textTheme.inverseUrbanistSemiBold17,
@@ -791,7 +792,7 @@ class _PlansList extends StatelessWidget {
           _PlanTile(product: product, onTap: () => onPurchase(product)),
           const SizedBox(height: 12),
         ],
-      ],
+      ]),
     );
   }
 }
@@ -869,7 +870,7 @@ class _SubscriptionActiveScreen extends StatelessWidget {
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
+      children: AsteriaEntrance.sections([
         _SubscriptionInfoCard(
           isActive: true,
           nextPaymentDateText: formattedDate,
@@ -894,7 +895,7 @@ class _SubscriptionActiveScreen extends StatelessWidget {
           ],
           _CancelSubscriptionButton(grant: grant),
         ],
-      ],
+      ]),
     );
   }
 }

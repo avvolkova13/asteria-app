@@ -1,3 +1,5 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
+import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/ui_kit/card_radii.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
@@ -80,10 +82,10 @@ class AnakraPageScaffold extends StatelessWidget {
             SafeArea(
               bottom: false,
               child: Column(
-                children: [
+                children: AsteriaEntrance.sections([
                   AnakraTopNavBar(canPop: canPop),
                   Expanded(child: child),
-                ],
+                ]),
               ),
             ),
           ],
@@ -150,7 +152,9 @@ class AnakraTopNavBar extends StatelessWidget {
                     children: [
                       Text(
                         '$balance',
-                        style: AppTypography.navTitle.copyWith(color: Colors.white),
+                        style: AppTypography.navTitle.copyWith(
+                          color: Colors.white,
+                        ),
                       ),
                       const SizedBox(width: 4),
                       LotusRasterIcon(AnakraAssets.coin, height: 16),
@@ -200,12 +204,14 @@ class AnakraHeroHeader extends StatelessWidget {
                   padding: EdgeInsets.zero,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+                    children: AsteriaEntrance.sections([
                       Text(context.l10n.anakraGreetingTitle, style: titleStyle),
                       const SizedBox(height: 12),
                       Text(
                         context.l10n.anakraReady,
-                        style: AppTypography.text1.copyWith(color: Colors.white),
+                        style: AppTypography.text1.copyWith(
+                          color: Colors.white,
+                        ),
                       ),
                       if (showRequestsBadge && !isPro) ...[
                         const SizedBox(height: 12),
@@ -222,7 +228,7 @@ class AnakraHeroHeader extends StatelessWidget {
                           ),
                         ),
                       ],
-                    ],
+                    ]),
                   ),
                 ),
               ),
@@ -243,7 +249,7 @@ class AnakraAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
+    return AsteriaEntrance(child: SizedBox(
       width: size,
       height: size,
       child: Image.asset(
@@ -251,7 +257,7 @@ class AnakraAvatar extends StatelessWidget {
         fit: BoxFit.contain,
         excludeFromSemantics: true,
       ),
-    );
+    ));
   }
 }
 
@@ -308,7 +314,9 @@ class AnakraGlassCard extends StatelessWidget {
     super.key,
     required this.child,
     this.padding = const EdgeInsets.all(16),
-    this.borderRadius = const BorderRadius.all(Radius.circular(AsteriaCardRadii.tile)),
+    this.borderRadius = const BorderRadius.all(
+      Radius.circular(AsteriaCardRadii.tile),
+    ),
     this.border,
     this.gradient,
     this.onTap,
@@ -319,7 +327,7 @@ class AnakraGlassCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final content = Container(
       padding: padding,
-      decoration: BoxDecoration(
+      decoration: CardLensDecoration(
         borderRadius: borderRadius,
         gradient:
             gradient ??

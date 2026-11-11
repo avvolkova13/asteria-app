@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
@@ -165,7 +166,7 @@ class _AffirmationTopNavBar extends StatelessWidget {
                           .copyWith(height: 1.2, letterSpacing: -0.408),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                    ),
+                    ).withEntrance(),
                   ),
                 ],
               ),
@@ -203,7 +204,7 @@ class _AffirmationTopNavBar extends StatelessWidget {
                                       height: 1.2,
                                       letterSpacing: -0.408,
                                     ),
-                              ),
+                              ).withEntrance(),
                               LotusRasterIcon(
                                 'assets/icons/star_coin_icon.png',
                                 width: 14,

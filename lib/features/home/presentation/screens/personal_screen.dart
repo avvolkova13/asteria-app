@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/ui_kit/card_radii.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'dart:math' as math;
@@ -277,7 +278,7 @@ class _PersonalScreenState extends State<PersonalScreen> {
                               backgroundColor: Colors.transparent,
                             ),
                           ),
-                        ),
+                        ).withEntrance(),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 16),
                           child: ListenableBuilder(
@@ -315,15 +316,15 @@ class _PersonalScreenState extends State<PersonalScreen> {
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: AsteriaEntrance.sections([
+      children: [
         Text(
           context.l10n.personalYourHoroscope,
           style: context.textTheme.inversePlayfairSemiBold32.copyWith(
             height: 1.2,
           ),
-        ),
+        ).withEntrance(),
         const SizedBox(height: 14),
-        _ZodiacInfoCards(zodiacInfo: zodiacInfo),
+        _ZodiacInfoCards(zodiacInfo: zodiacInfo).withEntrance(),
         const SizedBox(height: 24),
         _PersonalSegmentedPicker(
           selectedIndex: _selectedTabIndex,
@@ -332,10 +333,10 @@ class _PersonalScreenState extends State<PersonalScreen> {
               _selectedTabIndex = index;
             });
           },
-        ),
+        ).withEntrance(),
         const SizedBox(height: 16),
-        AsteriaEntrance(
-          replayKey: _selectedTabIndex,
+        KeyedSubtree(
+          key: ValueKey(_selectedTabIndex),
           child: _buildTabContent(
             _buildTodayContent(context, userProvider),
             _buildWeekContent(context, userProvider),
@@ -346,7 +347,7 @@ class _PersonalScreenState extends State<PersonalScreen> {
         _PersonalGradientButton(
           text: context.l10n.personalYearForecast,
           onPressed: _onHoroscopePressed,
-        ),
+        ).withEntrance(),
         const SizedBox(height: 24),
         CardAdvertisementWidget(
           horizontalMargin: 0,
@@ -355,11 +356,13 @@ class _PersonalScreenState extends State<PersonalScreen> {
           description: _natalCardDescription(userProvider),
           buttonText: context.l10n.personalOpenChart,
           onPressed: _onNatalCardPressed,
-        ),
+        ).withEntrance(),
         const SizedBox(height: 24),
-        _PersonalCompatibilitySection(onPressed: _onCompatibilityPressed),
+        _PersonalCompatibilitySection(
+          onPressed: _onCompatibilityPressed,
+        ).withEntrance(),
         const SizedBox(height: 124),
-      ]),
+      ],
     );
   }
 
@@ -377,53 +380,51 @@ class _PersonalScreenState extends State<PersonalScreen> {
       return _localizedContentPlaceholder();
     }
 
-    return AsteriaEntrance(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            context.l10n.personalImpactAreas,
-            style: context.textTheme.inversePlayfairSemiBold24.copyWith(
-              height: 1,
-            ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: AsteriaEntrance.sections([
+        Text(
+          context.l10n.personalImpactAreas,
+          style: context.textTheme.inversePlayfairSemiBold24.copyWith(
+            height: 1,
           ),
-          const SizedBox(height: 12),
-          _HoroscopeImpactMetrics(
-            lovePercentage: day?.loveAreaPercentage ?? '0%',
-            financesPercentage: day?.financeAreaPercentage ?? '0%',
-            energyPercentage: day?.personalAreaPercentage ?? '0%',
+        ),
+        const SizedBox(height: 12),
+        _HoroscopeImpactMetrics(
+          lovePercentage: day?.loveAreaPercentage ?? '0%',
+          financesPercentage: day?.financeAreaPercentage ?? '0%',
+          energyPercentage: day?.personalAreaPercentage ?? '0%',
+        ),
+        const SizedBox(height: 18),
+        Text(
+          context.l10n.personalAdviceDay,
+          style: context.textTheme.inversePlayfairSemiBold24.copyWith(
+            height: 1,
           ),
+        ),
+        const SizedBox(height: 8),
+        _GradientText(
+          day?.spotlight ?? '',
+          style: context.textTheme.inverseUrbanistRegular16.copyWith(
+            height: 1.2,
+            letterSpacing: -0.408,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          '${day?.focus ?? ''} ${day?.risk ?? ''}'.trim(),
+          style: context.textTheme.inverseUrbanistRegular16.copyWith(
+            height: 1.2,
+            letterSpacing: -0.408,
+          ),
+        ),
+        if (day != null) ...[
           const SizedBox(height: 18),
-          Text(
-            context.l10n.personalAdviceDay,
-            style: context.textTheme.inversePlayfairSemiBold24.copyWith(
-              height: 1,
-            ),
-          ),
-          const SizedBox(height: 8),
-          _GradientText(
-            day?.spotlight ?? '',
-            style: context.textTheme.inverseUrbanistRegular16.copyWith(
-              height: 1.2,
-              letterSpacing: -0.408,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            '${day?.focus ?? ''} ${day?.risk ?? ''}'.trim(),
-            style: context.textTheme.inverseUrbanistRegular16.copyWith(
-              height: 1.2,
-              letterSpacing: -0.408,
-            ),
-          ),
-          if (day != null) ...[
-            const SizedBox(height: 18),
-            AsteriaEntrance(child: _buildDayKeyThemeContent(context, day)),
-            const SizedBox(height: 12),
-            AsteriaEntrance(child: _buildDayWeaknessesContent(context, day)),
-          ],
+          AsteriaEntrance(child: _buildDayKeyThemeContent(context, day)),
+          const SizedBox(height: 12),
+          AsteriaEntrance(child: _buildDayWeaknessesContent(context, day)),
         ],
-      ),
+      ]),
     );
   }
 
@@ -811,7 +812,7 @@ class _ConstellationCard extends StatelessWidget {
     return Container(
       height: 67,
       clipBehavior: Clip.antiAlias,
-      decoration: BoxDecoration(
+      decoration: CardLensDecoration(
         color: _cardTint,
         borderRadius: BorderRadius.circular(AsteriaCardRadii.compact),
       ),
@@ -898,7 +899,7 @@ class _ZodiacAttributeCard extends StatelessWidget {
   }
 }
 
-final _zodiacCardDecoration = BoxDecoration(
+final _zodiacCardDecoration = CardLensDecoration(
   color: _cardTint,
   borderRadius: BorderRadius.circular(AsteriaCardRadii.compact),
   border: Border.all(color: AppColors.white.withValues(alpha: 0.18)),
@@ -1245,7 +1246,7 @@ class _DailyAddonCard extends StatelessWidget {
         width: double.infinity,
         constraints: const BoxConstraints(minHeight: 129),
         padding: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
+        decoration: CardLensDecoration(
           color: _cardTint,
           borderRadius: BorderRadius.circular(AsteriaCardRadii.tile),
           border: Border.all(color: AppColors.white.withValues(alpha: 0.1)),
@@ -1331,7 +1332,7 @@ class _DailyAddonPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DecoratedBox(
-      decoration: BoxDecoration(
+      decoration: CardLensDecoration(
         color: const Color(0x8021183D),
         borderRadius: BorderRadius.circular(AsteriaCardRadii.compact),
       ),
@@ -1457,7 +1458,7 @@ class _LockedPeriodCard extends StatelessWidget {
         padding: const EdgeInsets.only(top: 16),
         child: _PersonalGradientButton(text: buttonText, onPressed: onPressed),
       ),
-    );
+    ).withEntrance();
   }
 }
 
@@ -1547,7 +1548,7 @@ class _WeeklyAreaCard extends StatelessWidget {
     return Container(
       width: width,
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
+      decoration: CardLensDecoration(
         color: _cardTint,
         borderRadius: BorderRadius.circular(AsteriaCardRadii.tile),
         border: Border.all(color: AppColors.white.withValues(alpha: 0.18)),
@@ -1630,12 +1631,12 @@ class _MonthFavourablePeriodsBlock extends StatelessWidget {
         ),
         const SizedBox(height: 16),
         Column(
-          children: [
+          children: AsteriaEntrance.sections([
             for (var index = 0; index < items.length; index++) ...[
               _MonthPeriodItem(data: items[index]),
               if (index != items.length - 1) const SizedBox(height: 8),
             ],
-          ],
+          ]),
         ),
       ],
     );
@@ -1651,7 +1652,7 @@ class _MonthPeriodItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      decoration: BoxDecoration(
+      decoration: CardLensDecoration(
         color: AppColors.deepPurple.withValues(alpha: 0.74),
         borderRadius: BorderRadius.circular(AsteriaCardRadii.tile),
       ),
@@ -1743,7 +1744,7 @@ class _MonthKeyTopicsCard extends StatelessWidget {
       width: double.infinity,
       constraints: const BoxConstraints(minHeight: 191),
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
+      decoration: CardLensDecoration(
         borderRadius: BorderRadius.circular(AsteriaCardRadii.card),
         color: AppColors.deepPurple,
         image: const DecorationImage(
@@ -1864,7 +1865,7 @@ class _ForecastUnlockBanner extends StatelessWidget {
         return Container(
           width: double.infinity,
           constraints: BoxConstraints(minHeight: minHeight),
-          decoration: BoxDecoration(
+          decoration: CardLensDecoration(
             color: _cardTint,
             borderRadius: BorderRadius.circular(AsteriaCardRadii.card),
             border: Border.all(color: AppColors.white.withValues(alpha: 0.18)),
@@ -1986,7 +1987,7 @@ class _DarkContentCard extends StatelessWidget {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
+      decoration: CardLensDecoration(
         color: AppColors.white.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(AsteriaCardRadii.card),
         border: Border.all(color: AppColors.white.withValues(alpha: 0.1)),
@@ -2035,7 +2036,7 @@ class _PersonalCompatibilitySection extends StatelessWidget {
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+          children: AsteriaEntrance.sections([
             Row(
               children: [
                 Expanded(
@@ -2091,7 +2092,7 @@ class _PersonalCompatibilitySection extends StatelessWidget {
               phrase: compatibility.compatibilityData.phrase,
               onPressed: onPressed,
             ),
-          ],
+          ]),
         );
       },
     );
@@ -2113,67 +2114,73 @@ class _EmptyCompatibilityCard extends StatelessWidget {
 
     return Semantics(
       button: true,
-      child: Material(
-        // Figma Compatibility / Empty: Surface/card-tinted.
-        color: const Color(0xFF1B1433),
-        borderRadius: BorderRadius.circular(AsteriaCardRadii.card),
-        clipBehavior: Clip.antiAlias,
-        child: LotusInkTap(
-          onTap: onPressed,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              AspectRatio(
-                aspectRatio: 358 / 224,
-                child: Image.asset(
-                  'assets/images/home/compatibility_intro_figma.webp',
-                  fit: BoxFit.cover,
-                  excludeFromSemantics: true,
+      child: DecoratedBox(
+        position: DecorationPosition.foreground,
+        decoration: CardLensDecoration(
+          borderRadius: BorderRadius.circular(AsteriaCardRadii.card),
+        ),
+        child: Material(
+          // Figma Compatibility / Empty: Surface/card-tinted.
+          color: const Color(0xFF1B1433),
+          borderRadius: BorderRadius.circular(AsteriaCardRadii.card),
+          clipBehavior: Clip.antiAlias,
+          child: LotusInkTap(
+            onTap: onPressed,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                AspectRatio(
+                  aspectRatio: 358 / 224,
+                  child: Image.asset(
+                    'assets/images/home/compatibility_intro_figma.webp',
+                    fit: BoxFit.cover,
+                    excludeFromSemantics: true,
+                  ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 8, 16, 21),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      context.l10n.compatibilityAboutPair,
-                      style: context.textTheme.inversePlayfairSemiBold24
-                          .copyWith(fontFamily: 'Lora', height: 1),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      context.l10n.compatibilityAboutPairDescription,
-                      style: bodyStyle,
-                    ),
-                    const SizedBox(height: 8),
-                    ConstrainedBox(
-                      constraints: const BoxConstraints(minHeight: 24),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: _GradientText(
-                              context.l10n.compatibilityCheck,
-                              style: bodyStyle,
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Transform.rotate(
-                            angle: -math.pi / 4,
-                            child: ClayAssetIcon(
-                              'assets/icons/affirmation_arrow_figma.svg',
-                              width: 20,
-                              height: 20,
-                              excludeFromSemantics: true,
-                            ),
-                          ),
-                        ],
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 21),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        context.l10n.compatibilityAboutPair,
+                        style: context.textTheme.inversePlayfairSemiBold24
+                            .copyWith(fontFamily: 'Lora', height: 1),
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: 8),
+                      Text(
+                        context.l10n.compatibilityAboutPairDescription,
+                        style: bodyStyle,
+                      ),
+                      const SizedBox(height: 8),
+                      ConstrainedBox(
+                        constraints: const BoxConstraints(minHeight: 24),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: _GradientText(
+                                context.l10n.compatibilityCheck,
+                                style: bodyStyle,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Transform.rotate(
+                              angle: -math.pi / 4,
+                              child: ClayAssetIcon(
+                                'assets/icons/affirmation_arrow_figma.svg',
+                                width: 20,
+                                height: 20,
+                                excludeFromSemantics: true,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -2215,141 +2222,149 @@ class _CompatibilityHistoryCard extends StatelessWidget {
           width: double.infinity,
           child: ClipRRect(
             borderRadius: BorderRadius.circular(AsteriaCardRadii.card),
-            child: Stack(
-              children: [
-                Positioned.fill(
-                  child: Image.asset(
-                    _compatibilityBackgroundImage,
-                    key: const ValueKey('personal-compatibility-background'),
-                    fit: BoxFit.cover,
-                    alignment: const Alignment(0, 0.08),
-                    opacity: const AlwaysStoppedAnimation(0.5),
+            child: DecoratedBox(
+              position: DecorationPosition.foreground,
+              decoration: CardLensDecoration(
+                borderRadius: BorderRadius.circular(AsteriaCardRadii.card),
+              ),
+              child: Stack(
+                children: [
+                  Positioned.fill(
+                    child: Image.asset(
+                      _compatibilityBackgroundImage,
+                      key: const ValueKey('personal-compatibility-background'),
+                      fit: BoxFit.cover,
+                      alignment: const Alignment(0, 0.08),
+                      opacity: const AlwaysStoppedAnimation(0.5),
+                    ),
                   ),
-                ),
-                LayoutBuilder(
-                  builder: (context, constraints) {
-                    final width = constraints.maxWidth;
-                    return Stack(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
-                          child: Column(
-                            children: [
-                              const SizedBox(height: 200),
-                              _GradientText(
-                                phrase,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                textAlign: TextAlign.center,
-                                style: context
-                                    .textTheme
-                                    .inverseUrbanistRegular16
-                                    .copyWith(
-                                      height: 1.2,
-                                      letterSpacing: -0.408,
-                                    ),
-                              ),
-                              Text(
-                                compatibilityDescription,
-                                textAlign: TextAlign.center,
-                                style: context
-                                    .textTheme
-                                    .inverseUrbanistRegular16
-                                    .copyWith(
-                                      height: 1.2,
-                                      letterSpacing: -0.408,
-                                    ),
-                              ),
-                              const SizedBox(height: 16),
-                              _GradientText(
-                                context.l10n.compatibilityReadMore,
-                                style: context
-                                    .textTheme
-                                    .inverseUrbanistSemiBold16
-                                    .copyWith(
-                                      height: 1.2,
-                                      letterSpacing: -0.408,
-                                    ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Positioned(
-                          left: 16,
-                          top: 24,
-                          width: 110,
-                          child: _CompatibilityPerson(
-                            name: firstZodiacSign,
-                            birthdate: firstBirthdate.toLocalizedShortDate(
-                              Localizations.localeOf(context),
+                  LayoutBuilder(
+                    builder: (context, constraints) {
+                      final width = constraints.maxWidth;
+                      return Stack(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+                            child: Column(
+                              children: [
+                                const SizedBox(height: 200),
+                                _GradientText(
+                                  phrase,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  textAlign: TextAlign.center,
+                                  style: context
+                                      .textTheme
+                                      .inverseUrbanistRegular16
+                                      .copyWith(
+                                        height: 1.2,
+                                        letterSpacing: -0.408,
+                                      ),
+                                ),
+                                Text(
+                                  compatibilityDescription,
+                                  textAlign: TextAlign.center,
+                                  style: context
+                                      .textTheme
+                                      .inverseUrbanistRegular16
+                                      .copyWith(
+                                        height: 1.2,
+                                        letterSpacing: -0.408,
+                                      ),
+                                ),
+                                const SizedBox(height: 16),
+                                _GradientText(
+                                  context.l10n.compatibilityReadMore,
+                                  style: context
+                                      .textTheme
+                                      .inverseUrbanistSemiBold16
+                                      .copyWith(
+                                        height: 1.2,
+                                        letterSpacing: -0.408,
+                                      ),
+                                ),
+                              ],
                             ),
-                            assetName: firstBirthdate.getZodiacSignAsset(),
-                            angle: -20,
                           ),
-                        ),
-                        Positioned(
-                          right: 16,
-                          top: 24,
-                          width: 110,
-                          child: _CompatibilityPerson(
-                            name: secondZodiacSign,
-                            birthdate: secondBirthdate.toLocalizedShortDate(
-                              Localizations.localeOf(context),
+                          Positioned(
+                            left: 16,
+                            top: 24,
+                            width: 110,
+                            child: _CompatibilityPerson(
+                              name: firstZodiacSign,
+                              birthdate: firstBirthdate.toLocalizedShortDate(
+                                Localizations.localeOf(context),
+                              ),
+                              assetName: firstBirthdate.getZodiacSignAsset(),
+                              angle: -20,
                             ),
-                            assetName: secondBirthdate.getZodiacSignAsset(),
-                            angle: 20,
                           ),
-                        ),
-                        Positioned(
-                          left: width / 2 - 3.49,
-                          top: 83,
-                          width: 55,
-                          height: 30,
-                          child: SvgPicture.asset(
-                            _compatibilityVector51,
-                            fit: BoxFit.fill,
+                          Positioned(
+                            right: 16,
+                            top: 24,
+                            width: 110,
+                            child: _CompatibilityPerson(
+                              name: secondZodiacSign,
+                              birthdate: secondBirthdate.toLocalizedShortDate(
+                                Localizations.localeOf(context),
+                              ),
+                              assetName: secondBirthdate.getZodiacSignAsset(),
+                              angle: 20,
+                            ),
                           ),
-                        ),
-                        Positioned(
-                          left: 118.51,
-                          top: 128,
-                          width: 62.35,
-                          height: 49.105,
-                          child: Transform.rotate(
-                            alignment: Alignment.center,
-                            angle: 157 * math.pi / 180,
-                            child: Transform.scale(
-                              scaleY: -1,
-                              child: Center(
-                                child: SizedBox(
-                                  width: 55,
-                                  height: 30,
-                                  child: SvgPicture.asset(
-                                    _compatibilityVector52,
-                                    fit: BoxFit.fill,
+                          Positioned(
+                            left: width / 2 - 3.49,
+                            top: 83,
+                            width: 55,
+                            height: 30,
+                            child: SvgPicture.asset(
+                              _compatibilityVector51,
+                              fit: BoxFit.fill,
+                            ),
+                          ),
+                          Positioned(
+                            left: 118.51,
+                            top: 128,
+                            width: 62.35,
+                            height: 49.105,
+                            child: Transform.rotate(
+                              alignment: Alignment.center,
+                              angle: 157 * math.pi / 180,
+                              child: Transform.scale(
+                                scaleY: -1,
+                                child: Center(
+                                  child: SizedBox(
+                                    width: 55,
+                                    height: 30,
+                                    child: SvgPicture.asset(
+                                      _compatibilityVector52,
+                                      fit: BoxFit.fill,
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
                           ),
-                        ),
-                        Positioned(
-                          top: 118,
-                          left: 0,
-                          right: 0,
-                          child: Center(
-                            child: _GradientText(
-                              '$compatibilityPercentage%',
-                              style: context.textTheme.inversePlayfairSemiBold24
-                                  .copyWith(height: 1),
+                          Positioned(
+                            top: 118,
+                            left: 0,
+                            right: 0,
+                            child: Center(
+                              child: _GradientText(
+                                '$compatibilityPercentage%',
+                                style: context
+                                    .textTheme
+                                    .inversePlayfairSemiBold24
+                                    .copyWith(height: 1),
+                              ),
                             ),
                           ),
-                        ),
-                      ],
-                    );
-                  },
-                ),
-              ],
+                        ],
+                      );
+                    },
+                  ),
+                ],
+              ),
             ),
           ),
         ),

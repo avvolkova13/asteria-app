@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:flutter/material.dart';
 
@@ -16,7 +17,7 @@ class _AdvicesWidgetState extends State<AdvicesWidget> {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+      children: AsteriaEntrance.sections([
         Align(
           alignment: Alignment.centerLeft,
           child: Text(
@@ -34,7 +35,7 @@ class _AdvicesWidgetState extends State<AdvicesWidget> {
           }).toList(),
         ),
         const SizedBox(height: 32),
-      ],
+      ]),
     );
   }
 }

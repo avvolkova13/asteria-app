@@ -1,3 +1,5 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
+import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/ui_kit/card_radii.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
@@ -82,7 +84,7 @@ class SonnikPageScaffold extends StatelessWidget {
             Positioned.fill(
               child: RotatedBox(
                 quarterTurns: 2,
-                child: Image.asset(SonnikAssets.clouds, fit: BoxFit.cover),
+                child: Image.asset(SonnikAssets.clouds, fit: BoxFit.cover).withEntrance(),
               ),
             ),
             Positioned.fill(
@@ -103,10 +105,10 @@ class SonnikPageScaffold extends StatelessWidget {
             SafeArea(
               bottom: false,
               child: Column(
-                children: [
+                children: AsteriaEntrance.sections([
                   SonnikTopNavBar(title: title, canPop: canPop),
                   Expanded(child: child),
-                ],
+                ]),
               ),
             ),
           ],
@@ -155,13 +157,16 @@ class SonnikTopNavBar extends StatelessWidget {
               title,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: AppTypography.navTitle.copyWith(color: SonnikPalette.white),
+              style: AppTypography.navTitle.copyWith(
+                color: SonnikPalette.white,
+              ),
             ),
           ),
           const SizedBox(width: 8),
           Consumer<UserProvider>(
             builder: (context, userProvider, child) {
-              final balance = MonetizationProvider.maybeOf(context)?.balance ?? 0;
+              final balance =
+                  MonetizationProvider.maybeOf(context)?.balance ?? 0;
               return Semantics(
                 button: true,
                 label: '${context.l10n.balanceTitle}: $balance',
@@ -174,7 +179,9 @@ class SonnikTopNavBar extends StatelessWidget {
                     children: [
                       Text(
                         '$balance',
-                        style: AppTypography.navTitle.copyWith(color: SonnikPalette.white),
+                        style: AppTypography.navTitle.copyWith(
+                          color: SonnikPalette.white,
+                        ),
                       ),
                       const SizedBox(width: 4),
                       LotusRasterIcon(
@@ -355,7 +362,9 @@ class SonnikGlassPanel extends StatelessWidget {
     super.key,
     required this.child,
     this.padding = const EdgeInsets.all(16),
-    this.borderRadius = const BorderRadius.all(Radius.circular(AsteriaCardRadii.card)),
+    this.borderRadius = const BorderRadius.all(
+      Radius.circular(AsteriaCardRadii.card),
+    ),
     this.onTap,
   });
 
@@ -367,7 +376,7 @@ class SonnikGlassPanel extends StatelessWidget {
         filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
         child: Container(
           padding: padding,
-          decoration: BoxDecoration(
+          decoration: CardLensDecoration(
             color: SonnikPalette.white.withValues(alpha: 0.12),
             borderRadius: borderRadius,
             border: Border.all(
@@ -466,7 +475,9 @@ class SonnikOfferCard extends StatelessWidget {
                         title,
                         maxLines: 3,
                         overflow: TextOverflow.ellipsis,
-                        style: AppTypography.text1SemiBold.copyWith(color: SonnikPalette.white),
+                        style: AppTypography.text1SemiBold.copyWith(
+                          color: SonnikPalette.white,
+                        ),
                       ),
                     ),
                     const SizedBox(width: 4),
