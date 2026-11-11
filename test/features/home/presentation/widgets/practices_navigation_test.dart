@@ -9,71 +9,91 @@ import 'package:asteria_app/core/routing/app_route.dart';
 import 'package:asteria_app/core/ui_kit/theme/theme.dart';
 import 'package:asteria_app/features/home/presentation/screens/practices_screen.dart';
 import 'package:asteria_app/features/home/presentation/screens/profile_screen.dart';
+import 'package:asteria_app/features/scenarios/first_session.dart';
+import 'package:asteria_app/features/scenarios/scenario_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 void main() {
-  testWidgets('open profile from practices and return using its back button', (
-    tester,
-  ) async {
-    final content = _Content();
-    final user = _User();
-    di.registerSingleton<ContentProvider>(content);
-    di.registerSingleton<ProductAnalyticsService>(_ProfileAnalytics());
-    final router = GoRouter(
-      initialLocation: '/home',
-      routes: [
-        GoRoute(
-          path: '/home',
-          routes: [HomeProfileRoute()],
-          builder: (_, _) => const Scaffold(body: PracticesScreen()),
-        ),
-      ],
-    );
-    addTearDown(() async {
-      router.dispose();
-      content.dispose();
-      user.dispose();
-      await di.reset();
-    });
-    await tester.pumpWidget(
-      MaterialApp.router(
-        routerConfig: router,
-        localizationsDelegates: const [AppLocalizations.delegate],
-        builder: (context, child) => Theme(
-          data: AppThemeDark.instance.getThemeData(context),
-          child: ChangeNotifierProvider<UserProvider>.value(
-            value: user,
-            child: child,
+  testWidgets(
+    'reopen scenarios from profile and return through each step to practices',
+    (tester) async {
+      final content = _Content();
+      final user = _User();
+      di.registerSingleton<ContentProvider>(content);
+      di.registerSingleton<UserProvider>(user);
+      di.registerSingleton<ProductAnalyticsService>(_ProfileAnalytics());
+      final router = GoRouter(
+        initialLocation: '/home',
+        routes: [
+          GoRoute(
+            path: FirstSession.path,
+            builder: (_, _) => const ScenarioPicker(),
+          ),
+          GoRoute(
+            path: '/home',
+            routes: [HomeProfileRoute()],
+            builder: (_, _) => const Scaffold(body: PracticesScreen()),
+          ),
+        ],
+      );
+      addTearDown(() async {
+        router.dispose();
+        content.dispose();
+        user.dispose();
+        await di.reset();
+      });
+      await tester.pumpWidget(
+        MaterialApp.router(
+          routerConfig: router,
+          localizationsDelegates: const [AppLocalizations.delegate],
+          builder: (context, child) => Theme(
+            data: AppThemeDark.instance.getThemeData(context),
+            child: ChangeNotifierProvider<UserProvider>.value(
+              value: user,
+              child: child,
+            ),
           ),
         ),
-      ),
-    );
-    await tester.pumpAndSettle();
-    final context = tester.element(find.byType(PracticesScreen));
-    final labels = AppLocalizations.of(context);
-    expect(find.text(labels.energyOfDay), findsNothing);
-    final profileLabel = labels.navProfile;
-    final avatar = find.byTooltip(profileLabel);
-    expect(find.text(profileLabel), findsOneWidget);
-    expect(tester.getSize(avatar).width, greaterThan(44));
-    expect(tester.getSize(avatar).height, greaterThanOrEqualTo(44));
-    await tester.tap(avatar);
-    await tester.pumpAndSettle();
-    expect(find.byType(ProfileScreen), findsOneWidget);
-    expect(
-      router.routerDelegate.currentConfiguration.last.route.name,
-      HomeProfileRoute.routeName,
-    );
-    final back = MaterialLocalizations.of(context).backButtonTooltip;
-    await tester.tap(find.bySemanticsLabel(back));
-    await tester.pumpAndSettle();
-    expect(find.byType(PracticesScreen), findsOneWidget);
-    expect(find.byType(ProfileScreen), findsNothing);
-    await tester.pumpWidget(const SizedBox.shrink());
-  });
+      );
+      await tester.pumpAndSettle();
+      final context = tester.element(find.byType(PracticesScreen));
+      final labels = AppLocalizations.of(context);
+      expect(find.text(labels.energyOfDay), findsNothing);
+      final profileLabel = labels.navProfile;
+      final avatar = find.byTooltip(profileLabel);
+      expect(find.text(profileLabel), findsOneWidget);
+      expect(tester.getSize(avatar).width, greaterThan(44));
+      expect(tester.getSize(avatar).height, greaterThanOrEqualTo(44));
+      await tester.tap(avatar);
+      await tester.pumpAndSettle();
+      expect(find.byType(ProfileScreen), findsOneWidget);
+      expect(
+        router.routerDelegate.currentConfiguration.last.route.name,
+        HomeProfileRoute.routeName,
+      );
+      final back = MaterialLocalizations.of(context).backButtonTooltip;
+      await tester.tap(find.text(labels.scenarioStartTitle));
+      await tester.pumpAndSettle();
+      expect(find.byType(ScenarioPicker), findsOneWidget);
+      await tester.tap(find.text(labels.scenarioPracticeTitle));
+      await tester.pumpAndSettle();
+      expect(find.text(labels.scenarioPracticeChooseMood), findsOneWidget);
+      await tester.tap(find.byTooltip(back));
+      await tester.pumpAndSettle();
+      expect(find.byType(ScenarioPicker), findsOneWidget);
+      await tester.tap(find.byTooltip(back));
+      await tester.pumpAndSettle();
+      expect(find.byType(ProfileScreen), findsOneWidget);
+      await tester.tap(find.bySemanticsLabel(back));
+      await tester.pumpAndSettle();
+      expect(find.byType(PracticesScreen), findsOneWidget);
+      expect(find.byType(ProfileScreen), findsNothing);
+      await tester.pumpWidget(const SizedBox.shrink());
+    },
+  );
 }
 
 class _Content extends ChangeNotifier implements ContentProvider {

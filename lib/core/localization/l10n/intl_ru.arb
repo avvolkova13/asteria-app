@@ -966,9 +966,13 @@
   "scenarioRelationshipsSubtitle": "Выберите, что вас волнует в отношениях. Asteria подскажет, с чего начать.",
   "scenarioStrengthTitle": "В чём моя сила?",
   "scenarioStrengthSubtitle": "Что вам предстоит? Подскажем первый шаг.",
-  "scenarioPracticeSlowDown": "Успокоиться",
-  "scenarioPracticeFocus": "Собраться",
-  "scenarioPracticeUnwind": "Выдохнуть после трудного дня",
-  "scenarioPracticeChooseMood": "Что вам сейчас нужно?",
+  "scenarioPracticeSlowDown": "Всё время спешу",
+  "scenarioPracticeFocus": "Сложно сосредоточиться",
+  "scenarioPracticeUnwind": "День выдался тяжёлым",
+  "scenarioPracticeChooseMood": "Как вы сейчас себя чувствуете?",
+  "scenarioPracticeAlternativeTitle": "Минутка передышки",
+  "scenarioPracticeAlternativeOffered": "Для этого состояния пока нет отдельной записи. Хотите попробовать аффирмацию, чтобы замедлиться?",
+  "scenarioPracticeNoMatch": "Для этого состояния пока нет записи. Можно вернуться и выбрать другое.",
+  "scenarioPracticeListen": "Послушать · {duration}",
   "scenarioPracticeUnavailable": "Сейчас нет доступных аудиопрактик."
 }

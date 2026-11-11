@@ -6,51 +6,97 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  Future<void> start(
+    WidgetTester tester,
+    List<ScenarioPractice> recordings,
+  ) async {
+    await tester.pumpWidget(_app(recordings));
+    await tester.tap(find.text('Start'));
+    await tester.pumpAndSettle();
+  }
+
   testWidgets(
-    'one accessible recording opens directly; restricted mood stays hidden',
+    'one recording still asks how the visitor feels and offers a way back',
     (tester) async {
       final played = <String>[];
-      final recordings = [
-        _fixture(played, 'Only recording', PracticeMood.slowDown),
+      await start(tester, [
+        _fixture(played, 'Slow practice', PracticeMood.slowDown),
+      ]);
+      expect(find.text('How are you feeling right now?'), findsOneWidget);
+      expect(played, isEmpty);
+      await tester.tap(find.text('I feel rushed'));
+      await tester.pumpAndSettle();
+      expect(played, ['Slow practice']);
+      await tester.tap(find.byTooltip('Back'));
+      await tester.pumpAndSettle();
+      expect(find.text('Start'), findsOneWidget);
+    },
+  );
+
+  testWidgets(
+    'a missing match offers an explicitly optional alternative and preserves the return path',
+    (tester) async {
+      final played = <String>[];
+      await start(tester, [
+        _fixture(played, 'Available recording', PracticeMood.slowDown),
         _fixture(
           played,
           'Restricted recording',
           PracticeMood.focus,
           available: false,
         ),
-      ];
-      await tester.pumpWidget(_app(recordings));
-      await tester.tap(find.text('Start'));
+      ]);
+      await tester.tap(find.text('I find it hard to focus'));
       await tester.pumpAndSettle();
-      expect(played, ['Only recording']);
-      expect(find.text('What do you need right now?'), findsNothing);
+      expect(played, isEmpty);
+      expect(
+        find.textContaining('There isn’t a recording for this feeling yet.'),
+        findsOneWidget,
+      );
+      expect(find.text('Restricted recording'), findsNothing);
+      expect(find.text('Listen · 1:15'), findsOneWidget);
+      await tester.tap(find.text('Available recording'));
+      await tester.pumpAndSettle();
+      expect(played, ['Available recording']);
+      await tester.tap(find.byTooltip('Back'));
+      await tester.pumpAndSettle();
+      expect(find.text('I find it hard to focus'), findsOneWidget);
     },
   );
 
-  testWidgets(
-    'actual mood opens its assigned recording and offers another when returning',
-    (tester) async {
-      final played = <String>[];
-      final recordings = [
-        _fixture(played, 'Quiet', PracticeMood.slowDown),
-        _fixture(played, 'First focus recording', PracticeMood.focus),
-        _fixture(played, 'Second focus recording', PracticeMood.focus),
-        _fixture(played, 'Locked', PracticeMood.unwind, available: false),
-      ];
-      await tester.pumpWidget(_app(recordings));
-      await tester.tap(find.text('Start'));
+  testWidgets('matching recordings rotate within the selected mood', (
+    tester,
+  ) async {
+    final played = <String>[];
+    await start(tester, [
+      _fixture(played, 'Quiet', PracticeMood.slowDown),
+      _fixture(played, 'First focus recording', PracticeMood.focus),
+      _fixture(played, 'Second focus recording', PracticeMood.focus),
+      _fixture(played, 'Locked', PracticeMood.focus, available: false),
+    ]);
+    for (var i = 0; i < 3; ++i) {
+      await tester.tap(find.text('I find it hard to focus'));
       await tester.pumpAndSettle();
-      expect(find.text('Slow down'), findsOneWidget);
-      expect(find.text('Unwind after a long day'), findsNothing);
-      await tester.tap(find.text('Find focus'));
-      await tester.pumpAndSettle();
-      expect(played, ['First focus recording']);
-      expect(find.text('Second focus recording · 1:15'), findsOneWidget);
-      await tester.tap(find.text('Find focus'));
-      await tester.pumpAndSettle();
-      expect(played, ['First focus recording', 'Second focus recording']);
-    },
-  );
+    }
+    expect(played, [
+      'First focus recording',
+      'Second focus recording',
+      'First focus recording',
+    ]);
+  });
+
+  testWidgets('an empty catalog can be left through the visible back button', (
+    tester,
+  ) async {
+    await start(tester, []);
+    expect(
+      find.text('No audio practices are available right now.'),
+      findsOneWidget,
+    );
+    await tester.tap(find.byTooltip('Back'));
+    await tester.pumpAndSettle();
+    expect(find.text('Start'), findsOneWidget);
+  });
 }
 
 ScenarioPractice _fixture(

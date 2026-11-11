@@ -42,7 +42,6 @@ class _ScenarioPickerState extends State<ScenarioPicker> {
   Widget build(BuildContext context) {
     return ScenarioPage(
       title: context.l10n.scenarioStartTitle,
-      showBack: false,
       background: Image.asset(
         'assets/images/scenarios/picker_sky.webp',
         fit: BoxFit.cover,

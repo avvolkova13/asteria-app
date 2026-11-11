@@ -8495,43 +8495,83 @@ class AppLocalizations {
     );
   }
 
-  /// `Slow down`
+  /// `I feel rushed`
   String get scenarioPracticeSlowDown {
     return Intl.message(
-      'Slow down',
+      'I feel rushed',
       name: 'scenarioPracticeSlowDown',
       desc: '',
       args: [],
     );
   }
 
-  /// `Find focus`
+  /// `I find it hard to focus`
   String get scenarioPracticeFocus {
     return Intl.message(
-      'Find focus',
+      'I find it hard to focus',
       name: 'scenarioPracticeFocus',
       desc: '',
       args: [],
     );
   }
 
-  /// `Unwind after a long day`
+  /// `It’s been a hard day`
   String get scenarioPracticeUnwind {
     return Intl.message(
-      'Unwind after a long day',
+      'It’s been a hard day',
       name: 'scenarioPracticeUnwind',
       desc: '',
       args: [],
     );
   }
 
-  /// `What do you need right now?`
+  /// `How are you feeling right now?`
   String get scenarioPracticeChooseMood {
     return Intl.message(
-      'What do you need right now?',
+      'How are you feeling right now?',
       name: 'scenarioPracticeChooseMood',
       desc: '',
       args: [],
+    );
+  }
+
+  /// `A moment to pause`
+  String get scenarioPracticeAlternativeTitle {
+    return Intl.message(
+      'A moment to pause',
+      name: 'scenarioPracticeAlternativeTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `There isn’t a recording for this feeling yet. Would you like to try an affirmation for slowing down?`
+  String get scenarioPracticeAlternativeOffered {
+    return Intl.message(
+      'There isn’t a recording for this feeling yet. Would you like to try an affirmation for slowing down?',
+      name: 'scenarioPracticeAlternativeOffered',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `There isn’t a recording for this feeling yet. Go back to choose another.`
+  String get scenarioPracticeNoMatch {
+    return Intl.message(
+      'There isn’t a recording for this feeling yet. Go back to choose another.',
+      name: 'scenarioPracticeNoMatch',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Listen · {duration}`
+  String scenarioPracticeListen(Object duration) {
+    return Intl.message(
+      'Listen · $duration',
+      name: 'scenarioPracticeListen',
+      desc: '',
+      args: [duration],
     );
   }
 

@@ -152,23 +152,25 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m57(title) => "Открыть значение руны настоящего ${title}";
 
-  static String m58(count) => "${count} шт.";
+  static String m58(duration) => "Послушать · ${duration}";
 
-  static String m59(price) => "цена за 1 = ${price}";
+  static String m59(count) => "${count} шт.";
 
-  static String m60(date) => "Следующее списание\nбудет произведено\n${date}";
+  static String m60(price) => "цена за 1 = ${price}";
 
-  static String m61(count) => "Восстановлено покупок: ${count}";
+  static String m61(date) => "Следующее списание\nбудет произведено\n${date}";
 
-  static String m62(title) => "Карта ${title} закрыта";
+  static String m62(count) => "Восстановлено покупок: ${count}";
 
-  static String m63(title) => "Открыть карту ${title}";
+  static String m63(title) => "Карта ${title} закрыта";
 
-  static String m64(position) => "Открыть карту ${position} из 3";
+  static String m64(title) => "Открыть карту ${title}";
 
-  static String m65(position, card) => "Карта ${position} из 3: ${card}";
+  static String m65(position) => "Открыть карту ${position} из 3";
 
-  static String m66(price) =>
+  static String m66(position, card) => "Карта ${position} из 3: ${card}";
+
+  static String m67(price) =>
       "Твой персональный гороскоп\nна год за ${price} звёздочётов";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
@@ -1870,12 +1872,24 @@ class MessageLookup extends MessageLookupByLibrary {
       "Подобрать день",
     ),
     "scenarioGoHome": MessageLookupByLibrary.simpleMessage("На главную"),
-    "scenarioPracticeChooseMood": MessageLookupByLibrary.simpleMessage(
-      "Что вам сейчас нужно?",
+    "scenarioPracticeAlternativeOffered": MessageLookupByLibrary.simpleMessage(
+      "Для этого состояния пока нет отдельной записи. Хотите попробовать аффирмацию, чтобы замедлиться?",
     ),
-    "scenarioPracticeFocus": MessageLookupByLibrary.simpleMessage("Собраться"),
+    "scenarioPracticeAlternativeTitle": MessageLookupByLibrary.simpleMessage(
+      "Минутка передышки",
+    ),
+    "scenarioPracticeChooseMood": MessageLookupByLibrary.simpleMessage(
+      "Как вы сейчас себя чувствуете?",
+    ),
+    "scenarioPracticeFocus": MessageLookupByLibrary.simpleMessage(
+      "Сложно сосредоточиться",
+    ),
+    "scenarioPracticeListen": m58,
+    "scenarioPracticeNoMatch": MessageLookupByLibrary.simpleMessage(
+      "Для этого состояния пока нет записи. Можно вернуться и выбрать другое.",
+    ),
     "scenarioPracticeSlowDown": MessageLookupByLibrary.simpleMessage(
-      "Успокоиться",
+      "Всё время спешу",
     ),
     "scenarioPracticeSubtitle": MessageLookupByLibrary.simpleMessage(
       "Аффирмации под ваше настроение.",
@@ -1887,7 +1901,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Сейчас нет доступных аудиопрактик.",
     ),
     "scenarioPracticeUnwind": MessageLookupByLibrary.simpleMessage(
-      "Выдохнуть после трудного дня",
+      "День выдался тяжёлым",
     ),
     "scenarioRelationshipCare": MessageLookupByLibrary.simpleMessage(
       "Мы по-разному проявляем чувства",
@@ -2028,7 +2042,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "shopIncreaseQuantity": MessageLookupByLibrary.simpleMessage(
       "Увеличить количество",
     ),
-    "shopItemCount": m58,
+    "shopItemCount": m59,
     "shopItemSuffix": MessageLookupByLibrary.simpleMessage("шт"),
     "shopItemsLeft": MessageLookupByLibrary.simpleMessage("Осталось"),
     "shopLoadError": MessageLookupByLibrary.simpleMessage(
@@ -2051,7 +2065,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "shopTitle": MessageLookupByLibrary.simpleMessage("Магазин"),
     "shopUnitPrice": MessageLookupByLibrary.simpleMessage("цена за 1"),
-    "shopUnitPriceValue": m59,
+    "shopUnitPriceValue": m60,
     "specialReadingsTitle": MessageLookupByLibrary.simpleMessage(
       "Особые расклады",
     ),
@@ -2175,7 +2189,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "subscriptionNextPaymentInline": MessageLookupByLibrary.simpleMessage(
       "Следующее списание будет\nпроизведено ",
     ),
-    "subscriptionNextPaymentOn": m60,
+    "subscriptionNextPaymentOn": m61,
     "subscriptionNoPurchasesToRestore": MessageLookupByLibrary.simpleMessage(
       "Покупки для восстановления не найдены",
     ),
@@ -2188,7 +2202,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "subscriptionPlansUnavailable": MessageLookupByLibrary.simpleMessage(
       "Подписки пока недоступны. Попробуйте позже.",
     ),
-    "subscriptionPurchasesRestored": m61,
+    "subscriptionPurchasesRestored": m62,
     "subscriptionRestoreInProgress": MessageLookupByLibrary.simpleMessage(
       "Восстанавливаем покупки…",
     ),
@@ -2216,10 +2230,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "tarotLoadError": MessageLookupByLibrary.simpleMessage(
       "Не удалось загрузить карты Таро.",
     ),
-    "tarotLockedCardLabel": m62,
-    "tarotOpenCardLabel": m63,
-    "tarotOpenSpreadCard": m64,
-    "tarotOpenedSpreadCard": m65,
+    "tarotLockedCardLabel": m63,
+    "tarotOpenCardLabel": m64,
+    "tarotOpenSpreadCard": m65,
+    "tarotOpenedSpreadCard": m66,
     "tarotRefreshSubscriptionRequired": MessageLookupByLibrary.simpleMessage(
       "Обновление карты Таро доступно только по подписке. Оформите подписку, чтобы получать новую карту каждый день.",
     ),
@@ -2266,6 +2280,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "yearHoroscopeIntro": MessageLookupByLibrary.simpleMessage(
       "Открой карту своей судьбы и загляни в будущее, которое ждёт именно тебя.",
     ),
-    "yearHoroscopePriceTitle": m66,
+    "yearHoroscopePriceTitle": m67,
   };
 }

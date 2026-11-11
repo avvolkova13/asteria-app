@@ -154,23 +154,25 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m57(title) => "Open the meaning of the present rune ${title}";
 
-  static String m58(count) => "${count} pcs";
+  static String m58(duration) => "Listen · ${duration}";
 
-  static String m59(price) => "price per item = ${price}";
+  static String m59(count) => "${count} pcs";
 
-  static String m60(date) => "Your next payment\nwill be charged on\n${date}";
+  static String m60(price) => "price per item = ${price}";
 
-  static String m61(count) => "Purchases restored: ${count}";
+  static String m61(date) => "Your next payment\nwill be charged on\n${date}";
 
-  static String m62(title) => "${title} is locked";
+  static String m62(count) => "Purchases restored: ${count}";
 
-  static String m63(title) => "Open ${title}";
+  static String m63(title) => "${title} is locked";
 
-  static String m64(position) => "Open card ${position} of 3";
+  static String m64(title) => "Open ${title}";
 
-  static String m65(position, card) => "Card ${position} of 3: ${card}";
+  static String m65(position) => "Open card ${position} of 3";
 
-  static String m66(price) =>
+  static String m66(position, card) => "Card ${position} of 3: ${card}";
+
+  static String m67(price) =>
       "Your personal yearly horoscope\nfor ${price} Star Coins";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
@@ -1828,12 +1830,24 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "scenarioCalendarTitle": MessageLookupByLibrary.simpleMessage("Pick a day"),
     "scenarioGoHome": MessageLookupByLibrary.simpleMessage("Go home"),
-    "scenarioPracticeChooseMood": MessageLookupByLibrary.simpleMessage(
-      "What do you need right now?",
+    "scenarioPracticeAlternativeOffered": MessageLookupByLibrary.simpleMessage(
+      "There isn’t a recording for this feeling yet. Would you like to try an affirmation for slowing down?",
     ),
-    "scenarioPracticeFocus": MessageLookupByLibrary.simpleMessage("Find focus"),
+    "scenarioPracticeAlternativeTitle": MessageLookupByLibrary.simpleMessage(
+      "A moment to pause",
+    ),
+    "scenarioPracticeChooseMood": MessageLookupByLibrary.simpleMessage(
+      "How are you feeling right now?",
+    ),
+    "scenarioPracticeFocus": MessageLookupByLibrary.simpleMessage(
+      "I find it hard to focus",
+    ),
+    "scenarioPracticeListen": m58,
+    "scenarioPracticeNoMatch": MessageLookupByLibrary.simpleMessage(
+      "There isn’t a recording for this feeling yet. Go back to choose another.",
+    ),
     "scenarioPracticeSlowDown": MessageLookupByLibrary.simpleMessage(
-      "Slow down",
+      "I feel rushed",
     ),
     "scenarioPracticeSubtitle": MessageLookupByLibrary.simpleMessage(
       "Affirmations to match your mood.",
@@ -1845,7 +1859,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "No audio practices are available right now.",
     ),
     "scenarioPracticeUnwind": MessageLookupByLibrary.simpleMessage(
-      "Unwind after a long day",
+      "It’s been a hard day",
     ),
     "scenarioRelationshipCare": MessageLookupByLibrary.simpleMessage(
       "We show affection differently",
@@ -1984,7 +1998,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "shopIncreaseQuantity": MessageLookupByLibrary.simpleMessage(
       "Increase quantity",
     ),
-    "shopItemCount": m58,
+    "shopItemCount": m59,
     "shopItemSuffix": MessageLookupByLibrary.simpleMessage("items"),
     "shopItemsLeft": MessageLookupByLibrary.simpleMessage("Left"),
     "shopLoadError": MessageLookupByLibrary.simpleMessage(
@@ -2007,7 +2021,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "shopTitle": MessageLookupByLibrary.simpleMessage("Shop"),
     "shopUnitPrice": MessageLookupByLibrary.simpleMessage("price per item"),
-    "shopUnitPriceValue": m59,
+    "shopUnitPriceValue": m60,
     "specialReadingsTitle": MessageLookupByLibrary.simpleMessage(
       "Special readings",
     ),
@@ -2131,7 +2145,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "subscriptionNextPaymentInline": MessageLookupByLibrary.simpleMessage(
       "Your next payment will be\ncharged on ",
     ),
-    "subscriptionNextPaymentOn": m60,
+    "subscriptionNextPaymentOn": m61,
     "subscriptionNoPurchasesToRestore": MessageLookupByLibrary.simpleMessage(
       "No purchases were found to restore",
     ),
@@ -2144,7 +2158,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "subscriptionPlansUnavailable": MessageLookupByLibrary.simpleMessage(
       "Subscriptions are currently unavailable. Try again later.",
     ),
-    "subscriptionPurchasesRestored": m61,
+    "subscriptionPurchasesRestored": m62,
     "subscriptionRestoreInProgress": MessageLookupByLibrary.simpleMessage(
       "Restoring purchases…",
     ),
@@ -2172,10 +2186,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "tarotLoadError": MessageLookupByLibrary.simpleMessage(
       "Unable to load Tarot cards.",
     ),
-    "tarotLockedCardLabel": m62,
-    "tarotOpenCardLabel": m63,
-    "tarotOpenSpreadCard": m64,
-    "tarotOpenedSpreadCard": m65,
+    "tarotLockedCardLabel": m63,
+    "tarotOpenCardLabel": m64,
+    "tarotOpenSpreadCard": m65,
+    "tarotOpenedSpreadCard": m66,
     "tarotRefreshSubscriptionRequired": MessageLookupByLibrary.simpleMessage(
       "Refreshing the Tarot card is available with a subscription. Subscribe to receive a new card every day.",
     ),
@@ -2222,6 +2236,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "yearHoroscopeIntro": MessageLookupByLibrary.simpleMessage(
       "Open your map of destiny and glimpse the future created just for you.",
     ),
-    "yearHoroscopePriceTitle": m66,
+    "yearHoroscopePriceTitle": m67,
   };
 }

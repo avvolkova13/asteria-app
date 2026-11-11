@@ -1,4 +1,5 @@
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
+import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 import 'dart:async';
 import 'dart:math' as math;
 
@@ -41,7 +42,13 @@ String _formatTime(Duration time) =>
     '${time.inMinutes}:${(time.inSeconds % 60).toString().padLeft(2, '0')}';
 
 class AffirmationPlayerScreen extends StatefulWidget {
-  const AffirmationPlayerScreen({super.key, this.controller});
+  const AffirmationPlayerScreen({
+    super.key,
+    this.controller,
+    this.showBack = false,
+  });
+
+  final bool showBack;
 
   /// An injected controller belongs to its caller.
   final PracticePlaybackController? controller;
@@ -306,6 +313,7 @@ class _AffirmationPlayerScreenState extends State<AffirmationPlayerScreen> {
                   bounds.maxHeight < 360 ||
                   MediaQuery.textScalerOf(context).scale(18) > 27;
               final header = _PlayerHeader(
+                showBack: widget.showBack,
                 compact: compact,
                 onExit: () => Navigator.of(context).maybePop(),
                 repeatButton: ListenableBuilder(
@@ -642,10 +650,12 @@ class _PlayerHeader extends StatelessWidget {
   const _PlayerHeader({
     required this.compact,
     required this.onExit,
+    required this.showBack,
     required this.repeatButton,
   });
   final bool compact;
   final VoidCallback onExit;
+  final bool showBack;
   final Widget repeatButton;
 
   @override
@@ -704,11 +714,23 @@ class _PlayerHeader extends StatelessWidget {
           Positioned(
             top: 0,
             left: 0,
-            child: PlayerPebble(
-              glyph: ClayGlyph.close,
-              label: strings.playerClose,
-              onTap: onExit,
-            ).withEntrance(order: 0),
+            child: (showBack
+                ? LotusButtons.icon(
+                    tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+                    onPressed: onExit,
+                    icon: const LotusIconSurface(
+                      child: ClayIcon(
+                        Icons.arrow_back_ios_new_rounded,
+                        size: 24,
+                        color: _headerInk,
+                      ),
+                    ),
+                  )
+                : PlayerPebble(
+                    glyph: ClayGlyph.close,
+                    label: strings.playerClose,
+                    onTap: onExit,
+                  )).withEntrance(order: 0),
           ),
           Positioned(top: 0, right: 0, child: repeatButton.withEntrance(order: 1)),
         ],

@@ -966,9 +966,13 @@
   "scenarioRelationshipsSubtitle": "Choose what is on your mind. Asteria will suggest a place to start.",
   "scenarioStrengthTitle": "What’s my strength?",
   "scenarioStrengthSubtitle": "What’s ahead? Get a first step to try.",
-  "scenarioPracticeSlowDown": "Slow down",
-  "scenarioPracticeFocus": "Find focus",
-  "scenarioPracticeUnwind": "Unwind after a long day",
-  "scenarioPracticeChooseMood": "What do you need right now?",
+  "scenarioPracticeSlowDown": "I feel rushed",
+  "scenarioPracticeFocus": "I find it hard to focus",
+  "scenarioPracticeUnwind": "It’s been a hard day",
+  "scenarioPracticeChooseMood": "How are you feeling right now?",
+  "scenarioPracticeAlternativeTitle": "A moment to pause",
+  "scenarioPracticeAlternativeOffered": "There isn’t a recording for this feeling yet. Would you like to try an affirmation for slowing down?",
+  "scenarioPracticeNoMatch": "There isn’t a recording for this feeling yet. Go back to choose another.",
+  "scenarioPracticeListen": "Listen · {duration}",
   "scenarioPracticeUnavailable": "No audio practices are available right now."
 }
