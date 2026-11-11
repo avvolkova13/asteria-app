@@ -204,7 +204,9 @@ class _BalanceHistoryViewState extends State<BalanceHistoryView> {
                                           ? context
                                                 .l10n
                                                 .balanceHistoryNoWithdrawals
-                                          : context.l10n.balanceHistoryNoDeposits,
+                                          : context
+                                                .l10n
+                                                .balanceHistoryNoDeposits,
                                       textAlign: TextAlign.center,
                                       style: BalanceHistoryStyle.body.copyWith(
                                         color: BalanceHistoryStyle.muted,
@@ -225,9 +227,13 @@ class _BalanceHistoryViewState extends State<BalanceHistoryView> {
                                     final item = history.items[index];
                                     return AsteriaEntrance(
                                       key: ValueKey(item.entryId),
-                                      animateInitially: _presentedEntries.add(item.entryId),
+                                      animateInitially: _presentedEntries.add(
+                                        item.entryId,
+                                      ),
                                       child: Padding(
-                                        padding: const EdgeInsets.only(bottom: 8),
+                                        padding: const EdgeInsets.only(
+                                          bottom: 8,
+                                        ),
                                         child: _HistoryItem(item: item),
                                       ),
                                     );
@@ -468,141 +474,13 @@ class _FilterTabs extends StatelessWidget {
       context.l10n.balanceWithdrawals,
       context.l10n.balanceAllOperations,
     ];
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final tabWidth = (constraints.maxWidth - 4) / 3;
-        final style = BalanceHistoryStyle.body.copyWith(
-          fontSize: 13,
-          fontWeight: FontWeight.w600,
-        );
-        var textHeight = 16.0;
-        for (final label in labels) {
-          final painter = TextPainter(
-            text: TextSpan(text: label, style: style),
-            textDirection: Directionality.of(context),
-            textScaler: MediaQuery.textScalerOf(context),
-          )..layout(maxWidth: tabWidth - 12);
-          if (painter.height > textHeight) textHeight = painter.height;
-          painter.dispose();
-        }
-        final height = textHeight + 16;
-        return SizedBox(
-          key: const Key('history-filters'),
-          height: height + 12,
-          child: Stack(
-            children: [
-              Positioned(
-                left: 0,
-                right: 0,
-                top: 6,
-                bottom: 6,
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    color: BalanceHistoryStyle.modal,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-              ),
-              if (selectedFilter != WalletHistoryFilter.withdrawals)
-                Positioned(
-                  left:
-                      2 +
-                      tabWidth *
-                          (selectedFilter == WalletHistoryFilter.all ? 1 : 2),
-                  top: (height + 12 - 16) / 2,
-                  child: const SizedBox(
-                    width: 0.5,
-                    height: 16,
-                    child: ColoredBox(color: BalanceHistoryStyle.border),
-                  ),
-                ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 2),
-                child: Row(
-                  children: [
-                    for (var i = 0; i < labels.length; i++)
-                      Expanded(
-                        child: Semantics(
-                          button: true,
-                          selected:
-                              selectedFilter == WalletHistoryFilter.values[i],
-                          child: Material(
-                            color: Colors.transparent,
-                            child: LotusInkTap(
-                              borderRadius: BorderRadius.circular(8),
-                              onTap: () => onFilterChanged(
-                                WalletHistoryFilter.values[i],
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 8,
-                                ),
-                                child: Container(
-                                  alignment: Alignment.center,
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 6,
-                                  ),
-                                  decoration:
-                                      selectedFilter ==
-                                          WalletHistoryFilter.values[i]
-                                      ? BoxDecoration(
-                                          color: BalanceHistoryStyle.selected,
-                                          borderRadius: BorderRadius.circular(
-                                            8,
-                                          ),
-                                          border: Border.all(
-                                            color: BalanceHistoryStyle.border,
-                                            width: 0.5,
-                                          ),
-                                          boxShadow: const [
-                                            BoxShadow(
-                                              color: Color(0x1F000000),
-                                              offset: Offset(0, 3),
-                                              blurRadius: 8,
-                                            ),
-                                            BoxShadow(
-                                              color: Color(0x0A000000),
-                                              offset: Offset(0, 3),
-                                              blurRadius: 1,
-                                            ),
-                                          ],
-                                        )
-                                      : null,
-                                  child:
-                                      selectedFilter ==
-                                          WalletHistoryFilter.values[i]
-                                      ? ShaderMask(
-                                          blendMode: BlendMode.srcIn,
-                                          shaderCallback: BalanceHistoryStyle
-                                              .accent
-                                              .createShader,
-                                          child: Text(
-                                            labels[i],
-                                            textAlign: TextAlign.center,
-                                            style: style,
-                                          ),
-                                        )
-                                      : Text(
-                                          labels[i],
-                                          textAlign: TextAlign.center,
-                                          style: style.copyWith(
-                                            fontWeight: FontWeight.w400,
-                                            color: BalanceHistoryStyle.muted,
-                                          ),
-                                        ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        );
-      },
+    return SegmentedPicker<WalletHistoryFilter>(
+      key: const Key('history-filters'),
+      options: WalletHistoryFilter.values,
+      surfaceBrightness: Brightness.dark,
+      selectedValue: selectedFilter,
+      labelBuilder: (filter) => labels[filter.index],
+      onChanged: onFilterChanged,
     );
   }
 }
@@ -649,10 +527,12 @@ class _LoadingHistory extends StatelessWidget {
       child: SizedBox(
         width: 24,
         height: 24,
-        child: AsteriaEntrance(child: CircularProgressIndicator(
-          strokeWidth: 2,
-          color: Color(0xFFF3B76A),
-        )),
+        child: AsteriaEntrance(
+          child: CircularProgressIndicator(
+            strokeWidth: 2,
+            color: Color(0xFFF3B76A),
+          ),
+        ),
       ),
     ),
   );

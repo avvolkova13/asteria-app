@@ -53,8 +53,6 @@ class _DailySymbolOfTheDayWidgetState extends State<DailySymbolOfTheDayWidget>
   static const double _runeWidth = 189;
   static const double _runeHeight = 307;
   static const double _runeRadius = 41;
-  static const Color _pickerBackground = Color(0xFF1B1433);
-  static const Color _selectedBackground = Color(0xFF151028);
   static const LinearGradient _orangeGradient = LinearGradient(
     colors: [Color(0xFFE6994D), Color(0xFFF3B76A), Color(0xFFE6994D)],
   );
@@ -151,10 +149,14 @@ class _DailySymbolOfTheDayWidgetState extends State<DailySymbolOfTheDayWidget>
                 ),
               ).withEntrance(),
               const SizedBox(height: 16),
-              _SegmentedPicker(
-                selectedTab: _selectedTab,
+              SegmentedPicker<_DailySymbolTab>(
+                surfaceBrightness: Brightness.dark,
+                options: _DailySymbolTab.values,
+                selectedValue: _selectedTab,
+                labelBuilder: (tab) => tab == _DailySymbolTab.tarot
+                    ? context.l10n.dailyTarotTab
+                    : context.l10n.dailyRuneTab,
                 onChanged: _selectTab,
-                orangeGradient: _orangeGradient,
               ).withEntrance(),
               const SizedBox(height: 9),
               AnimatedSwitcher(
@@ -206,137 +208,6 @@ class _DailySymbolOfTheDayWidgetState extends State<DailySymbolOfTheDayWidget>
     if (tab == _DailySymbolTab.rune) {
       widget.onRuneTabSelected?.call();
     }
-  }
-}
-
-class _SegmentedPicker extends StatelessWidget {
-  const _SegmentedPicker({
-    required this.selectedTab,
-    required this.onChanged,
-    required this.orangeGradient,
-  });
-
-  final _DailySymbolTab selectedTab;
-  final ValueChanged<_DailySymbolTab> onChanged;
-  final LinearGradient orangeGradient;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: 32,
-      width: double.infinity,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: _DailySymbolOfTheDayWidgetState._pickerBackground,
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(2),
-          child: Row(
-            children: [
-              Expanded(
-                child: _SegmentedOption(
-                  text: context.l10n.dailyTarotTab,
-                  isSelected: selectedTab == _DailySymbolTab.tarot,
-                  orangeGradient: orangeGradient,
-                  onTap: () => onChanged(_DailySymbolTab.tarot),
-                ),
-              ),
-              Expanded(
-                child: _SegmentedOption(
-                  text: context.l10n.dailyRuneTab,
-                  isSelected: selectedTab == _DailySymbolTab.rune,
-                  orangeGradient: orangeGradient,
-                  onTap: () => onChanged(_DailySymbolTab.rune),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _SegmentedOption extends StatelessWidget {
-  const _SegmentedOption({
-    required this.text,
-    required this.isSelected,
-    required this.orangeGradient,
-    required this.onTap,
-  });
-
-  final String text;
-  final bool isSelected;
-  final LinearGradient orangeGradient;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final style =
-        (isSelected
-                ? context.textTheme.inverseUrbanistSemiBold14
-                : context.textTheme.tertiaryUrbanistMedium14)
-            .copyWith(
-              fontFamily: 'Onest',
-              fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-              fontSize: 13,
-              height: 1.2,
-              letterSpacing: -0.08,
-              color: isSelected ? Colors.white : AppColors.textTertiary,
-            );
-
-    return LotusFeedback(
-      onActivate: onTap,
-      keyboard: true,
-      builder: (activate) => Semantics(
-        button: true,
-        selected: isSelected,
-        label: text,
-        onTap: activate,
-        child: ExcludeSemantics(
-          child: GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onTap: activate,
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 180),
-              height: 28,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: isSelected
-                    ? _DailySymbolOfTheDayWidgetState._selectedBackground
-                    : Colors.transparent,
-                borderRadius: BorderRadius.circular(8),
-                border: isSelected
-                    ? Border.all(color: const Color(0xFF302654), width: 0.5)
-                    : null,
-                boxShadow: isSelected
-                    ? [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.12),
-                          blurRadius: 4,
-                          offset: const Offset(0, 3),
-                        ),
-                      ]
-                    : null,
-              ),
-              child: isSelected
-                  ? _GradientText(
-                      text: text,
-                      gradient: orangeGradient,
-                      style: style,
-                    )
-                  : Text(
-                      text,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: style,
-                    ),
-            ),
-          ),
-        ),
-      ),
-    );
   }
 }
 

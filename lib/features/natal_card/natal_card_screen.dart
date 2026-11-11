@@ -450,8 +450,11 @@ class _NatalCardContentState extends State<_NatalCardContent> {
           birthPlace: personalInfo?.birthPlace?.location ?? '',
         ),
         const SizedBox(height: 24),
-        _NatalCardSegmentedPicker(
-          selectedTab: _selectedTab,
+        SegmentedPicker<_NatalCardTab>(
+          options: _NatalCardTab.values,
+          surfaceBrightness: Brightness.dark,
+          labelBuilder: (tab) => tab.title(context),
+          selectedValue: _selectedTab,
           onChanged: (tab) => setState(() {
             _selectedTab = tab;
           }),
@@ -711,128 +714,6 @@ class _GeneralInfoTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text(title, style: style);
-  }
-}
-
-class _NatalCardSegmentedPicker extends StatelessWidget {
-  final _NatalCardTab selectedTab;
-  final ValueChanged<_NatalCardTab> onChanged;
-
-  const _NatalCardSegmentedPicker({
-    required this.selectedTab,
-    required this.onChanged,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    const tabs = _NatalCardTab.values;
-
-    return Container(
-      constraints: const BoxConstraints(minHeight: 32),
-      padding: const EdgeInsets.all(2),
-      decoration: BoxDecoration(
-        color: _NatalCardColors.segmentBackground,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Row(
-        children: [
-          for (var index = 0; index < tabs.length; index++)
-            Expanded(
-              child: _NatalCardSegment(
-                title: tabs[index].title(context),
-                isSelected: selectedTab == tabs[index],
-                showSeparator:
-                    selectedTab != tabs[index] &&
-                    index < tabs.length - 1 &&
-                    selectedTab != tabs[index + 1],
-                onTap: () => onChanged(tabs[index]),
-              ),
-            ),
-        ],
-      ),
-    );
-  }
-}
-
-class _NatalCardSegment extends StatelessWidget {
-  final String title;
-  final bool isSelected;
-  final bool showSeparator;
-  final VoidCallback onTap;
-
-  const _NatalCardSegment({
-    required this.title,
-    required this.isSelected,
-    required this.showSeparator,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return LotusTap(
-      behavior: HitTestBehavior.opaque,
-      onTap: onTap,
-      child: Container(
-        constraints: const BoxConstraints(minHeight: 28),
-        decoration: BoxDecoration(
-          color: isSelected ? _NatalCardColors.selectedSegment : null,
-          borderRadius: BorderRadius.circular(8),
-          border: isSelected
-              ? Border.all(
-                  color: AppColors.uiDisabled.withValues(alpha: 0.4),
-                  width: 0.5,
-                )
-              : null,
-          boxShadow: isSelected
-              ? [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.12),
-                    blurRadius: 4,
-                    offset: const Offset(0, 3),
-                  ),
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.04),
-                    blurRadius: 0.5,
-                    offset: const Offset(0, 3),
-                  ),
-                ]
-              : null,
-        ),
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            if (showSeparator)
-              Align(
-                alignment: Alignment.centerRight,
-                child: Container(
-                  width: 1,
-                  height: 16,
-                  decoration: BoxDecoration(
-                    color: AppColors.uiDisabled.withValues(alpha: 0.4),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                ),
-              ),
-            Text(
-              title,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              textAlign: TextAlign.center,
-              style: context.textTheme.urbanistRegular16.copyWith(
-                fontFamily: 'Onest',
-                color: isSelected
-                    ? _NatalCardColors.gold
-                    : AppColors.textTertiary,
-                fontSize: 13,
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-                height: 1.2,
-                letterSpacing: -0.08,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
   }
 }
 
@@ -1304,10 +1185,7 @@ abstract final class _NatalCardColors {
   );
   static const Color background = Color(0xFF0F0A1A);
   static const Color figmaPurple = Color(0xFF9A7DB8);
-  static const Color gold = Color(0xFFF3B76A);
   static const Color goldLight = Color(0xFFFFD28A);
-  static const Color segmentBackground = Color(0xCC0A0615);
-  static const Color selectedSegment = Color(0xB8140C15);
   static const Color cardSolid = Color(0xE60B041C);
 
   static const LinearGradient purpleGradient = LinearGradient(

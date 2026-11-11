@@ -2,6 +2,9 @@ import '../../../compatibility/support/selection_test_support.dart';
 
 import 'dart:async';
 
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
+import 'package:asteria_app/core/utils/enums.dart';
+
 import 'package:asteria_app/app/data/models/affirmation/affirmation_model.dart';
 import 'package:asteria_app/app/data/models/article/article_model.dart';
 import 'package:asteria_app/app/data/models/energy_of_day/energy_of_day_model.dart';
@@ -360,7 +363,27 @@ void main() {
               const TextSelection(baseOffset: 0, extentOffset: 1),
             )
             .single;
-        expect(lastLetter.top, firstLetter.top, reason: label);
+        if (label.startsWith('На ')) {
+          final segment = find
+              .ancestor(of: find.text(label), matching: find.byType(LotusTap))
+              .first;
+          final target = tester.getRect(segment);
+          final labelOrigin = tester.getTopLeft(find.text(label));
+          expect(target.height, greaterThanOrEqualTo(44), reason: label);
+          expect(
+            labelOrigin.dy + firstLetter.top,
+            greaterThanOrEqualTo(target.top),
+            reason: label,
+          );
+          expect(
+            labelOrigin.dy + lastLetter.bottom,
+            lessThanOrEqualTo(target.bottom),
+            reason: label,
+          );
+          expect(paragraph.didExceedMaxLines, isFalse, reason: label);
+        } else {
+          expect(lastLetter.top, firstLetter.top, reason: label);
+        }
         expect(
           lastLetter.right,
           lessThanOrEqualTo(paragraph.size.width + 0.1),
@@ -494,7 +517,7 @@ void main() {
     },
   );
 
-  testWidgets('personal horoscope uses Figma daily add-on card layout', (
+  testWidgets('daily cards center the text on a single surface', (
     tester,
   ) async {
     await di.reset();
@@ -569,7 +592,17 @@ void main() {
     expect(lovePanelFinder, findsOneWidget);
     expect(weaknessPanelFinder, findsOneWidget);
     expect(tester.getSize(lovePanelFinder).width, 112);
-    expect(tester.getSize(weaknessPanelFinder), const Size(112, 112));
+    expect(tester.getSize(weaknessPanelFinder).width, 112);
+    expect(
+      tester.getCenter(find.text('Глубокое описание отношений')).dy,
+      closeTo(tester.getCenter(lovePanelFinder).dy, .5),
+    );
+    for (final panel in [lovePanelFinder, weaknessPanelFinder]) {
+      expect(
+        find.descendant(of: panel, matching: find.byType(DecoratedBox)),
+        findsNothing,
+      );
+    }
 
     final loveImage = tester.widget<Image>(
       find.byKey(const ValueKey('personal-day-love-image')),
@@ -589,7 +622,7 @@ void main() {
   });
 
   testWidgets(
-    'personal horoscope shows unlock prompt for an expired daily forecast',
+    'visible daily forecast loads once, retries errors and reveals the result',
     (tester) async {
       await di.reset();
       await tester.binding.setSurfaceSize(const Size(390, 1200));
@@ -603,11 +636,10 @@ void main() {
           ),
         ),
       );
-      final contentProvider = ContentProvider(
-        contentRepository: _FakeContentRepository(),
-        userProvider: userProvider,
-        compatibilityRepository: _FakeCompatibilityRepository(),
-      );
+      final active = ValueNotifier(false);
+      addTearDown(active.dispose);
+      final contentProvider = _DailyContent(userProvider);
+      di.registerSingleton<ContentProvider>(contentProvider);
       final homeCubit = HomeCubit(
         userRepository: _FakeUserRepository(),
         contentProvider: contentProvider,
@@ -637,7 +669,12 @@ void main() {
                 value: userProvider,
                 child: BlocProvider<HomeCubit>.value(
                   value: homeCubit,
-                  child: const PersonalScreen(),
+                  child: ValueListenableBuilder<bool>(
+                    valueListenable: active,
+                    builder: (_, enabled, child) =>
+                        TickerMode(enabled: enabled, child: child!),
+                    child: const PersonalScreen(),
+                  ),
                 ),
               ),
             ),
@@ -646,10 +683,33 @@ void main() {
       );
       await tester.pump();
 
-      expect(find.text('Открой прогноз'), findsOneWidget);
-      expect(find.text('Открыть бесплатно'), findsOneWidget);
-      expect(find.text('Влияние на сферы'), findsNothing);
+      expect(contentProvider.calls, isEmpty);
+      active.value = true;
+      await tester.pump();
+      expect(contentProvider.calls, hasLength(1));
+      expect(find.text('Открыть бесплатно'), findsNothing);
+      expect(find.byType(CircularProgressIndicator), findsOneWidget);
       expect(find.text('Совет на день'), findsNothing);
+      active.value = false;
+      await tester.pump();
+      active.value = true;
+      await tester.pump();
+      expect(contentProvider.calls, hasLength(1));
+      contentProvider.calls.single.completeError(StateError('offline'));
+      await tester.pump();
+      await tester.pump();
+      expect(find.text('Не удалось загрузить гороскоп.'), findsOneWidget);
+      final retry = find.text('Попробовать снова');
+      await tester.ensureVisible(retry);
+      await tester.tap(retry);
+      await tester.pump();
+      expect(contentProvider.calls, hasLength(2));
+      contentProvider.calls.last.complete();
+      await tester.pump();
+      await tester.pump();
+      expect(find.text('Совет на день'), findsOneWidget);
+      expect(retry, findsNothing);
+      expect(contentProvider.calls, hasLength(2));
       expect(tester.takeException(), isNull);
     },
   );
@@ -813,6 +873,33 @@ class _DelayedEnergyRepository extends _FakeContentRepository {
 
   @override
   Future<List<EnergyOfDayModel>> getEnergyOfDayFromCache() => response.future;
+}
+
+class _DailyContent extends ContentProvider {
+  _DailyContent(this.user)
+    : super(
+        contentRepository: _FakeContentRepository(),
+        userProvider: user,
+        compatibilityRepository: _FakeCompatibilityRepository(),
+      );
+
+  final UserProvider user;
+  final calls = <Completer<void>>[];
+
+  @override
+  Future<void> buyHoroscope(
+    HoroscopeTypeEnum type, {
+    bool requirePro = false,
+  }) async {
+    expect(type, HoroscopeTypeEnum.day);
+    expect(requirePro, isFalse);
+    final response = Completer<void>();
+    calls.add(response);
+    await response.future;
+    user.applyServerUserSnapshot(
+      user.currentUser!.copyWith(horoscopeDay: _horoscopeDay()),
+    );
+  }
 }
 
 class _FakeContentRepository implements ContentRepository {

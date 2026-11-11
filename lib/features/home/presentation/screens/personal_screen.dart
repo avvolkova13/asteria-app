@@ -17,7 +17,6 @@ import 'package:asteria_app/core/di/di.dart';
 import 'package:asteria_app/core/extensions/datetime_extensions.dart';
 import 'package:asteria_app/core/extensions/string_extensions.dart';
 import 'package:asteria_app/core/routing/app_route.dart';
-import 'package:asteria_app/core/services/global_loader_service.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/top_nav_bar.dart';
@@ -34,7 +33,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 const _pageBackground = Color(0xFF090612);
 const _cardTint = Color(0x339A7DB8);
-const _selectedTabBackground = Color(0xFF171026);
 const _accentPurple = Color(0xFF6E4BFF);
 const _accentPurpleDark = Color(0xFF5A3FD1);
 const _goldGradient = LinearGradient(
@@ -84,6 +82,8 @@ class _PersonalScreenState extends State<PersonalScreen> {
   AnalyticsRouteObserver? _routeObserver;
   bool _analyticsScheduled = false;
   String? _lastContentLanguage;
+  (String?, String, String)? _dailyRequestKey;
+  Future<void>? _dailyRequest;
 
   @override
   void initState() {
@@ -165,29 +165,6 @@ class _PersonalScreenState extends State<PersonalScreen> {
       CreateCompatibilityLoadedRoute.push(context);
     } else {
       CreateCompatibilityInitialRoute.push(context);
-    }
-  }
-
-  Future<void> _onBuyHoroscopePressed(HoroscopeTypeEnum horoscopeType) async {
-    di.get<GlobalLoaderService>().show();
-    try {
-      switch (horoscopeType) {
-        case HoroscopeTypeEnum.day:
-          await di.get<ContentProvider>().buyHoroscope(HoroscopeTypeEnum.day);
-          break;
-        case HoroscopeTypeEnum.week:
-          await di.get<ContentProvider>().buyHoroscope(HoroscopeTypeEnum.week);
-          break;
-        case HoroscopeTypeEnum.month:
-          await di.get<ContentProvider>().buyHoroscope(HoroscopeTypeEnum.month);
-          break;
-        case HoroscopeTypeEnum.year:
-          break;
-      }
-    } catch (e) {
-      debugPrint('Ошибка покупки гороскопа: $e');
-    } finally {
-      di.get<GlobalLoaderService>().hide();
     }
   }
 
@@ -326,9 +303,15 @@ class _PersonalScreenState extends State<PersonalScreen> {
         const SizedBox(height: 14),
         _ZodiacInfoCards(zodiacInfo: zodiacInfo).withEntrance(),
         const SizedBox(height: 24),
-        _PersonalSegmentedPicker(
+        SegmentedPicker.indexed(
+          surfaceBrightness: Brightness.dark,
+          titles: [
+            context.l10n.personalTodayTab,
+            context.l10n.personalWeekTab,
+            context.l10n.personalMonthTab,
+          ],
           selectedIndex: _selectedTabIndex,
-          onSelected: (index) {
+          onTabSelected: (index) {
             setState(() {
               _selectedTabIndex = index;
             });
@@ -368,16 +351,46 @@ class _PersonalScreenState extends State<PersonalScreen> {
 
   Widget _buildTodayContent(BuildContext context, UserProvider userProvider) {
     final day = userProvider.currentUser?.horoscopeDay;
-    if (!userProvider.showHoroscope(HoroscopeTypeEnum.day)) {
-      return _LockedPeriodCard(
-        title: context.l10n.personalOpenForecast,
-        description: context.l10n.personalTodayFree,
-        buttonText: context.l10n.personalOpenFree,
-        onPressed: () => _onBuyHoroscopePressed(HoroscopeTypeEnum.day),
+    if (!userProvider.showHoroscope(HoroscopeTypeEnum.day) ||
+        !_isLocalizedHoroscope(day?.toJson())) {
+      if (_selectedTabIndex != 0 ||
+          !TickerMode.valuesOf(context).enabled ||
+          ModalRoute.isCurrentOf(context) == false) {
+        return const SizedBox.shrink();
+      }
+      final key = (
+        userProvider.currentUser?.id,
+        Localizations.localeOf(context).languageCode,
+        DateTime.now().toIsoDate(),
       );
-    }
-    if (!_isLocalizedHoroscope(day?.toJson())) {
-      return _localizedContentPlaceholder();
+      if (_dailyRequestKey != key || _dailyRequest == null) {
+        _dailyRequestKey = key;
+        _dailyRequest = Future.microtask(
+          () => di.get<ContentProvider>().buyHoroscope(HoroscopeTypeEnum.day),
+        );
+      }
+      return FutureBuilder<void>(
+        future: _dailyRequest,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState != ConnectionState.done) {
+            return Padding(
+              padding: const EdgeInsets.symmetric(vertical: 24),
+              child: Center(
+                child: CircularProgressIndicator(
+                  semanticsLabel: context.l10n.loading,
+                  color: AppColors.primary,
+                ),
+              ),
+            );
+          }
+          return _LockedPeriodCard(
+            title: context.l10n.horoscopeLoadError,
+            description: context.l10n.genericCheckConnection,
+            buttonText: context.l10n.commonRetry,
+            onPressed: () => setState(() => _dailyRequest = null),
+          );
+        },
+      );
     }
 
     return Column(
@@ -757,24 +770,19 @@ class _FittingTileRow extends StatelessWidget {
     required this.minTileWidth,
     required this.children,
     this.gap = 0,
-    this.useIntermediateColumns = true,
   });
 
   final double minTileWidth;
   final double gap;
-  final bool useIntermediateColumns;
   final List<Widget> children;
 
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final capacity = ((constraints.maxWidth + gap) / (minTileWidth + gap))
+        final columns = ((constraints.maxWidth + gap) / (minTileWidth + gap))
             .floor()
             .clamp(1, children.length);
-        final columns = useIntermediateColumns || capacity == children.length
-            ? capacity
-            : 1;
         return Column(
           children: [
             for (var start = 0; start < children.length; start += columns) ...[
@@ -904,109 +912,6 @@ final _zodiacCardDecoration = CardLensDecoration(
   borderRadius: BorderRadius.circular(AsteriaCardRadii.compact),
   border: Border.all(color: AppColors.white.withValues(alpha: 0.18)),
 );
-
-class _PersonalSegmentedPicker extends StatelessWidget {
-  final int selectedIndex;
-  final ValueChanged<int> onSelected;
-
-  const _PersonalSegmentedPicker({
-    required this.selectedIndex,
-    required this.onSelected,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final labels = [
-      context.l10n.personalTodayTab,
-      context.l10n.personalWeekTab,
-      context.l10n.personalMonthTab,
-    ];
-    final labelStyle = context.textTheme.urbanistSemiBold12.copyWith(
-      fontSize: 13,
-      height: 1.2,
-      letterSpacing: -0.08,
-    );
-    return Container(
-      padding: const EdgeInsets.all(2),
-      decoration: BoxDecoration(
-        color: _selectedTabBackground,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: _FittingTileRow(
-        useIntermediateColumns: false,
-        minTileWidth:
-            labels
-                .map((label) => _labelWidth(context, label, labelStyle))
-                .reduce(math.max) +
-            14, // 6 pt padding and 1 pt selected border per edge.
-        children: [
-          for (var index = 0; index < labels.length; index++)
-            _SegmentedOption(
-              label: labels[index],
-              isSelected: selectedIndex == index,
-              onTap: () => onSelected(index),
-            ),
-        ],
-      ),
-    );
-  }
-}
-
-class _SegmentedOption extends StatelessWidget {
-  final String label;
-  final bool isSelected;
-  final VoidCallback onTap;
-
-  const _SegmentedOption({
-    required this.label,
-    required this.isSelected,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final text = Text(
-      label,
-      textAlign: TextAlign.center,
-      style:
-          (isSelected
-                  ? context.textTheme.urbanistSemiBold12
-                  : context.textTheme.tertiaryUrbanistRegular12)
-              .copyWith(fontSize: 13, height: 1.2, letterSpacing: -0.08),
-    );
-
-    return Semantics(
-      button: true,
-      selected: isSelected,
-      child: LotusTap(
-        onTap: onTap,
-        behavior: HitTestBehavior.opaque,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 160),
-          constraints: const BoxConstraints(minHeight: 44),
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: isSelected ? AppColors.white.withValues(alpha: 0.08) : null,
-            borderRadius: BorderRadius.circular(8),
-            border: isSelected
-                ? Border.all(color: AppColors.white.withValues(alpha: 0.12))
-                : null,
-          ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-            child: isSelected
-                ? _GradientText(
-                    label,
-                    style: text.style!,
-                    textAlign: TextAlign.center,
-                  )
-                : text,
-          ),
-        ),
-      ),
-    );
-  }
-}
 
 class _HoroscopeImpactMetrics extends StatelessWidget {
   final String lovePercentage;
@@ -1255,31 +1160,16 @@ class _DailyAddonCard extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            _isWeakness
-                ? Align(
-                    alignment: Alignment.topLeft,
-                    child: SizedBox(
-                      key: panelKey,
-                      width: 112,
-                      height: 112,
-                      child: _DailyAddonPanel(
-                        label: label,
-                        imageAsset: imageAsset,
-                        imageKey: imageKey,
-                        isWeakness: _isWeakness,
-                      ),
-                    ),
-                  )
-                : SizedBox(
-                    key: panelKey,
-                    width: 112,
-                    child: _DailyAddonPanel(
-                      label: label,
-                      imageAsset: imageAsset,
-                      imageKey: imageKey,
-                      isWeakness: _isWeakness,
-                    ),
-                  ),
+            SizedBox(
+              key: panelKey,
+              width: 112,
+              child: _DailyAddonPanel(
+                label: label,
+                imageAsset: imageAsset,
+                imageKey: imageKey,
+                isWeakness: _isWeakness,
+              ),
+            ),
             const SizedBox(width: 8),
             Expanded(
               child: Padding(
@@ -1287,9 +1177,7 @@ class _DailyAddonCard extends StatelessWidget {
                   vertical: title?.isNotEmpty == true ? 4 : 0,
                 ),
                 child: Column(
-                  mainAxisAlignment: title?.isNotEmpty == true
-                      ? MainAxisAlignment.center
-                      : MainAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     if (title?.isNotEmpty == true) ...[
@@ -1331,33 +1219,26 @@ class _DailyAddonPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return DecoratedBox(
-      decoration: CardLensDecoration(
-        color: const Color(0x8021183D),
-        borderRadius: BorderRadius.circular(AsteriaCardRadii.compact),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 8),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            _DailyAddonImage(
-              asset: imageAsset,
-              imageKey: imageKey,
-              isWeakness: isWeakness,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          _DailyAddonImage(
+            asset: imageAsset,
+            imageKey: imageKey,
+            isWeakness: isWeakness,
+          ),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            textAlign: TextAlign.center,
+            style: context.textTheme.inverseUrbanistMedium14.copyWith(
+              height: 1,
+              letterSpacing: -0.41,
             ),
-            Text(
-              label,
-              textAlign: TextAlign.center,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: context.textTheme.inverseUrbanistMedium14.copyWith(
-                height: 0.9,
-                letterSpacing: -0.41,
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -2165,7 +2046,7 @@ class _EmptyCompatibilityCard extends StatelessWidget {
                             ),
                             const SizedBox(width: 8),
                             Transform.rotate(
-                              angle: -math.pi / 4,
+                              angle: math.pi / 4,
                               child: ClayAssetIcon(
                                 'assets/icons/affirmation_arrow_figma.svg',
                                 width: 20,

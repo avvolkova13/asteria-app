@@ -41,10 +41,6 @@ enum RunesTab {
 
 class _RunesColors {
   static const background = Color(0xFF0F0A1A);
-  static const segmentedBackground = Color(0xFF1B1433);
-  static const selectedTabBackground = Color(0xFF151028);
-  static const tabStroke = Color(0xFF31296D);
-  static const inactiveText = Color(0xFFB5AAB8);
   static const descriptionText = Color(0xFFEEEAFD);
   static const gold = Color(0xFFF3B76A);
   static const goldGradient = LinearGradient(
@@ -265,7 +261,8 @@ class _RunesContentState extends State<_RunesContent> {
       builder: (context, child) {
         return Column(
           children: [
-            _RunesSegmentedTabs(
+            SegmentedPicker.indexed(
+              surfaceBrightness: Brightness.dark,
               titles: [
                 RunesTab.day.title(context),
                 RunesTab.layout.title(context),
@@ -683,177 +680,6 @@ class _GradientUnderlineButton extends StatelessWidget {
             ),
           ),
         ),
-      ),
-    );
-  }
-}
-
-class _RunesSegmentedTabs extends StatelessWidget {
-  const _RunesSegmentedTabs({
-    required this.titles,
-    required this.selectedIndex,
-    required this.onTabSelected,
-  });
-
-  final List<String> titles;
-  final int selectedIndex;
-  final ValueChanged<int> onTabSelected;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: 32,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: _RunesColors.segmentedBackground,
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(2),
-          child: Row(
-            children: [
-              for (var index = 0; index < titles.length; index++)
-                Expanded(
-                  child: _RunesSegmentedTab(
-                    title: titles[index],
-                    index: index,
-                    selectedIndex: selectedIndex,
-                    isLast: index == titles.length - 1,
-                    onTap: () => onTabSelected(index),
-                  ),
-                ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _RunesSegmentedTab extends StatelessWidget {
-  const _RunesSegmentedTab({
-    required this.title,
-    required this.index,
-    required this.selectedIndex,
-    required this.isLast,
-    required this.onTap,
-  });
-
-  final String title;
-  final int index;
-  final int selectedIndex;
-  final bool isLast;
-  final VoidCallback onTap;
-
-  bool get _isSelected => selectedIndex == index;
-
-  bool get _showSeparator =>
-      !_isSelected && !isLast && selectedIndex != index + 1;
-
-  @override
-  Widget build(BuildContext context) {
-    final textStyle = context.textTheme.urbanistRegular16.copyWith(
-      fontSize: 13,
-      fontWeight: _isSelected ? FontWeight.w600 : FontWeight.w400,
-      height: 1.2,
-      color: _isSelected ? _RunesColors.gold : _RunesColors.inactiveText,
-    );
-
-    final tabText = _isSelected
-        ? _GradientText(
-            text: title,
-            gradient: _RunesColors.goldGradient,
-            style: textStyle,
-          )
-        : Text(
-            title,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            textAlign: TextAlign.center,
-            style: textStyle,
-          );
-
-    return Semantics(
-      button: true,
-      selected: _isSelected,
-      label: title,
-      child: ExcludeSemantics(
-        child: LotusTap(
-          behavior: HitTestBehavior.opaque,
-          onTap: onTap,
-          child: Stack(
-            children: [
-              Positioned.fill(
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 160),
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: _isSelected
-                        ? _RunesColors.selectedTabBackground
-                        : Colors.transparent,
-                    borderRadius: BorderRadius.circular(8),
-                    border: _isSelected
-                        ? Border.all(color: _RunesColors.tabStroke, width: 0.5)
-                        : null,
-                    boxShadow: _isSelected
-                        ? [
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.16),
-                              blurRadius: 8,
-                              offset: const Offset(0, 3),
-                            ),
-                          ]
-                        : null,
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 6),
-                    child: tabText,
-                  ),
-                ),
-              ),
-              if (_showSeparator)
-                Positioned(
-                  right: 0,
-                  top: 6,
-                  bottom: 6,
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      color: _RunesColors.tabStroke,
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: const SizedBox(width: 0.7),
-                  ),
-                ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _GradientText extends StatelessWidget {
-  const _GradientText({
-    required this.text,
-    required this.gradient,
-    required this.style,
-  });
-
-  final String text;
-  final Gradient gradient;
-  final TextStyle style;
-
-  @override
-  Widget build(BuildContext context) {
-    return ShaderMask(
-      blendMode: BlendMode.srcIn,
-      shaderCallback: (bounds) => gradient.createShader(bounds),
-      child: Text(
-        text,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-        textAlign: TextAlign.center,
-        style: style.copyWith(color: AppColors.white),
       ),
     );
   }

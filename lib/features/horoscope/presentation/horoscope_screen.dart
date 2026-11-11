@@ -280,7 +280,8 @@ class _HoroscopeContentState extends State<_HoroscopeContent> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        _HoroscopeSegmentedTabs(
+        SegmentedPicker.indexed(
+          surfaceBrightness: Brightness.dark,
           titles: [
             context.l10n.horoscopeEssence,
             context.l10n.horoscopeLifeAreas,
@@ -466,8 +467,6 @@ class _HoroscopeDesign {
   static const card = Color(0xFF3A2355);
   static const cardAlt = Color(0xFF10051F);
   static const cardBorder = Color(0x66FFFFFF);
-  static const segmentedBackground = Color(0xFF2A1D3C);
-  static const mutedText = Color(0xFFA89CAA);
   static const accentStart = Color(0xFFE6994D);
   static const accentMid = Color(0xFFF3B76A);
   static const accentPurple = Color(0xFF6E4BFF);
@@ -627,149 +626,6 @@ class _HoroscopeTopBar extends StatelessWidget {
                     ),
                   ),
                 ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _HoroscopeSegmentedTabs extends StatelessWidget {
-  final int selectedIndex;
-  final ValueChanged<int> onTabSelected;
-  final List<String> titles;
-
-  const _HoroscopeSegmentedTabs({
-    required this.selectedIndex,
-    required this.onTabSelected,
-    required this.titles,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: 44,
-      child: Center(
-        child: Container(
-          height: 32,
-          padding: const EdgeInsets.all(2),
-          decoration: BoxDecoration(
-            color: _HoroscopeDesign.segmentedBackground,
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(
-              color: AppColors.uiDisabled.withValues(alpha: 0.14),
-              width: 0.5,
-            ),
-          ),
-          child: Row(
-            children: [
-              for (var index = 0; index < titles.length; index++)
-                Expanded(
-                  child: _SegmentedTab(
-                    title: titles[index],
-                    isSelected: selectedIndex == index,
-                    showSeparator:
-                        index < titles.length - 1 &&
-                        selectedIndex != index &&
-                        selectedIndex != index + 1,
-                    onTap: () => onTabSelected(index),
-                  ),
-                ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _SegmentedTab extends StatelessWidget {
-  final String title;
-  final bool isSelected;
-  final bool showSeparator;
-  final VoidCallback onTap;
-
-  const _SegmentedTab({
-    required this.title,
-    required this.isSelected,
-    required this.showSeparator,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return LotusFeedback(
-      onActivate: onTap,
-      keyboard: true,
-      builder: (activate) => Semantics(
-        button: true,
-        selected: isSelected,
-        label: title,
-        onTap: activate,
-        child: GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          onTap: activate,
-          child: Container(
-            height: double.infinity,
-            decoration: BoxDecoration(
-              color: isSelected
-                  ? _HoroscopeDesign.cardAlt.withValues(alpha: 0.42)
-                  : Colors.transparent,
-              borderRadius: BorderRadius.circular(8),
-              border: isSelected
-                  ? Border.all(
-                      color: AppColors.uiDisabled.withValues(alpha: 0.24),
-                      width: 0.5,
-                    )
-                  : null,
-            ),
-            child: Stack(
-              children: [
-                Center(
-                  child: isSelected
-                      ? ShaderMask(
-                          shaderCallback: (bounds) => _HoroscopeDesign
-                              .orangeGradient
-                              .createShader(bounds),
-                          child: Text(
-                            title,
-                            textAlign: TextAlign.center,
-                            style: context.textTheme.inverseUrbanistSemiBold14
-                                .copyWith(
-                                  fontSize: 13,
-                                  height: 1.2,
-                                  color: Colors.white,
-                                  letterSpacing: -0.08,
-                                ),
-                          ),
-                        )
-                      : Text(
-                          title,
-                          textAlign: TextAlign.center,
-                          style: context.textTheme.inverseUrbanistRegular14
-                              .copyWith(
-                                fontSize: 13,
-                                height: 1.2,
-                                color: _HoroscopeDesign.mutedText,
-                                letterSpacing: -0.08,
-                              ),
-                        ),
-                ),
-                if (showSeparator)
-                  Positioned(
-                    right: 0,
-                    top: 6,
-                    bottom: 6,
-                    child: Container(
-                      width: 0.7,
-                      decoration: BoxDecoration(
-                        color: AppColors.uiDisabled.withValues(alpha: 0.35),
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                    ),
-                  ),
               ],
             ),
           ),

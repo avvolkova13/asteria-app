@@ -83,11 +83,12 @@ class _SphereSelectionWidgetState extends State<SphereSelectionWidget> {
               spacing: 4,
               runSpacing: 4,
               children: Sphere.allSpheres.map((sphere) {
-                final isSelected = state.selectedSphere == sphere;
                 final isAvailable =
                     hasProSubscription ||
                     _isSphereAvailableWithoutSubscription(sphere);
                 final isDisabled = !isAvailable;
+                final isSelected =
+                    isAvailable && state.selectedSphere == sphere;
                 final label = sphere.getLocalizedName(context);
 
                 void handleTap() {
@@ -172,7 +173,9 @@ class _SphereSelectionItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final foreground = isSelected
+    final foreground = isDisabled
+        ? AppColors.uiDisabledText
+        : isSelected
         ? AppColors.textPrimary
         : MoonDesignTokens.chipOrange;
     final label = Text(
@@ -191,7 +194,11 @@ class _SphereSelectionItem extends StatelessWidget {
         borderRadius: BorderRadius.circular(8),
         border: isSelected
             ? null
-            : Border.all(color: MoonDesignTokens.chipOrange),
+            : Border.all(
+                color: isDisabled
+                    ? AppColors.uiDisabledText.withValues(alpha: .48)
+                    : MoonDesignTokens.chipOrange,
+              ),
       ),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
@@ -201,7 +208,7 @@ class _SphereSelectionItem extends StatelessWidget {
             _buildIcon(foreground),
             const SizedBox(width: 4),
             Flexible(
-              child: isSelected
+              child: isSelected || isDisabled
                   ? label
                   : ShaderMask(
                       blendMode: BlendMode.srcIn,
@@ -215,7 +222,7 @@ class _SphereSelectionItem extends StatelessWidget {
               const ClayIcon(
                 Icons.lock_rounded,
                 size: 16,
-                color: MoonDesignTokens.chipOrangeLight,
+                color: AppColors.uiDisabledText,
               ),
             ],
           ],

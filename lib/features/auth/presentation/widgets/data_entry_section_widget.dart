@@ -1,10 +1,8 @@
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
-import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/app/data/models/user/user_model.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/features/auth/localization/auth_localization_contract.dart';
 import 'package:asteria_app/features/auth/presentation/cubit/auth_cubit.dart';
-import 'package:asteria_app/features/auth/presentation/widgets/auth_flow_widgets.dart';
 import 'package:asteria_app/features/auth/presentation/widgets/inputs_section_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -70,7 +68,8 @@ class DataEntrySectionWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _AuthGenderSegmentedPicker(
+        SegmentedPicker<Gender>(
+          surfaceBrightness: Brightness.dark,
           options: Gender.values,
           selectedValue: selectedGender,
           onChanged: (gender) {
@@ -104,140 +103,6 @@ class DataEntrySectionWidget extends StatelessWidget {
               .exactTimeUnknownDescription(context),
         ),
       ],
-    );
-  }
-}
-
-class _AuthGenderSegmentedPicker extends StatelessWidget {
-  final List<Gender> options;
-  final Gender selectedValue;
-  final ValueChanged<Gender> onChanged;
-  final String Function(Gender) labelBuilder;
-
-  const _AuthGenderSegmentedPicker({
-    required this.options,
-    required this.selectedValue,
-    required this.onChanged,
-    required this.labelBuilder,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: 44,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          Container(
-            height: 32,
-            padding: const EdgeInsets.all(2),
-            decoration: BoxDecoration(
-              color: const Color(0xFF1B1433),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Row(
-              children: [
-                for (final option in options)
-                  Expanded(
-                    child: _AuthGenderSegment(
-                      label: labelBuilder(option),
-                      isSelected: option == selectedValue,
-                    ),
-                  ),
-              ],
-            ),
-          ),
-          Positioned.fill(
-            child: Row(
-              children: [
-                for (final option in options)
-                  Expanded(
-                    child: _AuthGenderHitTarget(
-                      label: labelBuilder(option),
-                      isSelected: option == selectedValue,
-                      onTap: () => onChanged(option),
-                    ),
-                  ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _AuthGenderHitTarget extends StatelessWidget {
-  final String label;
-  final bool isSelected;
-  final VoidCallback onTap;
-
-  const _AuthGenderHitTarget({
-    required this.label,
-    required this.isSelected,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Semantics(
-      button: true,
-      selected: isSelected,
-      label: label,
-      child: LotusTap(
-        behavior: HitTestBehavior.opaque,
-        onTap: onTap,
-        child: const SizedBox.expand(),
-      ),
-    );
-  }
-}
-
-class _AuthGenderSegment extends StatelessWidget {
-  final String label;
-  final bool isSelected;
-
-  const _AuthGenderSegment({required this.label, required this.isSelected});
-
-  @override
-  Widget build(BuildContext context) {
-    final text = Text(
-      label,
-      textAlign: TextAlign.center,
-      style: context.textTheme.inverseUrbanistRegular12.copyWith(
-        color: isSelected ? AppColors.white : const Color(0xFFB5AAB8),
-        fontSize: 13,
-        fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-        height: 1.2,
-        letterSpacing: -0.08,
-      ),
-    );
-
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 160),
-      height: 28,
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        color: isSelected ? const Color(0xFF151028) : Colors.transparent,
-        borderRadius: BorderRadius.circular(8),
-        border: isSelected ? Border.all(color: const Color(0xFF31296D)) : null,
-        boxShadow: isSelected
-            ? [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.12),
-                  blurRadius: 8,
-                  offset: const Offset(0, 3),
-                ),
-              ]
-            : null,
-      ),
-      child: isSelected
-          ? ShaderMask(
-              blendMode: BlendMode.srcIn,
-              shaderCallback: (bounds) => authGoldGradient.createShader(bounds),
-              child: text,
-            )
-          : text,
     );
   }
 }
