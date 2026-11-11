@@ -2,7 +2,6 @@ import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'dart:async';
-import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 
 import 'package:asteria_app/app/providers/content_provider.dart';
 import 'package:asteria_app/app/providers/user_provider.dart';
@@ -101,7 +100,9 @@ class RunesScreen extends StatelessWidget {
                           }
                         },
                       ),
-                      SizedBox(height: MediaQuery.paddingOf(context).bottom + 24),
+                      SizedBox(
+                        height: MediaQuery.paddingOf(context).bottom + 24,
+                      ),
                     ],
                   ),
                 ),
@@ -435,18 +436,10 @@ class _RuneLayoutTabState extends State<_RuneLayoutTab> {
                     child: Opacity(
                       opacity: widget.isRefreshingDeck ? 0.5 : 1,
                       child: SizedBox(
-                        width: 32,
-                        height: 32,
+                        width: LotusArrowBubble.hitExtent,
+                        height: LotusArrowBubble.hitExtent,
                         child: Center(
-                          child: LotusIconSurface(
-                            diameter: 32,
-                            child: ClayAssetIcon(
-                              'assets/icons/repeat_icon.svg',
-                              width: 24,
-                              height: 24,
-                              tint: _RunesColors.gold,
-                            ),
-                          ),
+                          child: LotusRefreshBubble(tint: _RunesColors.gold),
                         ),
                       ),
                     ),

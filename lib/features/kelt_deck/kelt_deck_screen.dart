@@ -12,7 +12,6 @@ import 'package:asteria_app/core/const/purchase_products_const.dart';
 import 'package:asteria_app/core/di/di.dart';
 import 'package:asteria_app/core/services/global_loader_service.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
-import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 import 'package:asteria_app/core/ui_kit/widgets/top_nav_bar.dart';
 import 'package:asteria_app/core/utils/enums.dart';
 import 'package:asteria_app/core/utils/horoscope_parsers/horoscope_request_helper.dart';
@@ -309,18 +308,9 @@ class _KeltDeckTitle extends StatelessWidget {
               height: 48,
               child: Align(
                 alignment: Alignment.center,
-                child: LotusIconSurface(
-                  diameter: 32,
-                  child: ShaderMask(
-                    blendMode: BlendMode.srcIn,
-                    shaderCallback: (bounds) =>
-                        _KeltDeckColors.goldGradient.createShader(bounds),
-                    child: const ClayIcon(
-                      Icons.shuffle,
-                      color: AppColors.white,
-                      size: 24,
-                    ),
-                  ),
+                child: const LotusRefreshBubble(
+                  shuffle: true,
+                  tint: Color(0xFFF3B76A),
                 ),
               ),
             ),

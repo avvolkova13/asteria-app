@@ -106,7 +106,9 @@ class TaroCardsScreen extends StatelessWidget {
                           }
                         },
                       ),
-                      SizedBox(height: MediaQuery.paddingOf(context).bottom + 24),
+                      SizedBox(
+                        height: MediaQuery.paddingOf(context).bottom + 24,
+                      ),
                     ],
                   ),
                 ),
@@ -485,17 +487,11 @@ class _TaroCardsContentState extends State<_TaroCardsContent> {
                           child: Opacity(
                             opacity: _isRefreshingDeck ? 0.5 : 1,
                             child: SizedBox(
-                              width: 32,
-                              height: 32,
+                              width: LotusArrowBubble.hitExtent,
+                              height: LotusArrowBubble.hitExtent,
                               child: Center(
-                                child: LotusIconSurface(
-                                  diameter: 32,
-                                  child: ClayAssetIcon(
-                                    'assets/icons/repeat_icon.svg',
-                                    width: 24,
-                                    height: 24,
-                                    tint: _TaroCardsColors.gold,
-                                  ),
+                                child: LotusRefreshBubble(
+                                  tint: _TaroCardsColors.gold,
                                 ),
                               ),
                             ),

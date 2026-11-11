@@ -93,6 +93,33 @@ class LotusArrowBubble extends StatelessWidget {
   }
 }
 
+/// Refresh and shuffle share the navigation arrows' optical proportions.
+/// A parent button retains a minimum 44-point touch target.
+class LotusRefreshBubble extends StatelessWidget {
+  const LotusRefreshBubble({super.key, this.shuffle = false, this.tint});
+
+  final bool shuffle;
+  final Color? tint;
+
+  @override
+  Widget build(BuildContext context) => SizedBox.square(
+    dimension: LotusArrowBubble.diameter,
+    child: LotusIconSurface(
+      diameter: LotusArrowBubble.diameter,
+      child: Center(
+        child: ClayAssetIcon(
+          shuffle
+              ? 'assets/icons/daily_symbol_shuffle.svg'
+              : 'assets/icons/repeat_icon.svg',
+          width: LotusArrowBubble.glyphSize,
+          height: LotusArrowBubble.glyphSize,
+          tint: tint,
+        ),
+      ),
+    ),
+  );
+}
+
 class LotusSurfacePainter extends CustomPainter {
   const LotusSurfacePainter(this.radius, this.active, this.focused);
   final BorderRadius radius;

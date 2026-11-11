@@ -4,7 +4,6 @@ import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/ui_kit/card_radii.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'dart:math' as math;
-import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 
 import 'package:asteria_app/app/data/entities/zodiac_info_entity.dart';
 import 'package:asteria_app/app/data/models/horoscope/horoscope_day_model.dart';
@@ -2014,11 +2013,11 @@ class _PersonalCompatibilitySection extends StatelessWidget {
                   },
                   child: Padding(
                     padding: const EdgeInsets.all(4),
-                    child: ClayAssetIcon(
-                      'assets/icons/repeat_icon.svg',
-                      width: 24,
-                      height: 24,
-                      tint: Color(0xFFE6994D),
+                    child: const SizedBox.square(
+                      dimension: LotusArrowBubble.hitExtent,
+                      child: Center(
+                        child: LotusRefreshBubble(tint: Color(0xFFE6994D)),
+                      ),
                     ),
                   ),
                 ),

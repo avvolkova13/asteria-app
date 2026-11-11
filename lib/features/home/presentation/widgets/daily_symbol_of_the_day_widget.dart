@@ -460,14 +460,7 @@ class _SectionTitleRow extends StatelessWidget {
               height: 44,
               child: Align(
                 alignment: Alignment.center,
-                child: LotusIconSurface(
-                  diameter: 32,
-                  child: ClayAssetIcon(
-                    'assets/icons/daily_symbol_shuffle.svg',
-                    width: 24,
-                    height: 24,
-                  ),
-                ),
+                child: LotusRefreshBubble(shuffle: true),
               ),
             ),
           ),
@@ -753,7 +746,7 @@ class _GradientActionText extends StatelessWidget {
             behavior: HitTestBehavior.opaque,
             onTap: activate,
             child: SizedBox(
-              height: 32,
+              height: LotusArrowBubble.hitExtent,
               child: Center(
                 child: _GradientText(
                   text: text,

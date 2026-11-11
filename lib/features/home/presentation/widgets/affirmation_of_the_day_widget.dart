@@ -98,7 +98,7 @@ class _AffirmationOfTheDayState extends State<AffirmationOfTheDayWidget> {
     final player = _player;
     final playing = player?.isPlaying ?? false;
     final strings = context.l10n;
-    const linkColor = Color(0xFFE2BDFF);
+    const linkColor = Color(0xFF6330A0);
     const radius = BorderRadius.all(Radius.circular(AsteriaCardRadii.card));
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -140,8 +140,8 @@ class _AffirmationOfTheDayState extends State<AffirmationOfTheDayWidget> {
                           Color(0x70291B36),
                           Color(0x00291B36),
                           Color(0x00291B36),
-                          Color(0x99291B36),
-                          Color(0xB3291B36),
+                          Color(0x80F3E4F8),
+                          Color(0xE6F3E4F8),
                         ],
                         stops: [0, .16, .42, .58, .84, 1],
                       ),
@@ -184,7 +184,7 @@ class _AffirmationOfTheDayState extends State<AffirmationOfTheDayWidget> {
                         const SizedBox(width: 12),
                         Expanded(
                           child: Align(
-                            alignment: Alignment.centerRight,
+                            alignment: Alignment.bottomRight,
                             child: LotusButtons.text(
                               onPressed: _openCollection,
                               style: TextButton.styleFrom(
@@ -194,7 +194,7 @@ class _AffirmationOfTheDayState extends State<AffirmationOfTheDayWidget> {
                                 alignment: Alignment.bottomRight,
                                 foregroundColor: linkColor,
                                 padding: const EdgeInsets.symmetric(
-                                  horizontal: 6,
+                                  horizontal: 12,
                                 ),
                               ),
                               child: _opening
@@ -209,12 +209,6 @@ class _AffirmationOfTheDayState extends State<AffirmationOfTheDayWidget> {
                                       textAlign: TextAlign.end,
                                       style: AppTypography.link.copyWith(
                                         color: linkColor,
-                                        shadows: const [
-                                          Shadow(
-                                            color: Color(0x99402A55),
-                                            blurRadius: 5,
-                                          ),
-                                        ],
                                       ),
                                     ),
                             ),

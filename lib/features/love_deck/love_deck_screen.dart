@@ -13,7 +13,6 @@ import 'package:asteria_app/core/const/purchase_products_const.dart';
 import 'package:asteria_app/core/di/di.dart';
 import 'package:asteria_app/core/services/global_loader_service.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
-import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 import 'package:asteria_app/core/ui_kit/widgets/top_nav_bar.dart';
 import 'package:asteria_app/core/utils/enums.dart';
 import 'package:asteria_app/core/utils/horoscope_parsers/horoscope_request_helper.dart';
@@ -137,56 +136,66 @@ class _LoveDeckScreenState extends State<LoveDeckScreen> {
 
     return Scaffold(
       backgroundColor: _LoveDeckColors.background,
-      body: Stack(fit: StackFit.expand, children: [
-        if (ScenarioSkyScope.of(context)) const ScenarioSky(),
-        CustomScrollView(
-        slivers: [
-          SliverPersistentHeader(
-            pinned: true,
-            floating: false,
-            delegate: TopNavBarDelegate(
-              canPop: true,
-              userName: context.l10n.loveDeckTitle,
-              type: TopNavBarType.moon,
-              birthDate:
-                  userProvider.currentUser?.personalInfo?.birthDate?.birthDate,
-            ),
-          ),
-          SliverToBoxAdapter(
-            child: Align(
-              alignment: Alignment.topCenter,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 358),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: 24),
-                      if (_isRefreshing)
-                        const Center(
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(vertical: 32),
-                            child: AsteriaEntrance(child: CircularProgressIndicator(
-                              color: AppColors.primary,
-                            )),
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          if (ScenarioSkyScope.of(context)) const ScenarioSky(),
+          CustomScrollView(
+            slivers: [
+              SliverPersistentHeader(
+                pinned: true,
+                floating: false,
+                delegate: TopNavBarDelegate(
+                  canPop: true,
+                  userName: context.l10n.loveDeckTitle,
+                  type: TopNavBarType.moon,
+                  birthDate: userProvider
+                      .currentUser
+                      ?.personalInfo
+                      ?.birthDate
+                      ?.birthDate,
+                ),
+              ),
+              SliverToBoxAdapter(
+                child: Align(
+                  alignment: Alignment.topCenter,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 358),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(height: 24),
+                          if (_isRefreshing)
+                            const Center(
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(vertical: 32),
+                                child: AsteriaEntrance(
+                                  child: CircularProgressIndicator(
+                                    color: AppColors.primary,
+                                  ),
+                                ),
+                              ),
+                            )
+                          else
+                            _LoveDeckContent(
+                              onRefresh: onRefreshPressed,
+                              afterReading: widget.afterReading,
+                            ),
+                          SizedBox(
+                            height: MediaQuery.paddingOf(context).bottom + 24,
                           ),
-                        )
-                      else
-                        _LoveDeckContent(
-                          onRefresh: onRefreshPressed,
-                          afterReading: widget.afterReading,
-                        ),
-                      SizedBox(height: MediaQuery.paddingOf(context).bottom + 24),
-                    ],
+                        ],
+                      ),
+                    ),
                   ),
                 ),
               ),
-            ),
+            ],
           ),
         ],
       ),
-      ]),
     );
   }
 }
@@ -337,18 +346,10 @@ class _LoveDeckHeader extends StatelessWidget {
             behavior: HitTestBehavior.opaque,
             onTap: onRefresh,
             child: SizedBox(
-              width: 32,
-              height: 32,
+              width: LotusArrowBubble.hitExtent,
+              height: LotusArrowBubble.hitExtent,
               child: Center(
-                child: LotusIconSurface(
-                  diameter: 32,
-                  child: ClayAssetIcon(
-                    'assets/icons/repeat_icon.svg',
-                    width: 24,
-                    height: 24,
-                    tint: _LoveDeckColors.gold,
-                  ),
-                ),
+                child: LotusRefreshBubble(tint: _LoveDeckColors.gold),
               ),
             ),
           ),

@@ -102,18 +102,10 @@ class _RuneOfTheDayWidgetState extends State<RuneOfTheDayWidget>
                 onTap: widget.onRefresh,
                 child: widget.isDarkLayout
                     ? SizedBox(
-                        width: 32,
-                        height: 32,
+                        width: LotusArrowBubble.hitExtent,
+                        height: LotusArrowBubble.hitExtent,
                         child: Center(
-                          child: LotusIconSurface(
-                            diameter: 32,
-                            child: ClayAssetIcon(
-                              'assets/icons/repeat_icon.svg',
-                              width: 24,
-                              height: 24,
-                              tint: Color(0xFFF3B76A),
-                            ),
-                          ),
+                          child: LotusRefreshBubble(tint: Color(0xFFF3B76A)),
                         ),
                       )
                     : const RepeatButtonWidget(),
@@ -148,10 +140,7 @@ class _RuneOfTheDayWidgetState extends State<RuneOfTheDayWidget>
       children: AsteriaEntrance.sections([
         // Показываем закрытую карту
         Center(
-          child: LotusTap(
-            onTap: widget.onRuneTap,
-            child: _buildRuneBack(),
-          ),
+          child: LotusTap(onTap: widget.onRuneTap, child: _buildRuneBack()),
         ),
         const SizedBox(height: 16),
         // Описание для закрытой карты
