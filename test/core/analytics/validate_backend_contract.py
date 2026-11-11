@@ -6,6 +6,25 @@ import ast
 from pathlib import Path
 from typing import Literal, Any
 from uuid import UUID
+# Read the literal from the supplied backend source without importing its runtime.
+if sys.argv[2] == 'client-events':
+    source = ast.parse(Path(sys.argv[1]).read_text())
+    declarations = [node.value for node in source.body
+                    if isinstance(node, ast.Assign) and any(
+                        isinstance(target, ast.Name) and target.id == 'CLIENT_EVENTS'
+                        for target in node.targets)]
+    if len(declarations) != 1:
+        sys.exit('Expected one CLIENT_EVENTS declaration in the backend model')
+    value = declarations[0]
+    if not (isinstance(value, ast.Call) and isinstance(value.func, ast.Name)
+            and value.func.id == 'frozenset' and len(value.args) == 1 and not value.keywords):
+        sys.exit('Expected CLIENT_EVENTS = frozenset(...) in the backend model')
+    events = ast.literal_eval(value.args[0])
+    if not isinstance(events, (set, tuple, list)) or not all(isinstance(e, str) for e in events):
+        sys.exit('Expected CLIENT_EVENTS to contain event name strings')
+    print(json.dumps(sorted(events)))
+    sys.exit(0)
+
 from pydantic import BaseModel, Field, AliasChoices, AliasPath, ConfigDict
 
 if len(sys.argv) == 4 and sys.argv[3] == 'payment':

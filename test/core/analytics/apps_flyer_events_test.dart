@@ -1,10 +1,12 @@
-import 'dart:io';
-
 import 'package:asteria_app/core/analytics/apps_flyer_events.dart';
 import 'package:asteria_app/core/analytics/durable/analytics_taxonomy.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'backend_client_events_contract.dart' as backend;
+
 void main() {
+  backend.registerBackendClientEventsContract(requireBackend: false);
+
   test('every allowed screen has a distinct allowed AF name', () {
     final routeNames = <String>{};
     for (final screen in AnalyticsTaxonomy.screens) {
@@ -19,39 +21,39 @@ void main() {
     }
   });
 
-  test(
-    'every accepted client action has an AF projection, except diagnostics',
-    () {
-      final backend = File(
-        '${Platform.environment['ASTERIA_BACKEND_PATH'] ?? '../asteria-back'}/app/services/analytics/models.py',
-      ).readAsStringSync();
-      final declaration = backend
-          .split('CLIENT_EVENTS = frozenset({')[1]
-          .split('})')[0];
-      final names = RegExp(
-        "'([a-z_]+)'",
-      ).allMatches(declaration).map((m) => m[1]!);
-      expect(names, isNotEmpty);
-      for (final name in names) {
-        final mapped = AppsFlyerEvents.fromCanonical(name, {
-          'feature': 'sonnik',
-          'screen': '/settings',
-          'outcome': 'success',
-        });
-        if (name == 'analytics_queue_dropped') {
-          expect(mapped, isNull);
-        } else {
-          expect(mapped, isNotNull, reason: name);
-          expect(
-            mapped,
-            isNot(name),
-            reason: 'AF must not receive the warehouse name',
-          );
-          expect(AppsFlyerEvents.names, contains(mapped));
-        }
+  test('canonical mobile events use their documented AppsFlyer names', () {
+    // From the correspondence table in docs/gmkt-22-mobile-analytics.md
+    // and the social_action contract in docs/social-client-report.md.
+    const examples = <String, String?>{
+      'first_open': 'ast_first_open',
+      'session_started': 'ast_app_open',
+      'screen_viewed': 'ast_profile_view',
+      'onboarding_step_viewed': 'ast_onboarding_step_view',
+      'auth_result': 'ast_auth_code_verify_success',
+      'feature_action_started': 'ast_sonnik_dream_submit',
+      'feature_result_viewed': 'ast_sonnik_result_view',
+      'feature_action_failed': 'ast_feature_action_failed',
+      'paywall_viewed': 'ast_paywall_view',
+      'offer_selected': 'ast_offer_select',
+      'checkout_started': 'af_initiated_checkout',
+      'checkout_outcome': 'ast_checkout_outcome',
+      'restore_started': 'ast_purchase_restore_click',
+      'restore_outcome': 'ast_purchase_restore_success',
+      'social_action': 'ast_social_action',
+      'analytics_queue_dropped': null,
+    };
+    for (final entry in examples.entries) {
+      final mapped = AppsFlyerEvents.fromCanonical(entry.key, {
+        'feature': entry.key == 'social_action' ? 'social' : 'sonnik',
+        'screen': '/home/profile',
+        'outcome': 'success',
+      });
+      expect(mapped, entry.value, reason: entry.key);
+      if (mapped != null) {
+        expect(AppsFlyerEvents.names, contains(mapped), reason: entry.key);
       }
-    },
-  );
+    }
+  });
 
   test(
     'all supported feature families and game actions have allowed names',

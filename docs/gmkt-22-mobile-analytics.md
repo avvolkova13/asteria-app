@@ -432,6 +432,22 @@ raw attribution/revisions/quarantine, taxonomy/privacy/revenue suppression,
 ordered checkout и one-use context, native outcomes, route/tab transitions,
 реальные widget flows статьи, Moon и Anakra, degraded storage и loss snapshots.
 
+В отдельном репозитории приложения `flutter test` проверяет клиентские соответствия
+AppsFlyer по таблице выше и по [контракту социальных действий](social-client-report.md).
+Если задан путь к серверу или рядом есть папка `../asteria-back`, обычный
+`flutter test` дополнительно сверяет клиент с серверной моделью.
+Перед релизом дополнительно проверьте все события, которые принимает версия сервера
+для этого релиза. Из корня мобильного проекта выполните:
+
+```sh
+ASTERIA_BACKEND_PATH=/path/to/asteria-back flutter test --no-pub test/core/analytics/backend_client_events_contract.dart
+```
+
+Команда использует стандартный `python3` и читает объявление `CLIENT_EVENTS`
+из файла модели сервера. При отсутствии файла или изменении формата объявления
+она завершается ошибкой. Для соседнего
+`../asteria-back` переменную можно опустить. Также поддерживается `GMKT22_BACKEND`.
+
 `backend_contract_test.dart` использует соседний backend venv (`GMKT22_BACKEND`
 переопределяет путь), только чтение и `python -B`. Analytics-модели импортируются
 напрямую; payment request classes извлекаются AST из исходника без запуска Firebase
