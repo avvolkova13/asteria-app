@@ -196,6 +196,7 @@ class _AffirmationCardStackState extends State<AffirmationCardStack> {
   static const Duration _animationDuration = Duration(milliseconds: 220);
 
   int _frontIndex = 0;
+  int _deckRevision = 0;
   double _dragOffset = 0;
   double _exitOffset = 0;
   bool _isAnimatingOut = false;
@@ -213,9 +214,6 @@ class _AffirmationCardStackState extends State<AffirmationCardStack> {
   @override
   void didUpdateWidget(covariant AffirmationCardStack oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.affirmations.isEmpty) {
-      return;
-    }
 
     final signatureChanged =
         _affirmationSignature(oldWidget.affirmations) !=
@@ -226,6 +224,7 @@ class _AffirmationCardStackState extends State<AffirmationCardStack> {
     }
 
     if (signatureChanged) {
+      _deckRevision++;
       _frontIndex = 0;
       _trackedContentId = null;
       _dragOffset = 0;
@@ -315,20 +314,20 @@ class _AffirmationCardStackState extends State<AffirmationCardStack> {
       contentId: contentId,
     );
 
-    setState(() {
-      _isAnimatingOut = true;
-      _exitOffset = direction * stackWidth;
-      _dragOffset = 0;
-      _showHint = false;
-    });
-
-    await Future<void>.delayed(_animationDuration);
-
-    if (!mounted || widget.affirmations.isEmpty) {
-      return;
+    if (!MediaQuery.disableAnimationsOf(context)) {
+      final revision = _deckRevision;
+      setState(() {
+        _isAnimatingOut = true;
+        _exitOffset = direction * stackWidth;
+        _dragOffset = 0;
+        _showHint = false;
+      });
+      await Future<void>.delayed(_animationDuration);
+      if (!mounted || revision != _deckRevision) return;
     }
 
     setState(() {
+      _showHint = false;
       _frontIndex = _wrapIndex(_frontIndex + 1);
       _isAnimatingOut = false;
       _exitOffset = 0;
@@ -489,7 +488,10 @@ class _AffirmationCardStackState extends State<AffirmationCardStack> {
     final double offset = isFront
         ? (_isAnimatingOut ? _exitOffset : _dragOffset)
         : 0;
-    final duration = isFront && (_isAnimatingOut || _dragOffset == 0)
+    final duration =
+        !MediaQuery.disableAnimationsOf(context) &&
+            isFront &&
+            (_isAnimatingOut || _dragOffset == 0)
         ? _animationDuration
         : Duration.zero;
 

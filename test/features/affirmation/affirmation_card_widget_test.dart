@@ -190,6 +190,60 @@ void main() {
     });
 
     testWidgets(
+      'a replaced deck discards the old swipe; Reduce Motion advances immediately',
+      (tester) async {
+        final deck = ValueNotifier([
+          _affirmation(id: 'old-a'),
+          _affirmation(id: 'old-b'),
+        ]);
+        final reduced = ValueNotifier(false);
+        addTearDown(deck.dispose);
+        addTearDown(reduced.dispose);
+        await tester.pumpWidget(
+          MaterialApp(
+            locale: const Locale('ru'),
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              ...GlobalMaterialLocalizations.delegates,
+            ],
+            supportedLocales: AppLocaleService.supportedLocales,
+            home: Builder(
+              builder: (context) => Theme(
+                data: AppThemeDark.instance.getThemeData(context),
+                child: Scaffold(
+                  body: ListenableBuilder(
+                    listenable: Listenable.merge([deck, reduced]),
+                    builder: (context, _) => MediaQuery(
+                      data: MediaQuery.of(
+                        context,
+                      ).copyWith(disableAnimations: reduced.value),
+                      child: SizedBox(
+                        width: 358,
+                        child: AffirmationCardStack(affirmations: deck.value),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+        final stack = find.byType(AffirmationCardStack);
+        await tester.drag(stack, const Offset(-145, 0));
+        deck.value = [_affirmation(id: 'new-a'), _affirmation(id: 'new-b')];
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 250));
+        expect(_frontImageAssetPath(tester), endsWith('category_love.webp'));
+        reduced.value = true;
+        await tester.pump();
+        await tester.drag(stack, const Offset(-145, 0));
+        await tester.pump();
+        expect(_frontImageAssetPath(tester), endsWith('category_love_2.webp'));
+      },
+    );
+
+    testWidgets(
       'promotes the visible card behind without duplicating adjacent images',
       (tester) async {
         final affirmations = <AffirmationModel>[

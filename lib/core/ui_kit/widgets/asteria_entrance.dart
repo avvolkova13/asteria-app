@@ -88,6 +88,7 @@ class _RenderEntrance extends RenderProxyBox {
   Object? _replayKey;
   List<ScrollPosition> _scroll;
   bool _waitingForScroll = false;
+  VoidCallback? _removeViewportCheck;
   Ticker? _ticker;
   double _progress = 0;
 
@@ -116,11 +117,32 @@ class _RenderEntrance extends RenderProxyBox {
   }
 
   void _stopWaiting() {
+    _removeViewportCheck?.call();
+    _removeViewportCheck = null;
     if (!_waitingForScroll) return;
     for (final position in _scroll) {
       position.removeListener(markNeedsPaint);
     }
     _waitingForScroll = false;
+  }
+
+  void _waitForViewport(PaintingContext context) {
+    if (!_waitingForScroll) {
+      for (final position in _scroll) {
+        position.addListener(markNeedsPaint);
+      }
+      _waitingForScroll = true;
+    }
+    // A cached layer can enter the viewport without scrolling or repainting
+    // the child, e.g. when a keyboard closes or the section above collapses.
+    _removeViewportCheck?.call();
+    _removeViewportCheck = context.addCompositionCallback((layer) {
+      if (layer.attached && attached && _inViewport()) {
+        SchedulerBinding.instance.addPostFrameCallback((_) {
+          if (attached && _waitingForScroll) markNeedsPaint();
+        });
+      }
+    });
   }
 
   void _finish() {
@@ -172,20 +194,14 @@ class _RenderEntrance extends RenderProxyBox {
   @override
   void paint(PaintingContext context, Offset offset) {
     if (!_enabled && !_done) _finish();
-    if (_done || child == null) {
+    if (_done || child == null || size.isEmpty) {
       layer = null;
       super.paint(context, offset);
       return;
     }
     if (_ticker == null) {
       if (!_inViewport()) {
-        if (!_waitingForScroll && _scroll.isNotEmpty) {
-          for (final position in _scroll) {
-            position.addListener(markNeedsPaint);
-          }
-          _waitingForScroll = true;
-        }
-        super.paint(context, offset);
+        _waitForViewport(context);
         return;
       }
       _stopWaiting();

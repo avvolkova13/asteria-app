@@ -54,12 +54,20 @@ class _LotusFeedbackState extends State<LotusFeedback>
   Offset? _origin;
   bool _showFocus = false;
   bool _reduceMotion = false;
+  Timer? _acknowledgement;
+
+  void _clearAcknowledgement() {
+    _acknowledgement?.cancel();
+    _acknowledgement = null;
+  }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _reduceMotion = MediaQuery.disableAnimationsOf(context);
-    if (_reduceMotion) {
+    final reduced = MediaQuery.disableAnimationsOf(context);
+    if (_reduceMotion != reduced) {
+      _reduceMotion = reduced;
+      _clearAcknowledgement();
       _release();
       _contactController.reset();
       _pulse.reset();
@@ -70,6 +78,7 @@ class _LotusFeedbackState extends State<LotusFeedback>
   void didUpdateWidget(LotusFeedback oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.onActivate == null) {
+      _clearAcknowledgement();
       _release();
       _contactController.reset();
       _pulse.reset();
@@ -77,8 +86,7 @@ class _LotusFeedbackState extends State<LotusFeedback>
   }
 
   void _down(PointerDownEvent event) {
-    if (_reduceMotion ||
-        _pointer != null ||
+    if (_pointer != null ||
         _owners.containsKey(event.pointer) ||
         event.buttons != kPrimaryButton) {
       return;
@@ -86,7 +94,12 @@ class _LotusFeedbackState extends State<LotusFeedback>
     _owners[event.pointer] = this;
     _pointer = event.pointer;
     _origin = event.position;
-    _contactController.forward();
+    _clearAcknowledgement();
+    if (_reduceMotion) {
+      _contactController.value = 1;
+    } else {
+      _contactController.forward();
+    }
   }
 
   void _move(PointerMoveEvent event) {
@@ -105,19 +118,34 @@ class _LotusFeedbackState extends State<LotusFeedback>
   void _end(PointerEvent event) {
     if (event.pointer != _pointer) return;
     _release();
-    _contactController.reverse();
+    if (_reduceMotion) {
+      if (_acknowledgement == null) _contactController.reset();
+    } else {
+      _contactController.reverse();
+    }
   }
 
   void _activate() {
     final callback = widget.onActivate;
     if (callback == null) return;
     LotusFeedback.selection();
-    if (!_reduceMotion) _pulse.forward(from: 0);
+    if (_reduceMotion) {
+      // A fast tap may finish between frames. Keep a stationary cue visible.
+      _clearAcknowledgement();
+      _contactController.value = 1;
+      _acknowledgement = Timer(const Duration(milliseconds: 110), () {
+        _acknowledgement = null;
+        if (_pointer == null) _contactController.reset();
+      });
+    } else {
+      _pulse.forward(from: 0);
+    }
     callback();
   }
 
   @override
   void dispose() {
+    _clearAcknowledgement();
     _release();
     _contactController.dispose();
     _pulse.dispose();
@@ -145,7 +173,10 @@ class _LotusFeedbackState extends State<LotusFeedback>
             return Transform.scale(
               scale: _reduceMotion ? 1 : math.min(pressScale, activationScale),
               transformHitTests: false,
-              child: surface,
+              child: Opacity(
+                opacity: _reduceMotion && _contact.value > 0 ? .76 : 1,
+                child: surface,
+              ),
             );
           },
           child: LotusMotionScope(

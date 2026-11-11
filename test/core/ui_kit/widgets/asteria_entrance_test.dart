@@ -147,6 +147,72 @@ void main() {
     expect(_fades(tester), isEmpty);
   });
 
+  testWidgets('zero-height content waits for its first visible layout', (
+    tester,
+  ) async {
+    Widget section(double height) => _screen(
+      AsteriaEntrance(
+        child: SizedBox(width: 60, height: height, child: _tile),
+      ),
+    );
+    await tester.pumpWidget(section(0));
+    expect(_fades(tester), isEmpty);
+    await tester.pumpAndSettle();
+    await tester.pumpWidget(section(32));
+    expect(_fades(tester).single.alpha, inExclusiveRange(0, 255));
+    await tester.pumpAndSettle();
+  });
+
+  testWidgets('a cached row enters when its viewport grows without scrolling', (
+    tester,
+  ) async {
+    const list = SingleChildScrollView(
+      child: Column(
+        children: [
+          SizedBox(height: 100),
+          RepaintBoundary(child: AsteriaEntrance(child: _tile)),
+          SizedBox(height: 200),
+        ],
+      ),
+    );
+    Widget scene(double height) =>
+        _screen(SizedBox(width: 60, height: height, child: list));
+
+    await tester.pumpWidget(scene(60));
+    await tester.pumpAndSettle();
+    expect(_fades(tester), isEmpty);
+    await tester.pumpWidget(scene(150));
+    await tester.pump();
+    expect(_fades(tester).single.alpha, inExclusiveRange(0, 255));
+    await tester.pumpAndSettle();
+  });
+
+  testWidgets('a retained row enters when the section above collapses', (
+    tester,
+  ) async {
+    Widget scene(double spacer) => _screen(
+      SizedBox(
+        height: 80,
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              SizedBox(height: spacer),
+              const RepaintBoundary(child: AsteriaEntrance(child: _tile)),
+              SizedBox(height: 240 - spacer),
+            ],
+          ),
+        ),
+      ),
+    );
+    await tester.pumpWidget(scene(100));
+    await tester.pumpAndSettle();
+    expect(_fades(tester), isEmpty);
+    await tester.pumpWidget(scene(40));
+    await tester.pump();
+    expect(_fades(tester).single.alpha, inExclusiveRange(0, 255));
+    await tester.pumpAndSettle();
+  });
+
   testWidgets('a row in a carousel waits for the enclosing feed viewport', (
     tester,
   ) async {

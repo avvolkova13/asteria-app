@@ -125,6 +125,45 @@ void main() {
     },
   );
 
+  testWidgets(
+    'reduced motion still acknowledges contact, cancel and a quick tap',
+    (tester) async {
+      var calls = 0;
+      await tester.pumpWidget(
+        screen(
+          LotusTap(onTap: () => calls++, child: const Text('Action')),
+          reduceMotion: true,
+        ),
+      );
+      final target = find.text('Action');
+      bool dimmed() => find
+          .ancestor(
+            of: target,
+            matching: find.byWidgetPredicate(
+              (w) => w is Opacity && w.opacity < 1,
+            ),
+          )
+          .evaluate()
+          .isNotEmpty;
+      final finger = await tester.startGesture(tester.getCenter(target));
+      await tester.pump();
+      expect(dimmed(), isTrue);
+      expect(scale(tester, target), 1);
+      await finger.cancel();
+      await tester.pump();
+      expect(dimmed(), isFalse);
+      expect(haptics, isEmpty);
+      await tester.tap(target);
+      await tester.pump();
+      expect(dimmed(), isTrue);
+      expect(scale(tester, target), 1);
+      expect(calls, 1);
+      expect(haptics, ['HapticFeedbackType.selectionClick']);
+      await tester.pump(const Duration(milliseconds: 200));
+      expect(dimmed(), isFalse);
+    },
+  );
+
   testWidgets('scroll, cancellation and disabled controls stay silent', (
     tester,
   ) async {
