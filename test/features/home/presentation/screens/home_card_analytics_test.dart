@@ -1,3 +1,5 @@
+import 'dart:ui' as ui;
+import 'package:flutter/rendering.dart';
 import '../../../compatibility/support/selection_test_support.dart';
 import 'package:asteria_app/app/data/models/affirmation/affirmation_model.dart';
 import 'package:asteria_app/app/data/models/article/article_model.dart';
@@ -216,6 +218,45 @@ void main() {
     expect(style.statusBarIconBrightness, Brightness.light);
     expect(tester.getTopLeft(overlay).dy, 0);
 
+    expect(tester.takeException(), isNull);
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
+
+  testWidgets('scrolled home paints one surface behind status bar and header', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.padding = const FakeViewPadding(top: 62);
+    addTearDown(tester.view.reset);
+    await mount(tester, initialTab: 0);
+    await tester.runAsync(() async {
+      await precacheImage(
+        const AssetImage('assets/images/home/home_sky.webp'),
+        tester.element(find.byType(MainScreen)),
+      );
+    });
+    await tester.pump();
+    final position = Scrollable.of(
+      tester.element(find.byType(DailySymbolOfTheDayWidget)),
+    ).position;
+    position.jumpTo(120);
+    await tester.pump(const Duration(milliseconds: 600));
+    final boundary = tester.renderObject<RenderRepaintBoundary>(
+      find.byType(RepaintBoundary).first,
+    );
+    await tester.runAsync(() async {
+      final image = await boundary.toImage();
+      final bytes = await image.toByteData(format: ui.ImageByteFormat.rawRgba);
+      final data = bytes!.buffer.asUint8List();
+      List<int> pixel(int x, int y) {
+        final offset = (y * image.width + x) * 4;
+        return data.sublist(offset, offset + 4);
+      }
+
+      expect(pixel(4, 20), pixel(4, 80));
+      image.dispose();
+    });
     expect(tester.takeException(), isNull);
     await tester.pumpWidget(const SizedBox.shrink());
   });

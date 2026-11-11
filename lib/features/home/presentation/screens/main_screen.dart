@@ -160,6 +160,7 @@ class _MainScreenState extends State<MainScreen> {
               ),
             ),
             child: SafeArea(
+              top: false,
               bottom: false,
               child: CustomScrollView(
                 physics: const ClampingScrollPhysics(),
@@ -169,14 +170,20 @@ class _MainScreenState extends State<MainScreen> {
                 slivers: [
                   SliverLayoutBuilder(
                     builder: (context, constraints) => PinnedHeaderSliver(
-                      child: HomeAccountBar(
-                        backgroundColor: AppColorsDark.homeCanvas.withValues(
+                      child: ColoredBox(
+                        color: AppColorsDark.homeCanvas.withValues(
                           alpha: (constraints.scrollOffset / 32).clamp(0, 1),
                         ),
-                        accountLabelStyle: context
-                            .textTheme
-                            .inversePlayfairSemiBold17
-                            .copyWith(fontFamily: 'Lora'),
+                        child: SafeArea(
+                          bottom: false,
+                          child: HomeAccountBar(
+                            backgroundColor: Colors.transparent,
+                            accountLabelStyle: context
+                                .textTheme
+                                .inversePlayfairSemiBold17
+                                .copyWith(fontFamily: 'Lora'),
+                          ),
+                        ),
                       ),
                     ),
                   ),
