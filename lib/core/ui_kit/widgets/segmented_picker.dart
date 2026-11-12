@@ -52,75 +52,113 @@ class SegmentedPicker<T> extends StatelessWidget {
       ),
       child: Padding(
         padding: const EdgeInsets.all(3),
-        child: Stack(
-          children: [
-            if (active >= 0)
-              Positioned.fill(
-                child: AnimatedAlign(
-                  alignment: AlignmentDirectional(
-                    options.length == 1
-                        ? 0
-                        : 2 * active / (options.length - 1) - 1,
-                    0,
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final slot = constraints.maxWidth / options.length;
+            // Measure the widest unbreakable word in the selected weight so a
+            // change of selection never rearranges the picker.
+            final painter = TextPainter(
+              textDirection: Directionality.of(context),
+              textScaler: MediaQuery.textScalerOf(context),
+              locale: Localizations.maybeLocaleOf(context),
+            );
+            final style = AppTypography.text2SemiBold.copyWith(
+              fontSize: 13,
+              height: 1.2,
+            );
+            var widest = 0.0;
+            for (final option in options) {
+              painter.text = TextSpan(text: labelBuilder(option), style: style);
+              painter.layout();
+              if (painter.minIntrinsicWidth > widest) {
+                widest = painter.minIntrinsicWidth;
+              }
+            }
+            painter.dispose();
+            final inset = widest + 12 <= slot ? 6.0 : 3.0;
+            final vertical = widest + inset * 2 > slot;
+            Widget segment(T option) => Semantics(
+              button: true,
+              selected: option == selectedValue,
+              inMutuallyExclusiveGroup: true,
+              child: LotusTap(
+                behavior: HitTestBehavior.opaque,
+                onTap: () => onChanged(option),
+                child: Container(
+                  constraints: const BoxConstraints(minHeight: 44),
+                  decoration: vertical && option == selectedValue
+                      ? CardLensDecoration.button(
+                          borderRadius: BorderRadius.circular(19),
+                          color: lens,
+                        )
+                      : null,
+                  alignment: Alignment.center,
+                  padding: EdgeInsets.symmetric(
+                    horizontal: inset,
+                    vertical: 5,
                   ),
-                  curve: Curves.easeOutCubic,
-                  duration: MediaQuery.disableAnimationsOf(context)
-                      ? Duration.zero
-                      : const Duration(milliseconds: 210),
-                  child: FractionallySizedBox(
-                    widthFactor: 1 / options.length,
-                    heightFactor: 1,
-                    child: DecoratedBox(
-                      decoration: CardLensDecoration.button(
-                        borderRadius: BorderRadius.circular(19),
-                        color: lens,
-                      ),
-                    ),
+                  child: Text(
+                    labelBuilder(option),
+                    textAlign: TextAlign.center,
+                    style:
+                        (option == selectedValue
+                                ? AppTypography.text2SemiBold
+                                : AppTypography.text2)
+                            .copyWith(
+                              fontSize: 13,
+                              height: 1.2,
+                              color: dark
+                                  ? (option == selectedValue
+                                        ? AppColors.textInverse
+                                        : const Color(0xFFE0D2E5))
+                                  : AppColors.textPrimary,
+                            ),
                   ),
                 ),
               ),
-            Row(
+            );
+            if (vertical) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: options.map(segment).toList(),
+              );
+            }
+            return Stack(
               children: [
-                for (final option in options)
-                  Expanded(
-                    child: Semantics(
-                      button: true,
-                      selected: option == selectedValue,
-                      inMutuallyExclusiveGroup: true,
-                      child: LotusTap(
-                        behavior: HitTestBehavior.opaque,
-                        onTap: () => onChanged(option),
-                        child: Container(
-                          constraints: const BoxConstraints(minHeight: 44),
-                          alignment: Alignment.center,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 6,
-                            vertical: 5,
-                          ),
-                          child: Text(
-                            labelBuilder(option),
-                            textAlign: TextAlign.center,
-                            style:
-                                (option == selectedValue
-                                        ? AppTypography.text2SemiBold
-                                        : AppTypography.text2)
-                                    .copyWith(
-                                      fontSize: 13,
-                                      height: 1.2,
-                                      color: dark
-                                          ? (option == selectedValue
-                                                ? AppColors.textInverse
-                                                : const Color(0xFFE0D2E5))
-                                          : AppColors.textPrimary,
-                                    ),
+                if (active >= 0)
+                  Positioned.fill(
+                    child: AnimatedAlign(
+                      alignment: AlignmentDirectional(
+                        options.length == 1
+                            ? 0
+                            : 2 * active / (options.length - 1) - 1,
+                        0,
+                      ),
+                      curve: Curves.easeOutCubic,
+                      duration: MediaQuery.disableAnimationsOf(context)
+                          ? Duration.zero
+                          : const Duration(milliseconds: 210),
+                      child: FractionallySizedBox(
+                        widthFactor: 1 / options.length,
+                        heightFactor: 1,
+                        child: DecoratedBox(
+                          decoration: CardLensDecoration.button(
+                            borderRadius: BorderRadius.circular(19),
+                            color: lens,
                           ),
                         ),
                       ),
                     ),
                   ),
+                Row(
+                  children: [
+                    for (final option in options)
+                      Expanded(child: segment(option)),
+                  ],
+                ),
               ],
-            ),
-          ],
+            );
+          },
         ),
       ),
     );

@@ -1234,70 +1234,73 @@ class _LocationBlock extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) => Row(
-        children: [
-          Expanded(
-            child: location == null
-                ? Text(context.l10n.locationNotConfigured)
-                : CurrentLocationControls.city(
-                    location: location!,
-                    onLocationUpdateStarted: onLocationUpdateStarted,
-                    onLocationUpdated: onLocationUpdated,
-                    label: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        SizedBox.square(
-                          dimension: 14,
-                          child: Center(
-                            child: ClayAssetIcon(
-                              'assets/icons/home_moon_location.svg',
-                              width: 9.38,
-                              height: 12,
-                              excludeFromSemantics: true,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 4),
-                        Flexible(
-                          child: Text(
-                            location!.location,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: context.textTheme.urbanistRegular12.copyWith(
-                              fontFamily: 'Onest',
-                              color: AppColors.textInverse,
-                              letterSpacing: -0.08,
-                              height: 1.2,
-                            ),
-                          ),
-                        ),
-                      ],
+    final city = location == null
+        ? Text(context.l10n.locationNotConfigured)
+        : CurrentLocationControls.city(
+            location: location!,
+            onLocationUpdateStarted: onLocationUpdateStarted,
+            onLocationUpdated: onLocationUpdated,
+            label: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SizedBox.square(
+                  dimension: 14,
+                  child: Center(
+                    child: ClayAssetIcon(
+                      'assets/icons/home_moon_location.svg',
+                      width: 9.38,
+                      height: 12,
+                      excludeFromSemantics: true,
                     ),
                   ),
-          ),
-          const SizedBox(width: 8),
-          ConstrainedBox(
-            constraints: BoxConstraints(maxWidth: constraints.maxWidth * 0.75),
-            child: FittedBox(
-              fit: BoxFit.scaleDown,
-              alignment: Alignment.centerRight,
-              child: Text(
-                context.l10n.moonLocationNote,
-                maxLines: 1,
-                softWrap: false,
-                textAlign: TextAlign.end,
-                style: context.textTheme.tertiaryUrbanistRegular12.copyWith(
-                  fontFamily: 'Onest',
-                  fontSize: 10,
-                  height: 1.2,
-                  letterSpacing: -0.41,
                 ),
-              ),
+                const SizedBox(width: 4),
+                Flexible(
+                  child: Text(
+                    location!.location,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: context.textTheme.urbanistRegular12.copyWith(
+                      fontFamily: 'Onest',
+                      color: AppColors.textInverse,
+                      letterSpacing: -0.08,
+                      height: 1.2,
+                    ),
+                  ),
+                ),
+              ],
             ),
+          );
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final stacked =
+            constraints.maxWidth < MediaQuery.textScalerOf(context).scale(275);
+        final note = Text(
+          context.l10n.moonLocationNote,
+          textAlign: stacked ? TextAlign.start : TextAlign.end,
+          style: context.textTheme.tertiaryUrbanistRegular12.copyWith(
+            fontFamily: 'Onest',
+            color: AppColorsDark.textSecondary,
+            height: 1.2,
           ),
-        ],
-      ),
+        );
+        if (stacked) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [city, const SizedBox(height: 2), note],
+          );
+        }
+        return Row(
+          children: [
+            Expanded(child: city),
+            const SizedBox(width: 8),
+            ConstrainedBox(
+              constraints: BoxConstraints(maxWidth: constraints.maxWidth * .75),
+              child: FittedBox(fit: BoxFit.scaleDown, child: note),
+            ),
+          ],
+        );
+      },
     );
   }
 }

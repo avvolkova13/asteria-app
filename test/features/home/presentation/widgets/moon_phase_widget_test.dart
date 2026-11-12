@@ -383,6 +383,18 @@ void main() {
     }
   });
 
+  testWidgets('large text gives the city and location note their own lines', (
+    tester,
+  ) async {
+    tester.platformDispatcher.textScaleFactorTestValue = 1.6;
+    addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+    await _pumpMoonPhaseWidget(tester, moonPhase: _moonPhase(15));
+    final city = tester.getRect(find.text(_currentLocation().location));
+    final note = tester.getRect(find.text('Учитываем твою локацию и время'));
+    expect(note.top, greaterThanOrEqualTo(city.bottom));
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('opens current city, confirms it, or changes it from the list', (
     tester,
   ) async {

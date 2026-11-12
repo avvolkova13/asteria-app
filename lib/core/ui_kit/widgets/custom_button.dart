@@ -44,12 +44,11 @@ class CustomButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final buttonWidget = _buildButtonWidget(context);
 
-    if (isFullWidth) {
-      return SizedBox(width: double.infinity, height: height ?? 50, child: buttonWidget);
-    }
-
-    if (width != null || height != null) {
-      return SizedBox(width: width, height: height ?? 50, child: buttonWidget);
+    if (isFullWidth || width != null || height != null) {
+      return ConstrainedBox(
+        constraints: BoxConstraints(minHeight: height ?? 50),
+        child: SizedBox(width: isFullWidth ? double.infinity : width, child: buttonWidget),
+      );
     }
 
     return buttonWidget;
@@ -170,6 +169,12 @@ class CustomButton extends StatelessWidget {
     final buttonTextStyle = _getTextStyleForType(context, type);
     const double defaultIconSize = 20;
 
+    final label = Text(
+      text,
+      textAlign: TextAlign.center,
+      style: buttonTextStyle.copyWith(fontWeight: fontWeight, color: textColor ?? buttonTextStyle.color),
+    );
+
     if (imageAsset != null) {
       final width = imageWidth ?? defaultIconSize;
       final height = imageHeight ?? defaultIconSize;
@@ -177,11 +182,7 @@ class CustomButton extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(
-            text,
-            textAlign: TextAlign.center,
-            style: buttonTextStyle.copyWith(fontWeight: fontWeight, color: textColor ?? buttonTextStyle.color),
-          ),
+          Flexible(child: label),
           const SizedBox(width: 10),
           LotusRasterIcon(imageAsset!, width: width, height: height, fit: BoxFit.contain),
         ],
@@ -195,19 +196,11 @@ class CustomButton extends StatelessWidget {
         children: [
           ClayIcon(icon, size: defaultIconSize),
           const SizedBox(width: 10),
-          Text(
-            text,
-            textAlign: TextAlign.center,
-            style: buttonTextStyle.copyWith(fontWeight: fontWeight, color: textColor ?? buttonTextStyle.color),
-          ),
+          Flexible(child: label),
         ],
       );
     }
 
-    return Text(
-      text,
-      textAlign: TextAlign.center,
-      style: buttonTextStyle.copyWith(fontWeight: fontWeight, color: textColor ?? buttonTextStyle.color),
-    );
+    return label;
   }
 }

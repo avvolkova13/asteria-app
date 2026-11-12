@@ -370,8 +370,8 @@ class _LocationSecondaryButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 52,
+    return ConstrainedBox(
+      constraints: const BoxConstraints(minHeight: 52),
       child: DecoratedBox(
         decoration: CardLensDecoration.button(
           enabled: !isLoading,
@@ -383,6 +383,10 @@ class _LocationSecondaryButton extends StatelessWidget {
         ),
         child: LotusButtons.textIcon(
           onPressed: isLoading ? null : onPressed,
+          style: TextButton.styleFrom(
+            minimumSize: const Size.fromHeight(52),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          ),
           icon: isLoading
               ? const SizedBox(
                   width: 18,
@@ -392,6 +396,7 @@ class _LocationSecondaryButton extends StatelessWidget {
               : ClayIcon(icon, color: const Color(0xFFE6994D)),
           label: Text(
             title,
+            textAlign: TextAlign.center,
             style: AppTypography.text1SemiBold.copyWith(color: const Color(0xFFE6994D)),
           ),
         ),
@@ -415,8 +420,8 @@ class _LocationPrimaryButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 52,
+    return ConstrainedBox(
+      constraints: const BoxConstraints(minHeight: 52),
       child: DecoratedBox(
         decoration: CardLensDecoration.button(
           enabled: !isLoading,
@@ -427,6 +432,10 @@ class _LocationPrimaryButton extends StatelessWidget {
         ),
         child: LotusButtons.textIcon(
           onPressed: isLoading ? null : onPressed,
+          style: TextButton.styleFrom(
+            minimumSize: const Size.fromHeight(52),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          ),
           icon: isLoading
               ? const SizedBox(
                   width: 18,
@@ -436,6 +445,7 @@ class _LocationPrimaryButton extends StatelessWidget {
               : ClayIcon(icon, color: AppColors.white),
           label: Text(
             title,
+            textAlign: TextAlign.center,
             style: AppTypography.text1SemiBold.copyWith(color: AppColors.white),
           ),
         ),
