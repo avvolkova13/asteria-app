@@ -1,9 +1,9 @@
+import 'package:asteria_app/core/ui_kit/widgets/artwork_unavailable.dart';
 import 'package:asteria_app/core/ui_kit/widgets/modal_glass_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/app/data/models/rune_of_day/rune_of_day_model.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
-import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 import 'package:flutter/material.dart';
 
 class _RunesBlockColors {
@@ -346,14 +346,10 @@ class _RunesBlockState extends State<RunesBlock> with TickerProviderStateMixin {
               height: visualHeight,
               fit: BoxFit.fill,
               errorBuilder: (context, error, stackTrace) {
-                return Container(
+                return ArtworkUnavailable(
                   width: width,
                   height: visualHeight,
-                  decoration: BoxDecoration(
-                    color: Colors.grey[300],
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: const ClayIcon(Icons.image_not_supported, size: 64),
+                  radius: 12,
                 );
               },
             ),

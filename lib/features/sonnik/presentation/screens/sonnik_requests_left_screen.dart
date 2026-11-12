@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
 import 'package:asteria_app/core/config/app_feature_visibility.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/card_radii.dart';
@@ -91,38 +92,39 @@ class _SonnikProCard extends StatelessWidget {
       onTap: onTap,
       padding: const EdgeInsets.all(18),
       borderRadius: BorderRadius.circular(AsteriaCardRadii.card),
-      child: Stack(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Positioned(
-            right: -16,
-            bottom: -22,
-            child: Image.asset(SonnikAssets.proCrystal, width: 112),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(right: 82),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SonnikPill(
-                  child: Text(
-                    context.l10n.unlimited,
-                    style: context.textTheme.inverseUrbanistSemiBold17.copyWith(
-                      fontSize: 14,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 14),
-                _OfferTitleRow(title: context.l10n.offerProTitle),
-                const SizedBox(height: 10),
-                Text(
-                  context.l10n.offerUnlimitedDescription,
-                  style: context.textTheme.inverseUrbanistRegular16.copyWith(
-                    color: SonnikPalette.white.withValues(alpha: 0.78),
-                    height: 1.22,
-                  ),
-                ),
-              ],
+          SonnikPill(
+            child: Text(
+              context.l10n.unlimited,
+              style: AppTypography.text2SemiBold.copyWith(
+                color: AppColorsDark.linkGold,
+              ),
             ),
+          ),
+          const SizedBox(height: 12),
+          _OfferTitleRow(title: context.l10n.offerProTitle),
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  context.l10n.offerUnlimitedDescription,
+                  style: AppTypography.text1.copyWith(
+                    color: AppColors.uiDisabled,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Image.asset(
+                SonnikAssets.proCrystal,
+                width: 76,
+                height: 88,
+                fit: BoxFit.contain,
+                excludeFromSemantics: true,
+              ),
+            ],
           ),
         ],
       ),
@@ -260,17 +262,11 @@ class _OfferTitleRow extends StatelessWidget {
         Expanded(
           child: Text(
             title,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
             style: AppTypography.text1SemiBold.copyWith(color: Colors.white),
           ),
         ),
         const SizedBox(width: 8),
-        const ClayIcon(
-          Icons.arrow_forward_rounded,
-          color: SonnikPalette.white,
-          size: 20,
-        ),
+        const LotusArrowBubble(),
       ],
     );
   }

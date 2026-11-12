@@ -68,12 +68,14 @@ class AnakraComposer extends StatelessWidget {
                           icon: ClayIcon(
                             Icons.cancel,
                             size: 18,
-                            color: Colors.white.withValues(alpha: 0.2),
+                            color: Colors.white.withValues(
+                              alpha: busy ? 0.35 : 0.78,
+                            ),
                           ),
                         )
                       : null,
                   suffixIconConstraints: const BoxConstraints(
-                    minWidth: 40,
+                    minWidth: 44,
                     minHeight: 44,
                   ),
                 ),

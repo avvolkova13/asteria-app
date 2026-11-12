@@ -5,7 +5,6 @@ import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 import 'package:asteria_app/core/ui_kit/widgets/static_glass_surface.dart';
 import 'package:asteria_app/features/achievements/presentation/achievements_style.dart';
-import 'package:asteria_app/features/profile_flow/profile_flow_ui.dart';
 import 'package:flutter/material.dart';
 
 class AchievementCard extends StatelessWidget {
@@ -140,9 +139,6 @@ class _Artwork extends StatelessWidget {
       child: Stack(
         alignment: Alignment.center,
         children: [
-          const Positioned.fill(
-            child: ColoredBox(color: AchievementsStyle.imageBackground),
-          ),
           Image.asset(
             imageAsset,
             frameBuilder: AsteriaEntrance.imageFrame,
@@ -154,14 +150,16 @@ class _Artwork extends StatelessWidget {
             Positioned.fill(
               child: BackdropFilter(
                 filter: ui.ImageFilter.blur(sigmaX: 8, sigmaY: 8),
-                child: const ColoredBox(color: Color(0x1AFFFFFF)),
+                child: ColoredBox(
+                  color: AppColorsDark.homeCanvas.withValues(alpha: 0.60),
+                ),
               ),
             ),
             ClayAssetIcon(
               'assets/icons/white_lock_icon.svg',
               width: 26,
               height: 28,
-              tint: ProfileFlowColors.purple,
+              tint: AppColors.white,
             ),
           ],
         ],

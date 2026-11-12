@@ -93,24 +93,7 @@ class CompatibilityRequestsBadge extends StatelessWidget {
         if (monetizationProvider.effectivePro) return const SizedBox.shrink();
         final requestsLeft = monetizationProvider.requestsLeft('compatibility');
 
-        return IntrinsicWidth(
-          child: Container(
-            height: 22,
-            padding: const EdgeInsets.symmetric(horizontal: 8),
-            decoration: BoxDecoration(
-              color: const Color(0xFFFFB45E),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            alignment: Alignment.center,
-            child: Text(
-              context.l10n.requestsLeftCount(requestsLeft),
-              style: context.textTheme.urbanistRegular12.copyWith(
-                color: AppColors.textPrimary,
-                height: 1,
-              ),
-            ),
-          ),
-        );
+        return RequestsLeftBadge(requestsLeft: requestsLeft);
       },
     );
   }

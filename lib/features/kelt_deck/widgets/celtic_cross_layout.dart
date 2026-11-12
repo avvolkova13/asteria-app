@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/artwork_unavailable.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/app/data/models/tarot_card/tarot_card_model.dart';
@@ -6,7 +7,6 @@ import 'package:asteria_app/app/providers/user_provider.dart';
 import 'package:asteria_app/core/di/di.dart';
 import 'package:asteria_app/core/localization/tarot_card_asset_resolver.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
-import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 import 'package:asteria_app/core/utils/enums.dart';
 import 'package:asteria_app/features/kelt_deck/widgets/card_description_modal.dart';
 import 'package:flutter/material.dart';
@@ -492,15 +492,7 @@ class _CelticCrossLayoutState extends State<CelticCrossLayout>
           height: height,
           fit: BoxFit.contain,
           errorBuilder: (context, error, stackTrace) {
-            return Container(
-              width: width,
-              height: height,
-              decoration: BoxDecoration(
-                color: Colors.grey[300],
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: const ClayIcon(Icons.image_not_supported, size: 64),
-            );
+            return ArtworkUnavailable(width: width, height: height, radius: 12);
           },
         ),
       ),
@@ -529,15 +521,7 @@ class _CelticCrossLayoutState extends State<CelticCrossLayout>
           height: height,
           fit: BoxFit.contain,
           errorBuilder: (context, error, stackTrace) {
-            return Container(
-              width: width,
-              height: height,
-              decoration: BoxDecoration(
-                color: Colors.grey[300],
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: const ClayIcon(Icons.image_not_supported, size: 64),
-            );
+            return ArtworkUnavailable(width: width, height: height, radius: 12);
           },
         ),
       ),

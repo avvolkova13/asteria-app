@@ -1,23 +1,32 @@
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
+import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:flutter/material.dart';
 
 class RequestsLeftBadge extends StatelessWidget {
-  final int requestsLeft;
+  final int? requestsLeft;
+  final String? _label;
 
-  const RequestsLeftBadge({Key? key, required this.requestsLeft})
-    : super(key: key);
+  const RequestsLeftBadge({super.key, required int this.requestsLeft})
+    : _label = null;
+  const RequestsLeftBadge.label(String label, {super.key})
+    : _label = label,
+      requestsLeft = null;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: AppColors.cardTinted,
+    return DecoratedBox(
+      decoration: CardLensDecoration.button(
+        color: AppColorsDark.modal,
         borderRadius: BorderRadius.circular(16),
       ),
-      child: Text(
-        context.l10n.requestsLeftCount(requestsLeft),
-        style: context.textTheme.urbanistRegular16,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        child: Text(
+          _label ?? context.l10n.requestsLeftCount(requestsLeft!),
+          style: context.textTheme.urbanistRegular12.copyWith(
+            color: AppColorsDark.linkGold,
+          ),
+        ),
       ),
     );
   }

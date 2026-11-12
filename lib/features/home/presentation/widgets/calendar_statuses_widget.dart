@@ -17,8 +17,7 @@ class CalendarStatusesWidget extends StatelessWidget {
       return SizedBox(
         width: double.infinity,
         child: Wrap(
-          alignment: WrapAlignment.spaceBetween,
-          spacing: 6,
+          spacing: 14,
           runSpacing: 8,
           children: AsteriaEntrance.sections([
             _CalendarStatusItem(
@@ -69,15 +68,12 @@ class _CalendarStatusItem extends StatelessWidget {
       children: [
         DayStatusIcon(status: status, size: 25, excludeFromSemantics: true),
         const SizedBox(width: 4),
-        Text(
-          title,
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
-          style: context.textTheme.urbanistRegular12.copyWith(
-            color: AppColors.textInverse,
-            fontSize: 8,
-            height: 1.2,
-            letterSpacing: -0.408,
+        Flexible(
+          child: Text(
+            title,
+            style: context.textTheme.urbanistRegular12.copyWith(
+              color: AppColors.textInverse,
+            ),
           ),
         ),
       ],

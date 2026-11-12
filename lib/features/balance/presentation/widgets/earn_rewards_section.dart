@@ -1,5 +1,4 @@
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
-import 'package:asteria_app/core/ui_kit/card_radii.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
@@ -155,9 +154,7 @@ class _RewardCard extends StatelessWidget {
       origin: origin,
     );
     if (!context.mounted || amount <= 0) return;
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(
+    ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('${context.l10n.rewardGranted}: $amount')),
     );
   }
@@ -174,15 +171,23 @@ class _RewardCard extends StatelessWidget {
         ? _localizedFrequency(context)
         : _progressText(context);
 
+    final largeText = MediaQuery.textScalerOf(context).scale(16) > 20;
+    final title = Text(
+      _localizedTitle(context),
+      style: context.textTheme.inversePlayfairSemiBold24.copyWith(
+        fontSize: 20,
+        height: 1.12,
+      ),
+    );
+    final amount = _RewardAmount(item: item, isSharing: isSharing);
     return ProfileGlassCard(
       key: ValueKey('reward_card_${item.id}'),
       onTap: canShare ? () => _share(context) : null,
       padding: const EdgeInsets.all(8),
       color: const Color(0x6633214A),
-      child: SizedBox(
-        height: 112,
+      child: IntrinsicHeight(
         child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             _RewardArtwork(
               assetPath: _assetPath,
@@ -197,27 +202,22 @@ class _RewardCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: Text(
-                            _localizedTitle(context),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: context.textTheme.inversePlayfairSemiBold24
-                                .copyWith(fontSize: 20, height: 1.02),
-                          ),
-                        ),
-                        const SizedBox(width: 6),
-                        _RewardAmount(item: item, isSharing: isSharing),
-                      ],
-                    ),
+                    if (largeText) ...[
+                      amount,
+                      const SizedBox(height: 6),
+                      title,
+                    ] else
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(child: title),
+                          const SizedBox(width: 6),
+                          amount,
+                        ],
+                      ),
                     const SizedBox(height: 4),
                     Text(
                       bodyText,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
                       style: context.textTheme.inverseUrbanistRegular16
                           .copyWith(
                             color: ProfileFlowColors.textMuted,
@@ -225,6 +225,7 @@ class _RewardCard extends StatelessWidget {
                           ),
                     ),
                     if (_showsProgress) ...[
+                      const SizedBox(height: 8),
                       const Spacer(),
                       _RewardProgressBar(value: _progressValue),
                       const SizedBox(height: 7),
@@ -256,14 +257,12 @@ class _RewardArtwork extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 112,
-      height: 112,
-      decoration: BoxDecoration(
-        color: const Color(0xFF342848).withValues(alpha: 0.78),
-        borderRadius: BorderRadius.circular(AsteriaCardRadii.compact),
-      ),
-      clipBehavior: Clip.hardEdge,
+    final compact =
+        MediaQuery.sizeOf(context).width < 360 ||
+        MediaQuery.textScalerOf(context).scale(16) > 20;
+    return SizedBox(
+      width: compact ? 64 : 112,
+      height: compact ? 80 : 112,
       child: assetPath == null
           ? ClayIcon(
               icon,
@@ -326,7 +325,11 @@ class _RewardAmount extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 3),
-        LotusRasterIcon('assets/icons/star_coin_icon.png', width: 16, height: 16),
+        LotusRasterIcon(
+          'assets/icons/star_coin_icon.png',
+          width: 16,
+          height: 16,
+        ),
       ],
     );
   }

@@ -278,26 +278,7 @@ class AnakraRequestsPill extends StatelessWidget {
     final isRussian = Localizations.localeOf(context).languageCode == 'ru';
     final label = isRussian ? 'Осталось $requestCount' : '$requestCount left';
 
-    return Container(
-      height: 24,
-      padding: const EdgeInsets.symmetric(horizontal: 8),
-      decoration: BoxDecoration(
-        color: AnakraPalette.orange,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      alignment: Alignment.center,
-      child: FittedBox(
-        fit: BoxFit.scaleDown,
-        child: Text(
-          label,
-          maxLines: 1,
-          style: context.textTheme.urbanistRegular12.copyWith(
-            color: AppColors.textPrimary,
-            height: 1,
-          ),
-        ),
-      ),
-    );
+    return RequestsLeftBadge.label(label);
   }
 }
 

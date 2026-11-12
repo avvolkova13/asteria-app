@@ -1,10 +1,8 @@
 import 'package:asteria_app/core/ui_kit/widgets/content_scroll_behavior.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
-import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'dart:async';
 import 'dart:io' show Platform;
 import 'package:asteria_app/core/payments/apple/apple_purchase_coordinator.dart';
-import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 
 import 'package:asteria_app/core/analytics/durable/durable_analytics.dart';
 import 'package:asteria_app/core/analytics/durable/analytics_lifecycle.dart';
@@ -371,33 +369,20 @@ class _ErrorScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    return Material(
-      child: Container(
-        color: Colors.black,
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const ClayIcon(Icons.error_outline, size: 64, color: Colors.white),
-                const SizedBox(height: 16),
-                Text(
-                  l10n.initializationError,
-                  style: AppTypography.h3.copyWith(color: Colors.white),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  error.toString(),
-                  textAlign: TextAlign.center,
-                  style: AppTypography.text1.copyWith(color: Colors.white),
-                ),
-                const SizedBox(height: 24),
-                LotusButtons.elevated(
-                  onPressed: onRetry,
-                  child: Text(l10n.retry, style: AppTypography.text1SemiBold),
-                ),
-              ],
+    return Theme(
+      data: AppThemeDark.instance.getThemeData(context),
+      child: Material(
+        color: AppColorsDark.homeCanvas,
+        child: SafeArea(
+          child: Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: ErrorScreenWidget(
+                title: l10n.initializationError,
+                error: error.toString(),
+                retryLabel: l10n.retry,
+                onRetry: onRetry,
+              ),
             ),
           ),
         ),

@@ -1,5 +1,5 @@
+import 'package:asteria_app/core/ui_kit/widgets/artwork_unavailable.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
-import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 import 'package:flutter/material.dart';
 
@@ -37,18 +37,10 @@ class LockedContentImage extends StatelessWidget {
               height: height,
               fit: fit,
               errorBuilder: (context, error, stackTrace) {
-                return Container(
+                return ArtworkUnavailable(
                   width: width,
                   height: height,
-                  decoration: BoxDecoration(
-                    color: AppColors.uiSecondary,
-                    borderRadius: BorderRadius.circular(borderRadius),
-                  ),
-                  child: const ClayIcon(
-                    Icons.image_not_supported,
-                    size: 32,
-                    color: AppColors.textSecondary,
-                  ),
+                  radius: borderRadius,
                 );
               },
             ),

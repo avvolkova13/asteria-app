@@ -1,4 +1,6 @@
 import 'package:asteria_app/core/ui_kit/widgets/input_bubble_surface.dart';
+import 'package:asteria_app/core/ui_kit/widgets/pro_badge_surface.dart';
+import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/modal_glass_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
@@ -420,33 +422,18 @@ class _CitySelectionHeader extends StatelessWidget {
         ? di.get<MonetizationProvider>()
         : null;
     final balance = monetization?.balance ?? 0;
-    final proIconPath = user != null && monetization?.effectivePro == true
-        ? 'assets/icons/pro_enabled.png'
-        : 'assets/icons/pro_disabled.png';
+    final isPro = user != null && monetization?.effectivePro == true;
 
     return Row(
       children: [
-        Container(
-          width: 36,
-          height: 36,
-          decoration: BoxDecoration(
-            color: const Color(0xFF100817),
-            borderRadius: BorderRadius.circular(18),
-            border: Border.all(color: const Color(0xFF3B2A57)),
+        if (Navigator.canPop(context))
+          LotusButtons.icon(
+            onPressed: () => Navigator.maybePop(context),
+            tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+            icon: const LotusArrowBubble(back: true),
+            padding: EdgeInsets.zero,
+            constraints: const BoxConstraints(minHeight: 44, minWidth: 44),
           ),
-          child: Center(
-            child: Text(
-              Localizations.localeOf(context).languageCode == 'ru'
-                  ? 'EN'
-                  : 'RU',
-              style: const TextStyle(
-                color: Color(0xFFD6A359),
-                fontWeight: FontWeight.w800,
-                fontSize: 12,
-              ),
-            ),
-          ),
-        ),
         const Spacer(),
         Text(
           '$balance',
@@ -462,7 +449,7 @@ class _CitySelectionHeader extends StatelessWidget {
           height: 14,
         ),
         const SizedBox(width: 10),
-        LotusRasterIcon(proIconPath, height: 30),
+        ProBadgeSurface(isActive: isPro),
       ],
     );
   }

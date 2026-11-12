@@ -327,15 +327,13 @@ class _LoveDeckHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 39,
+    return ConstrainedBox(
+      constraints: const BoxConstraints(minHeight: LotusArrowBubble.hitExtent),
       child: Row(
         children: [
           Expanded(
             child: Text(
               context.l10n.loveDeckTitle,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
               style: context.textTheme.playfairSemiBold32.copyWith(
                 color: AppColors.white,
                 height: 1.2,
@@ -344,14 +342,18 @@ class _LoveDeckHeader extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 8),
-          LotusTap(
-            behavior: HitTestBehavior.opaque,
-            onTap: onRefresh,
-            child: SizedBox(
-              width: LotusArrowBubble.hitExtent,
-              height: LotusArrowBubble.hitExtent,
-              child: Center(
-                child: LotusRefreshBubble(tint: _LoveDeckColors.gold),
+          Semantics(
+            button: true,
+            label: context.l10n.refreshReadingLabel,
+            child: LotusTap(
+              behavior: HitTestBehavior.opaque,
+              onTap: onRefresh,
+              child: SizedBox(
+                width: LotusArrowBubble.hitExtent,
+                height: LotusArrowBubble.hitExtent,
+                child: Center(
+                  child: LotusRefreshBubble(tint: _LoveDeckColors.gold),
+                ),
               ),
             ),
           ),

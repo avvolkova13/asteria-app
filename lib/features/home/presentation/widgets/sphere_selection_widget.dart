@@ -1,3 +1,5 @@
+import 'package:asteria_app/core/ui_kit/card_radii.dart';
+import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
@@ -80,8 +82,8 @@ class _SphereSelectionWidgetState extends State<SphereSelectionWidget> {
             ).withEntrance(),
             const SizedBox(height: 16),
             Wrap(
-              spacing: 4,
-              runSpacing: 4,
+              spacing: 6,
+              runSpacing: 6,
               children: Sphere.allSpheres.map((sphere) {
                 final isAvailable =
                     hasProSubscription ||
@@ -116,7 +118,9 @@ class _SphereSelectionWidgetState extends State<SphereSelectionWidget> {
                     child: ExcludeSemantics(
                       child: InkWell(
                         onTap: activate,
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(
+                          AsteriaCardRadii.compact,
+                        ),
                         child: _SphereSelectionItem(
                           sphere: sphere,
                           isSelected: isSelected,
@@ -177,7 +181,7 @@ class _SphereSelectionItem extends StatelessWidget {
         ? AppColors.uiDisabledText
         : isSelected
         ? AppColors.textPrimary
-        : MoonDesignTokens.chipOrange;
+        : AppColorsDark.linkGold;
     final label = Text(
       sphere.getLocalizedName(context),
       style: context.textTheme.urbanistRegular16.copyWith(
@@ -188,45 +192,41 @@ class _SphereSelectionItem extends StatelessWidget {
         letterSpacing: -0.408,
       ),
     );
-    return DecoratedBox(
-      decoration: BoxDecoration(
+    return Container(
+      constraints: const BoxConstraints(minHeight: 44),
+      decoration: CardLensDecoration.button(
+        enabled: !isDisabled,
+        borderRadius: BorderRadius.circular(AsteriaCardRadii.compact),
         gradient: isSelected ? MoonDesignTokens.orangeGradient : null,
-        borderRadius: BorderRadius.circular(8),
+        color: isSelected
+            ? null
+            : isDisabled
+            ? MoonDesignTokens.calendarSurface
+            : AppColorsDark.modal,
         border: isSelected
             ? null
             : Border.all(
-                color: isDisabled
-                    ? AppColors.uiDisabledText.withValues(alpha: .48)
-                    : MoonDesignTokens.chipOrange,
+                color: AppColors.white.withValues(
+                  alpha: isDisabled ? .12 : .22,
+                ),
               ),
       ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _buildIcon(foreground),
-            const SizedBox(width: 4),
-            Flexible(
-              child: isSelected || isDisabled
-                  ? label
-                  : ShaderMask(
-                      blendMode: BlendMode.srcIn,
-                      shaderCallback:
-                          MoonDesignTokens.orangeGradient.createShader,
-                      child: label,
-                    ),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _buildIcon(foreground),
+          const SizedBox(width: 4),
+          Flexible(child: label),
+          if (isDisabled) ...[
+            const SizedBox(width: 6),
+            const ClayIcon(
+              Icons.lock_rounded,
+              size: 16,
+              color: AppColors.uiDisabledText,
             ),
-            if (isDisabled) ...[
-              const SizedBox(width: 6),
-              const ClayIcon(
-                Icons.lock_rounded,
-                size: 16,
-                color: AppColors.uiDisabledText,
-              ),
-            ],
           ],
-        ),
+        ],
       ),
     );
   }

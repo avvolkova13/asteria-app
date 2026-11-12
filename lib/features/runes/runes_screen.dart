@@ -407,15 +407,15 @@ class _RuneLayoutTabState extends State<_RuneLayoutTab> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: AsteriaEntrance.sections([
-        SizedBox(
-          height: 38,
+        ConstrainedBox(
+          constraints: const BoxConstraints(
+            minHeight: LotusArrowBubble.hitExtent,
+          ),
           child: Row(
             children: [
               Expanded(
                 child: Text(
                   context.l10n.runesSpreadTitle,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
                   style: context.textTheme.playfairSemiBold32.copyWith(
                     color: AppColors.white,
                     height: 1.2,
@@ -427,6 +427,9 @@ class _RuneLayoutTabState extends State<_RuneLayoutTab> {
                 button: true,
                 enabled: !widget.isRefreshingDeck,
                 label: context.l10n.refreshRuneSpreadLabel,
+                onTap: widget.isRefreshingDeck
+                    ? null
+                    : widget.onRefreshRuneDeckLayout,
                 child: ExcludeSemantics(
                   child: LotusTap(
                     behavior: HitTestBehavior.opaque,

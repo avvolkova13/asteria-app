@@ -18,13 +18,12 @@ class SubscriptionActiveStatusWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final paymentText = oneTimeAccess
-        ? (nextPaymentDateText?.isNotEmpty == true
-              ? '${context.l10n.subscriptionAccessUntil}${nextPaymentDateText!}'
-              : context.l10n.subscriptionAvailableToYou)
-        : (nextPaymentDateText?.isNotEmpty == true
-              ? context.l10n.subscriptionNextPaymentOn(nextPaymentDateText!)
-              : context.l10n.subscriptionNextPayment);
+    final date = nextPaymentDateText?.trim();
+    final paymentText = date == null || date.isEmpty
+        ? null
+        : oneTimeAccess
+        ? '${context.l10n.subscriptionAccessUntil}$date'
+        : context.l10n.subscriptionNextPaymentOn(date);
 
     return _SubscriptionStatusCard(
       onTap: onTap,
@@ -67,7 +66,7 @@ class _SubscriptionStatusCard extends StatelessWidget {
 
   final VoidCallback onTap;
   final String title;
-  final String subtitle;
+  final String? subtitle;
   final String? buttonText;
   final String? actionText;
   final Color? actionColor;
@@ -102,12 +101,14 @@ class _SubscriptionStatusCard extends StatelessWidget {
                             style: context.textTheme.inversePlayfairSemiBold24
                                 .copyWith(height: 1),
                           ),
-                          const SizedBox(height: 8),
-                          Text(
-                            subtitle.replaceAll('\n', ' '),
-                            style: context.textTheme.inverseUrbanistRegular16
-                                .copyWith(height: 1.2),
-                          ),
+                          if (subtitle case final text?) ...[
+                            const SizedBox(height: 8),
+                            Text(
+                              text.replaceAll('\n', ' '),
+                              style: context.textTheme.inverseUrbanistRegular16
+                                  .copyWith(height: 1.2),
+                            ),
+                          ],
                         ],
                       ),
                     ),

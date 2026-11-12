@@ -127,7 +127,9 @@ class _ShopScreenState extends State<ShopScreen> {
                                 .copyWith(height: 1.2),
                           ).withEntrance(),
                           const SizedBox(height: 16),
-                          _buildSubscriptionPromoSection(context).withEntrance(),
+                          _buildSubscriptionPromoSection(
+                            context,
+                          ).withEntrance(),
                           KeyedSubtree(
                             key: ValueKey(state.runtimeType),
                             child: _buildShopContent(context, state),
@@ -539,40 +541,37 @@ class _ShopItemImage extends StatelessWidget {
       child: SizedBox(
         width: 74,
         height: 74,
-        child: ColoredBox(
-          color: _ShopColors.imageFrame,
-          child: Stack(
-            fit: StackFit.expand,
-            children: [
-              Positioned.fill(
-                child: Padding(
-                  padding: visual.padding,
-                  child: Image.asset(
-                    visual.asset,
-                    fit: visual.fit,
-                    alignment: visual.alignment,
-                    cacheWidth: cacheWidth,
-                  ),
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            Positioned.fill(
+              child: Padding(
+                padding: visual.padding,
+                child: Image.asset(
+                  visual.asset,
+                  fit: visual.fit,
+                  alignment: visual.alignment,
+                  cacheWidth: cacheWidth,
                 ),
               ),
-              if (isLocked) ...[
-                BackdropFilter(
-                  filter: ui.ImageFilter.blur(sigmaX: 4, sigmaY: 4),
-                  child: ColoredBox(
-                    color: AppColors.white.withValues(alpha: 0.1),
-                  ),
+            ),
+            if (isLocked) ...[
+              BackdropFilter(
+                filter: ui.ImageFilter.blur(sigmaX: 4, sigmaY: 4),
+                child: ColoredBox(
+                  color: AppColorsDark.homeCanvas.withValues(alpha: 0.60),
                 ),
-                Center(
-                  child: ClayAssetIcon(
-                    'assets/icons/white_lock_icon.svg',
-                    width: 32,
-                    height: 32,
-                    tint: _ShopColors.lockPurple,
-                  ),
+              ),
+              Center(
+                child: ClayAssetIcon(
+                  'assets/icons/white_lock_icon.svg',
+                  width: 32,
+                  height: 32,
+                  tint: AppColors.white,
                 ),
-              ],
+              ),
             ],
-          ),
+          ],
         ),
       ),
     );
@@ -651,10 +650,12 @@ class _ShopLoadingState extends StatelessWidget {
     return const Padding(
       padding: EdgeInsets.only(top: 28),
       child: Center(
-        child: AsteriaEntrance(child: CircularProgressIndicator(
-          color: _ShopColors.gold,
-          strokeWidth: 2,
-        )),
+        child: AsteriaEntrance(
+          child: CircularProgressIndicator(
+            color: _ShopColors.gold,
+            strokeWidth: 2,
+          ),
+        ),
       ),
     );
   }
@@ -745,11 +746,9 @@ class _ShopColors {
   static const background = Color(0xFF0F0A1A);
   static const card = Color(0x339A7DB8);
   static const cardBorder = Color(0x52FFFFFF);
-  static const imageFrame = Color(0x8021183D);
   static const textSecondary = Color(0xD9FFFFFF);
   static const gold = Color(0xFFF3B76A);
   static const zero = Color(0xFFE36A6A);
-  static const lockPurple = Color(0xFF7548FF);
 
   static const goldGradient = LinearGradient(
     colors: [Color(0xFFE6994D), Color(0xFFF3B76A), Color(0xFFE6994D)],

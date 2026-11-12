@@ -145,20 +145,19 @@ class _SettingsListTileState extends State<_SettingsListTile> {
               style: context.textTheme.inverseUrbanistRegular17,
             ),
           ),
-          Transform.scale(
-            scale: 0.92,
-            child: CupertinoSwitch(
-              value: _isEnabled,
-              onChanged: (bool value) {
-                setState(() {
-                  _isEnabled = value;
-                });
-              },
-              activeTrackColor: ProfileFlowColors.accent,
-              inactiveTrackColor: const Color(0xFF21194B),
-              thumbColor: _isEnabled
-                  ? const Color(0xFF160D25)
-                  : const Color(0xFF443B9B),
+          Semantics(
+            label: widget.title,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(minHeight: 44),
+              child: CupertinoSwitch(
+                value: _isEnabled,
+                onChanged: (value) => setState(() => _isEnabled = value),
+                activeTrackColor: ProfileFlowColors.accent,
+                inactiveTrackColor: ProfileFlowColors.border,
+                thumbColor: _isEnabled
+                    ? ProfileFlowColors.background
+                    : AppColors.white,
+              ),
             ),
           ),
         ],

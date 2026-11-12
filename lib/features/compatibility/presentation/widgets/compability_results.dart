@@ -81,9 +81,8 @@ class CompabilityResults extends StatelessWidget {
           onPressed: onHistoryPressed,
           child: Text(
             context.l10n.viewHistory,
-            style: context.textTheme.tertiaryUrbanistSemiBold14.copyWith(
-              decoration: TextDecoration.underline,
-              decorationColor: AppColors.textTertiary,
+            style: context.textTheme.inverseUrbanistSemiBold14.copyWith(
+              color: AppColorsDark.linkGold,
             ),
           ),
         ),

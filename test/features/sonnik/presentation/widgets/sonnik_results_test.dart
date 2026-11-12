@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/requests_left_badge.dart';
 import 'package:asteria_app/app/data/models/sonnik/sonnik_model.dart';
 import 'package:asteria_app/core/localization/localization.dart';
 import 'package:asteria_app/core/ui_kit/theme/theme.dart';
@@ -36,10 +37,7 @@ void main() {
     await tester.pumpWidget(_testApp(const SonnikQuotaBadge(requestsLeft: 2)));
 
     expect(find.text('Осталось 2 попытки'), findsOneWidget);
-    final container = tester.widget<Container>(find.byType(Container));
-    final decoration = container.decoration! as BoxDecoration;
-    expect(decoration.color, const Color(0xFFE6A64F));
-    expect(decoration.borderRadius, BorderRadius.circular(12));
+    expect(find.byType(RequestsLeftBadge), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 }

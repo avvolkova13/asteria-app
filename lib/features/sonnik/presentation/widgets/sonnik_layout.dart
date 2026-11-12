@@ -393,20 +393,7 @@ class SonnikQuotaBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     final label = context.l10n.attemptsLeftCount(requestsLeft);
 
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: const Color(0xFFE6A64F),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Text(
-        label,
-        style: context.textTheme.inverseUrbanistSemiBold17.copyWith(
-          color: SonnikPalette.darkText,
-          fontSize: 14,
-        ),
-      ),
-    );
+    return RequestsLeftBadge.label(label);
   }
 }
 
@@ -493,9 +480,9 @@ class SonnikPill extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      decoration: BoxDecoration(
-        gradient: SonnikPalette.proGradient,
-        borderRadius: BorderRadius.circular(999),
+      decoration: CardLensDecoration.button(
+        color: AppColorsDark.modal,
+        borderRadius: BorderRadius.circular(AsteriaCardRadii.compact),
       ),
       child: child,
     );

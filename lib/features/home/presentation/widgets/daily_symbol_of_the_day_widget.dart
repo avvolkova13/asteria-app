@@ -1,8 +1,8 @@
+import 'package:asteria_app/core/ui_kit/widgets/artwork_unavailable.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'dart:math' as math;
-import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 
 import 'package:asteria_app/app/data/models/rune_of_day/rune_of_day_model.dart';
 import 'package:asteria_app/app/data/models/tarot_card/tarot_card_model.dart';
@@ -541,7 +541,7 @@ class DailyTarotCardFace extends StatelessWidget {
         height: height,
         fit: BoxFit.cover,
         errorBuilder: (context, error, stackTrace) =>
-            _ImageFallback(width: width, height: height, radius: 16),
+            ArtworkUnavailable(width: width, height: height, radius: 16),
       ),
     );
   }
@@ -579,7 +579,7 @@ class _RuneFront extends StatelessWidget {
         height: _DailySymbolOfTheDayWidgetState._runeHeight,
         fit: BoxFit.cover,
         errorBuilder: (context, error, stackTrace) {
-          return const _ImageFallback(
+          return const ArtworkUnavailable(
             width: _DailySymbolOfTheDayWidgetState._runeWidth,
             height: _DailySymbolOfTheDayWidgetState._runeHeight,
             radius: _DailySymbolOfTheDayWidgetState._runeRadius,
@@ -789,31 +789,6 @@ class _GradientText extends StatelessWidget {
         textAlign: TextAlign.center,
         style: style.copyWith(color: Colors.white),
       ),
-    );
-  }
-}
-
-class _ImageFallback extends StatelessWidget {
-  const _ImageFallback({
-    required this.width,
-    required this.height,
-    required this.radius,
-  });
-
-  final double width;
-  final double height;
-  final double radius;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: width,
-      height: height,
-      decoration: BoxDecoration(
-        color: AppColors.uiDisabled,
-        borderRadius: BorderRadius.circular(radius),
-      ),
-      child: const ClayIcon(Icons.image_not_supported, size: 48),
     );
   }
 }

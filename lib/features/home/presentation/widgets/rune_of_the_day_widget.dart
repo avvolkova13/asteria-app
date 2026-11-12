@@ -1,10 +1,10 @@
+import 'package:asteria_app/core/ui_kit/widgets/artwork_unavailable.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/app/data/models/rune_of_day/rune_of_day_model.dart';
 import 'package:asteria_app/core/routing/app_route.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
-import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 import 'package:flutter/material.dart';
 
 class RuneOfTheDayWidget extends StatefulWidget {
@@ -241,15 +241,7 @@ class _RuneOfTheDayWidgetState extends State<RuneOfTheDayWidget>
           height: height,
           fit: BoxFit.cover,
           errorBuilder: (context, error, stackTrace) {
-            return Container(
-              width: width,
-              height: height,
-              decoration: BoxDecoration(
-                color: Colors.grey[300],
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: const ClayIcon(Icons.image_not_supported, size: 64),
-            );
+            return ArtworkUnavailable(width: width, height: height, radius: 12);
           },
         ),
       ),

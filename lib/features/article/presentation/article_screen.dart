@@ -1,3 +1,5 @@
+import 'package:asteria_app/core/ui_kit/widgets/artwork_unavailable.dart';
+import 'package:asteria_app/core/ui_kit/card_radii.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
@@ -21,10 +23,6 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 class _ArticlePageColors {
-  static const tagGradient = LinearGradient(
-    colors: [Color(0xFFE6994D), Color(0xFFF3B76A), Color(0xFFE6994D)],
-  );
-
   static const background = AppColors.textPrimary;
   static const cardBackground = AppColors.deepPurple;
   static const navHeight = 105.0;
@@ -91,7 +89,9 @@ class _ArticleScreenState extends State<ArticleScreen> {
               delegate: const _ArticleTopBarDelegate(),
             ),
             SliverFillRemaining(
-              child: Center(child: Text(context.l10n.articleNotFound).withEntrance()),
+              child: Center(
+                child: Text(context.l10n.articleNotFound).withEntrance(),
+              ),
             ),
           ],
         ),
@@ -265,18 +265,27 @@ class _ArticleHero extends StatelessWidget {
               child: Image.asset(
                 'assets/images/articles/${article.id}.webp',
                 fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) =>
+                    const ArtworkUnavailable(radius: 32),
               ),
             ),
           ),
           Positioned(
             left: 16,
-            bottom: 24,
-            child: _ArticleCategoryTag(text: article.category),
-          ),
-          Positioned(
             right: 16,
-            bottom: 24,
-            child: _ArticleTimeTag(timeToRead: article.timeToRead),
+            bottom: 16,
+            child: Wrap(
+              alignment: WrapAlignment.spaceBetween,
+              spacing: 8,
+              runSpacing: 6,
+              children: [
+                _ArticleTag(text: article.category, accent: true),
+                _ArticleTag(
+                  text:
+                      '${article.timeToRead} ${context.l10n.readingTimeMinutes}',
+                ),
+              ],
+            ),
           ),
         ],
       ),
@@ -364,47 +373,25 @@ class _ArticleParagraphs extends StatelessWidget {
   }
 }
 
-class _ArticleCategoryTag extends StatelessWidget {
-  const _ArticleCategoryTag({required this.text});
+class _ArticleTag extends StatelessWidget {
+  const _ArticleTag({required this.text, this.accent = false});
 
   final String text;
+  final bool accent;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 33,
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        gradient: _ArticlePageColors.tagGradient,
-        borderRadius: BorderRadius.circular(8),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+      decoration: CardLensDecoration.button(
+        color: AppColorsDark.modal,
+        borderRadius: BorderRadius.circular(AsteriaCardRadii.compact),
       ),
-      alignment: Alignment.center,
       child: Text(
         text,
-        style: AppTypography.label14.copyWith(color: AppColors.white),
-      ),
-    );
-  }
-}
-
-class _ArticleTimeTag extends StatelessWidget {
-  const _ArticleTimeTag({required this.timeToRead});
-
-  final int timeToRead;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 33,
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: AppColors.deepPurple,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      alignment: Alignment.center,
-      child: Text(
-        '$timeToRead ${context.l10n.readingTimeMinutes}',
-        style: AppTypography.label14.copyWith(color: AppColors.white),
+        style: AppTypography.label14.copyWith(
+          color: accent ? AppColorsDark.linkGold : AppColors.white,
+        ),
       ),
     );
   }

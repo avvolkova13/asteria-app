@@ -1,4 +1,4 @@
-import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
+import 'package:asteria_app/core/ui_kit/widgets/artwork_unavailable.dart';
 import 'package:flutter/material.dart';
 
 class RuneBackImage extends StatelessWidget {
@@ -37,12 +37,7 @@ class RuneBackImage extends StatelessWidget {
                 'assets/images/home/daily_symbol_rune_back.webp',
                 fit: BoxFit.fill,
                 errorBuilder: (context, error, stackTrace) {
-                  return ColoredBox(
-                    color: Colors.grey.shade300,
-                    child: const Center(
-                      child: ClayIcon(Icons.image_not_supported, size: 64),
-                    ),
-                  );
+                  return const ArtworkUnavailable();
                 },
               ),
             ),

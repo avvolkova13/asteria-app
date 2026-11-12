@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/artwork_unavailable.dart';
 import 'package:asteria_app/core/ui_kit/widgets/modal_glass_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
@@ -135,15 +136,10 @@ class _RuneGridItem extends StatelessWidget {
                       height: height,
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) {
-                        return Container(
+                        return ArtworkUnavailable(
                           width: width,
                           height: height,
-                          color: AppColors.uiSecondary,
-                          child: const ClayIcon(
-                            Icons.image_not_supported,
-                            size: 32,
-                            color: AppColors.textSecondary,
-                          ),
+                          radius: 0,
                         );
                       },
                     ),

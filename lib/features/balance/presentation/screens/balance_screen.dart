@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/config/app_feature_visibility.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
@@ -193,8 +194,6 @@ class _WhereToSpend extends StatelessWidget {
           Expanded(
             child: Text(
               item.text,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
               style: context.textTheme.inverseUrbanistRegular16.copyWith(
                 color: ProfileFlowColors.textMuted,
                 height: 1.05,
@@ -251,14 +250,11 @@ class _PricePill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      constraints: const BoxConstraints(minWidth: 48),
-      height: 24,
-      padding: const EdgeInsets.symmetric(horizontal: 8),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8),
-        gradient: const LinearGradient(
-          colors: [Color(0xFF8A58FF), Color(0xFF6B39E9)],
-        ),
+      constraints: const BoxConstraints(minWidth: 48, minHeight: 26),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: CardLensDecoration(
+        color: ProfileFlowColors.cardStrong,
+        borderRadius: BorderRadius.circular(24),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,

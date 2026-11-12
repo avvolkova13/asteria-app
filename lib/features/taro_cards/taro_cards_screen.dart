@@ -1,3 +1,4 @@
+import 'package:asteria_app/features/taro_cards/widgets/tarot_sphere_chip.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
@@ -17,7 +18,6 @@ import 'package:asteria_app/core/di/di.dart';
 import 'package:asteria_app/core/routing/app_route.dart';
 import 'package:asteria_app/core/services/global_loader_service.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
-import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 import 'package:asteria_app/core/ui_kit/widgets/closed_content_modal.dart';
 import 'package:asteria_app/core/ui_kit/widgets/top_nav_bar.dart';
 import 'package:asteria_app/core/utils/enums.dart';
@@ -45,7 +45,6 @@ enum TaroCardsTab {
 class _TaroCardsColors {
   static const background = Color(0xFF0F0A1A);
   static const descriptionText = Color(0xFFEEEAFD);
-  static const darkText = Color(0xFF140C15);
   static const gold = Color(0xFFF3B76A);
   static const goldGradient = LinearGradient(
     colors: [Color(0xFFE6994D), Color(0xFFF3B76A), Color(0xFFE6994D)],
@@ -459,15 +458,15 @@ class _TaroCardsContentState extends State<_TaroCardsContent> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: AsteriaEntrance.sections([
-              SizedBox(
-                height: 38,
+              ConstrainedBox(
+                constraints: const BoxConstraints(
+                  minHeight: LotusArrowBubble.hitExtent,
+                ),
                 child: Row(
                   children: [
                     Expanded(
                       child: Text(
                         context.l10n.tarotSpreadTitle,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
                         style: context.textTheme.playfairSemiBold32.copyWith(
                           color: AppColors.white,
                           height: 1.2,
@@ -479,6 +478,9 @@ class _TaroCardsContentState extends State<_TaroCardsContent> {
                       button: true,
                       enabled: !_isRefreshingDeck,
                       label: context.l10n.refreshTarotSpreadLabel,
+                      onTap: _isRefreshingDeck
+                          ? null
+                          : _onRefreshTarotDeckLayout,
                       child: ExcludeSemantics(
                         child: LotusTap(
                           behavior: HitTestBehavior.opaque,
@@ -717,9 +719,10 @@ class _TarotInsightBlockState extends State<_TarotInsightBlock> {
           runSpacing: 8,
           children: _TarotInsightSphere.values.map((sphere) {
             final isSelected = _selectedSphere == sphere;
-            return _TarotInsightSphereChip(
-              sphere: sphere,
-              isSelected: isSelected,
+            return TarotSphereChip(
+              title: sphere.title(context),
+              iconName: sphere.iconName,
+              selected: isSelected,
               onTap: () => setState(() => _selectedSphere = sphere),
             );
           }).toList(),
@@ -734,102 +737,6 @@ class _TarotInsightBlockState extends State<_TarotInsightBlock> {
           ),
         ),
       ]),
-    );
-  }
-}
-
-class _TarotInsightSphereChip extends StatelessWidget {
-  const _TarotInsightSphereChip({
-    required this.sphere,
-    required this.isSelected,
-    required this.onTap,
-  });
-
-  final _TarotInsightSphere sphere;
-  final bool isSelected;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final textStyle = context.textTheme.urbanistRegular16.copyWith(
-      color: isSelected ? _TaroCardsColors.darkText : AppColors.white,
-      fontWeight: FontWeight.w600,
-      height: 1.2,
-      letterSpacing: -0.408,
-    );
-
-    return Opacity(
-      opacity: isSelected ? 1 : 0.62,
-      child: LotusTap(
-        behavior: HitTestBehavior.opaque,
-        onTap: onTap,
-        child: Container(
-          constraints: const BoxConstraints(minHeight: 32),
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-          decoration: BoxDecoration(
-            gradient: isSelected ? _TaroCardsColors.goldGradient : null,
-            borderRadius: BorderRadius.circular(4),
-            border: isSelected
-                ? null
-                : Border.all(color: _TaroCardsColors.gold),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ClayAssetIcon(
-                'assets/icons/sphere_icon/${sphere.iconName}.svg',
-                width: 24,
-                height: 24,
-                tint: isSelected
-                    ? _TaroCardsColors.darkText
-                    : _TaroCardsColors.gold,
-              ),
-              const SizedBox(width: 4),
-              Flexible(
-                child: isSelected
-                    ? Text(
-                        sphere.title(context),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: textStyle,
-                      )
-                    : _GradientText(
-                        text: sphere.title(context),
-                        gradient: _TaroCardsColors.goldGradient,
-                        style: textStyle,
-                      ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _GradientText extends StatelessWidget {
-  const _GradientText({
-    required this.text,
-    required this.gradient,
-    required this.style,
-  });
-
-  final String text;
-  final Gradient gradient;
-  final TextStyle style;
-
-  @override
-  Widget build(BuildContext context) {
-    return ShaderMask(
-      blendMode: BlendMode.srcIn,
-      shaderCallback: (bounds) => gradient.createShader(bounds),
-      child: Text(
-        text,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-        textAlign: TextAlign.center,
-        style: style.copyWith(color: AppColors.white),
-      ),
     );
   }
 }

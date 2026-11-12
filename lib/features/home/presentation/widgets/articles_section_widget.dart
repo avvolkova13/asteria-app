@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/artwork_unavailable.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
@@ -189,6 +190,8 @@ class _ArticleCard extends StatelessWidget {
               width: 201,
               height: 167,
               fit: BoxFit.cover,
+              errorBuilder: (_, __, ___) =>
+                  const ArtworkUnavailable(width: 201, height: 167, radius: 0),
             ),
           ),
           const SizedBox(height: 8),

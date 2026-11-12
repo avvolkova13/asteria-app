@@ -313,13 +313,18 @@ class ProfileOutlineButton extends StatelessWidget {
       padding: EdgeInsets.zero,
       color: Colors.transparent,
       onTap: onPressed,
-      child: SizedBox(
-        height: 49,
-        child: Center(
-          child: Text(
-            text,
-            style: context.textTheme.inverseUrbanistRegular17.copyWith(
-              color: const Color(0xFF7D50FF),
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(minHeight: 49),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          child: Center(
+            heightFactor: 1,
+            child: Text(
+              text,
+              textAlign: TextAlign.center,
+              style: context.textTheme.inverseUrbanistRegular17.copyWith(
+                color: ProfileFlowColors.accent,
+              ),
             ),
           ),
         ),

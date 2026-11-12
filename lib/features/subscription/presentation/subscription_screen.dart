@@ -897,7 +897,7 @@ class _SubscriptionActiveScreen extends StatelessWidget {
             },
           ),
         ] else ...[
-          const SizedBox(height: 146),
+          const SizedBox(height: 24),
           if (route == PaymentProviderRoute.appleStoreKit) ...[
             const _RestorePurchasesButton(),
             const SizedBox(height: 16),
@@ -945,7 +945,7 @@ class _SubscriptionInfoCard extends StatelessWidget {
                           title,
                           style: context.textTheme.inversePlayfairSemiBold24,
                         ),
-                        if (isActive) ...[
+                        if (isActive && nextPaymentDateText?.isNotEmpty == true) ...[
                           const SizedBox(height: 8),
                           Text.rich(
                             TextSpan(

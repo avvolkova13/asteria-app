@@ -1,7 +1,7 @@
-import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
-import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/top_nav_bar.dart';
+import 'package:asteria_app/features/profile_flow/profile_flow_ui.dart';
 import 'package:flutter/material.dart';
 
 class PaymentsSettingsScreen extends StatelessWidget {
@@ -10,35 +10,32 @@ class PaymentsSettingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.surface,
-      body: CustomScrollView(
-        slivers: [
-          SliverPersistentHeader(
-            pinned: true,
-            delegate: TopNavBarDelegate(
-              canPop: true,
-              userName: context.l10n.paymentTitle,
-              type: TopNavBarType.person,
-            ),
-          ),
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.all(24),
-              child: Container(
-                padding: const EdgeInsets.all(20),
-                decoration: CardLensDecoration(
-                  color: AppColors.cardBackground,
-                  borderRadius: BorderRadius.circular(16),
+      backgroundColor: ProfileFlowColors.background,
+      body: ProfileFlowBackground(
+        child: SafeArea(
+          child: Column(
+            children: [
+              TopNavBar(
+                canPop: true,
+                userName: context.l10n.paymentTitle,
+                type: TopNavBarType.payment,
+              ),
+              Expanded(
+                child: ListView(
+                  padding: const EdgeInsets.fromLTRB(16, 24, 16, 16),
+                  children: [
+                    ProfileGlassCard(
+                      child: Text(
+                        context.l10n.paymentSettingsDescription,
+                        style: context.textTheme.inverseUrbanistRegular16,
+                      ),
+                    ).withEntrance(),
+                  ],
                 ),
-                child: Text(
-                  context.l10n.paymentSettingsDescription,
-                  style: context.textTheme.urbanistRegular16,
-                  textAlign: TextAlign.center,
-                ),
-              ).withEntrance(),
-            ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
