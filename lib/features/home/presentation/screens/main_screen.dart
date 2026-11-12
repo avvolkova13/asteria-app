@@ -1,6 +1,3 @@
-import 'package:asteria_app/features/home/home_tabs.dart';
-import 'package:asteria_app/features/scenarios/calendar_scenario.dart';
-import 'package:asteria_app/features/scenarios/calendar_plan.dart';
 import 'package:asteria_app/features/scenarios/scenario_ui.dart';
 import 'package:go_router/go_router.dart';
 import 'package:asteria_app/app/providers/content_provider.dart';
@@ -182,42 +179,6 @@ class _MainScreenState extends State<MainScreen> {
                             const SizedBox(height: 26),
                             const MoonPhaseWidget(),
                             const SizedBox(height: 24),
-                            CalendarPlansBuilder(
-                              compact: true,
-                              builder: (c, plans) {
-                                final next = plans
-                                    .where(
-                                      (p) => !p.day.isBefore(
-                                        calendarDay(DateTime.now()),
-                                      ),
-                                    )
-                                    .firstOrNull;
-                                if (next == null) {
-                                  return const SizedBox.shrink();
-                                }
-                                final ru =
-                                    Localizations.localeOf(c).languageCode ==
-                                    'ru';
-                                return Padding(
-                                  padding: const EdgeInsets.fromLTRB(
-                                    16,
-                                    0,
-                                    16,
-                                    24,
-                                  ),
-                                  child: ScenarioTile(
-                                    title: next.title,
-                                    subtitle:
-                                        '${next.day.day}.${next.day.month}.${next.day.year} · ${ru ? 'Открыть календарь' : 'Open calendar'}',
-                                    art:
-                                        'assets/images/scenarios/calendar.webp',
-                                    onTap: () => c.read<HomeCubit>().changeTab(
-                                      HomeTabs.calendar,
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
                             AsteriaEntrance(child: _buildAffirmationCard()),
                             const SizedBox(height: 24),
                             _buildDailySymbolWidget(state),

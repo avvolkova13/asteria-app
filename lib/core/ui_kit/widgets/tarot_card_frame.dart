@@ -14,7 +14,10 @@ class TarotCardFrame extends StatelessWidget {
     return DecoratedBox(
       position: DecorationPosition.foreground,
       decoration: BoxDecoration(
-        border: Border.all(color: AppColorsDark.linkGold, width: 1),
+        border: Border.all(
+          color: AppColorsDark.linkGold.withValues(alpha: 0.5),
+          width: 1,
+        ),
         borderRadius: borderRadius,
       ),
       child: ClipRRect(borderRadius: borderRadius, child: child),
