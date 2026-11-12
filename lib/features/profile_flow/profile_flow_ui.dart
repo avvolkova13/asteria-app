@@ -90,36 +90,38 @@ class ProfileFlowHeader extends StatelessWidget {
     final hasPro = monetization?.effectivePro ?? false;
     final balance = monetization?.balance ?? 0;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
+    final back = Semantics(
+      button: true,
+      label: MaterialLocalizations.of(context).backButtonTooltip,
+      child: LotusTap(
+        behavior: HitTestBehavior.opaque,
+        onTap: () => Navigator.of(context).pop(),
+        child: const SizedBox(
+          width: 44,
+          height: 44,
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: LotusArrowBubble(back: true),
+          ),
+        ),
+      ),
+    );
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final separateTitle =
+            constraints.maxWidth <
+            MediaQuery.textScalerOf(context).scale(17) * 13;
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Expanded(
-              child: Row(
-                children: [
-                  if (canPop) ...[
-                    Semantics(
-                      button: true,
-                      label: MaterialLocalizations.of(
-                        context,
-                      ).backButtonTooltip,
-                      child: LotusTap(
-                        behavior: HitTestBehavior.opaque,
-                        onTap: () => Navigator.of(context).pop(),
-                        child: const SizedBox(
-                          width: 44,
-                          height: 44,
-                          child: Align(
-                            alignment: Alignment.centerLeft,
-                            child: LotusArrowBubble(back: true),
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 6),
-                  ],
-                  Flexible(
+            Row(
+              children: [
+                if (canPop) back,
+                if (canPop && !separateTitle) const SizedBox(width: 6),
+                if (separateTitle)
+                  const Spacer()
+                else
+                  Expanded(
                     child: Text(
                       title,
                       maxLines: 1,
@@ -127,19 +129,24 @@ class ProfileFlowHeader extends StatelessWidget {
                       style: context.textTheme.inversePlayfairSemiBold17,
                     ),
                   ),
-                ],
-              ),
+                const SizedBox(width: 6),
+                _BalancePill(balance: balance),
+                const SizedBox(width: 10),
+                ProfileProPill(isActive: hasPro),
+              ],
             ),
-            _BalancePill(balance: balance),
-            const SizedBox(width: 10),
-            ProfileProPill(isActive: hasPro),
+            if (separateTitle || showTitleLarge) ...[
+              SizedBox(height: showTitleLarge ? 28 : 8),
+              Text(
+                title,
+                style: showTitleLarge
+                    ? context.textTheme.inversePlayfairSemiBold32
+                    : context.textTheme.inversePlayfairSemiBold17,
+              ),
+            ],
           ],
-        ),
-        if (showTitleLarge) ...[
-          const SizedBox(height: 28),
-          Text(title, style: context.textTheme.inversePlayfairSemiBold32),
-        ],
-      ],
+        );
+      },
     );
   }
 }
@@ -252,9 +259,11 @@ class ProfilePrimaryButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      height: 50,
+    return ConstrainedBox(
+      constraints: const BoxConstraints(
+        minWidth: double.infinity,
+        minHeight: 50,
+      ),
       child: DecoratedBox(
         decoration: CardLensDecoration.button(
           enabled: onPressed != null && !isLoading,
@@ -277,6 +286,7 @@ class ProfilePrimaryButton extends StatelessWidget {
             shadowColor: Colors.transparent,
             disabledBackgroundColor: Colors.transparent,
             foregroundColor: AppColors.white,
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(14),
             ),
@@ -290,7 +300,11 @@ class ProfilePrimaryButton extends StatelessWidget {
                     color: AppColors.white,
                   ),
                 )
-              : Text(text, style: context.textTheme.inverseUrbanistRegular17),
+              : Text(
+                  text,
+                  textAlign: TextAlign.center,
+                  style: context.textTheme.inverseUrbanistRegular17,
+                ),
         ),
       ),
     );

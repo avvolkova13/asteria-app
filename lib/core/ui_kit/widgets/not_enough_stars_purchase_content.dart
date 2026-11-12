@@ -150,19 +150,35 @@ class _BalanceRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Wrap(
-      alignment: WrapAlignment.spaceBetween,
-      crossAxisAlignment: WrapCrossAlignment.center,
-      spacing: 8,
-      runSpacing: 8,
-      children: [
-        _AmountLabel(label: context.l10n.balanceLabel, amount: balance),
-        const _ArrowIcon(),
-        _AmountLabel(
-          label: context.l10n.purchaseRequired,
-          amount: requiredAmount,
-        ),
-      ],
+    final before = context.l10n.balanceLabel;
+    final after = context.l10n.purchaseRequired;
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final measurement = TextPainter(
+          text: TextSpan(
+            text: '$before $balance$after $requiredAmount',
+            style: AppTypography.text1SemiBold,
+          ),
+          textDirection: Directionality.of(context),
+          textScaler: MediaQuery.textScalerOf(context),
+        )..layout();
+        // Two coin marks, their padding and the arrow between the amounts.
+        final fitsOneLine =
+            measurement.width + 2 * (19 + 4) + 24 + 2 * 8 <=
+            constraints.maxWidth;
+        measurement.dispose();
+        return Wrap(
+          alignment: WrapAlignment.spaceBetween,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            _AmountLabel(label: before, amount: balance),
+            if (fitsOneLine) const _ArrowIcon(),
+            _AmountLabel(label: after, amount: requiredAmount),
+          ],
+        );
+      },
     );
   }
 }
@@ -233,22 +249,25 @@ class _ButtonsRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(
-          child: _PurchaseActionButton.outline(
-            text: context.l10n.commonCancel,
-            onPressed: onCancel,
+    return IntrinsicHeight(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Expanded(
+            child: _PurchaseActionButton.outline(
+              text: context.l10n.commonCancel,
+              onPressed: onCancel,
+            ),
           ),
-        ),
-        const SizedBox(width: 8),
-        Expanded(
-          child: _PurchaseActionButton.primary(
-            text: context.l10n.balanceBuy,
-            onPressed: onBuyStars,
+          const SizedBox(width: 8),
+          Expanded(
+            child: _PurchaseActionButton.primary(
+              text: context.l10n.balanceBuy,
+              onPressed: onBuyStars,
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

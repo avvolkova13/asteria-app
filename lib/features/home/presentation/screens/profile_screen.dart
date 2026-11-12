@@ -266,57 +266,64 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       art: 'assets/images/scenarios/compass.webp',
                       onTap: () => context.push<void>(FirstSession.path),
                     ),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _ProfileMenuCard(
-                            title: context.l10n.settingsNotifications,
-                            iconAsset:
-                                'assets/icons/profile_notifications_icon.svg',
-                            preserveIconAssetColors: true,
-                            iconSize: 34,
-                            onTap: () => _onSettingsTap(context),
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: _ProfileMenuCard(
-                            title: context.l10n.profileAbout,
-                            iconAsset: 'assets/icons/profile_about_icon.svg',
-                            preserveIconAssetColors: true,
-                            iconSize: 34,
-                            onTap: () => _onAboutUsTap(context),
-                          ),
-                        ),
-                      ],
+                    LayoutBuilder(
+                      builder: (context, constraints) {
+                        final labelSize = MediaQuery.textScalerOf(
+                          context,
+                        ).scale(17);
+                        final columns = constraints.maxWidth >= labelSize * 14
+                            ? 2
+                            : 1;
+                        final gap = 8.0;
+                        final tileWidth =
+                            (constraints.maxWidth - gap * (columns - 1)) /
+                            columns;
+                        return Wrap(
+                          spacing: gap,
+                          runSpacing: gap,
+                          children: [
+                            for (final (label, icon, action) in [
+                              (
+                                context.l10n.settingsNotifications,
+                                'profile_notifications_icon',
+                                _onSettingsTap,
+                              ),
+                              (
+                                context.l10n.profileAbout,
+                                'profile_about_icon',
+                                _onAboutUsTap,
+                              ),
+                              (
+                                context.l10n.profileAchievements,
+                                'profile_achievements_icon',
+                                _onAchievementsTap,
+                              ),
+                              (
+                                context.l10n.profileShop,
+                                'profile_shop_icon',
+                                _onShopTap,
+                              ),
+                              (
+                                context.l10n.asteriaWebsite,
+                                'profile_site_icon',
+                                _onSiteTap,
+                              ),
+                            ])
+                              SizedBox(
+                                width: icon == 'profile_site_icon'
+                                    ? constraints.maxWidth
+                                    : tileWidth,
+                                child: _ProfileMenuCard(
+                                  title: label,
+                                  iconAsset: 'assets/icons/$icon.svg',
+                                  horizontal: columns == 1,
+                                  onTap: () => action(context),
+                                ),
+                              ),
+                          ],
+                        );
+                      },
                     ),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _ProfileMenuCard(
-                            title: context.l10n.profileAchievements,
-                            iconAsset:
-                                'assets/icons/profile_achievements_icon.svg',
-                            preserveIconAssetColors: true,
-                            iconSize: 34,
-                            onTap: () => _onAchievementsTap(context),
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: _ProfileMenuCard(
-                            title: context.l10n.profileShop,
-                            iconAsset: 'assets/icons/profile_shop_icon.svg',
-                            preserveIconAssetColors: true,
-                            iconSize: 34,
-                            onTap: () => _onShopTap(context),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    _AsteriaSiteCard(onTap: () => _onSiteTap(context)),
                     const SizedBox(height: 24),
                     if (hasProSubscription)
                       SubscriptionActiveStatusWidget(
@@ -421,97 +428,44 @@ class _ProfileHeroCard extends StatelessWidget {
 class _ProfileMenuCard extends StatelessWidget {
   const _ProfileMenuCard({
     required this.title,
+    required this.iconAsset,
+    required this.horizontal,
     required this.onTap,
-    this.iconAsset,
-    this.preserveIconAssetColors = false,
-    this.iconSize = 22,
   });
 
-  static const _cardColor = Color(0x3D72418A);
-
   final String title;
-  final String? iconAsset;
-  final bool preserveIconAssetColors;
-  final double iconSize;
+  final String iconAsset;
+  final bool horizontal;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    final textScale = MediaQuery.textScalerOf(context).scale(1).clamp(1.0, 1.3);
-
-    return ProfileGlassCard(
-      onTap: onTap,
-      color: _cardColor,
-      padding: const EdgeInsets.fromLTRB(10, 16, 10, 15),
-      child: SizedBox(
-        height: 58 + ((textScale - 1) * 74),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            ProfileIconBox(
-              iconAsset: iconAsset,
-              iconSize: iconSize,
-              preserveAssetColors: preserveIconAssetColors,
-            ),
-            Text(
-              title,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              textAlign: TextAlign.center,
-              style: context.textTheme.inverseUrbanistRegular17.copyWith(
-                fontSize: 17,
-                fontWeight: FontWeight.w400,
-                height: 1.1,
-                letterSpacing: 0,
-                color: AppColors.white,
-              ),
-            ),
-          ],
-        ),
-      ),
+    final icon = ProfileIconBox(
+      iconAsset: iconAsset,
+      iconSize: 34,
+      preserveAssetColors: true,
     );
-  }
-}
-
-class _AsteriaSiteCard extends StatelessWidget {
-  const _AsteriaSiteCard({required this.onTap});
-
-  static const _cardColor = Color(0x3D72418A);
-
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
+    final label = Text(
+      title,
+      textAlign: horizontal ? TextAlign.start : TextAlign.center,
+      style: context.textTheme.inverseUrbanistRegular17.copyWith(height: 1.1),
+    );
     return ProfileGlassCard(
       onTap: onTap,
-      color: _cardColor,
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 14),
-      child: SizedBox(
-        height: 58,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const ProfileIconBox(
-              iconAsset: 'assets/icons/profile_site_icon.svg',
-              preserveAssetColors: true,
-              iconSize: 34,
-            ),
-            Text(
-              context.l10n.asteriaWebsite,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              textAlign: TextAlign.center,
-              style: context.textTheme.inverseUrbanistRegular17.copyWith(
-                fontSize: 17,
-                fontWeight: FontWeight.w400,
-                height: 1.1,
-                letterSpacing: 0,
-                color: AppColors.white,
-              ),
-            ),
-          ],
-        ),
+      color: const Color(0x3D72418A),
+      padding: EdgeInsets.symmetric(
+        horizontal: horizontal ? 16 : 8,
+        vertical: 14,
       ),
+      child: horizontal
+          ? Row(
+              children: [
+                icon,
+                const SizedBox(width: 12),
+                Expanded(child: label),
+              ],
+            )
+          : Column(children: [icon, const SizedBox(height: 6), label]),
     );
   }
 }
@@ -577,13 +531,20 @@ class _DeleteAccountButton extends StatelessWidget {
             child: GestureDetector(
               behavior: HitTestBehavior.opaque,
               onTap: activate,
-              child: Text(
-                context.l10n.profileDeleteAccount,
-                style: context.textTheme.inverseUrbanistRegular14.copyWith(
-                  color: AppColors.white.withValues(alpha: 0.42),
-                  decoration: TextDecoration.underline,
-                  decorationColor: AppColors.white.withValues(alpha: 0.32),
-                  decorationThickness: 0.8,
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(minHeight: 44),
+                child: Align(
+                  widthFactor: 1,
+                  heightFactor: 1,
+                  child: Text(
+                    context.l10n.profileDeleteAccount,
+                    style: context.textTheme.inverseUrbanistRegular14.copyWith(
+                      color: AppColorsDark.textSecondary,
+                      decoration: TextDecoration.underline,
+                      decorationColor: AppColorsDark.textSecondary,
+                      decorationThickness: 0.8,
+                    ),
+                  ),
                 ),
               ),
             ),

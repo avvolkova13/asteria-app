@@ -249,24 +249,28 @@ class _SharedPurchaseModalState extends State<SharedPurchaseModal> {
           ),
           Padding(
             padding: const EdgeInsets.only(top: 24, bottom: 32),
-            child: Row(
-              children: [
-                Expanded(
-                  child: _ModalActionButton.outline(
-                    onPressed: () => Navigator.pop(context),
-                    text: context.l10n.commonCancel,
+            child: IntrinsicHeight(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Expanded(
+                    child: _ModalActionButton.outline(
+                      onPressed: () => Navigator.pop(context),
+                      text: context.l10n.commonCancel,
+                    ),
                   ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _ModalActionButton.primary(
-                    onPressed: _isSubmitting
-                        ? null
-                        : () => _handlePurchase(context, monetizationProvider),
-                    text: context.l10n.commonBuy,
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _ModalActionButton.primary(
+                      onPressed: _isSubmitting
+                          ? null
+                          : () =>
+                                _handlePurchase(context, monetizationProvider),
+                      text: context.l10n.commonBuy,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ).withEntrance(),
         ],
@@ -419,16 +423,35 @@ class _BalanceChangeWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Wrap(
-      alignment: WrapAlignment.center,
-      crossAxisAlignment: WrapCrossAlignment.center,
-      spacing: 12,
-      runSpacing: 8,
-      children: [
-        _AmountLabel(label: context.l10n.balanceLabel, amount: balance),
-        const _ArrowIcon(),
-        _AmountLabel(label: context.l10n.shopAfterPurchase, amount: newBalance),
-      ],
+    final before = context.l10n.balanceLabel;
+    final after = context.l10n.shopAfterPurchase;
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final measurement = TextPainter(
+          text: TextSpan(
+            text: '$before $balance$after $newBalance',
+            style: context.textTheme.inverseUrbanistSemiBold16,
+          ),
+          textDirection: Directionality.of(context),
+          textScaler: MediaQuery.textScalerOf(context),
+        )..layout();
+        // Two coin marks, their padding and the arrow between the amounts.
+        final fitsOneLine =
+            measurement.width + 2 * (20 + 4) + 24 + 2 * 12 <=
+            constraints.maxWidth;
+        measurement.dispose();
+        return Wrap(
+          alignment: WrapAlignment.center,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          spacing: 12,
+          runSpacing: 8,
+          children: [
+            _AmountLabel(label: before, amount: balance),
+            if (fitsOneLine) const _ArrowIcon(),
+            _AmountLabel(label: after, amount: newBalance),
+          ],
+        );
+      },
     );
   }
 }
@@ -629,9 +652,11 @@ class _ModalActionButton extends StatelessWidget {
       enabled: onPressed != null,
       onTap: onPressed == null ? null : LotusFeedback.action(onPressed!),
       child: ExcludeSemantics(
-        child: SizedBox(
-          height: 50,
-          width: double.infinity,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(
+            minHeight: 50,
+            minWidth: double.infinity,
+          ),
           child: Material(
             color: Colors.transparent,
             borderRadius: BorderRadius.circular(16),
@@ -644,14 +669,20 @@ class _ModalActionButton extends StatelessWidget {
               child: LotusInkTap(
                 onTap: onPressed,
                 borderRadius: BorderRadius.circular(16),
-                child: Center(
-                  child: Text(
-                    text,
-                    style: context.textTheme.button.copyWith(
-                      color: ModalGlassTokens.text,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 8,
+                  ),
+                  child: Center(
+                    heightFactor: 1,
+                    child: Text(
+                      text,
+                      style: context.textTheme.button.copyWith(
+                        color: ModalGlassTokens.text,
+                      ),
+                      textAlign: TextAlign.center,
                     ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ),

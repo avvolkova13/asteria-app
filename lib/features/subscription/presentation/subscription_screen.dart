@@ -275,22 +275,21 @@ class _SubscriptionScreenContentState extends State<_SubscriptionScreenContent>
       });
     }
 
+    final actionBar = SafeArea(
+      top: false,
+      minimum: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+      child: _SubscribeCta(route: widget.route),
+    );
     if (hasProSubscription) {
       final canExtend = activeGrant?.provider == 'arc_pay';
       return Scaffold(
         backgroundColor: ProfileFlowColors.background,
-        floatingActionButton: canExtend
-            ? Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: _SubscribeCta(route: widget.route),
-              )
-            : null,
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+        bottomNavigationBar: canExtend ? actionBar : null,
         body: ProfileFlowBackground(
           child: SafeArea(
             bottom: false,
             child: SingleChildScrollView(
-              padding: EdgeInsets.fromLTRB(16, 14, 16, canExtend ? 116 : 48),
+              padding: EdgeInsets.fromLTRB(16, 14, 16, canExtend ? 12 : 48),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -315,16 +314,18 @@ class _SubscriptionScreenContentState extends State<_SubscriptionScreenContent>
 
     return Scaffold(
       backgroundColor: ProfileFlowColors.background,
-      floatingActionButton: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: _SubscribeCta(route: widget.route),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      bottomNavigationBar: actionBar,
       body: ProfileFlowBackground(
         child: SafeArea(
           bottom: false,
           child: SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(16, 14, 16, 116),
+            // Keep the restore action reachable above StoreKit status messages.
+            padding: EdgeInsets.fromLTRB(
+              16,
+              14,
+              16,
+              widget.route == PaymentProviderRoute.appleStoreKit ? 80 : 12,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -934,7 +935,12 @@ class _SubscriptionInfoCard extends StatelessWidget {
         children: [
           LayoutBuilder(
             builder: (context, constraints) {
-              final artSize = (constraints.maxWidth * .36).clamp(100.0, 128.0);
+              final compact =
+                  constraints.maxWidth <
+                  MediaQuery.textScalerOf(context).scale(24) * 8;
+              final artSize = compact
+                  ? 56.0
+                  : (constraints.maxWidth * .36).clamp(80.0, 128.0);
               return Row(
                 children: [
                   Expanded(
@@ -945,7 +951,8 @@ class _SubscriptionInfoCard extends StatelessWidget {
                           title,
                           style: context.textTheme.inversePlayfairSemiBold24,
                         ),
-                        if (isActive && nextPaymentDateText?.isNotEmpty == true) ...[
+                        if (isActive &&
+                            nextPaymentDateText?.isNotEmpty == true) ...[
                           const SizedBox(height: 8),
                           Text.rich(
                             TextSpan(

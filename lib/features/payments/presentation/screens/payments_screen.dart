@@ -363,7 +363,10 @@ class _PaymentsScreenState extends State<PaymentsScreen>
             LotusButtons.text(
               style: TextButton.styleFrom(foregroundColor: AppColors.white),
               onPressed: _confirmAbandon,
-              child: Text(context.l10n.paymentLeaveAttempt),
+              child: Text(
+                context.l10n.paymentLeaveAttempt,
+                textAlign: TextAlign.center,
+              ),
             ),
           ],
         ),

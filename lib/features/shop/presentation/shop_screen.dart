@@ -296,8 +296,8 @@ class _ShopListItem extends StatelessWidget {
                           _ShopItemImage(visual: visual, isLocked: isEmpty),
                           const SizedBox(width: 8),
                           Expanded(
-                            child: SizedBox(
-                              height: 74,
+                            child: ConstrainedBox(
+                              constraints: const BoxConstraints(minHeight: 74),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -308,8 +308,6 @@ class _ShopListItem extends StatelessWidget {
                                       Expanded(
                                         child: Text(
                                           product.title,
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
                                           style: context
                                               .textTheme
                                               .inversePlayfairMedium20
@@ -333,20 +331,25 @@ class _ShopListItem extends StatelessWidget {
                                           height: 1.2,
                                         ),
                                   ),
-                                  const Spacer(),
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(
-                                        context.l10n.shopItemsLeft,
-                                        style: context
-                                            .textTheme
-                                            .inverseUrbanistSemiBold12
-                                            .copyWith(height: 1.2),
-                                      ),
-                                      _ShopQuantity(quantity: quantity),
-                                    ],
+                                  const SizedBox(height: 8),
+                                  SizedBox(
+                                    width: double.infinity,
+                                    child: Wrap(
+                                      alignment: WrapAlignment.spaceBetween,
+                                      crossAxisAlignment:
+                                          WrapCrossAlignment.center,
+                                      spacing: 4,
+                                      children: [
+                                        Text(
+                                          context.l10n.shopItemsLeft,
+                                          style: context
+                                              .textTheme
+                                              .inverseUrbanistSemiBold12
+                                              .copyWith(height: 1.2),
+                                        ),
+                                        _ShopQuantity(quantity: quantity),
+                                      ],
+                                    ),
                                   ),
                                 ],
                               ),

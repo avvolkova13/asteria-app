@@ -489,8 +489,8 @@ class _BalanceSubscriptionButtonState extends State<_BalanceSubscriptionButton>
   @override
   Widget build(BuildContext context) {
     final disableAnimations = MediaQuery.disableAnimationsOf(context);
-    final button = SizedBox(
-      height: 42,
+    final button = ConstrainedBox(
+      constraints: const BoxConstraints(minHeight: 44),
       child: Material(
         color: Colors.transparent,
         child: LotusInkTap(
@@ -530,11 +530,14 @@ class _BalanceSubscriptionButtonState extends State<_BalanceSubscriptionButton>
                         child: const _BalanceSubscriptionButtonShimmer(),
                       ),
                     ),
-                  Center(
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 9,
+                    ),
                     child: Text(
                       widget.text,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.center,
                       style: context.textTheme.urbanistRegular16.copyWith(
                         color: const Color(0xFF2A1533),
                         height: 1,
