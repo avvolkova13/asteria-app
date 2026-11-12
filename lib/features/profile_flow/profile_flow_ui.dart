@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/top_bar_geometry.dart';
 import 'package:asteria_app/core/ui_kit/widgets/pro_badge_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/ui_kit/card_radii.dart';
@@ -100,7 +101,7 @@ class ProfileFlowHeader extends StatelessWidget {
           width: 44,
           height: 44,
           child: Align(
-            alignment: Alignment.centerLeft,
+            alignment: Alignment.center,
             child: LotusArrowBubble(back: true),
           ),
         ),
@@ -114,26 +115,29 @@ class ProfileFlowHeader extends StatelessWidget {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              children: [
-                if (canPop) back,
-                if (canPop && !separateTitle) const SizedBox(width: 6),
-                if (separateTitle)
-                  const Spacer()
-                else
-                  Expanded(
-                    child: Text(
-                      title,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: context.textTheme.inversePlayfairSemiBold17,
+            AsteriaTopBarFrame(
+              padding: EdgeInsets.zero,
+              child: Row(
+                children: [
+                  if (canPop) back,
+                  if (canPop && !separateTitle) const SizedBox(width: 6),
+                  if (separateTitle)
+                    const Spacer()
+                  else
+                    Expanded(
+                      child: Text(
+                        title,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: context.textTheme.inversePlayfairSemiBold17,
+                      ),
                     ),
-                  ),
-                const SizedBox(width: 6),
-                _BalancePill(balance: balance),
-                const SizedBox(width: 10),
-                ProfileProPill(isActive: hasPro),
-              ],
+                  const SizedBox(width: 6),
+                  _BalancePill(balance: balance),
+                  const SizedBox(width: 10),
+                  ProfileProPill(isActive: hasPro),
+                ],
+              ),
             ),
             if (separateTitle || showTitleLarge) ...[
               SizedBox(height: showTitleLarge ? 28 : 8),

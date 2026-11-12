@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/top_bar_geometry.dart';
 import 'package:asteria_app/features/scenarios/scenario_sky.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
@@ -51,6 +52,8 @@ class CompatibilityLayout extends StatelessWidget {
                   pinned: true,
                   floating: false,
                   delegate: TopNavBarDelegate(
+                    topInset: MediaQuery.paddingOf(context).top,
+                    toolbarHeight: AsteriaTopBarMetrics.heightOf(context),
                     userName: context.l10n.compatibilityTitle,
                     type: TopNavBarType.transparent,
                     canPop: true,

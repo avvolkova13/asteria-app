@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/top_bar_geometry.dart';
 import 'package:asteria_app/core/ui_kit/widgets/pro_badge_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
@@ -49,7 +50,10 @@ class _AffirmationScreenState extends State<AffirmationScreen> {
             SliverPersistentHeader(
               pinned: true,
               floating: false,
-              delegate: const _AffirmationTopNavBarDelegate(),
+              delegate: _AffirmationTopNavBarDelegate(
+                topInset: MediaQuery.paddingOf(context).top,
+                toolbarHeight: AsteriaTopBarMetrics.heightOf(context),
+              ),
             ),
             SliverPadding(
               padding: const EdgeInsets.fromLTRB(16, 22, 16, 34),
@@ -92,9 +96,13 @@ class _AffirmationScreenState extends State<AffirmationScreen> {
 }
 
 class _AffirmationTopNavBarDelegate extends SliverPersistentHeaderDelegate {
-  const _AffirmationTopNavBarDelegate();
+  const _AffirmationTopNavBarDelegate({
+    required this.topInset,
+    required this.toolbarHeight,
+  });
 
-  static const double _height = 105;
+  final double topInset;
+  final double toolbarHeight;
 
   @override
   Widget build(
@@ -102,118 +110,130 @@ class _AffirmationTopNavBarDelegate extends SliverPersistentHeaderDelegate {
     double shrinkOffset,
     bool overlapsContent,
   ) {
-    return const ColoredBox(
+    return ColoredBox(
       color: _affirmationSurface,
-      child: _AffirmationTopNavBar(),
+      child: _AffirmationTopNavBar(
+        topInset: topInset,
+        toolbarHeight: toolbarHeight,
+      ),
     );
   }
 
   @override
-  double get maxExtent => _height;
+  double get maxExtent => topInset + toolbarHeight;
 
   @override
-  double get minExtent => _height;
+  double get minExtent => topInset + toolbarHeight;
 
   @override
   bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) {
-    return false;
+    return oldDelegate is! _AffirmationTopNavBarDelegate ||
+        oldDelegate.topInset != topInset ||
+        oldDelegate.toolbarHeight != toolbarHeight;
   }
 }
 
 class _AffirmationTopNavBar extends StatelessWidget {
-  const _AffirmationTopNavBar();
+  const _AffirmationTopNavBar({
+    required this.topInset,
+    required this.toolbarHeight,
+  });
+  final double topInset;
+  final double toolbarHeight;
 
   @override
   Widget build(BuildContext context) {
     final userProvider = di.get<UserProvider>();
 
     return SizedBox(
-      height: _AffirmationTopNavBarDelegate._height,
+      height: topInset + toolbarHeight,
       width: double.infinity,
       child: Padding(
-        padding: const EdgeInsets.only(left: 16, right: 16, top: 60),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: Row(
-                children: [
-                  Semantics(
-                    button: true,
-                    label: context.l10n.commonBack,
-                    child: LotusTap(
-                      behavior: HitTestBehavior.opaque,
-                      onTap: () => Navigator.of(context).pop(),
-                      child: const SizedBox.square(
-                        dimension: LotusArrowBubble.hitExtent,
-                        child: Center(child: LotusArrowBubble(back: true)),
-                      ),
-                    ),
-                  ),
-                  Flexible(
-                    child: Text(
-                      context.l10n.affirmationsTitle,
-                      style: context.textTheme.inversePlayfairSemiBold17
-                          .copyWith(height: 1.2, letterSpacing: -0.408),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ).withEntrance(),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(width: 8),
-            ListenableBuilder(
-              listenable: userProvider,
-              builder: (context, _) {
-                final balance =
-                    MonetizationProvider.maybeOf(context)?.balance ?? 0;
-                final hasSubscription =
-                    MonetizationProvider.maybeOf(context)?.effectivePro ??
-                    false;
-
-                return Row(
-                  mainAxisSize: MainAxisSize.min,
+        padding: EdgeInsets.only(top: topInset),
+        child: AsteriaTopBarFrame(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(
+                child: Row(
                   children: [
                     Semantics(
                       button: true,
-                      label: context.l10n.balanceStarsLabel(balance),
+                      label: context.l10n.commonBack,
                       child: LotusTap(
                         behavior: HitTestBehavior.opaque,
-                        onTap: () => BalanceRoute.push(context),
-                        child: Padding(
-                          padding: const EdgeInsets.only(top: 1),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                '$balance ',
-                                style: context
-                                    .textTheme
-                                    .inversePlayfairSemiBold17
-                                    .copyWith(
-                                      height: 1.2,
-                                      letterSpacing: -0.408,
-                                    ),
-                              ).withEntrance(),
-                              LotusRasterIcon(
-                                'assets/icons/star_coin_icon.png',
-                                width: 14,
-                                height: 14,
-                              ),
-                            ],
-                          ),
+                        onTap: () => Navigator.of(context).pop(),
+                        child: const SizedBox.square(
+                          dimension: LotusArrowBubble.hitExtent,
+                          child: Center(child: LotusArrowBubble(back: true)),
                         ),
                       ),
                     ),
-                    const SizedBox(width: 8),
-                    _AffirmationProBadge(isActive: hasSubscription),
+                    Flexible(
+                      child: Text(
+                        context.l10n.affirmationsTitle,
+                        style: context.textTheme.inversePlayfairSemiBold17
+                            .copyWith(height: 1.2, letterSpacing: -0.408),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ).withEntrance(),
+                    ),
                   ],
-                );
-              },
-            ),
-          ],
+                ),
+              ),
+              const SizedBox(width: 8),
+              ListenableBuilder(
+                listenable: userProvider,
+                builder: (context, _) {
+                  final balance =
+                      MonetizationProvider.maybeOf(context)?.balance ?? 0;
+                  final hasSubscription =
+                      MonetizationProvider.maybeOf(context)?.effectivePro ??
+                      false;
+
+                  return Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Semantics(
+                        button: true,
+                        label: context.l10n.balanceStarsLabel(balance),
+                        child: LotusTap(
+                          behavior: HitTestBehavior.opaque,
+                          onTap: () => BalanceRoute.push(context),
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 1),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  '$balance ',
+                                  style: context
+                                      .textTheme
+                                      .inversePlayfairSemiBold17
+                                      .copyWith(
+                                        height: 1.2,
+                                        letterSpacing: -0.408,
+                                      ),
+                                ).withEntrance(),
+                                LotusRasterIcon(
+                                  'assets/icons/star_coin_icon.png',
+                                  width: 14,
+                                  height: 14,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      _AffirmationProBadge(isActive: hasSubscription),
+                    ],
+                  );
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );

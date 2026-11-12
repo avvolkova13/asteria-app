@@ -20,7 +20,7 @@ class SettingsScreen extends StatelessWidget {
         child: SafeArea(
           bottom: false,
           child: SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(16, 14, 16, 48),
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 48),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: AsteriaEntrance.sections([

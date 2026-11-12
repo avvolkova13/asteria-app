@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/top_bar_geometry.dart';
 import 'package:asteria_app/core/config/app_feature_visibility.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
@@ -34,7 +35,7 @@ class AchievementsScreen extends StatelessWidget {
             child: SafeArea(
               bottom: false,
               child: SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(16, 13, 16, 48),
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 48),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: AsteriaEntrance.sections([
@@ -120,40 +121,43 @@ class _AchievementsHeader extends StatelessWidget {
         ProfileProPill(isActive: hasPro),
       ],
     );
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final wrapWallet =
-            constraints.maxWidth < 340 ||
-            MediaQuery.textScalerOf(context).scale(17) > 22 ||
-            balance.toString().length > 6;
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            Row(
-              children: [
-                SizedBox(
-                  width: 44,
-                  height: 44,
-                  child: LotusButtons.icon(
-                    onPressed: () => Navigator.of(context).pop(),
-                    tooltip: MaterialLocalizations.of(
-                      context,
-                    ).backButtonTooltip,
-                    padding: EdgeInsets.zero,
-                    icon: const LotusArrowBubble(back: true),
+    return AsteriaTopBarFrame(
+      padding: EdgeInsets.zero,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final wrapWallet =
+              constraints.maxWidth < 340 ||
+              MediaQuery.textScalerOf(context).scale(17) > 22 ||
+              balance.toString().length > 6;
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Row(
+                children: [
+                  SizedBox(
+                    width: 44,
+                    height: 44,
+                    child: LotusButtons.icon(
+                      onPressed: () => Navigator.of(context).pop(),
+                      tooltip: MaterialLocalizations.of(
+                        context,
+                      ).backButtonTooltip,
+                      padding: EdgeInsets.zero,
+                      icon: const LotusArrowBubble(back: true),
+                    ),
                   ),
-                ),
-                const SizedBox(width: 6),
-                Expanded(
-                  child: Text(context.l10n.achievementsTitle, style: style),
-                ),
-                if (!wrapWallet) ...[const SizedBox(width: 8), wallet],
-              ],
-            ),
-            if (wrapWallet) ...[const SizedBox(height: 8), wallet],
-          ],
-        );
-      },
+                  const SizedBox(width: 6),
+                  Expanded(
+                    child: Text(context.l10n.achievementsTitle, style: style),
+                  ),
+                  if (!wrapWallet) ...[const SizedBox(width: 8), wallet],
+                ],
+              ),
+              if (wrapWallet) ...[const SizedBox(height: 8), wallet],
+            ],
+          );
+        },
+      ),
     );
   }
 }

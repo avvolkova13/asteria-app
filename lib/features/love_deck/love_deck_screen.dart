@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/top_bar_geometry.dart';
 import 'package:asteria_app/core/ui_kit/widgets/modal_glass_surface.dart';
 import 'package:asteria_app/features/scenarios/scenario_sky.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
@@ -152,6 +153,8 @@ class _LoveDeckScreenState extends State<LoveDeckScreen> {
                 pinned: true,
                 floating: false,
                 delegate: TopNavBarDelegate(
+                  topInset: MediaQuery.paddingOf(context).top,
+                  toolbarHeight: AsteriaTopBarMetrics.heightOf(context),
                   canPop: true,
                   userName: context.l10n.loveDeckTitle,
                   type: TopNavBarType.moon,

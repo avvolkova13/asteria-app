@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/top_bar_geometry.dart';
 import 'dart:math' as math;
 
 import 'package:asteria_app/features/scenarios/scenario_sky.dart';
@@ -350,6 +351,8 @@ class _NatalCardScreenState extends State<NatalCardScreen> {
                 pinned: true,
                 floating: false,
                 delegate: TopNavBarDelegate(
+                  topInset: MediaQuery.paddingOf(context).top,
+                  toolbarHeight: AsteriaTopBarMetrics.heightOf(context),
                   canPop: true,
                   userName: context.l10n.natalChartTitle,
                   type: useCompactHeader

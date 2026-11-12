@@ -23,7 +23,7 @@ class AboutUsScreen extends StatelessWidget {
         child: SafeArea(
           bottom: false,
           child: SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(12, 14, 12, 48),
+            padding: const EdgeInsets.fromLTRB(12, 0, 12, 48),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: AsteriaEntrance.sections([
@@ -481,7 +481,8 @@ class _LinkedText extends StatefulWidget {
   State<_LinkedText> createState() => _LinkedTextState();
 }
 
-class _LinkedTextState extends State<_LinkedText> with LotusInlineLinks<_LinkedText> {
+class _LinkedTextState extends State<_LinkedText>
+    with LotusInlineLinks<_LinkedText> {
   @override
   Widget build(BuildContext context) {
     final style = context.textTheme.inverseUrbanistRegular14.copyWith(

@@ -289,7 +289,7 @@ class _SubscriptionScreenContentState extends State<_SubscriptionScreenContent>
           child: SafeArea(
             bottom: false,
             child: SingleChildScrollView(
-              padding: EdgeInsets.fromLTRB(16, 14, 16, canExtend ? 12 : 48),
+              padding: EdgeInsets.fromLTRB(16, 0, 16, canExtend ? 12 : 48),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -322,7 +322,7 @@ class _SubscriptionScreenContentState extends State<_SubscriptionScreenContent>
             // Keep the restore action reachable above StoreKit status messages.
             padding: EdgeInsets.fromLTRB(
               16,
-              14,
+              0,
               16,
               widget.route == PaymentProviderRoute.appleStoreKit ? 80 : 12,
             ),

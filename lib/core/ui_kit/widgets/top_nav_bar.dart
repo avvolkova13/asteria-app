@@ -1,3 +1,4 @@
+import 'top_bar_geometry.dart';
 import 'package:flutter/services.dart';
 import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
@@ -71,8 +72,7 @@ class TopNavBar extends StatelessWidget {
   Widget _buildContent(BuildContext context) {
     switch (type) {
       case TopNavBarType.payment:
-        return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
+        return AsteriaTopBarFrame(
           child: Row(
             children: [
               Expanded(
@@ -84,7 +84,12 @@ class TopNavBar extends StatelessWidget {
           ),
         );
       case TopNavBarType.moon:
-        return _MoonTopNavBarWidget(userName: userName, canPop: canPop);
+        return _MoonTopNavBarWidget(
+          userName: userName,
+          canPop: canPop,
+          topPadding: MediaQuery.paddingOf(context).top,
+          toolbarHeight: AsteriaTopBarMetrics.heightOf(context),
+        );
       case TopNavBarType.profile:
         return _ProfileTopNavBarWidget(
           userName: userName,
@@ -108,6 +113,8 @@ class TopNavBarDelegate extends SliverPersistentHeaderDelegate {
   final bool canPop;
   final DateTime? birthDate;
   final double moonTopPadding;
+  final double topInset;
+  final double toolbarHeight;
 
   const TopNavBarDelegate({
     required this.userName,
@@ -115,7 +122,9 @@ class TopNavBarDelegate extends SliverPersistentHeaderDelegate {
     this.canPop = false,
     this.birthDate,
     this.moonTopPadding = 59,
-  });
+    double? topInset,
+    this.toolbarHeight = AsteriaTopBarMetrics.toolbarHeight,
+  }) : topInset = topInset ?? moonTopPadding;
 
   @override
   Widget build(
@@ -160,16 +169,16 @@ class TopNavBarDelegate extends SliverPersistentHeaderDelegate {
       minExtent,
       maxExtent,
     );
-    final collapsedHeight = _collapsedHeight;
+    final collapsedHeight = topInset + toolbarHeight;
 
-    if (type == TopNavBarType.moon) {
-      return SizedBox(
-        height: 42 + moonTopPadding,
-        child: _MoonTopNavBarWidget(
-          userName: userName,
-          canPop: canPop,
-          topPadding: moonTopPadding,
-        ),
+    if (type == TopNavBarType.moon ||
+        type == TopNavBarType.transparent ||
+        type == TopNavBarType.onlyCollapsed) {
+      return _MoonTopNavBarWidget(
+        userName: userName,
+        canPop: canPop,
+        topPadding: topInset,
+        toolbarHeight: toolbarHeight,
       );
     }
 
@@ -252,81 +261,13 @@ class TopNavBarDelegate extends SliverPersistentHeaderDelegate {
     }
   }
 
-  Widget _buildCollapsedHeader(BuildContext context, {bool showImage = true}) {
-    return Container(
-      color: Colors.transparent,
-      child: Padding(
-        padding: const EdgeInsets.only(left: 16, right: 16, top: 32),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Expanded(
-              child: Transform.translate(
-                offset: const Offset(0, -2),
-                child: Row(
-                  children: [
-                    if (canPop) ...[
-                      _TopNavBackButton(
-                        onTap: () => _navigateBack(context),
-                        child: const SizedBox.square(
-                          dimension: LotusArrowBubble.hitExtent,
-                          child: Center(child: LotusArrowBubble(back: true)),
-                        ),
-                      ),
-                    ],
-                    Flexible(
-                      child: Text(
-                        userName,
-                        style: AppTypography.navTitle.copyWith(
-                          color: AppColors.textInverse,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ).withEntrance(),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(width: 8),
-            Row(
-              children: [
-                LotusTap(
-                  onTap: () => BalanceRoute.push(context),
-                  child: Row(
-                    children: [
-                      Consumer<UserProvider>(
-                        builder: (context, userProvider, child) {
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 4),
-                            child: Text(
-                              '${MonetizationProvider.maybeOf(context)?.balance ?? 0} ',
-                              style:
-                                  context.textTheme.inverseUrbanistSemiBold17,
-                            ).withEntrance(),
-                          );
-                        },
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 4),
-                        child: LotusRasterIcon(
-                          'assets/icons/star_coin_icon.png',
-                          height: 16,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 8),
-                SubscriptionWidget(),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+  Widget _buildCollapsedHeader(BuildContext context, {bool showImage = true}) =>
+      _MoonTopNavBarWidget(
+        userName: userName,
+        canPop: canPop,
+        topPadding: topInset,
+        toolbarHeight: toolbarHeight,
+      );
 
   @override
   double get maxExtent {
@@ -334,10 +275,9 @@ class TopNavBarDelegate extends SliverPersistentHeaderDelegate {
       case TopNavBarType.profile:
         return _profileHeight;
       case TopNavBarType.moon:
-        return 42 + moonTopPadding;
       case TopNavBarType.transparent:
       case TopNavBarType.onlyCollapsed:
-        return _collapsedHeight;
+        return topInset + toolbarHeight;
       default:
         return _defaultHeight;
     }
@@ -345,10 +285,7 @@ class TopNavBarDelegate extends SliverPersistentHeaderDelegate {
 
   @override
   double get minExtent {
-    if (type == TopNavBarType.moon) {
-      return 42 + moonTopPadding;
-    }
-    return _collapsedHeight;
+    return topInset + toolbarHeight;
   }
 
   @override
@@ -358,50 +295,44 @@ class TopNavBarDelegate extends SliverPersistentHeaderDelegate {
             oldDelegate.type != type ||
             oldDelegate.canPop != canPop ||
             oldDelegate.birthDate != birthDate ||
-            oldDelegate.moonTopPadding != moonTopPadding);
+            oldDelegate.moonTopPadding != moonTopPadding ||
+            oldDelegate.topInset != topInset ||
+            oldDelegate.toolbarHeight != toolbarHeight);
   }
 }
 
 class _MoonTopNavBarWidget extends StatelessWidget {
-  final String userName;
-  final bool canPop;
-  final double topPadding;
-
   const _MoonTopNavBarWidget({
     required this.userName,
     required this.canPop,
-    this.topPadding = 59,
+    this.topPadding = 0,
+    this.toolbarHeight = AsteriaTopBarMetrics.toolbarHeight,
   });
 
+  final String userName;
+  final bool canPop;
+  final double topPadding;
+  final double toolbarHeight;
+
   @override
-  Widget build(BuildContext context) {
-    return ColoredBox(
-      color: Colors.transparent,
-      child: SizedBox(
-        height: 42 + topPadding,
-        width: double.infinity,
-        child: Padding(
-          padding: EdgeInsets.only(top: topPadding),
-          child: SizedBox(
-            height: 42,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Expanded(
-                    child: _TopNavBarTitle(userName: userName, canPop: canPop),
-                  ),
-                  const SizedBox(width: 12),
-                  const _MoonTopNavBarActions(),
-                ],
-              ),
+  Widget build(BuildContext context) => SizedBox(
+    height: topPadding + toolbarHeight,
+    width: double.infinity,
+    child: Padding(
+      padding: EdgeInsets.only(top: topPadding),
+      child: AsteriaTopBarFrame(
+        child: Row(
+          children: [
+            Expanded(
+              child: _TopNavBarTitle(userName: userName, canPop: canPop),
             ),
-          ),
+            const SizedBox(width: 8),
+            const _MoonTopNavBarActions(),
+          ],
         ),
       ),
-    );
-  }
+    ),
+  );
 }
 
 class _TopNavBarTitle extends StatelessWidget {
@@ -412,30 +343,29 @@ class _TopNavBarTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Transform.translate(
-      offset: const Offset(0, -2),
-      child: Row(
-        children: [
-          if (canPop)
-            _TopNavBackButton(
-              onTap: () => _navigateBack(context),
-              child: const SizedBox.square(
-                dimension: LotusArrowBubble.hitExtent,
-                child: Center(child: LotusArrowBubble(back: true)),
-              ),
+    return Row(
+      children: [
+        if (canPop) ...[
+          _TopNavBackButton(
+            onTap: () => _navigateBack(context),
+            child: const SizedBox.square(
+              dimension: LotusArrowBubble.hitExtent,
+              child: Center(child: LotusArrowBubble(back: true)),
             ),
-          Flexible(
-            child: Text(
-              userName,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: AppTypography.navTitle.copyWith(
-                color: AppColors.textInverse,
-              ),
-            ).withEntrance(),
           ),
+          const SizedBox(width: 4),
         ],
-      ),
+        Flexible(
+          child: Text(
+            userName,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: AppTypography.navTitle.copyWith(
+              color: AppColors.textInverse,
+            ),
+          ).withEntrance(),
+        ),
+      ],
     );
   }
 }
@@ -459,8 +389,7 @@ class HomeAccountBar extends StatelessWidget {
     );
     return ColoredBox(
       color: backgroundColor,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: AsteriaTopBarFrame(
         child: Row(
           children: [
             Expanded(
@@ -503,10 +432,7 @@ class HomeAccountBar extends StatelessWidget {
               ),
             ),
             if (showAccountActions) ...[
-              Transform.translate(
-                offset: const Offset(0, 2),
-                child: _MoonTopNavBarActions(labelStyle: accountLabelStyle),
-              ),
+              _MoonTopNavBarActions(labelStyle: accountLabelStyle),
             ],
           ],
         ),
@@ -533,7 +459,7 @@ class _MoonTopNavBarActions extends StatelessWidget {
               Consumer<UserProvider>(
                 builder: (context, userProvider, child) {
                   return Padding(
-                    padding: const EdgeInsets.only(bottom: 4),
+                    padding: EdgeInsets.zero,
                     child: Text(
                       '${MonetizationProvider.maybeOf(context)?.balance ?? 0} ',
                       style:
@@ -544,7 +470,7 @@ class _MoonTopNavBarActions extends StatelessWidget {
                 },
               ),
               Padding(
-                padding: const EdgeInsets.only(bottom: 4),
+                padding: EdgeInsets.zero,
                 child: LotusRasterIcon(
                   'assets/icons/star_coin_icon.png',
                   height: 14,
@@ -937,73 +863,12 @@ class _TransparentTopNavBar extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: _collapsedHeight,
-      width: double.infinity,
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          // Status Bar - без фона
-          Positioned(
-            top: 60,
-            left: 0,
-            right: 0,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  // Left title with optional back button
-                  Expanded(
-                    child: _TopNavBarTitle(userName: userName, canPop: canPop),
-                  ),
-                  // Right content (coins and PRO)
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      // Coins
-                      LotusTap(
-                        onTap: () => BalanceRoute.push(context),
-                        child: Row(
-                          children: [
-                            Consumer<UserProvider>(
-                              builder: (context, userProvider, child) {
-                                return Padding(
-                                  padding: const EdgeInsets.only(bottom: 4),
-                                  child: Text(
-                                    '${MonetizationProvider.maybeOf(context)?.balance ?? 0} ',
-                                    style: context
-                                        .textTheme
-                                        .inverseUrbanistSemiBold17,
-                                  ).withEntrance(),
-                                );
-                              },
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(bottom: 4),
-                              child: LotusRasterIcon(
-                                'assets/icons/star_coin_icon.png',
-                                height: 16,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      // PRO badge
-                      SubscriptionWidget(),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+  Widget build(BuildContext context) => _MoonTopNavBarWidget(
+    userName: userName,
+    canPop: canPop,
+    topPadding: MediaQuery.paddingOf(context).top,
+    toolbarHeight: AsteriaTopBarMetrics.heightOf(context),
+  );
 }
 
 void _navigateBack(BuildContext context) {
@@ -1070,4 +935,3 @@ class _AppBarButton extends StatelessWidget {
 // Константы высот
 const double _defaultHeight = 201.0;
 const double _profileHeight = 302.0;
-const double _collapsedHeight = 105.0;

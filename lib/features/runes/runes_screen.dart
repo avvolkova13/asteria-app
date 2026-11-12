@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/top_bar_geometry.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
@@ -65,6 +66,8 @@ class RunesScreen extends StatelessWidget {
             pinned: true,
             floating: false,
             delegate: TopNavBarDelegate(
+              topInset: MediaQuery.paddingOf(context).top,
+              toolbarHeight: AsteriaTopBarMetrics.heightOf(context),
               canPop: true,
               userName: context.l10n.runesTitle,
               type: TopNavBarType.moon,

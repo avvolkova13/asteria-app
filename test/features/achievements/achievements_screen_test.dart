@@ -191,7 +191,7 @@ void main() {
     for (final card in cards) {
       expect(tester.getSize(card), const Size(358, 128));
     }
-    expect(tester.getTopLeft(cards.first).dy, 182);
+    expect(tester.getTopLeft(cards.first).dy, 177);
     expect(
       tester.getTopLeft(cards[1]).dy - tester.getBottomLeft(cards[0]).dy,
       16,

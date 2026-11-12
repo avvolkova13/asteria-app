@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/top_bar_geometry.dart';
 import 'package:asteria_app/features/monetization/domain/purchase_visibility.dart';
 import 'package:asteria_app/core/ui_kit/card_radii.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
@@ -316,8 +317,7 @@ class _HistoryHeader extends StatelessWidget {
         ProfileProPill(isActive: hasPro),
       ],
     );
-    return Padding(
-      padding: const EdgeInsets.only(right: 16),
+    return AsteriaTopBarFrame(
       child: LayoutBuilder(
         builder: (context, constraints) {
           final large =

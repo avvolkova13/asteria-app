@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/top_bar_geometry.dart';
 import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/ui_kit/card_radii.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
@@ -439,93 +440,88 @@ class _ShopHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final balance = MonetizationProvider.maybeOf(context)?.balance ?? 0;
 
-    return SizedBox(
-      height: 42,
-      child: Padding(
-        padding: const EdgeInsets.only(left: 6, right: 16),
-        child: Row(
-          children: [
-            Expanded(
-              child: Row(
-                children: [
-                  LotusFeedback(
-                    onActivate: () => Navigator.of(context).pop(),
-                    keyboard: true,
-                    builder: (activate) => Semantics(
-                      button: true,
-                      label: MaterialLocalizations.of(
-                        context,
-                      ).backButtonTooltip,
-                      onTap: activate,
-                      child: ExcludeSemantics(
-                        child: GestureDetector(
-                          behavior: HitTestBehavior.opaque,
-                          onTap: activate,
-                          child: SizedBox(
-                            width: 44,
-                            height: 44,
-                            child: Align(
-                              alignment: Alignment.centerLeft,
-                              child: LotusArrowBubble(back: true),
-                            ),
+    return AsteriaTopBarFrame(
+      child: Row(
+        children: [
+          Expanded(
+            child: Row(
+              children: [
+                LotusFeedback(
+                  onActivate: () => Navigator.of(context).pop(),
+                  keyboard: true,
+                  builder: (activate) => Semantics(
+                    button: true,
+                    label: MaterialLocalizations.of(context).backButtonTooltip,
+                    onTap: activate,
+                    child: ExcludeSemantics(
+                      child: GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onTap: activate,
+                        child: SizedBox(
+                          width: 44,
+                          height: 44,
+                          child: Align(
+                            alignment: Alignment.center,
+                            child: LotusArrowBubble(back: true),
                           ),
                         ),
                       ),
                     ),
                   ),
-                  Flexible(
-                    child: Text(
-                      context.l10n.shopTitle,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: context.textTheme.inversePlayfairSemiBold17
-                          .copyWith(height: 1.2),
-                    ).withEntrance(),
-                  ),
-                ],
-              ),
+                ),
+                Flexible(
+                  child: Text(
+                    context.l10n.shopTitle,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: context.textTheme.inversePlayfairSemiBold17.copyWith(
+                      height: 1.2,
+                    ),
+                  ).withEntrance(),
+                ),
+              ],
             ),
-            LotusFeedback(
-              onActivate: () => BalanceRoute.push(context),
-              keyboard: true,
-              builder: (activate) => Semantics(
-                button: true,
-                label: context.l10n.balanceStarsLabel(balance),
-                onTap: activate,
-                child: ExcludeSemantics(
-                  child: GestureDetector(
-                    behavior: HitTestBehavior.opaque,
-                    onTap: activate,
-                    child: ConstrainedBox(
-                      constraints: const BoxConstraints(
-                        minWidth: 44,
-                        minHeight: 44,
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          Text(
-                            '$balance ',
-                            style: context.textTheme.inversePlayfairSemiBold17
-                                .copyWith(height: 1.2),
-                          ).withEntrance(),
-                          LotusRasterIcon(
-                            'assets/icons/star_coin_icon.png',
-                            width: 14,
-                            height: 14,
-                          ),
-                        ],
-                      ),
+          ),
+          LotusFeedback(
+            onActivate: () => BalanceRoute.push(context),
+            keyboard: true,
+            builder: (activate) => Semantics(
+              button: true,
+              label: context.l10n.balanceStarsLabel(balance),
+              onTap: activate,
+              child: ExcludeSemantics(
+                child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: activate,
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(
+                      minWidth: 44,
+                      minHeight: 44,
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Text(
+                          '$balance ',
+                          style: context.textTheme.inversePlayfairSemiBold17
+                              .copyWith(height: 1.2),
+                        ).withEntrance(),
+                        LotusRasterIcon(
+                          'assets/icons/star_coin_icon.png',
+                          width: 14,
+                          height: 14,
+                        ),
+                      ],
                     ),
                   ),
                 ),
               ),
             ),
-            const SizedBox(width: 8),
-            const SizedBox(width: 76, height: 28, child: SubscriptionWidget()),
-          ],
-        ),
+          ),
+          const SizedBox(width: 8),
+          const SizedBox(width: 76, height: 28, child: SubscriptionWidget()),
+        ],
       ),
     );
   }

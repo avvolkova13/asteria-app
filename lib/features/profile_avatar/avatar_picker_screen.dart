@@ -85,7 +85,7 @@ class _AvatarPickerScreenState extends State<AvatarPickerScreen> {
               Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 16,
-                  vertical: 8,
+                  vertical: 0,
                 ),
                 child: ProfileFlowHeader(
                   title: strings.avatarScreenTitle,
