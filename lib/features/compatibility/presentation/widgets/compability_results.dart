@@ -104,88 +104,87 @@ class _ZodiacCompatibilityHero extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 132,
-      child: Stack(
-        alignment: Alignment.center,
+    final locale = Localizations.localeOf(context);
+    Widget caption(DateTime date) => Expanded(
+      child: Column(
         children: [
-          Positioned(left: 4, top: 0, child: _ZodiacPerson(date: firstDate)),
-          Positioned(right: 4, top: 0, child: _ZodiacPerson(date: secondDate)),
-          Positioned(
-            left: 96,
-            top: 108,
-            child: SvgPicture.asset(
-              'assets/icons/compatibility_heart_left.svg',
-              width: 36,
-              height: 20,
-            ),
-          ),
-          Positioned(
-            right: 96,
-            top: 48,
-            child: SvgPicture.asset(
-              'assets/icons/compatibility_heart_right.svg',
-              width: 36,
-              height: 19,
-            ),
-          ),
-          Positioned(
-            top: 73,
-            left: 102,
-            right: 102,
-            height: 30,
-            child: FittedBox(
-              fit: BoxFit.scaleDown,
-              child: Text(
-                '$percentage%',
-                style: context.textTheme.playfairSemiBold20.copyWith(
-                  color: const Color(0xFFFFB45E),
-                  height: 1,
-                ),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              date.getZodiacSignName(languageCode: locale.languageCode),
+              style: context.textTheme.playfairMedium18.copyWith(
+                color: const Color(0xFFFFB45E),
+                height: 1.15,
               ),
+            ),
+          ),
+          const SizedBox(height: 2),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              date.toLocalizedShortDate(locale),
+              style: context.textTheme.inverseUrbanistRegular14,
             ),
           ),
         ],
       ),
     );
-  }
-}
-
-class _ZodiacPerson extends StatelessWidget {
-  final DateTime date;
-
-  const _ZodiacPerson({required this.date});
-
-  @override
-  Widget build(BuildContext context) {
-    final locale = Localizations.localeOf(context);
-    return SizedBox(
-      width: 106,
-      child: Column(
-        children: [
-          Text(
-            date.getZodiacSignName(languageCode: locale.languageCode),
-            style: context.textTheme.playfairMedium18.copyWith(
-              color: const Color(0xFFFFB45E),
-              height: 1.1,
-            ),
+    Widget portrait(DateTime date) => Expanded(
+      child: Center(
+        child: ClipOval(
+          child: Image.asset(
+            'assets/images/zodiacs/compatibility_round/${date.getZodiacSignAsset()}.webp',
+            width: 84,
+            height: 84,
+            fit: BoxFit.cover,
           ),
-          const SizedBox(height: 2),
-          Text(
-            date.toLocalizedShortDate(locale),
-            style: context.textTheme.inverseUrbanistRegular14,
-          ),
-          const SizedBox(height: 8),
-          ClipOval(
-            child: Image.asset(
-              'assets/images/zodiacs/compatibility_round/${date.getZodiacSignAsset()}.webp',
-              width: 84,
-              height: 84,
-              fit: BoxFit.cover,
-            ),
-          ),
-        ],
+        ),
       ),
+    );
+    return Column(
+      children: [
+        Row(
+          children: [
+            caption(firstDate),
+            const SizedBox(width: 12),
+            caption(secondDate),
+          ],
+        ),
+        const SizedBox(height: 8),
+        Stack(
+          alignment: Alignment.center,
+          children: [
+            Row(
+              children: [
+                portrait(firstDate),
+                const SizedBox(width: 12),
+                portrait(secondDate),
+              ],
+            ),
+            Column(
+              children: [
+                SvgPicture.asset(
+                  'assets/icons/compatibility_heart_right.svg',
+                  width: 26,
+                  excludeFromSemantics: true,
+                ),
+                Text(
+                  '$percentage%',
+                  style: context.textTheme.playfairSemiBold20.copyWith(
+                    color: const Color(0xFFFFB45E),
+                    height: 1.15,
+                  ),
+                ),
+                SvgPicture.asset(
+                  'assets/icons/compatibility_heart_left.svg',
+                  width: 26,
+                  excludeFromSemantics: true,
+                ),
+              ],
+            ),
+          ],
+        ),
+      ],
     );
   }
 }

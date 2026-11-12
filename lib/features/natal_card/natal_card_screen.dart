@@ -770,32 +770,35 @@ class _GeneralInfoSection extends StatelessWidget {
             ),
           ),
         const SizedBox(height: 16),
-        IntrinsicHeight(
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            spacing: 6,
-            children: [
-              Expanded(
-                child: _GeneralInfoItem(
-                  title: context.l10n.birthDateLabel,
-                  value: birthDate,
-                ),
+        LayoutBuilder(
+          builder: (context, constraints) {
+            final items = [
+              _GeneralInfoItem(
+                title: context.l10n.birthDateLabel,
+                value: birthDate,
               ),
-              Expanded(
-                child: _GeneralInfoItem(
-                  title: context.l10n.birthTimeLabel,
-                  value: birthTime,
-                ),
+              _GeneralInfoItem(
+                title: context.l10n.birthTimeLabel,
+                value: birthTime,
               ),
-              Expanded(
-                child: _GeneralInfoItem(
-                  title: context.l10n.birthPlaceLabel,
-                  value: birthPlace.split(',').first.trim(),
-                  valueMaxLines: 1,
-                ),
+              _GeneralInfoItem(
+                title: context.l10n.birthPlaceLabel,
+                value: birthPlace.split(',').first.trim(),
+                valueMaxLines: 1,
               ),
-            ],
-          ),
+            ];
+            final columnWidth = (constraints.maxWidth - 12) / items.length;
+            if (columnWidth < MediaQuery.textScalerOf(context).scale(98)) {
+              return Column(spacing: 6, children: items);
+            }
+            return IntrinsicHeight(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                spacing: 6,
+                children: [for (final item in items) Expanded(child: item)],
+              ),
+            );
+          },
         ),
       ]),
     );
@@ -833,7 +836,7 @@ class _GeneralInfoItem extends StatelessWidget {
               letterSpacing: 0,
               color: const Color(0xFFB5AAB8),
               fontSize: 20,
-              height: 0.9,
+              height: 1.1,
             ),
           ),
           const SizedBox(height: 4),

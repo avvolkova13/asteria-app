@@ -307,7 +307,8 @@ class SonnikGradientButton extends StatelessWidget {
         opacity: isEnabled ? 1 : 0.72,
         child: Container(
           width: double.infinity,
-          height: 54,
+          constraints: const BoxConstraints(minHeight: 54),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
           alignment: Alignment.center,
           decoration: CardLensDecoration.button(
             enabled: isEnabled,
@@ -326,6 +327,7 @@ class SonnikGradientButton extends StatelessWidget {
           ),
           child: Text(
             text,
+            textAlign: TextAlign.center,
             style: context.textTheme.inverseUrbanistSemiBold17.copyWith(
               color: SonnikPalette.white.withValues(
                 alpha: isEnabled ? 1 : 0.55,

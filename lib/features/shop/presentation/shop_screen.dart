@@ -254,6 +254,12 @@ class _ShopListItem extends StatelessWidget {
     final quantity = product.purchasedQuantity ?? 0;
     final isEmpty = quantity <= 0;
     final visual = _ShopItemVisual.fromProduct(product);
+    final separatePrice = MediaQuery.textScalerOf(context).scale(20) > 26;
+    final title = Text(
+      product.title,
+      style: context.textTheme.inversePlayfairMedium20.copyWith(height: 1.1),
+    );
+    final price = _ShopPrice(price: product.price);
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 14),
@@ -301,23 +307,20 @@ class _ShopListItem extends StatelessWidget {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Expanded(
-                                        child: Text(
-                                          product.title,
-                                          style: context
-                                              .textTheme
-                                              .inversePlayfairMedium20
-                                              .copyWith(height: 1.1),
-                                        ),
-                                      ),
-                                      const SizedBox(width: 8),
-                                      _ShopPrice(price: product.price),
-                                    ],
-                                  ),
+                                  if (separatePrice) ...[
+                                    title,
+                                    const SizedBox(height: 4),
+                                    price,
+                                  ] else
+                                    Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Expanded(child: title),
+                                        const SizedBox(width: 8),
+                                        price,
+                                      ],
+                                    ),
                                   const SizedBox(height: 4),
                                   Text(
                                     product.description,

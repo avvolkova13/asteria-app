@@ -3,6 +3,7 @@ import 'package:asteria_app/app/providers/content_provider.dart';
 import 'package:asteria_app/core/di/di.dart';
 import 'package:asteria_app/core/localization/generated/l10n.dart';
 import 'package:asteria_app/core/ui_kit/theme/theme.dart';
+import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
 import 'package:asteria_app/features/home/presentation/widgets/articles_section_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -70,6 +71,7 @@ void main() {
         );
         final short = cardFor(shortText);
         final long = cardFor(longText);
+        expect(long.width, greaterThan(275));
         expect(long.height, greaterThan(252));
         expect(short.bottom, long.bottom);
         expect(short.top, long.top);
@@ -78,6 +80,10 @@ void main() {
         await tester.pumpAndSettle();
         expect(cardFor(longText).left, lessThan(long.left));
         expect(cardFor(longText).height, short.height);
+        final afterSwipe = cardFor(longText).left;
+        await tester.tap(find.byType(LotusArrowBubble));
+        await tester.pumpAndSettle();
+        expect(cardFor(longText).left, lessThan(afterSwipe));
         expect(tester.takeException(), isNull);
       },
     );

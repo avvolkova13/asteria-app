@@ -28,17 +28,10 @@ class AdvertisingBlockWidget extends StatelessWidget {
       child: LayoutBuilder(
         builder: (context, constraints) {
           final cardWidth = constraints.maxWidth;
-          final availableContentWidth = cardWidth > 32
-              ? cardWidth - 32
-              : cardWidth;
-          final subtitleWidth = _widthWithin(availableContentWidth, 190);
-          final descriptionWidth = _widthWithin(availableContentWidth, 161);
-          final buttonWidth = _widthWithin(availableContentWidth, 161);
-          final imageScale = (cardWidth / 358).clamp(0.8, 1).toDouble();
-          final imageWidth = 144 * imageScale;
-          final imageHeight = 212 * imageScale;
-          final imageRight = 8 * imageScale;
-
+          final portraitWidth = (cardWidth * .34).clamp(72.0, 144.0);
+          final contentWidth = cardWidth - portraitWidth - 40;
+          final compact =
+              contentWidth < MediaQuery.textScalerOf(context).scale(145);
           return ClipRRect(
             borderRadius: BorderRadius.circular(AsteriaCardRadii.card),
             child: DecoratedBox(
@@ -46,8 +39,8 @@ class AdvertisingBlockWidget extends StatelessWidget {
               decoration: CardLensDecoration(
                 borderRadius: BorderRadius.circular(AsteriaCardRadii.card),
               ),
-              child: SizedBox(
-                height: 243,
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(minHeight: 243),
                 child: Stack(
                   clipBehavior: Clip.hardEdge,
                   children: [
@@ -62,70 +55,62 @@ class AdvertisingBlockWidget extends StatelessWidget {
                     ),
                     Positioned(
                       bottom: 0,
-                      right: imageRight,
-                      width: imageWidth,
-                      height: imageHeight,
+                      right: 8,
+                      width: portraitWidth,
+                      height: compact ? 104 : portraitWidth * 1.47,
                       child: Image.asset(
                         _liveyaAsset,
                         fit: BoxFit.contain,
                         alignment: Alignment.bottomCenter,
                       ),
                     ),
-                    Positioned(
-                      top: 16,
-                      left: 16,
-                      right: 16,
-                      child: FittedBox(
-                        alignment: Alignment.centerLeft,
-                        fit: BoxFit.scaleDown,
-                        child: Text(
-                          context.l10n.adDreamTitle,
-                          maxLines: 1,
-                          style: context.textTheme.inversePlayfairSemiBold24
-                              .copyWith(
-                                fontFamily: 'Lora',
-                                height: 1,
-                                letterSpacing: 0,
-                              ),
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      top: 56,
-                      left: 16,
-                      width: subtitleWidth,
-                      child: _AdvertisingSubtitle(
-                        textStyle: context.textTheme.inverseUrbanistSemiBold16
-                            .copyWith(
-                              fontFamily: 'Onest',
-                              height: 1.2,
-                              letterSpacing: -0.408,
+                    Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            context.l10n.adDreamTitle,
+                            style: context.textTheme.inversePlayfairSemiBold24,
+                          ),
+                          const SizedBox(height: 12),
+                          SizedBox(
+                            width: compact ? double.infinity : contentWidth,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                _AdvertisingSubtitle(
+                                  textStyle: context
+                                      .textTheme
+                                      .inverseUrbanistSemiBold16,
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  context.l10n.adDreamDescription,
+                                  style: context
+                                      .textTheme
+                                      .tertiaryUrbanistRegular16
+                                      .copyWith(color: _descriptionColor),
+                                ),
+                                const SizedBox(height: 14),
+                                SizedBox(
+                                  width: contentWidth,
+                                  height: compact ? 86 : 44,
+                                  child: Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: _AdvertisingCtaButton(
+                                      onTap: () =>
+                                          CreateSonnikInitialRoute.push(
+                                            context,
+                                          ),
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
-                      ),
-                    ),
-                    Positioned(
-                      top: 110,
-                      left: 16,
-                      width: descriptionWidth,
-                      child: Text(
-                        context.l10n.adDreamDescription,
-                        style: context.textTheme.tertiaryUrbanistRegular16
-                            .copyWith(
-                              fontFamily: 'Onest',
-                              height: 1.2,
-                              letterSpacing: -0.408,
-                              color: _descriptionColor,
-                            ),
-                      ),
-                    ),
-                    Positioned(
-                      left: 16,
-                      bottom: 16,
-                      width: buttonWidth,
-                      child: _AdvertisingCtaButton(
-                        onTap: () {
-                          CreateSonnikInitialRoute.push(context);
-                        },
+                          ),
+                        ],
                       ),
                     ),
                   ],
@@ -136,14 +121,6 @@ class AdvertisingBlockWidget extends StatelessWidget {
         },
       ),
     );
-  }
-
-  double _widthWithin(double availableWidth, double preferredWidth) {
-    if (availableWidth < preferredWidth) {
-      return availableWidth;
-    }
-
-    return preferredWidth;
   }
 }
 
@@ -170,7 +147,7 @@ class _AdvertisingSubtitle extends StatelessWidget {
             Text(' —', style: textStyle),
           ],
         ),
-        Text(context.l10n.adLiviaSubtitle, maxLines: 1, style: textStyle),
+        Text(context.l10n.adLiviaSubtitle, style: textStyle),
       ],
     );
   }
@@ -208,18 +185,21 @@ class _AdvertisingCtaButton extends StatelessWidget {
                 onTap: activate,
                 child: Center(
                   child: ExcludeSemantics(
-                    child: FittedBox(
-                      fit: BoxFit.scaleDown,
-                      child: Text(
-                        context.l10n.adDecode,
-                        maxLines: 1,
-                        style: context.textTheme.inverseUrbanistRegular17
-                            .copyWith(
-                              fontFamily: 'Onest',
-                              color: AppColors.textPrimary,
-                              height: 1.2,
-                              letterSpacing: -0.408,
-                            ),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(
+                          context.l10n.adDecode,
+                          maxLines: 1,
+                          style: context.textTheme.inverseUrbanistRegular17
+                              .copyWith(
+                                fontFamily: 'Onest',
+                                color: AppColors.textPrimary,
+                                height: 1.2,
+                                letterSpacing: -0.408,
+                              ),
+                        ),
                       ),
                     ),
                   ),

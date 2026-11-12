@@ -108,28 +108,35 @@ class CardAdvertisementWidget extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        heading,
-                        if (!roomyCopy) ...[const SizedBox(height: 8), body],
-                      ],
+              if (roomyCopy || natalChartPreview == null) ...[
+                heading,
+                if (natalChartPreview != null) ...[
+                  const SizedBox(height: 8),
+                  Center(
+                    child: SizedBox.square(
+                      dimension: wheelSize,
+                      child: natalChartPreview,
                     ),
                   ),
-                  if (natalChartPreview != null) ...[
+                ],
+                const SizedBox(height: 8),
+                body,
+              ] else
+                Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [heading, const SizedBox(height: 8), body],
+                      ),
+                    ),
                     const SizedBox(width: 12),
                     SizedBox.square(
                       dimension: wheelSize,
                       child: natalChartPreview,
                     ),
                   ],
-                ],
-              ),
-              if (roomyCopy) ...[const SizedBox(height: 8), body],
+                ),
               const SizedBox(height: 16),
               _NatalCardButton(text: buttonText, onPressed: onPressed),
             ],

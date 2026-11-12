@@ -32,8 +32,8 @@ class AnakraComposer extends StatelessWidget {
           child: InputBubbleSurface(
             enabled: !busy,
             surfaceBrightness: Brightness.dark,
-            child: SizedBox(
-              height: 48,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(minHeight: 48),
               child: TextField(
                 onTap: LotusFeedback.selection,
                 controller: controller,

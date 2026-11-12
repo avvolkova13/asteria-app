@@ -36,6 +36,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+const _headerBackground = Color(0xFF0F0A1A);
 const _pageBackground = Color(0xFF090612);
 const _cardTint = Color(0x339A7DB8);
 const _accentPurple = Color(0xFF6E4BFF);
@@ -278,39 +279,39 @@ class _PersonalScreenState extends State<PersonalScreen> {
           statusBarBrightness: Brightness.dark,
         ),
         child: Scaffold(
-          backgroundColor: _pageBackground,
-          body: CustomScrollView(
-            physics: const ClampingScrollPhysics(),
-            slivers: [
-              SliverToBoxAdapter(
-                child: Stack(
-                  children: [
-                    const Positioned.fill(child: _PersonalBackground()),
-                    Column(
-                      children: [
-                        const SafeArea(
-                          bottom: false,
-                          child: Padding(
+          backgroundColor: _headerBackground,
+          body: SafeArea(
+            bottom: false,
+            child: CustomScrollView(
+              physics: const ClampingScrollPhysics(),
+              slivers: [
+                SliverToBoxAdapter(
+                  child: Stack(
+                    children: [
+                      const Positioned.fill(child: _PersonalBackground()),
+                      Column(
+                        children: [
+                          const Padding(
                             padding: EdgeInsets.only(bottom: 8),
                             child: HomeAccountBar(
                               backgroundColor: Colors.transparent,
                             ),
+                          ).withEntrance(),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            child: ListenableBuilder(
+                              listenable: userProvider,
+                              builder: (context, _) =>
+                                  _buildContent(context, userProvider),
+                            ),
                           ),
-                        ).withEntrance(),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          child: ListenableBuilder(
-                            listenable: userProvider,
-                            builder: (context, _) =>
-                                _buildContent(context, userProvider),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -699,7 +700,7 @@ class _PersonalBackground extends StatelessWidget {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    Color(0xFF0F0A1A),
+                    _headerBackground,
                     Color(0xFF210746),
                     Color(0x001D0F3F),
                   ],
@@ -1843,12 +1844,14 @@ class _PersonalCompatibilitySection extends StatelessWidget {
             Row(
               children: [
                 Expanded(
-                  child: Text(
-                    context.l10n.compatibilityTitle,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: context.textTheme.inversePlayfairSemiBold24.copyWith(
-                      height: 1,
+                  child: FittedBox(
+                    alignment: AlignmentDirectional.centerStart,
+                    fit: BoxFit.scaleDown,
+                    child: Text(
+                      context.l10n.compatibilityTitle,
+                      maxLines: 1,
+                      style: context.textTheme.inversePlayfairSemiBold24
+                          .copyWith(height: 1),
                     ),
                   ),
                 ),
@@ -2029,120 +2032,94 @@ class _CompatibilityHistoryCard extends StatelessWidget {
                       opacity: const AlwaysStoppedAnimation(0.5),
                     ),
                   ),
-                  LayoutBuilder(
-                    builder: (context, constraints) {
-                      final width = constraints.maxWidth;
-                      return Stack(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
-                                const SizedBox(height: 188),
-                                Text(
-                                  phrase,
-                                  textAlign: TextAlign.start,
-                                  style: context
-                                      .textTheme
-                                      .inverseUrbanistRegular16
-                                      .copyWith(
-                                        height: 1.2,
-                                        letterSpacing: -0.408,
-                                      ),
-                                ),
-                                const SizedBox(height: 16),
-                                _GradientText(
-                                  context.l10n.compatibilityReadMore,
-                                  style: context
-                                      .textTheme
-                                      .inverseUrbanistSemiBold16
-                                      .copyWith(
-                                        height: 1.2,
-                                        letterSpacing: -0.408,
-                                      ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Positioned(
-                            left: 16,
-                            top: 24,
-                            width: 110,
-                            child: _CompatibilityPerson(
-                              name: firstZodiacSign,
-                              birthdate: firstBirthdate.toLocalizedShortDate(
-                                Localizations.localeOf(context),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 20, 16, 20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              flex: 2,
+                              child: _ZodiacCaption(
+                                firstZodiacSign,
+                                firstBirthdate,
                               ),
-                              assetName: firstBirthdate.getZodiacSignAsset(),
-                              angle: -20,
                             ),
-                          ),
-                          Positioned(
-                            right: 16,
-                            top: 24,
-                            width: 110,
-                            child: _CompatibilityPerson(
-                              name: secondZodiacSign,
-                              birthdate: secondBirthdate.toLocalizedShortDate(
-                                Localizations.localeOf(context),
+                            const Spacer(),
+                            Expanded(
+                              flex: 2,
+                              child: _ZodiacCaption(
+                                secondZodiacSign,
+                                secondBirthdate,
                               ),
-                              assetName: secondBirthdate.getZodiacSignAsset(),
-                              angle: 20,
                             ),
-                          ),
-                          Positioned(
-                            left: width * .5,
-                            top: 83,
-                            width: 36,
-                            height: 20,
-                            child: SvgPicture.asset(
-                              _compatibilityVector51,
-                              fit: BoxFit.fill,
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        Row(
+                          children: [
+                            Expanded(
+                              flex: 2,
+                              child: _ZodiacPortrait(
+                                assetName: firstBirthdate.getZodiacSignAsset(),
+                                angle: -20,
+                              ),
                             ),
-                          ),
-                          Positioned(
-                            right: width * .5,
-                            top: 151,
-                            width: 36,
-                            height: 20,
-                            child: Transform.rotate(
-                              alignment: Alignment.center,
-                              angle: 157 * math.pi / 180,
-                              child: Transform.scale(
-                                scaleY: -1,
-                                child: Center(
-                                  child: SizedBox(
-                                    width: 55,
-                                    height: 30,
-                                    child: SvgPicture.asset(
-                                      _compatibilityVector52,
-                                      fit: BoxFit.fill,
+                            Expanded(
+                              child: Column(
+                                children: [
+                                  SvgPicture.asset(
+                                    _compatibilityVector51,
+                                    width: 32,
+                                    height: 16,
+                                    excludeFromSemantics: true,
+                                  ),
+                                  FittedBox(
+                                    fit: BoxFit.scaleDown,
+                                    child: _GradientText(
+                                      '$compatibilityPercentage%',
+                                      style: context
+                                          .textTheme
+                                          .inversePlayfairSemiBold24,
                                     ),
                                   ),
-                                ),
+                                  Transform.rotate(
+                                    angle: math.pi,
+                                    child: SvgPicture.asset(
+                                      _compatibilityVector52,
+                                      width: 32,
+                                      height: 16,
+                                      excludeFromSemantics: true,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                          ),
-                          Positioned(
-                            top: 109,
-                            height: 34,
-                            left: width * .36,
-                            right: width * .36,
-                            child: FittedBox(
-                              fit: BoxFit.scaleDown,
-                              child: _GradientText(
-                                '$compatibilityPercentage%',
-                                style: context
-                                    .textTheme
-                                    .inversePlayfairSemiBold24
-                                    .copyWith(height: 1),
+                            Expanded(
+                              flex: 2,
+                              child: _ZodiacPortrait(
+                                assetName: secondBirthdate.getZodiacSignAsset(),
+                                angle: 20,
                               ),
                             ),
-                          ),
-                        ],
-                      );
-                    },
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        Text(
+                          phrase,
+                          style: context.textTheme.inverseUrbanistRegular16
+                              .copyWith(height: 1.2, letterSpacing: -.408),
+                        ),
+                        const SizedBox(height: 16),
+                        _GradientText(
+                          context.l10n.compatibilityReadMore,
+                          style: context.textTheme.inverseUrbanistSemiBold16
+                              .copyWith(height: 1.2, letterSpacing: -.408),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
@@ -2154,92 +2131,59 @@ class _CompatibilityHistoryCard extends StatelessWidget {
   }
 }
 
-class _CompatibilityPerson extends StatelessWidget {
+class _ZodiacCaption extends StatelessWidget {
+  const _ZodiacCaption(this.name, this.date);
   final String name;
-  final String birthdate;
+  final DateTime date;
+  @override
+  Widget build(BuildContext context) => Column(
+    children: [
+      FittedBox(
+        fit: BoxFit.scaleDown,
+        child: _GradientText(
+          name,
+          style: context.textTheme.inversePlayfairMedium20,
+        ),
+      ),
+      const SizedBox(height: 3),
+      FittedBox(
+        fit: BoxFit.scaleDown,
+        child: Text(
+          date.toLocalizedShortDate(Localizations.localeOf(context)),
+          style: context.textTheme.inverseUrbanistRegular16,
+        ),
+      ),
+    ],
+  );
+}
+
+class _ZodiacPortrait extends StatelessWidget {
   final String assetName;
   final double angle;
-
-  const _CompatibilityPerson({
-    required this.name,
-    required this.birthdate,
-    required this.assetName,
-    required this.angle,
-  });
-
+  const _ZodiacPortrait({required this.assetName, required this.angle});
   @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        _GradientText(
-          name,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          textAlign: TextAlign.center,
-          style: context.textTheme.inversePlayfairMedium20.copyWith(
-            height: 1.1,
-          ),
+  Widget build(BuildContext context) => Center(
+    child: Transform.rotate(
+      angle: angle * math.pi / 180,
+      child: ClipOval(
+        child: Image.asset(
+          'assets/images/zodiacs/compatibility_round/$assetName.webp',
+          key: ValueKey('personal-compatibility-zodiac-$assetName'),
+          width: 100,
+          height: 100,
+          fit: BoxFit.contain,
         ),
-        const SizedBox(height: 3),
-        Text(
-          birthdate,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          textAlign: TextAlign.center,
-          style: context.textTheme.inverseUrbanistRegular16.copyWith(
-            height: 1.2,
-            letterSpacing: -0.408,
-          ),
-        ),
-        const SizedBox(height: 4),
-        SizedBox(
-          width: 110,
-          height: 110,
-          child: Center(
-            child: Transform.rotate(
-              angle: angle * math.pi / 180,
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(100),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColors.white.withValues(alpha: 0.15),
-                      blurRadius: 5,
-                    ),
-                  ],
-                ),
-                child: ClipOval(
-                  child: Image.asset(
-                    'assets/images/zodiacs/compatibility_round/$assetName.webp',
-                    key: ValueKey('personal-compatibility-zodiac-$assetName'),
-                    width: 100,
-                    height: 100,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
+      ),
+    ),
+  );
 }
 
 class _GradientText extends StatelessWidget {
   final String text;
   final TextStyle style;
-  final int? maxLines;
-  final TextOverflow? overflow;
   final TextAlign? textAlign;
 
-  const _GradientText(
-    this.text, {
-    required this.style,
-    this.maxLines,
-    this.overflow,
-    this.textAlign,
-  });
+  const _GradientText(this.text, {required this.style, this.textAlign});
 
   @override
   Widget build(BuildContext context) {
@@ -2250,8 +2194,6 @@ class _GradientText extends StatelessWidget {
       ),
       child: Text(
         text,
-        maxLines: maxLines,
-        overflow: overflow,
         textAlign: textAlign,
         style: style.copyWith(color: AppColors.white),
       ),

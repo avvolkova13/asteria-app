@@ -192,9 +192,11 @@ class AuthGradientButton extends StatelessWidget {
         label: text,
         onTap: activate,
         child: ExcludeSemantics(
-          child: SizedBox(
-            width: double.infinity,
-            height: 50,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(
+              minHeight: 50,
+              minWidth: double.infinity,
+            ),
             child: DecoratedBox(
               decoration: CardLensDecoration.button(
                 enabled: _isEnabled,
@@ -224,22 +226,28 @@ class AuthGradientButton extends StatelessWidget {
                   child: InkWell(
                     onTap: activate,
                     child: Stack(
-                      fit: StackFit.expand,
+                      alignment: Alignment.center,
                       children: [
                         if (_isEnabled)
-                          const DecoratedBox(
-                            decoration: BoxDecoration(
-                              gradient: RadialGradient(
-                                center: Alignment(0, -0.65),
-                                radius: 1.8,
-                                colors: [
-                                  _authButtonHighlight,
-                                  Colors.transparent,
-                                ],
+                          const Positioned.fill(
+                            child: DecoratedBox(
+                              decoration: BoxDecoration(
+                                gradient: RadialGradient(
+                                  center: Alignment(0, -0.65),
+                                  radius: 1.8,
+                                  colors: [
+                                    _authButtonHighlight,
+                                    Colors.transparent,
+                                  ],
+                                ),
                               ),
                             ),
                           ),
-                        Center(
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 10,
+                          ),
                           child: isLoading
                               ? const SizedBox(
                                   width: 20,

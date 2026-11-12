@@ -20,7 +20,7 @@ class ArticlesSectionWidget extends StatefulWidget {
 }
 
 class _ArticlesSectionWidgetState extends State<ArticlesSectionWidget> {
-  static const double _articleCardWidth = 201;
+  static const double _baseCardWidth = 201;
   static const double _articleCardGap = 16;
 
   final ScrollController _articlesScrollController = ScrollController();
@@ -35,7 +35,7 @@ class _ArticlesSectionWidgetState extends State<ArticlesSectionWidget> {
     ArticleRoute.push(context, articleId: articleId);
   }
 
-  void _scrollArticlesForward() {
+  void _scrollArticlesForward(double cardWidth) {
     if (!_articlesScrollController.hasClients) {
       return;
     }
@@ -46,8 +46,10 @@ class _ArticlesSectionWidgetState extends State<ArticlesSectionWidget> {
     }
 
     final nextOffset =
-        _articlesScrollController.offset + _articleCardWidth + _articleCardGap;
-    final targetOffset = nextOffset >= maxScrollExtent ? 0.0 : nextOffset;
+        _articlesScrollController.offset + cardWidth + _articleCardGap;
+    final targetOffset = _articlesScrollController.position.extentAfter < 1
+        ? 0.0
+        : nextOffset.clamp(0.0, maxScrollExtent).toDouble();
 
     _articlesScrollController.animateTo(
       targetOffset,
@@ -70,6 +72,11 @@ class _ArticlesSectionWidgetState extends State<ArticlesSectionWidget> {
           .toList();
     }
     if (articles.isEmpty) return const SizedBox.shrink();
+    final scale = MediaQuery.textScalerOf(context).scale(20) / 20;
+    final width = MediaQuery.sizeOf(context).width;
+    final cardWidth = (_baseCardWidth * scale)
+        .clamp(_baseCardWidth, width > 245 ? width - 44 : _baseCardWidth)
+        .toDouble();
     return Container(
       width: double.infinity,
       color: isMainSection ? AppColors.textPrimary : null,
@@ -93,7 +100,7 @@ class _ArticlesSectionWidgetState extends State<ArticlesSectionWidget> {
                 label: context.l10n.articlesScrollLabel,
                 child: LotusTap(
                   behavior: HitTestBehavior.opaque,
-                  onTap: _scrollArticlesForward,
+                  onTap: () => _scrollArticlesForward(cardWidth),
                   child: SizedBox(
                     width: 48,
                     height: 44,
@@ -123,6 +130,7 @@ class _ArticlesSectionWidgetState extends State<ArticlesSectionWidget> {
                       child: LotusTap(
                         onTap: () => _onArticleTap(context, articles[index].id),
                         child: _ArticleCard(
+                          width: cardWidth,
                           title: articles[index].title,
                           category: articles[index].category,
                           timeToRead: articles[index].timeToRead,
@@ -145,6 +153,7 @@ class _ArticlesSectionWidgetState extends State<ArticlesSectionWidget> {
 }
 
 class _ArticleCard extends StatelessWidget {
+  final double width;
   final String title;
   final String category;
   final int timeToRead;
@@ -159,13 +168,14 @@ class _ArticleCard extends StatelessWidget {
     required this.timeToRead,
     required this.imageName,
     required this.isRedesigned,
+    required this.width,
     required this.isDarkSection,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 201,
+      width: width,
       constraints: const BoxConstraints(minHeight: 252),
       foregroundDecoration: CardLensDecoration(
         borderRadius: BorderRadius.circular(AsteriaCardRadii.tile),
@@ -187,11 +197,11 @@ class _ArticleCard extends StatelessWidget {
             ),
             child: Image.asset(
               'assets/images/articles/$imageName.webp',
-              width: 201,
+              width: width,
               height: 167,
               fit: BoxFit.cover,
               errorBuilder: (_, __, ___) =>
-                  const ArtworkUnavailable(width: 201, height: 167, radius: 0),
+                  ArtworkUnavailable(width: width, height: 167, radius: 0),
             ),
           ),
           const SizedBox(height: 8),

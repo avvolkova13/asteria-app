@@ -440,8 +440,6 @@ class _SectionTitleRow extends StatelessWidget {
         Expanded(
           child: Text(
             title,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
             style: context.textTheme.inversePlayfairSemiBold24.copyWith(
               fontFamily: 'Lora',
               height: 1,

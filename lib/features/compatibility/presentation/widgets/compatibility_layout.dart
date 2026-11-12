@@ -40,7 +40,10 @@ class CompatibilityLayout extends StatelessWidget {
         body: Stack(
           fit: StackFit.expand,
           children: [
-            if (ScenarioSkyScope.of(context)) const ScenarioSky() else const _CompatibilityStarBackground().withEntrance(),
+            if (ScenarioSkyScope.of(context))
+              const ScenarioSky()
+            else
+              const _CompatibilityStarBackground().withEntrance(),
             CustomScrollView(
               physics: physics,
               slivers: [
@@ -201,7 +204,8 @@ class CompatibilityGradientButton extends StatelessWidget {
             duration: const Duration(milliseconds: 150),
             opacity: enabled ? 1 : 0.68,
             child: Container(
-              height: height,
+              constraints: BoxConstraints(minHeight: height),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
               alignment: Alignment.center,
               decoration: CardLensDecoration.button(
                 enabled: enabled,
@@ -215,6 +219,7 @@ class CompatibilityGradientButton extends StatelessWidget {
               ),
               child: Text(
                 text,
+                textAlign: TextAlign.center,
                 style: context.textTheme.inverseUrbanistRegular16.copyWith(
                   color: enabled
                       ? AppColors.white
