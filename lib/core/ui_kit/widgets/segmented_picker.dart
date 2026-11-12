@@ -63,7 +63,7 @@ class SegmentedPicker<T> extends StatelessWidget {
               locale: Localizations.maybeLocaleOf(context),
             );
             final style = AppTypography.text2SemiBold.copyWith(
-              fontSize: 13,
+              fontSize: 15,
               height: 1.2,
             );
             var widest = 0.0;
@@ -93,10 +93,7 @@ class SegmentedPicker<T> extends StatelessWidget {
                         )
                       : null,
                   alignment: Alignment.center,
-                  padding: EdgeInsets.symmetric(
-                    horizontal: inset,
-                    vertical: 5,
-                  ),
+                  padding: EdgeInsets.symmetric(horizontal: inset, vertical: 5),
                   child: Text(
                     labelBuilder(option),
                     textAlign: TextAlign.center,
@@ -105,7 +102,7 @@ class SegmentedPicker<T> extends StatelessWidget {
                                 ? AppTypography.text2SemiBold
                                 : AppTypography.text2)
                             .copyWith(
-                              fontSize: 13,
+                              fontSize: 15,
                               height: 1.2,
                               color: dark
                                   ? (option == selectedValue

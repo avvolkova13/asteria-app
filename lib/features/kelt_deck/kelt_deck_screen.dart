@@ -47,17 +47,21 @@ class _KeltDeckScreenState extends State<KeltDeckScreen> {
     final userProvider = di.get<UserProvider>();
     userProvider.resetDeckOpenState(DeckType.kelt);
     if (userProvider.currentUser?.keltDeck?.keltDeckCards.isEmpty ?? true) {
-      _isRefreshing = true;
-      userProvider.loadLatestDeck(DeckType.kelt).whenComplete(() {
-        if (mounted) {
-          setState(() => _isRefreshing = false);
-        }
-      });
+      _restoreSavedDeck();
     }
     di.get<AnalyticsFacade>().trackEvent(
       AnalyticsEvents.keltDeckOpen,
       params: _featureParam,
     );
+  }
+
+  Future<void> _restoreSavedDeck() async {
+    setState(() => _isRefreshing = true);
+    try {
+      await di.get<UserProvider>().loadLatestDeck(DeckType.kelt);
+    } finally {
+      if (mounted) setState(() => _isRefreshing = false);
+    }
   }
 
   void onRefreshPressed() {
@@ -166,6 +170,23 @@ class _KeltDeckScreenState extends State<KeltDeckScreen> {
                             color: AppColors.primary,
                           ),
                         ),
+                      )
+                    else if (userProvider
+                            .currentUser
+                            ?.keltDeck
+                            ?.keltDeckCards
+                            .isNotEmpty !=
+                        true)
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Text(context.l10n.loadingDataError),
+                          const SizedBox(height: 16),
+                          CustomButton(
+                            text: context.l10n.retry,
+                            onPressed: _restoreSavedDeck,
+                          ),
+                        ],
                       )
                     else
                       _KeltDeckContent(onRefresh: onRefreshPressed),

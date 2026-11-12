@@ -31,7 +31,6 @@ class _CelticCrossLayoutState extends State<CelticCrossLayout>
   final Map<int, AnimationController> _animationControllers = {};
   final Map<int, bool> _isAnimating = {};
   bool _isAnyCardAnimating = false;
-  int? _activeCardNumber;
 
   @override
   void dispose() {
@@ -93,9 +92,6 @@ class _CelticCrossLayoutState extends State<CelticCrossLayout>
     if (cardId.isEmpty) return;
 
     if (!mounted) return;
-    setState(() {
-      _activeCardNumber = cardNumber;
-    });
 
     // Блокируем открытие новых карт, пока идет анимация любой другой карты
     if (_isAnyCardAnimating) return;
@@ -183,10 +179,10 @@ class _CelticCrossLayoutState extends State<CelticCrossLayout>
                   cardId: cardIds[2],
                 ),
                 _CelticCrossCardSlot(
-                  left: 90,
+                  left: 180,
                   top: 227,
-                  cardNumber: 1,
-                  cardId: cardIds[0],
+                  cardNumber: 4,
+                  cardId: cardIds[3],
                 ),
                 _CelticCrossCardSlot(
                   left: 68,
@@ -194,12 +190,6 @@ class _CelticCrossLayoutState extends State<CelticCrossLayout>
                   cardNumber: 2,
                   cardId: cardIds[1],
                   isHorizontal: true,
-                ),
-                _CelticCrossCardSlot(
-                  left: 180,
-                  top: 227,
-                  cardNumber: 4,
-                  cardId: cardIds[3],
                 ),
                 _CelticCrossCardSlot(
                   left: 90,
@@ -231,17 +221,13 @@ class _CelticCrossLayoutState extends State<CelticCrossLayout>
                   cardNumber: 7,
                   cardId: cardIds[6],
                 ),
+                _CelticCrossCardSlot(
+                  left: 90,
+                  top: 227,
+                  cardNumber: 1,
+                  cardId: cardIds[0],
+                ),
               ];
-
-              final activeCardNumber = _activeCardNumber;
-              if (activeCardNumber != null) {
-                final activeIndex = slots.indexWhere(
-                  (slot) => slot.cardNumber == activeCardNumber,
-                );
-                if (activeIndex != -1) {
-                  slots.add(slots.removeAt(activeIndex));
-                }
-              }
 
               return Stack(
                 clipBehavior: Clip.none,
@@ -277,6 +263,7 @@ class _CelticCrossLayoutState extends State<CelticCrossLayout>
     final isEnabled = cardId.isNotEmpty;
 
     return Positioned(
+      key: ValueKey('celtic_slot_$cardNumber'),
       left: left,
       top: top,
       child: _buildCard(

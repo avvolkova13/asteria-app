@@ -1,4 +1,9 @@
 import 'dart:async';
+import 'package:asteria_app/features/love_deck/love_deck_screen.dart';
+import 'package:asteria_app/features/monetization/data/feature_execution_api.dart';
+import 'package:asteria_app/features/monetization/domain/feature_execution_models.dart';
+import 'package:asteria_app/features/love_deck/widgets/love_layout.dart';
+import 'package:asteria_app/app/data/models/love_deck/love_deck_model.dart';
 import 'package:asteria_app/app/data/models/user/tarot_card_of_day_item_model.dart';
 import 'package:asteria_app/core/utils/utils.dart';
 
@@ -291,6 +296,62 @@ void main() {
       },
     );
 
+    testWidgets('failed saved love spread can retry without buying again', (
+      tester,
+    ) async {
+      final api = _RecoveringSpreadApi(
+        cards.take(6).map((card) => card.id).toList(),
+      );
+      di.registerSingleton<FeatureExecutionApi>(api);
+      await tester.pumpWidget(
+        ChangeNotifierProvider<UserProvider>.value(
+          value: userProvider,
+          child: _localizedApp(const LoveDeckScreen()),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('Ошибка загрузки данных'), findsOneWidget);
+      expect(find.byType(LoveLayout), findsNothing);
+      await tester.tap(find.text('Повторить'));
+      await tester.pumpAndSettle();
+      expect(api.calls, 2);
+      expect(find.byType(LoveLayout), findsOneWidget);
+      final first = find.byKey(const ValueKey('love_deck_card_1'));
+      await tester.ensureVisible(first);
+      await tester.pumpAndSettle();
+      await tester.tap(first);
+      await tester.pumpAndSettle();
+      expect(
+        userProvider.isDeckCardOpened(DeckType.love, cards.first.id),
+        isTrue,
+      );
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('love spread flips every card and unlocks the next tap', (
+      tester,
+    ) async {
+      userProvider.applyServerUserSnapshot(
+        userProvider.currentUser!.copyWith(
+          loveDeck: LoveDeckModel(
+            loveDeckCards: {for (final card in cards.take(6)) card.id: false},
+          ),
+        ),
+      );
+      await tester.pumpWidget(_localizedApp(const LoveLayout()));
+      await tester.pumpAndSettle();
+      for (var number = 1; number <= 6; number++) {
+        await tester.tap(find.byKey(ValueKey('love_deck_card_$number')));
+        await tester.pumpAndSettle();
+        expect(
+          userProvider.isDeckCardOpened(DeckType.love, cards[number - 1].id),
+          isTrue,
+        );
+      }
+      expect(userProvider.isAllCardsOpened('love_deck'), isTrue);
+      expect(tester.takeException(), isNull);
+    });
+
     testWidgets('opens a visible non-first card when it is tapped', (
       tester,
     ) async {
@@ -304,27 +365,53 @@ void main() {
       expect(userProvider.isDeckCardOpened(DeckType.kelt, cards[2].id), isTrue);
     });
 
-    testWidgets('keeps the last tapped overlapping card above neighbours', (
-      tester,
-    ) async {
-      await tester.pumpWidget(_localizedApp(const CelticCrossLayout()));
-      await tester.pumpAndSettle();
+    testWidgets(
+      'keeps the crossing card above neighbours and card one above the crossing',
+      (tester) async {
+        await tester.pumpWidget(_localizedApp(const CelticCrossLayout()));
+        await tester.pumpAndSettle();
 
-      final layoutTopLeft = tester.getTopLeft(find.byType(CelticCrossLayout));
+        final layoutTopLeft = tester.getTopLeft(find.byType(CelticCrossLayout));
+        final first = find.byKey(const ValueKey('celtic_slot_1'));
+        final crossing = find.byKey(const ValueKey('celtic_slot_2'));
+        expect(
+          tester.getRect(first).center.dx,
+          closeTo(tester.getRect(crossing).center.dx, 1),
+        );
+        expect(tester.getRect(crossing).width, 129);
+        expect(tester.getRect(crossing).height, 86);
+        final stack = tester.widget<Stack>(
+          find.ancestor(of: first, matching: find.byType(Stack)).first,
+        );
+        expect(stack.children.last.key, const ValueKey('celtic_slot_1'));
+        await tester.tapAt(layoutTopLeft + const Offset(133, 313));
+        await tester.pumpAndSettle();
+        expect(
+          userProvider.isDeckCardOpened(DeckType.kelt, cards[0].id),
+          isTrue,
+        );
+        expect(
+          userProvider.isDeckCardOpened(DeckType.kelt, cards[1].id),
+          isFalse,
+        );
 
-      await tester.tapAt(layoutTopLeft + const Offset(75, 313));
-      await tester.pumpAndSettle();
+        await tester.tapAt(layoutTopLeft + const Offset(75, 313));
+        await tester.pumpAndSettle();
 
-      expect(userProvider.isDeckCardOpened(DeckType.kelt, cards[1].id), isTrue);
+        expect(
+          userProvider.isDeckCardOpened(DeckType.kelt, cards[1].id),
+          isTrue,
+        );
 
-      await tester.tapAt(layoutTopLeft + const Offset(185, 313));
-      await tester.pumpAndSettle();
+        await tester.tapAt(layoutTopLeft + const Offset(185, 313));
+        await tester.pumpAndSettle();
 
-      expect(
-        userProvider.isDeckCardOpened(DeckType.kelt, cards[3].id),
-        isFalse,
-      );
-    });
+        expect(
+          userProvider.isDeckCardOpened(DeckType.kelt, cards[3].id),
+          isFalse,
+        );
+      },
+    );
   });
 }
 
@@ -437,6 +524,28 @@ class _FakeAnalyticsFacade implements AnalyticsFacade {
 class _FakeRewardsProvider implements RewardsProvider {
   @override
   Future<void> recordTarotSpread(String deckType) async {}
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+class _RecoveringSpreadApi implements FeatureExecutionApi {
+  _RecoveringSpreadApi(this.cards);
+  final List<String> cards;
+  int calls = 0;
+
+  @override
+  Future<TarotSpreadResultModel?> getLatestTarotSpread({
+    required String spreadType,
+  }) async {
+    calls++;
+    if (calls == 1) throw Exception('Temporary offline');
+    return TarotSpreadResultModel(
+      executionId: 'saved-love',
+      spreadType: 'love',
+      cardIds: cards,
+    );
+  }
 
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);

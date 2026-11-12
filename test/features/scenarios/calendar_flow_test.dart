@@ -15,7 +15,7 @@ import 'package:asteria_app/features/home/presentation/cubit/moon_screen_cubit.d
 import 'package:asteria_app/features/home/presentation/screens/moon_screen.dart';
 import 'package:asteria_app/features/home/presentation/widgets/moon_calendar_widget.dart';
 import 'package:asteria_app/features/home/presentation/widgets/sphere_selection_widget.dart';
-import 'package:asteria_app/features/home/presentation/widgets/advice_widget.dart';
+import 'package:asteria_app/features/home/presentation/widgets/calendar_statuses_widget.dart';
 import 'package:asteria_app/features/home/presentation/widgets/lunar_recommendations_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
@@ -93,11 +93,12 @@ void main() {
         await tester.pumpAndSettle();
       }
 
-      final start = find.text('Find a day for an activity');
+      final start = find.text('Choose a date');
       // Daily context and the calendar precede planning and saved history.
       final monthGrid = find.byType(MoonCalendarWidget);
       final spheres = find.byType(SphereSelectionWidget);
-      final dayAdvice = find.byType(AdviceWidget);
+      final dayAdvice = find.byKey(const ValueKey('calendar-day-context'));
+      final legend = find.byType(CalendarStatusesWidget);
       expect(tester.getTopLeft(dayAdvice).dy, lessThan(300));
       expect(monthGrid.hitTestable(), findsOneWidget);
       expect(start.hitTestable(), findsNothing);
@@ -118,6 +119,14 @@ void main() {
       expect(
         tester.getTopLeft(start).dy,
         lessThan(tester.getTopLeft(find.text('My plans')).dy),
+      );
+      expect(
+        tester.getBottomLeft(monthGrid).dy,
+        lessThanOrEqualTo(tester.getTopLeft(legend).dy),
+      );
+      expect(
+        tester.getBottomLeft(legend).dy,
+        lessThan(tester.getTopLeft(spheres).dy),
       );
       await tap(find.text('Gardening'));
       await tap(find.text('12').first);

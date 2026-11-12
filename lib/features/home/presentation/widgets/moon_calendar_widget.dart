@@ -58,12 +58,6 @@ class MoonCalendarWidget extends StatelessWidget {
   Widget _calendar(BuildContext context, MoonScreenState state) {
     final localeTag = Localizations.localeOf(context).toLanguageTag();
     final textScaler = MediaQuery.textScalerOf(context);
-    // Reserve room for the phase marker and status without a second large row gap.
-    final dayHeight = (textScaler.scale(20) * 1.25 + 33).clamp(
-      58.0,
-      double.infinity,
-    );
-    final rowHeight = dayHeight + 2;
     final weekdayHeight = textScaler.scale(13) * 18 / 13 + 8;
     final monthLabel = DateFormat('LLLL y', localeTag).format(state.focusedDay);
     final title = monthLabel[0].toUpperCase() + monthLabel.substring(1);
@@ -77,6 +71,17 @@ class MoonCalendarWidget extends StatelessWidget {
         state.selectedSphere != null ||
         state.dayStatuses.isNotEmpty ||
         plansByDay.isNotEmpty;
+    // Plain dates need less space; category stars and plans keep their own row.
+    // The full cell remains a touch target of at least 44 points in both modes.
+    final hasRatings =
+        state.selectedSphere != null || state.dayStatuses.isNotEmpty;
+    final minimumHeight = hasRatings ? 54.0 : (showMarkers ? 48.0 : 44.0);
+    final extraSpace = hasRatings ? 29 : (showMarkers ? 23 : 19);
+    final dayHeight = (textScaler.scale(20) * 1.25 + extraSpace).clamp(
+      minimumHeight,
+      double.infinity,
+    );
+    final rowHeight = dayHeight + 2;
 
     Widget dayCell(
       DateTime day, {
@@ -134,7 +139,7 @@ class MoonCalendarWidget extends StatelessWidget {
         ],
       ),
       child: Padding(
-        padding: const EdgeInsets.only(top: 16, bottom: 8),
+        padding: const EdgeInsets.only(top: 8, bottom: 8),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -174,7 +179,7 @@ class MoonCalendarWidget extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 8),
             LayoutBuilder(
               builder: (context, constraints) {
                 // Figma aligns the first and last 32-point digits 16 points from the card edges.
@@ -680,8 +685,8 @@ class _CalendarDayNumber extends StatelessWidget {
         ),
         if (hasPrimaryPhase)
           Positioned(
-            top: -7,
-            right: -5,
+            top: -10,
+            right: -10,
             child: MoonPhaseMarker(
               color: selected
                   ? AppColors.textPrimary

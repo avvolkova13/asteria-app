@@ -51,17 +51,21 @@ class _LoveDeckScreenState extends State<LoveDeckScreen> {
     final userProvider = di.get<UserProvider>();
     userProvider.resetDeckOpenState(DeckType.love);
     if (userProvider.currentUser?.loveDeck?.loveDeckCards.isEmpty ?? true) {
-      _isRefreshing = true;
-      userProvider.loadLatestDeck(DeckType.love).whenComplete(() {
-        if (mounted) {
-          setState(() => _isRefreshing = false);
-        }
-      });
+      _restoreSavedDeck();
     }
     di.get<AnalyticsFacade>().trackEvent(
       AnalyticsEvents.loveDeckOpen,
       params: _featureParam,
     );
+  }
+
+  Future<void> _restoreSavedDeck() async {
+    setState(() => _isRefreshing = true);
+    try {
+      await di.get<UserProvider>().loadLatestDeck(DeckType.love);
+    } finally {
+      if (mounted) setState(() => _isRefreshing = false);
+    }
   }
 
   void onRefreshPressed() {
@@ -179,6 +183,23 @@ class _LoveDeckScreenState extends State<LoveDeckScreen> {
                                   ),
                                 ),
                               ),
+                            )
+                          else if (userProvider
+                                  .currentUser
+                                  ?.loveDeck
+                                  ?.loveDeckCards
+                                  .isNotEmpty !=
+                              true)
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                Text(context.l10n.loadingDataError),
+                                const SizedBox(height: 16),
+                                CustomButton(
+                                  text: context.l10n.retry,
+                                  onPressed: _restoreSavedDeck,
+                                ),
+                              ],
                             )
                           else
                             _LoveDeckContent(

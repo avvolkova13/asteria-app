@@ -62,7 +62,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(tester.takeException(), isNull);
       final first = tester.getRect(find.text(labels.first));
-      expect(first.height, lessThan(13 * scale * 1.2 + 2));
+      expect(first.height, lessThan(15 * scale * 1.2 + 2));
       if (scale == 1) {
         expect(first.center.dy, tester.getCenter(find.text(labels.last)).dy);
       }

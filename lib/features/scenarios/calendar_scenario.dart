@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'scenario_completion.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/app/data/models/lunar_calendar/lunar_month_model.dart';
@@ -623,11 +624,18 @@ class CalendarPlansButton extends StatelessWidget {
   const CalendarPlansButton({super.key, this.fromTab = false});
   final bool fromTab;
   @override
-  Widget build(BuildContext c) => CustomButton(
-    type: CustomButtonType.text,
-    textColor: AppColors.cardTinted,
-    text: c.l10n.scenarioCalendarMyPlans,
+  Widget build(BuildContext c) => LotusButtons.text(
     onPressed: () => _open(c, const _PlansScreen(), fromTab: fromTab),
+    style: TextButton.styleFrom(
+      foregroundColor: AppColorsDark.linkGold,
+      minimumSize: const Size(44, 44),
+    ),
+    child: Text(
+      c.l10n.scenarioCalendarMyPlans,
+      style: AppTypography.text1SemiBold.copyWith(
+        color: AppColorsDark.linkGold,
+      ),
+    ),
   );
 }
 
@@ -669,31 +677,13 @@ class CalendarPlanningEntry extends StatelessWidget {
   Widget build(BuildContext c) => Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
-      AuthGradientButton(
-        text: c.l10n.scenarioCalendarFindDate,
-        onPressed: () =>
-            _open(c, const CalendarScenarioScreen(), fromTab: true),
+      ScenarioTile(
+        title: c.l10n.scenarioCalendarChooseDate,
+        subtitle: c.l10n.scenarioCalendarSubtitle,
+        onTap: () => _open(c, const CalendarScenarioScreen(), fromTab: true),
       ).withEntrance(),
+      const SizedBox(height: 20),
       const CalendarPlansButton(fromTab: true).withEntrance(),
-      CalendarPlansBuilder(
-        compact: true,
-        builder: (c, plans) {
-          final next = plans
-              .where((plan) => !plan.day.isBefore(calendarDay(DateTime.now())))
-              .firstOrNull;
-          return next == null
-              ? const SizedBox.shrink()
-              : Padding(
-                  padding: const EdgeInsets.only(top: 8),
-                  child: ScenarioTile(
-                    title: next.title,
-                    subtitle: _dateLabel(c, next.day),
-                    onTap: () =>
-                        _open(c, _PlanDetails(plan: next), fromTab: true),
-                  ),
-                );
-        },
-      ),
     ],
   );
 }

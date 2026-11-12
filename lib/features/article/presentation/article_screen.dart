@@ -313,7 +313,10 @@ class _ArticleContentCard extends StatelessWidget {
             Center(
               child: Text(
                 article.title,
-                style: AppTypography.h1.copyWith(color: AppColors.white),
+                style: AppTypography.h2.copyWith(
+                  color: AppColors.white,
+                  height: 1.2,
+                ),
                 textAlign: TextAlign.center,
               ),
             ),

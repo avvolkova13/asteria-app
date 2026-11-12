@@ -76,7 +76,7 @@ class _LoveLayoutState extends State<LoveLayout> {
     final contentProvider = di.get<ContentProvider>();
 
     return ListenableBuilder(
-      listenable: userProvider,
+      listenable: Listenable.merge([userProvider, contentProvider]),
       builder: (context, _) {
         final cardIds = _getCardIdsInOrder(userProvider);
 

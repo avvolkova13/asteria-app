@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
@@ -62,7 +63,12 @@ class TopNavBar extends StatelessWidget {
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) => AnnotatedRegion<SystemUiOverlayStyle>(
+    value: SystemUiOverlayStyle.light,
+    child: _buildContent(context),
+  );
+
+  Widget _buildContent(BuildContext context) {
     switch (type) {
       case TopNavBarType.payment:
         return Padding(
@@ -113,6 +119,37 @@ class TopNavBarDelegate extends SliverPersistentHeaderDelegate {
 
   @override
   Widget build(
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) {
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle.light,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              (Scaffold.maybeOf(context)?.widget.backgroundColor ??
+                      AppColorsDark.homeCanvas)
+                  .withValues(alpha: 1),
+              (Scaffold.maybeOf(context)?.widget.backgroundColor ??
+                      AppColorsDark.homeCanvas)
+                  .withValues(alpha: 1),
+              (Scaffold.maybeOf(context)?.widget.backgroundColor ??
+                      AppColorsDark.homeCanvas)
+                  .withValues(alpha: 0),
+            ],
+            stops: const [0, 0.96, 1],
+          ),
+        ),
+        child: _buildContent(context, shrinkOffset, overlapsContent),
+      ),
+    );
+  }
+
+  Widget _buildContent(
     BuildContext context,
     double shrinkOffset,
     bool overlapsContent,
@@ -217,18 +254,7 @@ class TopNavBarDelegate extends SliverPersistentHeaderDelegate {
 
   Widget _buildCollapsedHeader(BuildContext context, {bool showImage = true}) {
     return Container(
-      decoration: BoxDecoration(
-        image: showImage
-            ? DecorationImage(
-                image: AssetImage('assets/background/app_bar_short.webp'),
-                fit: BoxFit.cover,
-              )
-            : null,
-        borderRadius: const BorderRadius.only(
-          bottomLeft: Radius.circular(16),
-          bottomRight: Radius.circular(16),
-        ),
-      ),
+      color: Colors.transparent,
       child: Padding(
         padding: const EdgeInsets.only(left: 16, right: 16, top: 32),
         child: Row(
@@ -350,7 +376,7 @@ class _MoonTopNavBarWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ColoredBox(
-      color: AppColors.textPrimary,
+      color: Colors.transparent,
       child: SizedBox(
         height: 42 + topPadding,
         width: double.infinity,
@@ -563,25 +589,6 @@ class _HomeTopNavBarWidget extends StatelessWidget {
       child: Stack(
         clipBehavior: Clip.none,
         children: [
-          // Background image
-          if (!isProfileScreen && !isTransparent)
-            Positioned(
-              top: 0,
-              left: 0,
-              right: 0,
-              height: 144,
-              child: ClipRRect(
-                borderRadius: const BorderRadius.only(
-                  bottomLeft: Radius.circular(16),
-                  bottomRight: Radius.circular(16),
-                ),
-                child: Image.asset(
-                  'assets/background/app_bar_main.webp',
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
-
           // Status Bar
           Positioned(
             top: 60,

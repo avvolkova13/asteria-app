@@ -14,10 +14,12 @@ class HubEntryCard extends StatelessWidget {
     required this.art,
     required this.onTap,
     this.compact = false,
+    this.alignAction = false,
   });
   final String title, description, action, art;
   final VoidCallback onTap;
   final bool compact;
+  final bool alignAction;
   @override
   Widget build(BuildContext context) => Semantics(
     button: true,
@@ -35,7 +37,8 @@ class HubEntryCard extends StatelessWidget {
                   Center(
                     child: Image.asset(
                       art,
-                      height: 100,
+                      width: 126,
+                      height: 126,
                       fit: BoxFit.contain,
                       excludeFromSemantics: true,
                     ),
@@ -70,16 +73,26 @@ class HubEntryCard extends StatelessWidget {
                 const SizedBox(height: 10),
                 Text(
                   description,
-                  style: context.textTheme.inverseUrbanistRegular16,
+                  style: compact
+                      ? AppTypography.body14.copyWith(color: AppColors.white)
+                      : context.textTheme.inverseUrbanistRegular16,
                 ),
+                if (alignAction) const Spacer(),
                 const SizedBox(height: 16),
                 Row(
                   children: [
                     Expanded(
                       child: Text(
                         action,
-                        style: context.textTheme.inverseUrbanistSemiBold16
-                            .copyWith(color: AppColorsDark.linkGold),
+                        style:
+                            (compact
+                                    ? AppTypography.body14.copyWith(
+                                        fontWeight: FontWeight.w600,
+                                      )
+                                    : context
+                                          .textTheme
+                                          .inverseUrbanistSemiBold16)
+                                .copyWith(color: AppColorsDark.linkGold),
                       ),
                     ),
                     const SizedBox(width: 8),
@@ -100,31 +113,35 @@ class PracticeToolEntries extends StatelessWidget {
   @override
   Widget build(BuildContext c) {
     final ru = Localizations.localeOf(c).languageCode == 'ru';
-    final cards = [
-      HubEntryCard(
-        compact: true,
-        title: ru ? 'Таро' : 'Tarot',
-        description: ru
-            ? 'Карта дня, расклады и знакомство с колодой.'
-            : 'Your daily card, spreads and the full deck.',
-        action: ru ? 'Открыть Таро' : 'Explore Tarot',
-        art: 'assets/images/home/daily_symbol_tarot_back.webp',
-        onTap: () => TaroCardsRoute.push(c),
-      ),
-      HubEntryCard(
-        compact: true,
-        title: ru ? 'Руны' : 'Runes',
-        description: ru
-            ? 'Руна дня, расклады и значения символов.'
-            : 'Your daily rune, spreads and symbol meanings.',
-        action: ru ? 'Открыть руны' : 'Explore runes',
-        art: 'assets/images/home/runes_bag.webp',
-        onTap: () => RunesRoute.push(c),
-      ),
-    ];
     return LayoutBuilder(
       builder: (c, b) {
-        if (b.maxWidth < 340 || MediaQuery.textScalerOf(c).scale(16) > 22) {
+        final twoColumns =
+            b.maxWidth >= 340 && MediaQuery.textScalerOf(c).scale(16) <= 22;
+        final cards = [
+          HubEntryCard(
+            compact: true,
+            alignAction: twoColumns,
+            title: ru ? 'Таро' : 'Tarot',
+            description: ru
+                ? 'Карта дня, расклады и значения карт.'
+                : 'Your daily card, spreads and card meanings.',
+            action: ru ? 'Открыть' : 'Explore',
+            art: 'assets/images/home/practice_tarot_clay.webp',
+            onTap: () => TaroCardsRoute.push(c),
+          ),
+          HubEntryCard(
+            compact: true,
+            alignAction: twoColumns,
+            title: ru ? 'Руны' : 'Runes',
+            description: ru
+                ? 'Руна дня, расклады и значения рун.'
+                : 'Your daily rune, spreads and symbol meanings.',
+            action: ru ? 'Открыть' : 'Explore',
+            art: 'assets/images/home/practice_runes_clay.webp',
+            onTap: () => RunesRoute.push(c),
+          ),
+        ];
+        if (!twoColumns) {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [cards[0], const SizedBox(height: 14), cards[1]],

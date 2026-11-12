@@ -167,7 +167,7 @@ void main() {
         );
         final star = tester.getCenter(marker);
         final numeral = tester.getRect(number);
-        expect(star.dx, closeTo(numeral.right, 2));
+        expect(star.dx, closeTo(numeral.right + 4, 1));
         expect(star.dy, lessThan(numeral.top));
         expect(
           tester.widget<MoonPhaseMarker>(marker).color,
@@ -266,7 +266,8 @@ void main() {
     final decoration = _selectedDayBackgroundDecoration(tester);
     final highlightSize = tester.getSize(find.byKey(_selectedDayHighlightKey));
 
-    expect(highlightSize, const Size(32, 58));
+    expect(highlightSize.width, 32);
+    expect(highlightSize.height, inInclusiveRange(44, 56));
     expect(decoration.color, isNull);
     expect(decoration.boxShadow, isNull);
     expect(decoration.gradient, isA<LinearGradient>());

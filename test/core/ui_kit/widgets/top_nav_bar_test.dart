@@ -4,11 +4,73 @@ import 'package:asteria_app/core/routing/app_route.dart';
 import 'package:asteria_app/core/ui_kit/theme/theme.dart';
 import 'package:asteria_app/core/ui_kit/widgets/top_nav_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 void main() {
+  for (final type in [
+    TopNavBarType.transparent,
+    TopNavBarType.moon,
+    TopNavBarType.onlyCollapsed,
+  ]) {
+    testWidgets('scrolled $type header keeps light status and no legacy sky', (
+      tester,
+    ) async {
+      final user = UserProvider(userRepository: _UnusedUserRepository());
+      addTearDown(user.dispose);
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Builder(
+            builder: (context) => Theme(
+              data: AppThemeDark.instance.getThemeData(context),
+              child: ChangeNotifierProvider<UserProvider>.value(
+                value: user,
+                child: Scaffold(
+                  body: CustomScrollView(
+                    slivers: [
+                      SliverPersistentHeader(
+                        pinned: true,
+                        delegate: TopNavBarDelegate(
+                          userName: 'Расклад',
+                          type: type,
+                        ),
+                      ),
+                      const SliverToBoxAdapter(child: SizedBox(height: 1800)),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.drag(find.byType(CustomScrollView), const Offset(0, -400));
+      await tester.pumpAndSettle();
+      final oldSky = find.byWidgetPredicate(
+        (widget) =>
+            widget is Image &&
+            widget.image is AssetImage &&
+            (widget.image as AssetImage).assetName.startsWith(
+              'assets/background/app_bar_',
+            ),
+      );
+      expect(oldSky, findsNothing);
+      final regions = tester.widgetList<AnnotatedRegion<SystemUiOverlayStyle>>(
+        find.byType(AnnotatedRegion<SystemUiOverlayStyle>),
+      );
+      expect(
+        regions.any(
+          (region) => region.value.statusBarBrightness == Brightness.dark,
+        ),
+        isTrue,
+      );
+      expect(find.text('Расклад').hitTestable(), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+  }
+
   testWidgets('renders the transparent greeting with the Figma title style', (
     tester,
   ) async {

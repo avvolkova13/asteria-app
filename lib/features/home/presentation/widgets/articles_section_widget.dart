@@ -1,3 +1,4 @@
+import 'package:asteria_app/features/article/presentation/article_card_title.dart';
 import 'package:asteria_app/core/ui_kit/widgets/artwork_unavailable.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
@@ -131,7 +132,10 @@ class _ArticlesSectionWidgetState extends State<ArticlesSectionWidget> {
                         onTap: () => _onArticleTap(context, articles[index].id),
                         child: _ArticleCard(
                           width: cardWidth,
-                          title: articles[index].title,
+                          title: articleCardTitle(
+                            articles[index],
+                            Localizations.localeOf(context),
+                          ),
                           category: articles[index].category,
                           timeToRead: articles[index].timeToRead,
                           imageName: articles[index].id,
@@ -204,22 +208,24 @@ class _ArticleCard extends StatelessWidget {
                   ArtworkUnavailable(width: width, height: 167, radius: 0),
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 12),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 12),
             child: Text(
               title,
-              style: context.textTheme.playfairMedium20.copyWith(
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
+              style: AppTypography.h4.copyWith(
                 color: isRedesigned || isDarkSection
                     ? AppColors.white
                     : AppColors.textPrimary,
-                height: 1.1,
+                height: 1.25,
               ),
             ),
           ),
           const Spacer(),
           Padding(
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.all(12),
             child: _ArticleMetadata(category: category, timeToRead: timeToRead),
           ),
         ],
