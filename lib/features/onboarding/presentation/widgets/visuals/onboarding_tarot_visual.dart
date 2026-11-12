@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/tarot_card_frame.dart';
 import 'dart:math' as math;
 import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 
@@ -198,10 +199,13 @@ class _TarotCard extends StatelessWidget {
             child: Stack(
               fit: StackFit.expand,
               children: [
-                Image.asset(
-                  asset,
-                  fit: BoxFit.cover,
-                  excludeFromSemantics: true,
+                TarotCardFrame(
+                  radius: 7,
+                  child: Image.asset(
+                    asset,
+                    fit: BoxFit.cover,
+                    excludeFromSemantics: true,
+                  ),
                 ),
                 if (dimmed) const ColoredBox(color: Color(0x80110D20)),
               ],

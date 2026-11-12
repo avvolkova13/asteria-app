@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/tarot_card_frame.dart';
 import 'package:asteria_app/core/ui_kit/widgets/modal_glass_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/app/data/models/tarot_card/tarot_card_model.dart';
@@ -89,16 +90,19 @@ class TarotLayoutCardDescriptionModal extends StatelessWidget {
                       ),
                       const SizedBox(height: 16),
                       Center(
-                        child: Image.asset(
-                          TarotCardAssetResolver.resolve(
-                            imageName: card.imageName,
-                            languageCode: Localizations.localeOf(
-                              context,
-                            ).languageCode,
+                        child: TarotCardFrame(
+                          radius: 12,
+                          child: Image.asset(
+                            TarotCardAssetResolver.resolve(
+                              imageName: card.imageName,
+                              languageCode: Localizations.localeOf(
+                                context,
+                              ).languageCode,
+                            ),
+                            width: 183,
+                            height: 274,
+                            fit: BoxFit.cover,
                           ),
-                          width: 183,
-                          height: 274,
-                          fit: BoxFit.cover,
                         ),
                       ),
                       const SizedBox(height: 16),

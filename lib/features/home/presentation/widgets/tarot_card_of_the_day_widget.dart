@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/tarot_card_frame.dart';
 import 'package:asteria_app/core/ui_kit/widgets/artwork_unavailable.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
@@ -278,18 +279,21 @@ class _TarotCardOfTheDayWidgetState extends State<TarotCardOfTheDayWidget>
       ),
       child: ClipRRect(
         borderRadius: borderRadius,
-        child: Image.asset(
-          'assets/images/cards/card_back_default.png',
-          width: 219,
-          height: 328,
-          fit: BoxFit.fitWidth,
-          errorBuilder: (context, error, stackTrace) {
-            return ArtworkUnavailable(
-              width: 219,
-              height: 328,
-              radius: borderRadius.topLeft.x,
-            );
-          },
+        child: TarotCardFrame(
+          radius: borderRadius.topLeft.x,
+          child: Image.asset(
+            'assets/images/cards/card_back_default.png',
+            width: 219,
+            height: 328,
+            fit: BoxFit.fitWidth,
+            errorBuilder: (context, error, stackTrace) {
+              return ArtworkUnavailable(
+                width: 219,
+                height: 328,
+                radius: borderRadius.topLeft.x,
+              );
+            },
+          ),
         ),
       ),
     );
@@ -303,21 +307,24 @@ class _TarotCardOfTheDayWidgetState extends State<TarotCardOfTheDayWidget>
       decoration: BoxDecoration(borderRadius: borderRadius),
       child: ClipRRect(
         borderRadius: borderRadius,
-        child: Image.asset(
-          TarotCardAssetResolver.resolve(
-            imageName: tarotCard.imageName,
-            languageCode: Localizations.localeOf(context).languageCode,
+        child: TarotCardFrame(
+          radius: borderRadius.topLeft.x,
+          child: Image.asset(
+            TarotCardAssetResolver.resolve(
+              imageName: tarotCard.imageName,
+              languageCode: Localizations.localeOf(context).languageCode,
+            ),
+            width: 219,
+            height: 328,
+            fit: BoxFit.cover,
+            errorBuilder: (context, error, stackTrace) {
+              return ArtworkUnavailable(
+                width: 219,
+                height: 328,
+                radius: borderRadius.topLeft.x,
+              );
+            },
           ),
-          width: 219,
-          height: 328,
-          fit: BoxFit.cover,
-          errorBuilder: (context, error, stackTrace) {
-            return ArtworkUnavailable(
-              width: 219,
-              height: 328,
-              radius: borderRadius.topLeft.x,
-            );
-          },
         ),
       ),
     );

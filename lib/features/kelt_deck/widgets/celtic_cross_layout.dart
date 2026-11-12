@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/tarot_card_frame.dart';
 import 'package:asteria_app/core/ui_kit/widgets/artwork_unavailable.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
@@ -486,14 +487,21 @@ class _CelticCrossLayoutState extends State<CelticCrossLayout>
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(12),
-        child: Image.asset(
-          'assets/images/cards/card_back/card_back_$cardNumber.webp',
-          width: width,
-          height: height,
-          fit: BoxFit.contain,
-          errorBuilder: (context, error, stackTrace) {
-            return ArtworkUnavailable(width: width, height: height, radius: 12);
-          },
+        child: TarotCardFrame(
+          radius: 12,
+          child: Image.asset(
+            'assets/images/cards/card_back/card_back_$cardNumber.webp',
+            width: width,
+            height: height,
+            fit: BoxFit.contain,
+            errorBuilder: (context, error, stackTrace) {
+              return ArtworkUnavailable(
+                width: width,
+                height: height,
+                radius: 12,
+              );
+            },
+          ),
         ),
       ),
     );
@@ -511,18 +519,25 @@ class _CelticCrossLayoutState extends State<CelticCrossLayout>
       decoration: BoxDecoration(borderRadius: BorderRadius.circular(12)),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(12),
-        child: Image.asset(
-          TarotCardAssetResolver.resolve(
-            imageName: card.imageName,
-            languageCode: Localizations.localeOf(context).languageCode,
+        child: TarotCardFrame(
+          radius: 12,
+          child: Image.asset(
+            TarotCardAssetResolver.resolve(
+              imageName: card.imageName,
+              languageCode: Localizations.localeOf(context).languageCode,
+            ),
+            frameBuilder: AsteriaEntrance.imageFrame,
+            width: width,
+            height: height,
+            fit: BoxFit.contain,
+            errorBuilder: (context, error, stackTrace) {
+              return ArtworkUnavailable(
+                width: width,
+                height: height,
+                radius: 12,
+              );
+            },
           ),
-          frameBuilder: AsteriaEntrance.imageFrame,
-          width: width,
-          height: height,
-          fit: BoxFit.contain,
-          errorBuilder: (context, error, stackTrace) {
-            return ArtworkUnavailable(width: width, height: height, radius: 12);
-          },
         ),
       ),
     );

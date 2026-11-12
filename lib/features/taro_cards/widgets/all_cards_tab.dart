@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/tarot_card_frame.dart';
 import 'package:asteria_app/core/ui_kit/widgets/modal_glass_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
@@ -74,18 +75,21 @@ class AllCardsTab extends StatelessWidget {
                             () => _showCardDescription(context, card),
                           )
                         : null,
-                    child: LockedContentImage(
-                      imagePath: TarotCardAssetResolver.resolve(
-                        imageName: card.imageName,
-                        languageCode: Localizations.localeOf(
-                          context,
-                        ).languageCode,
+                    child: TarotCardFrame(
+                      radius: 12,
+                      child: LockedContentImage(
+                        imagePath: TarotCardAssetResolver.resolve(
+                          imageName: card.imageName,
+                          languageCode: Localizations.localeOf(
+                            context,
+                          ).languageCode,
+                        ),
+                        isLocked: !canView,
+                        borderRadius: 12,
+                        onTap: !canView
+                            ? null
+                            : () => _showCardDescription(context, card),
                       ),
-                      isLocked: !canView,
-                      borderRadius: 12,
-                      onTap: !canView
-                          ? null
-                          : () => _showCardDescription(context, card),
                     ),
                   ),
                 );

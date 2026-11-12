@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/tarot_card_frame.dart';
 import 'package:asteria_app/core/ui_kit/widgets/artwork_unavailable.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
@@ -533,13 +534,16 @@ class DailyTarotCardFace extends StatelessWidget {
           );
     return ClipRRect(
       borderRadius: BorderRadius.circular(16),
-      child: Image.asset(
-        asset,
-        width: width,
-        height: height,
-        fit: BoxFit.cover,
-        errorBuilder: (context, error, stackTrace) =>
-            ArtworkUnavailable(width: width, height: height, radius: 16),
+      child: TarotCardFrame(
+        radius: 16,
+        child: Image.asset(
+          asset,
+          width: width,
+          height: height,
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) =>
+              ArtworkUnavailable(width: width, height: height, radius: 16),
+        ),
       ),
     );
   }
