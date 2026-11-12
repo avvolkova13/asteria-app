@@ -28,8 +28,8 @@ class AdvertisingBlockWidget extends StatelessWidget {
       child: LayoutBuilder(
         builder: (context, constraints) {
           final cardWidth = constraints.maxWidth;
-          final portraitWidth = (cardWidth * .34).clamp(72.0, 144.0);
-          final contentWidth = cardWidth - portraitWidth - 40;
+          final portraitWidth = (cardWidth * .36).clamp(72.0, 152.0);
+          final contentWidth = cardWidth - portraitWidth - 32;
           final compact =
               contentWidth < MediaQuery.textScalerOf(context).scale(145);
           return ClipRRect(
@@ -54,7 +54,7 @@ class AdvertisingBlockWidget extends StatelessWidget {
                       ),
                     ),
                     Positioned(
-                      bottom: 0,
+                      bottom: compact ? 8 : 14,
                       right: 8,
                       width: portraitWidth,
                       height: compact ? 104 : portraitWidth * 1.47,
