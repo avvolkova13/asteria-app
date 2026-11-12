@@ -597,8 +597,8 @@ class _PlanDetails extends StatelessWidget {
           const SizedBox(height: 20),
           ScenarioCompletion(
             message: Localizations.localeOf(c).languageCode == 'ru'
-                ? 'Ваш план отмечен в лунном календаре. Его можно открыть во вкладке «Луна» → «Мои планы». На главной вас ждут карта дня и аудиопрактика.'
-                : 'Your plan is marked in the lunar calendar. Find it in Moon → My plans. Home also has your daily card and an audio practice.',
+                ? 'Ваш план отмечен в лунном календаре. Его можно открыть во вкладке «Календарь» → «Мои планы». На главной вас ждут карта дня и аудиопрактика.'
+                : 'Your plan is marked in the lunar calendar. Find it in Calendar → My plans. Home also has your daily card and an audio practice.',
           ),
         ] else
           AuthGradientButton(

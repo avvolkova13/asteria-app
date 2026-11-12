@@ -337,7 +337,7 @@ class _LiquidTabStripState extends State<_LiquidTabStrip>
     ratio: .98,
   );
   int? _target;
-  static const _assets = ['home', 'personal', 'moon', 'practice'];
+  static const _assets = ['home', 'moon', 'practice', 'personal'];
 
   bool _reduced = false;
   bool _dragging = false;
@@ -398,10 +398,10 @@ class _LiquidTabStripState extends State<_LiquidTabStrip>
     const ink = AppColors.white;
     final rtl = Directionality.of(context) == TextDirection.rtl;
     final labels = [
-      context.l10n.navHome,
-      context.l10n.navPersonal,
-      context.l10n.navMoon,
+      context.l10n.navigationToday,
+      context.l10n.navigationCalendar,
       context.l10n.navPractices,
+      context.l10n.navigationReadings,
     ];
     return DecoratedBox(
       decoration: BoxDecoration(

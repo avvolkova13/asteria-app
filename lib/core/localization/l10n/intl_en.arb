@@ -1023,5 +1023,9 @@
   "planReminderDenied": "To get reminders, allow notifications for Asteria in iPhone Settings.",
   "planReminderPast": "This time has passed. Choose a later time.",
   "planReminderUnavailable": "Couldn’t update the reminder. Please try again.",
-  "planReminderNotificationTitle": "Your plan for today"
+  "planReminderNotificationTitle": "Your plan for today",
+  "navigationToday": "Today",
+  "navigationCalendar": "Calendar",
+  "navigationReadings": "Readings",
+  "readingsIntro": "Explore your birth chart, understand a connection or revisit a dream."
 }

@@ -1,3 +1,8 @@
+import 'package:asteria_app/features/home/home_tabs.dart';
+import 'package:asteria_app/features/scenarios/calendar_scenario.dart';
+import 'package:asteria_app/features/scenarios/calendar_plan.dart';
+import 'package:asteria_app/features/scenarios/scenario_ui.dart';
+import 'package:go_router/go_router.dart';
 import 'package:asteria_app/app/providers/content_provider.dart';
 import 'package:asteria_app/app/providers/user_provider.dart';
 import 'package:asteria_app/core/analytics/analytics_route_observer.dart';
@@ -31,7 +36,6 @@ class _MainScreenState extends State<MainScreen> {
   bool _hasTrackedTarotCardView = false;
   bool _hasTrackedAffirmationCardView = false;
   bool _hasTrackedRuneCardView = false;
-  bool _hasTrackedSubscriptionPromoCardView = false;
 
   @override
   void initState() {
@@ -61,7 +65,6 @@ class _MainScreenState extends State<MainScreen> {
       if (!_isVisible) return;
       _trackHomeCardImpressions();
       _trackAffirmationCardViewOnce();
-      _trackSubscriptionPromoCardViewOnce();
     });
   }
 
@@ -99,23 +102,6 @@ class _MainScreenState extends State<MainScreen> {
       funnelType: FunnelType.runes,
       entryPointId: 'home_rune_card',
       position: 2,
-    );
-  }
-
-  void _trackSubscriptionPromoCardViewOnce() {
-    if (!_isVisible ||
-        _hasTrackedSubscriptionPromoCardView ||
-        context.read<UserProvider>().currentUser == null ||
-        (MonetizationProvider.maybeOf(context, listen: false)?.effectivePro ??
-            false)) {
-      return;
-    }
-
-    _hasTrackedSubscriptionPromoCardView = true;
-    di.get<ProductAnalyticsService>().trackHomeCardView(
-      funnelType: FunnelType.subscription,
-      entryPointId: 'home_pro_promo_card',
-      position: 3,
     );
   }
 
@@ -196,10 +182,70 @@ class _MainScreenState extends State<MainScreen> {
                             const SizedBox(height: 26),
                             const MoonPhaseWidget(),
                             const SizedBox(height: 24),
-                            _buildSubscriptionPromoSection(),
+                            CalendarPlansBuilder(
+                              compact: true,
+                              builder: (c, plans) {
+                                final next = plans
+                                    .where(
+                                      (p) => !p.day.isBefore(
+                                        calendarDay(DateTime.now()),
+                                      ),
+                                    )
+                                    .firstOrNull;
+                                if (next == null) {
+                                  return const SizedBox.shrink();
+                                }
+                                final ru =
+                                    Localizations.localeOf(c).languageCode ==
+                                    'ru';
+                                return Padding(
+                                  padding: const EdgeInsets.fromLTRB(
+                                    16,
+                                    0,
+                                    16,
+                                    24,
+                                  ),
+                                  child: ScenarioTile(
+                                    title: next.title,
+                                    subtitle:
+                                        '${next.day.day}.${next.day.month}.${next.day.year} · ${ru ? 'Открыть календарь' : 'Open calendar'}',
+                                    art:
+                                        'assets/images/scenarios/calendar.webp',
+                                    onTap: () => c.read<HomeCubit>().changeTab(
+                                      HomeTabs.calendar,
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
                             AsteriaEntrance(child: _buildAffirmationCard()),
                             const SizedBox(height: 24),
                             _buildDailySymbolWidget(state),
+                            const SizedBox(height: 24),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                              ),
+                              child: ScenarioTile(
+                                key: const ValueKey('today-scenario-entry'),
+                                title:
+                                    Localizations.localeOf(
+                                          context,
+                                        ).languageCode ==
+                                        'ru'
+                                    ? 'Что вам сейчас нужно?'
+                                    : 'What do you need right now?',
+                                subtitle:
+                                    Localizations.localeOf(
+                                          context,
+                                        ).languageCode ==
+                                        'ru'
+                                    ? 'Выбрать сценарий'
+                                    : 'Choose a path',
+                                art: 'assets/images/scenarios/compass.webp',
+                                onTap: () => context.push('/first-session'),
+                              ),
+                            ),
                             const SizedBox(height: 24),
                           ],
                         );
@@ -244,42 +290,6 @@ class _MainScreenState extends State<MainScreen> {
         track('open_affirmation');
         if (mounted) AffirmationRoute.push(context);
       },
-    );
-  }
-
-  Widget _buildSubscriptionPromoSection() {
-    final userProvider = context.watch<UserProvider>();
-    final monetizationProvider = MonetizationProvider.maybeOf(context);
-    final user = userProvider.currentUser;
-    if (user == null || (monetizationProvider?.effectivePro ?? false)) {
-      return const SizedBox.shrink();
-    }
-
-    _scheduleVisibleAnalytics();
-
-    return Column(
-      children: [
-        AsteriaEntrance(
-          child: HomeProSubscriptionCard(
-            compactHome: true,
-            onPressed: () {
-              di.get<ProductAnalyticsService>().trackHomeCardClick(
-                funnelType: FunnelType.subscription,
-                entryPointId: 'home_pro_promo_card',
-                position: 3,
-                ctaName: 'try_7_days_free',
-              );
-              SubscriptionRoute.push(
-                context,
-                params: SubscriptionRouteParams(
-                  originSurface: 'home_pro_promo_card',
-                ),
-              );
-            },
-          ),
-        ),
-        const SizedBox(height: 24),
-      ],
     );
   }
 

@@ -1,3 +1,6 @@
+import 'package:asteria_app/features/home/home_tabs.dart';
+import 'package:asteria_app/features/home/presentation/widgets/home_section_heading.dart';
+import 'package:asteria_app/features/home/presentation/widgets/advertising_block_widget.dart';
 import 'package:asteria_app/app/data/models/user/user_model.dart';
 import 'package:asteria_app/features/natal_card/widgets/natal_wheel.dart';
 import 'package:asteria_app/core/ui_kit/widgets/pearl_metric_row.dart';
@@ -269,7 +272,7 @@ class _PersonalScreenState extends State<PersonalScreen> {
     final userProvider = di.get<UserProvider>();
     return BlocListener<HomeCubit, HomeState>(
       listenWhen: (_, current) =>
-          current is HomeLoaded && current.currentTabIndex == 1,
+          current is HomeLoaded && current.currentTabIndex == HomeTabs.readings,
       listener: (_, __) => _scheduleVisibleAnalytics(),
       child: AnnotatedRegion<SystemUiOverlayStyle>(
         value: SystemUiOverlayStyle.light.copyWith(
@@ -322,6 +325,14 @@ class _PersonalScreenState extends State<PersonalScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        const SizedBox(height: 18),
+        HomeSectionHeading(context.l10n.navigationReadings).withEntrance(),
+        const SizedBox(height: 10),
+        Text(
+          context.l10n.readingsIntro,
+          style: context.textTheme.inverseUrbanistRegular16,
+        ).withEntrance(),
+        const SizedBox(height: 24),
         if (AppFeatureVisibility.horoscopes)
           ..._horoscopeSection(context, userProvider),
         _natalBanner(context, userProvider.currentUser).withEntrance(),
@@ -330,6 +341,8 @@ class _PersonalScreenState extends State<PersonalScreen> {
           onPressed: _onCompatibilityPressed,
         ).withEntrance(),
         const SizedBox(height: 24),
+        const AdvertisingBlockWidget(horizontalMargin: 0).withEntrance(),
+        const SizedBox(height: 16),
       ],
     );
   }
@@ -650,7 +663,7 @@ class _PersonalBackground extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ColoredBox(
-      color: _pageBackground,
+      color: _headerBackground,
       child: Stack(
         fit: StackFit.expand,
         children: [

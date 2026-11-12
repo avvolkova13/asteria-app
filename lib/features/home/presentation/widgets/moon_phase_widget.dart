@@ -1,3 +1,4 @@
+import 'package:asteria_app/features/home/home_tabs.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
@@ -1317,7 +1318,8 @@ class _MoonPhaseHeader extends StatelessWidget {
       children: [
         HomeSectionHeading(context.l10n.moonPhaseTitle),
         _MoonCalendarButton(
-          onPressed: () => context.read<HomeCubit>().changeTab(2),
+          onPressed: () =>
+              context.read<HomeCubit>().changeTab(HomeTabs.calendar),
         ),
       ],
     );

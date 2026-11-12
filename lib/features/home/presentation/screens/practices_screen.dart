@@ -1,3 +1,5 @@
+import 'package:asteria_app/core/routing/app_route.dart';
+import 'package:asteria_app/features/home/presentation/widgets/daily_practice_hub.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/app/providers/content_provider.dart';
 import 'package:asteria_app/core/di/di.dart';
@@ -12,6 +14,7 @@ class PracticesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ru = Localizations.localeOf(context).languageCode == 'ru';
     final content = di.get<ContentProvider>();
     return ColoredBox(
       color: AppColors.textPrimary,
@@ -32,7 +35,25 @@ class PracticesScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-            const AsteriaEntrance(child: AdvertisingBlockWidget()),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  HubEntryCard(
+                    title: ru ? 'Время для себя' : 'Time for yourself',
+                    description: ru
+                        ? 'Выберите аффирмацию по настроению. Любимые записи можно сохранить.'
+                        : 'Choose an affirmation for your mood and save your favourites.',
+                    action: ru ? 'Выбрать аффирмацию' : 'Choose an affirmation',
+                    art: 'assets/images/scenarios/lotus.webp',
+                    onTap: () => AffirmationRoute.push(context),
+                  ),
+                  const SizedBox(height: 24),
+                  const PracticeToolEntries(),
+                ],
+              ),
+            ),
             const SizedBox(height: 32),
             ListenableBuilder(
               listenable: content,

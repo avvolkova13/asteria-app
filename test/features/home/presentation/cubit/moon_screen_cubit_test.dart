@@ -97,7 +97,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(events.names.where((name) => name == 'moon_day_view'), isEmpty);
       tab.value = 1;
-      observer.homeTab(2);
+      observer.homeTab(1);
       await tester.pumpAndSettle();
       expect(
         events.names.where((name) => name == 'moon_day_view'),
@@ -107,7 +107,7 @@ void main() {
       tab.value = 0;
       await tester.pumpAndSettle();
       tab.value = 1;
-      observer.homeTab(2);
+      observer.homeTab(1);
       await tester.pumpAndSettle();
       expect(
         events.names.where((name) => name == 'moon_day_view'),

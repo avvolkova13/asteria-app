@@ -1320,6 +1320,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "navPersonal": MessageLookupByLibrary.simpleMessage("Личное"),
     "navPractices": MessageLookupByLibrary.simpleMessage("Практики"),
     "navProfile": MessageLookupByLibrary.simpleMessage("Профиль"),
+    "navigationCalendar": MessageLookupByLibrary.simpleMessage("Календарь"),
+    "navigationReadings": MessageLookupByLibrary.simpleMessage("Разборы"),
+    "navigationToday": MessageLookupByLibrary.simpleMessage("Сегодня"),
     "next": MessageLookupByLibrary.simpleMessage("Далее"),
     "nightTimeOptionLabel": MessageLookupByLibrary.simpleMessage(
       "Ночное время",
@@ -1742,6 +1745,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "Твой расклад завершён",
     ),
     "readingTimeMinutes": MessageLookupByLibrary.simpleMessage("мин"),
+    "readingsIntro": MessageLookupByLibrary.simpleMessage(
+      "Узнайте себя лучше, посмотрите разбор пары или вернитесь к запомнившемуся сну.",
+    ),
     "refreshDailyRuneLabel": MessageLookupByLibrary.simpleMessage(
       "Обновить руну дня",
     ),

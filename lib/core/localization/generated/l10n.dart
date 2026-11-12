@@ -8984,6 +8984,41 @@ class AppLocalizations {
       args: [],
     );
   }
+
+  /// `Today`
+  String get navigationToday {
+    return Intl.message('Today', name: 'navigationToday', desc: '', args: []);
+  }
+
+  /// `Calendar`
+  String get navigationCalendar {
+    return Intl.message(
+      'Calendar',
+      name: 'navigationCalendar',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Readings`
+  String get navigationReadings {
+    return Intl.message(
+      'Readings',
+      name: 'navigationReadings',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Explore your birth chart, understand a connection or revisit a dream.`
+  String get readingsIntro {
+    return Intl.message(
+      'Explore your birth chart, understand a connection or revisit a dream.',
+      name: 'readingsIntro',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<AppLocalizations> {

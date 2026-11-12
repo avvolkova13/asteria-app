@@ -71,7 +71,7 @@ void main() {
     await di.reset();
   });
 
-  Future<void> mount(WidgetTester tester, {int initialTab = 3}) async {
+  Future<void> mount(WidgetTester tester, {int initialTab = 2}) async {
     tab.value = initialTab;
     router = GoRouter(
       initialLocation: '/home',
@@ -95,9 +95,9 @@ void main() {
                   index: index,
                   children: const [
                     MainScreen(),
+                    SizedBox.shrink(),
+                    SizedBox.shrink(),
                     PersonalScreen(),
-                    SizedBox.shrink(),
-                    SizedBox.shrink(),
                   ],
                 ),
               ),
@@ -163,7 +163,11 @@ void main() {
           expect(position.pixels, position.maxScrollExtent);
           expect(
             tester.getBottomLeft(viewport).dy -
-                tester.getBottomLeft(symbols).dy,
+                tester
+                    .getBottomLeft(
+                      find.byKey(const ValueKey('today-scenario-entry')),
+                    )
+                    .dy,
             closeTo(24, .5),
           );
           await gesture.up();
@@ -186,7 +190,7 @@ void main() {
     expect(entry, findsOneWidget);
     await tester.tap(entry);
     await tester.pump();
-    expect(home.selectedTab, 2);
+    expect(home.selectedTab, 1);
     await tester.pumpWidget(const SizedBox.shrink());
   });
 
@@ -266,7 +270,7 @@ void main() {
   ) async {
     await mount(tester, initialTab: 0);
     expect(analytics.cards, ['home_tarot_card', 'home_affirmation_card']);
-    showTab(3);
+    showTab(2);
     await tester.pump();
     content.loadAffirmation();
     user.signIn();
@@ -278,19 +282,15 @@ void main() {
     await tester.pump();
     expect(
       analytics.cards,
-      unorderedEquals([
-        'home_tarot_card',
-        'home_affirmation_card',
-        'home_pro_promo_card',
-      ]),
+      unorderedEquals(['home_tarot_card', 'home_affirmation_card']),
     );
 
     content.loadAffirmation();
-    showTab(3);
+    showTab(2);
     await tester.pump();
     showTab(0);
     await tester.pump();
-    expect(analytics.cards, hasLength(3));
+    expect(analytics.cards, hasLength(2));
     expect(analytics.warehouseEvents, isEmpty);
     expect(tester.takeException(), isNull);
     await tester.pumpWidget(const SizedBox.shrink());
@@ -301,7 +301,7 @@ void main() {
     (tester) async {
       await mount(tester);
       expect(analytics.cards, isEmpty);
-      showTab(1);
+      showTab(3);
       expect(analytics.cards, isEmpty);
       await tester.pump();
       expect(analytics.cards, ['home_natal_card', 'home_compatibility_card']);
@@ -313,7 +313,7 @@ void main() {
         'home_tarot_card',
         'home_affirmation_card',
       ]);
-      showTab(1);
+      showTab(3);
       await tester.pump();
       expect(analytics.cards, hasLength(4));
       expect(analytics.warehouseEvents, isEmpty);
@@ -325,7 +325,7 @@ void main() {
   testWidgets('personal impressions also work when mounted on personal tab', (
     tester,
   ) async {
-    await mount(tester, initialTab: 1);
+    await mount(tester, initialTab: 3);
     expect(analytics.cards, ['home_natal_card', 'home_compatibility_card']);
     await tester.pumpWidget(const SizedBox.shrink());
   });
@@ -334,11 +334,11 @@ void main() {
     tester,
   ) async {
     await mount(tester);
-    showTab(1);
     showTab(3);
+    showTab(2);
     await tester.pump();
     expect(analytics.cards, isEmpty);
-    showTab(1);
+    showTab(3);
     await tester.pump();
     expect(analytics.cards, ['home_natal_card', 'home_compatibility_card']);
     await tester.pumpWidget(const SizedBox.shrink());
@@ -354,7 +354,7 @@ void main() {
     expect(observer.isObserved, isFalse);
     expect(content.isObserved, isFalse);
     content.loadAffirmation();
-    observer.homeTab(1);
+    observer.homeTab(3);
     await tester.pump();
     expect(analytics.cards, isEmpty);
     expect(tester.takeException(), isNull);

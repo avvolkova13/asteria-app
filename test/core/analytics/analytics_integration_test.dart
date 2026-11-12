@@ -370,8 +370,8 @@ void main() {
       expect(views, ['/home', '/shop', '/home', '/settings']);
       router.go('/home');
       await tester.pumpAndSettle();
-      observer.homeTab(3);
-      observer.homeTab(3);
+      observer.homeTab(2);
+      observer.homeTab(2);
       router.push('/home/profile');
       await tester.pumpAndSettle();
       router.push('/shop');

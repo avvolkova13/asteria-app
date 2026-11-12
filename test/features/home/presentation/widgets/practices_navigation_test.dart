@@ -35,7 +35,7 @@ void main() {
         userProvider: user,
       );
       await home.start();
-      home.changeTab(3);
+      home.changeTab(2);
       addTearDown(home.close);
       final router = GoRouter(
         initialLocation: '/home',
@@ -49,7 +49,7 @@ void main() {
             routes: [HomeProfileRoute()],
             builder: (_, _) => BlocBuilder<HomeCubit, HomeState>(
               builder: (_, state) => Scaffold(
-                body: (state as HomeLoaded).currentTabIndex == 3
+                body: (state as HomeLoaded).currentTabIndex == 2
                     ? const PracticesScreen()
                     : const Text('Main tab'),
               ),
@@ -109,7 +109,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.byType(PracticesScreen), findsOneWidget);
       expect(find.byType(ProfileScreen), findsNothing);
-      expect((home.state as HomeLoaded).currentTabIndex, 3);
+      expect((home.state as HomeLoaded).currentTabIndex, 2);
       await tester.tap(avatar);
       await tester.pumpAndSettle();
       await tester.tap(find.text(labels.scenarioStartTitle));

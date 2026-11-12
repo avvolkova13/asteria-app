@@ -1302,6 +1302,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "navPersonal": MessageLookupByLibrary.simpleMessage("Personal"),
     "navPractices": MessageLookupByLibrary.simpleMessage("Practices"),
     "navProfile": MessageLookupByLibrary.simpleMessage("Profile"),
+    "navigationCalendar": MessageLookupByLibrary.simpleMessage("Calendar"),
+    "navigationReadings": MessageLookupByLibrary.simpleMessage("Readings"),
+    "navigationToday": MessageLookupByLibrary.simpleMessage("Today"),
     "next": MessageLookupByLibrary.simpleMessage("Next"),
     "nightTimeOptionLabel": MessageLookupByLibrary.simpleMessage("Nighttime"),
     "noSubscriptionQuestion": MessageLookupByLibrary.simpleMessage(
@@ -1710,6 +1713,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "Your reading is complete",
     ),
     "readingTimeMinutes": MessageLookupByLibrary.simpleMessage("min"),
+    "readingsIntro": MessageLookupByLibrary.simpleMessage(
+      "Explore your birth chart, understand a connection or revisit a dream.",
+    ),
     "refreshDailyRuneLabel": MessageLookupByLibrary.simpleMessage(
       "Refresh rune of the day",
     ),

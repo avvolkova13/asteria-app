@@ -1023,5 +1023,9 @@
   "planReminderDenied": "Чтобы получать напоминания, разрешите уведомления для Asteria в настройках iPhone.",
   "planReminderPast": "Это время уже прошло. Выберите более позднее время.",
   "planReminderUnavailable": "Не удалось обновить напоминание. Попробуйте ещё раз.",
-  "planReminderNotificationTitle": "План на сегодня"
+  "planReminderNotificationTitle": "План на сегодня",
+  "navigationToday": "Сегодня",
+  "navigationCalendar": "Календарь",
+  "navigationReadings": "Разборы",
+  "readingsIntro": "Узнайте себя лучше, посмотрите разбор пары или вернитесь к запомнившемуся сну."
 }

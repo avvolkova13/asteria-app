@@ -9,7 +9,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() {
   testWidgets(
-    'home, personal, moon and practices select their expected indexes',
+    'today, calendar, practices and readings select their expected indexes',
     (tester) async {
       var selected = -1;
       await tester.pumpWidget(
@@ -34,10 +34,10 @@ void main() {
       final context = tester.element(find.byType(BottomTabBarWidget));
       final l10n = AppLocalizations.of(context);
       final labels = [
-        l10n.navHome,
-        l10n.navPersonal,
-        l10n.navMoon,
+        l10n.navigationToday,
+        l10n.navigationCalendar,
         l10n.navPractices,
+        l10n.navigationReadings,
       ];
       for (var index = 0; index < labels.length; index++) {
         await tester.tap(find.text(labels[index]));
@@ -85,7 +85,7 @@ void main() {
         final lens = find.byType(RawMagnifier);
         final start = tester.getCenter(lens);
         final end = Offset(
-          tester.getCenter(find.text(l10n.navPractices)).dx,
+          tester.getCenter(find.text(l10n.navigationReadings)).dx,
           start.dy,
         );
         final finger = await tester.startGesture(start);
@@ -155,7 +155,7 @@ void main() {
         await tester.pumpAndSettle();
         final lens = find.byType(RawMagnifier);
         final practice = find.text('Практики');
-        final personal = find.text('Личное');
+        final personal = find.text('Разборы');
         final initialX = tester.getCenter(lens).dx;
         await tester.tap(practice);
         await tester.pump();
@@ -172,7 +172,7 @@ void main() {
         );
         await tester.tap(practice);
         await tester.pumpAndSettle();
-        expect(changes, [3, 1, 3]);
+        expect(changes, [2, 3, 2]);
         final frame = tester.getRect(lens);
         final caption = tester.getRect(practice);
         expect(caption.left - frame.left, greaterThanOrEqualTo(3));

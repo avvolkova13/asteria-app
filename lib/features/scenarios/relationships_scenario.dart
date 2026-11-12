@@ -370,8 +370,8 @@ class _RelationshipAnswer extends StatelessWidget {
           const SizedBox(height: 24),
           ScenarioCompletion(
             message: ru
-                ? 'Разбор пары останется в «Личном». На главной можно посмотреть лунный календарь или взять минуту для себя с аффирмацией.'
-                : 'Your pair reading stays in Personal. On Home, you can explore the lunar calendar or take a minute with an affirmation.',
+                ? 'Разбор пары останется в «Разборах». На главной можно посмотреть лунный календарь или взять минуту для себя с аффирмацией.'
+                : 'Your pair reading stays in Readings. On Home, you can explore the lunar calendar or take a minute with an affirmation.',
           ),
         ]),
       ),

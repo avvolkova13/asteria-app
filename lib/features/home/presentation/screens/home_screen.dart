@@ -116,9 +116,9 @@ class _HomeScreenState extends State<HomeScreen> {
         index: state.currentTabIndex,
         children: [
           const MainScreen(),
-          const PersonalScreen(),
           const MoonScreen(),
           const PracticesScreen(),
+          const PersonalScreen(),
         ],
       ),
       bottomNavigationBar: Padding(

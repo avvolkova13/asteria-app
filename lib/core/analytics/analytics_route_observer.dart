@@ -1,3 +1,4 @@
+import 'package:asteria_app/features/home/home_tabs.dart';
 import 'package:asteria_app/core/analytics/durable/analytics_taxonomy.dart';
 import 'package:asteria_app/core/analytics/product_analytics_service.dart';
 import 'package:asteria_app/core/di/di.dart';
@@ -48,7 +49,7 @@ class AnalyticsRouteObserver extends ChangeNotifier {
     final route = match.route;
     if (!AnalyticsTaxonomy.screens.contains(route.name)) return;
     final screen = route.name == '/home'
-        ? ['/home', '/home/personal', '/home/moon', '/home/practices'][_homeTab]
+        ? HomeTabs.analyticsScreens[_homeTab]
         : route.name!;
     final key = (screen, match.pageKey);
     if (_visibleKey == key) return;
