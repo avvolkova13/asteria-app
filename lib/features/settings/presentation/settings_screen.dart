@@ -149,14 +149,37 @@ class _SettingsListTileState extends State<_SettingsListTile> {
             label: widget.title,
             child: ConstrainedBox(
               constraints: const BoxConstraints(minHeight: 44),
-              child: CupertinoSwitch(
-                value: _isEnabled,
-                onChanged: (value) => setState(() => _isEnabled = value),
-                activeTrackColor: ProfileFlowColors.accent,
-                inactiveTrackColor: ProfileFlowColors.border,
-                thumbColor: _isEnabled
-                    ? ProfileFlowColors.background
-                    : AppColors.white,
+              child: ShaderMask(
+                // Tint only the painted switch so its native shadow and drag remain visible.
+                blendMode: BlendMode.srcATop,
+                shaderCallback: (bounds) => LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    AppColors.white.withValues(alpha: .22),
+                    AppColors.white.withValues(alpha: 0),
+                    AppColors.textPrimary.withValues(alpha: .18),
+                  ],
+                  stops: const [.20, .48, .80],
+                ).createShader(bounds),
+                child: CupertinoSwitch(
+                  value: _isEnabled,
+                  onChanged: (value) => setState(() => _isEnabled = value),
+                  activeTrackColor: ProfileFlowColors.accent,
+                  inactiveTrackColor: AppColorsDark.secondary,
+                  thumbColor: Color.lerp(
+                    AppColors.white,
+                    AppColorsDark.linkGold,
+                    .14,
+                  ),
+                  inactiveThumbColor: AppColors.uiSecondary,
+                  trackOutlineColor: WidgetStateProperty.resolveWith(
+                    (states) => states.contains(WidgetState.selected)
+                        ? AppColorsDark.linkGold
+                        : AppColorsDark.textTertiary,
+                  ),
+                  trackOutlineWidth: const WidgetStatePropertyAll(1),
+                ),
               ),
             ),
           ),
