@@ -139,18 +139,12 @@ class AuthCubit extends Cubit<AuthState> {
   }) {
     if (_currentUser == null) return;
 
-    final actualBirthTime = birthTime;
-
-    final birthDateModel =
-        _currentUser!.personalInfo?.birthDate?.copyWith(
-          birthTime: actualBirthTime,
-        ) ??
-        BirthDateModel(
-          birthDate:
-              _currentUser!.personalInfo?.birthDate?.birthDate ??
-              DateTime.now(),
-          birthTime: actualBirthTime,
-        );
+    final birthDateModel = BirthDateModel(
+      birthDate:
+          _currentUser!.personalInfo?.birthDate?.birthDate ?? DateTime.now(),
+      birthTime: birthTime,
+      birthTimeKnown: birthTime != null && !isTimeUnknown,
+    );
 
     final personalInfo =
         _currentUser!.personalInfo?.copyWith(birthDate: birthDateModel) ??

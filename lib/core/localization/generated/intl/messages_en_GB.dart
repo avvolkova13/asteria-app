@@ -72,6 +72,19 @@ class MessageLookup extends MessageLookupByLibrary {
     "insightLoadingTogether": MessageLookupByLibrary.simpleMessage(
       "Bringing your insight together…",
     ),
+    "natalHousesNeedTime": MessageLookupByLibrary.simpleMessage(
+      "An exact birth time is needed to calculate the houses.",
+    ),
+    "natalTimeUnknown": MessageLookupByLibrary.simpleMessage("Not provided"),
+    "natalWheelApproximate": MessageLookupByLibrary.simpleMessage(
+      "Without an exact birth time, the planet positions on the chart are approximate.",
+    ),
+    "natalWheelSelectPlanet": MessageLookupByLibrary.simpleMessage(
+      "Tap a planet to see its connections",
+    ),
+    "natalWheelUnavailable": MessageLookupByLibrary.simpleMessage(
+      "Planet positions are currently unavailable. Your saved reading is below.",
+    ),
     "onboardingPage2Description": MessageLookupByLibrary.simpleMessage(
       "Moon phases, daily energy,\nfavourable periods, and guidance",
     ),

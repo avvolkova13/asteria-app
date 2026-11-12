@@ -43,13 +43,13 @@ void main() {
       );
       await tester.pump();
       expect(
-        find.textContaining('Соединяем звёзды'),
+        find.text(AppLocalizations.current.natalLoadingPattern),
         findsOneWidget,
       );
       await tester.pump(const Duration(seconds: 3));
       await tester.pump(const Duration(milliseconds: 600));
-      expect(find.text('Читаем тайный язык планет…'), findsOneWidget);
-      expect(find.textContaining('Соединяем звёзды'), findsNothing);
+      expect(find.text(AppLocalizations.current.natalLoadingLanguage), findsOneWidget);
+      expect(find.text(AppLocalizations.current.natalLoadingPattern), findsNothing);
       expect(tester.takeException(), isNull);
       loader.hide();
       await tester.pump();

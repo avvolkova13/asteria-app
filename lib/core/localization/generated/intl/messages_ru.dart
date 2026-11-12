@@ -350,13 +350,13 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "attemptsLeftCount": m5,
     "authBirthDetailsPrompt": MessageLookupByLibrary.simpleMessage(
-      "Укажи дату, время и место рождения — и Вселенная заговорит с тобой.",
+      "Укажи дату, время и место рождения",
     ),
     "authCosmicEssence": MessageLookupByLibrary.simpleMessage(
       "Познай свою космическую суть",
     ),
     "authMoonRhythms": MessageLookupByLibrary.simpleMessage(
-      "Настройся на ритмы Луны и открой натальную карту — она подскажет твой путь.",
+      "По данным рождения Asteria рассчитает положение планет в твоей карте.",
     ),
     "authSaveUserError": MessageLookupByLibrary.simpleMessage(
       "Не удалось сохранить профиль. Проверьте подключение и попробуйте снова.",
@@ -1225,17 +1225,17 @@ class MessageLookup extends MessageLookupByLibrary {
       "Судьба и глубина",
     ),
     "natalElementsDescription": MessageLookupByLibrary.simpleMessage(
-      "— твой внутренний баланс энергий.",
+      "— как в карте представлены огонь, земля, воздух и вода.",
     ),
     "natalElementsModalities": MessageLookupByLibrary.simpleMessage(
-      "Стихии\nи модальности",
+      "Баланс стихий",
     ),
     "natalElementsTab": MessageLookupByLibrary.simpleMessage("Стихии"),
     "natalForeverAccess": MessageLookupByLibrary.simpleMessage(
-      "Доступ навсегда",
+      "Сохранено в профиле",
     ),
     "natalForeverDescription": MessageLookupByLibrary.simpleMessage(
-      "Это подробный разбор, который останется с тобой навсегда.",
+      "Карта сохранится в профиле. Её можно открыть снова.",
     ),
     "natalGeneralData": MessageLookupByLibrary.simpleMessage("Общие данные"),
     "natalGenerationFailed": MessageLookupByLibrary.simpleMessage(
@@ -1246,7 +1246,10 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "natalGrowthLife": MessageLookupByLibrary.simpleMessage("Развитие и жизнь"),
     "natalHousesDescription": MessageLookupByLibrary.simpleMessage(
-      "— ключи к сферам жизни и твоим талантам.",
+      "— какие сферы жизни выделяются в карте. Для расчёта нужно точное время рождения.",
+    ),
+    "natalHousesNeedTime": MessageLookupByLibrary.simpleMessage(
+      "Для расчёта домов нужно точное время рождения.",
     ),
     "natalHousesThemes": MessageLookupByLibrary.simpleMessage("Дома и темы"),
     "natalIncludedInPro": MessageLookupByLibrary.simpleMessage(
@@ -1256,22 +1259,22 @@ class MessageLookup extends MessageLookupByLibrary {
       "Внутри тебя ждёт",
     ),
     "natalInstantAccess": MessageLookupByLibrary.simpleMessage(
-      "Доступ откроется мгновенно после оплаты.",
+      "После покупки Asteria подготовит твой разбор.",
     ),
     "natalLoadError": MessageLookupByLibrary.simpleMessage(
       "Не удалось загрузить натальную карту. Попробуйте снова.",
     ),
     "natalLoadingCode": MessageLookupByLibrary.simpleMessage(
-      "Раскрываем небесный код твоей личности…",
+      "Смотрим, какие стихии выделяются…",
     ),
     "natalLoadingLanguage": MessageLookupByLibrary.simpleMessage(
-      "Читаем тайный язык планет…",
+      "Соединяем планеты тонкими нитями…",
     ),
     "natalLoadingPattern": MessageLookupByLibrary.simpleMessage(
-      "Соединяем звёзды\nв узор твоей судьбы…",
+      "Собираем планеты в круг…",
     ),
     "natalLoadingPortrait": MessageLookupByLibrary.simpleMessage(
-      "Вселенная готовит твой звёздный портрет…",
+      "Готовим твой разбор…",
     ),
     "natalMagicSummary": MessageLookupByLibrary.simpleMessage(
       "Магический вывод",
@@ -1280,7 +1283,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Основные позиции",
     ),
     "natalPaywallIntro": MessageLookupByLibrary.simpleMessage(
-      "Натальная карта — это твой уникальный звёздный паспорт, созданный в момент рождения.",
+      "Рассмотрим небо в день твоего рождения. На круге можно выбрать планету и увидеть её связи с другими.",
     ),
     "natalPaywallTitle": MessageLookupByLibrary.simpleMessage(
       "Твоя натальная карта",
@@ -1288,18 +1291,28 @@ class MessageLookup extends MessageLookupByLibrary {
     "natalPersonalityFoundation": MessageLookupByLibrary.simpleMessage(
       "Основа личности",
     ),
-    "natalPositionsTab": MessageLookupByLibrary.simpleMessage("На сегодня"),
+    "natalPositionsTab": MessageLookupByLibrary.simpleMessage("Планеты"),
     "natalProAccessDescription": MessageLookupByLibrary.simpleMessage(
-      "Без списания звёзд. Созданная карта останется с тобой.",
+      "Со звёздного баланса ничего не спишется.",
     ),
     "natalRelationshipsExpression": MessageLookupByLibrary.simpleMessage(
       "Отношения и проявление",
     ),
     "natalStrongHouse": m33,
     "natalSummaryDescription": MessageLookupByLibrary.simpleMessage(
-      "— личное послание от Вселенной.",
+      "— главные темы твоего разбора.",
     ),
+    "natalTimeUnknown": MessageLookupByLibrary.simpleMessage("Не указано"),
     "natalWeakHouse": m34,
+    "natalWheelApproximate": MessageLookupByLibrary.simpleMessage(
+      "Без точного времени рождения положения планет на круге приблизительны.",
+    ),
+    "natalWheelSelectPlanet": MessageLookupByLibrary.simpleMessage(
+      "Коснись планеты, чтобы увидеть её связи",
+    ),
+    "natalWheelUnavailable": MessageLookupByLibrary.simpleMessage(
+      "Сейчас не удалось загрузить положения планет. Ниже — твой сохранённый разбор.",
+    ),
     "navHome": MessageLookupByLibrary.simpleMessage("Главная"),
     "navMoon": MessageLookupByLibrary.simpleMessage("Луна"),
     "navPersonal": MessageLookupByLibrary.simpleMessage("Личное"),
@@ -1496,7 +1509,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "personalCharacter": MessageLookupByLibrary.simpleMessage("Характер"),
     "personalDefaultDescription": MessageLookupByLibrary.simpleMessage(
-      "Ты родился(ась) под знаком стабильности и глубокой чувствительности. У тебя сильная связь с эмоциями и интуицией.",
+      "Посмотри, в каких знаках были планеты в день твоего рождения и как они связаны между собой.",
     ),
     "personalElement": MessageLookupByLibrary.simpleMessage("Стихия"),
     "personalEnergy": MessageLookupByLibrary.simpleMessage("Энергия"),
@@ -1520,7 +1533,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Укажи дату, время и место рождения — и Вселенная заговорит с тобой.",
     ),
     "personalInfoSubtitle": MessageLookupByLibrary.simpleMessage(
-      "Настройся на ритмы Луны и открой натальную карту — она подскажет твой путь.",
+      "По данным рождения Asteria рассчитает положение планет в твоей карте.",
     ),
     "personalInfoTitle": MessageLookupByLibrary.simpleMessage(
       "Познай свою космическую суть",

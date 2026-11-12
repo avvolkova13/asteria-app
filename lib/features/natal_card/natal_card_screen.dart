@@ -30,11 +30,12 @@ import 'package:asteria_app/core/ui_kit/widgets/pearl_metric_row.dart';
 import 'package:asteria_app/core/ui_kit/widgets/top_nav_bar.dart';
 import 'package:asteria_app/features/natal_card/widgets/natal_card_empty_screen.dart';
 import 'package:asteria_app/features/natal_card/widgets/natal_card_loading_overlay.dart';
+import 'package:asteria_app/features/natal_card/widgets/natal_wheel.dart';
 import 'package:flutter/material.dart';
 import 'package:asteria_app/features/monetization/presentation/monetization_provider.dart';
 
 class NatalCardScreen extends StatefulWidget {
-  const NatalCardScreen({Key? key}) : super(key: key);
+  const NatalCardScreen({super.key});
 
   @override
   State<NatalCardScreen> createState() => _NatalCardScreenState();
@@ -324,80 +325,111 @@ class _NatalCardScreenState extends State<NatalCardScreen> {
 
     return Scaffold(
       backgroundColor: _NatalCardColors.background,
-      body: Stack(fit: StackFit.expand, children: [
-        if (ScenarioSkyScope.of(context)) const ScenarioSky() else const DecoratedBox(
-        decoration: BoxDecoration(
-          color: _NatalCardColors.background,
-          image: DecorationImage(
-            image: AssetImage(
-              'assets/images/home/natal_card_figma_background.webp',
-            ),
-            fit: BoxFit.cover,
-            alignment: Alignment.topCenter,
-            opacity: 0.3,
-          ),
-        ),
-        ),
-        CustomScrollView(
-          slivers: [
-            SliverPersistentHeader(
-              pinned: true,
-              floating: false,
-              delegate: TopNavBarDelegate(
-                canPop: true,
-                userName: context.l10n.natalChartTitle,
-                type: useCompactHeader
-                    ? TopNavBarType.onlyCollapsed
-                    : TopNavBarType.transparent,
-                birthDate: _userProvider
-                    .currentUser
-                    ?.personalInfo
-                    ?.birthDate
-                    ?.birthDate,
-              ),
-            ),
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(height: useCompactHeader ? 22 : 30),
-                    if (_error != null) ...[
-                      Text(
-                        _error == 'translation_unavailable'
-                            ? context.l10n.contentTranslationUnavailable
-                            : _error == 'access_unavailable'
-                            ? context.l10n.natalAccessUnavailable
-                            : context.l10n.natalLoadError,
-                        style: context.textTheme.inverseUrbanistRegular16,
-                      ),
-                      LotusButtons.text(
-                        onPressed: _loadNatalCard,
-                        child: Text(context.l10n.retry),
-                      ),
-                    ] else if (!_hasNatalCard) ...[
-                      if (_generationFailed) ...[
-                        Text(
-                          context.l10n.natalGenerationFailed,
-                          style: context.textTheme.inverseUrbanistRegular16,
-                        ),
-                        const SizedBox(height: 16),
-                      ],
-                      NatalCardEmptyScreen(
-                        isPro: _monetizationProvider?.effectivePro ?? false,
-                        onBuyPressed: _openNatalCard,
-                      ),
-                    ] else
-                      const _NatalCardContent(),
-                    SizedBox(height: MediaQuery.paddingOf(context).bottom + 24),
-                  ],
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          if (ScenarioSkyScope.of(context))
+            const ScenarioSky()
+          else
+            const DecoratedBox(
+              decoration: BoxDecoration(
+                color: _NatalCardColors.background,
+                image: DecorationImage(
+                  image: AssetImage(
+                    'assets/images/home/natal_card_figma_background.webp',
+                  ),
+                  fit: BoxFit.cover,
+                  alignment: Alignment.topCenter,
+                  opacity: 0.3,
                 ),
               ),
             ),
-          ],
-        ),
-      ]),
+          CustomScrollView(
+            slivers: [
+              SliverPersistentHeader(
+                pinned: true,
+                floating: false,
+                delegate: TopNavBarDelegate(
+                  canPop: true,
+                  userName: context.l10n.natalChartTitle,
+                  type: useCompactHeader
+                      ? TopNavBarType.onlyCollapsed
+                      : TopNavBarType.transparent,
+                  birthDate: _userProvider
+                      .currentUser
+                      ?.personalInfo
+                      ?.birthDate
+                      ?.birthDate,
+                ),
+              ),
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(height: useCompactHeader ? 22 : 30),
+                      if (_error != null) ...[
+                        Text(
+                          _error == 'translation_unavailable'
+                              ? context.l10n.contentTranslationUnavailable
+                              : _error == 'access_unavailable'
+                              ? context.l10n.natalAccessUnavailable
+                              : context.l10n.natalLoadError,
+                          style: context.textTheme.inverseUrbanistRegular16,
+                        ),
+                        LotusButtons.text(
+                          onPressed: _loadNatalCard,
+                          child: Text(context.l10n.retry),
+                        ),
+                      ] else if (!_hasNatalCard) ...[
+                        if (_generationFailed) ...[
+                          Text(
+                            context.l10n.natalGenerationFailed,
+                            style: context.textTheme.inverseUrbanistRegular16,
+                          ),
+                          const SizedBox(height: 16),
+                        ],
+                        NatalCardEmptyScreen(
+                          isPro: _monetizationProvider?.effectivePro ?? false,
+                          onBuyPressed: _openNatalCard,
+                        ),
+                      ] else
+                        ListenableBuilder(
+                          listenable: _userProvider,
+                          builder: (context, _) {
+                            final user = _userProvider.currentUser;
+                            if (user == null ||
+                                !(user.natalCard?.hasAnyInterpretation ??
+                                    false)) {
+                              return const SizedBox.shrink();
+                            }
+                            final birth = user.personalInfo?.birthDate;
+                            final place = user.personalInfo?.birthPlace;
+                            return _NatalCardContent(
+                              key: ValueKey((
+                                user.id,
+                                birth?.birthDate,
+                                birth?.birthTime,
+                                birth?.hasExactBirthTime,
+                                place?.latitude,
+                                place?.longitude,
+                              )),
+                              user: user,
+                            );
+                          },
+                        ),
+                      SizedBox(
+                        height: MediaQuery.paddingOf(context).bottom + 24,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }
@@ -415,7 +447,9 @@ extension on _NatalCardTab {
 }
 
 class _NatalCardContent extends StatefulWidget {
-  const _NatalCardContent({Key? key}) : super(key: key);
+  const _NatalCardContent({super.key, required this.user});
+
+  final UserModel user;
 
   @override
   State<_NatalCardContent> createState() => _NatalCardContentState();
@@ -424,17 +458,38 @@ class _NatalCardContent extends StatefulWidget {
 class _NatalCardContentState extends State<_NatalCardContent> {
   _NatalCardTab _selectedTab = _NatalCardTab.positions;
 
+  late Future<PlanetsHousesDataModel?> _geometry;
+
+  @override
+  void initState() {
+    super.initState();
+    _geometry = di.get<ContentProvider>().loadPurchasedNatalGeometry();
+  }
+
   @override
   Widget build(BuildContext context) {
-    final userProvider = di.get<UserProvider>();
-    final currentUser = userProvider.currentUser;
-    final natalCard = currentUser?.natalCard;
-    final personalInfo = currentUser?.personalInfo;
+    return FutureBuilder<PlanetsHousesDataModel?>(
+      future: _geometry,
+      builder: (context, snapshot) => _buildChart(
+        context,
+        snapshot.data ?? widget.user.planetsHousesData,
+        loading: snapshot.connectionState == ConnectionState.waiting,
+      ),
+    );
+  }
+
+  Widget _buildChart(
+    BuildContext context,
+    PlanetsHousesDataModel planetsHousesData, {
+    required bool loading,
+  }) {
+    final natalCard = widget.user.natalCard;
+    final personalInfo = widget.user.personalInfo;
     final birthTime = personalInfo?.birthDate?.birthTime;
     final locale = Localizations.localeOf(context);
     final language = locale.languageCode == 'ru' ? 'ru' : 'en';
     final interpretation = natalCard?.tryInterpretationFor(language);
-    final planetsHousesData = currentUser?.planetsHousesData;
+    final exactTime = personalInfo?.birthDate?.hasExactBirthTime ?? false;
     if (interpretation == null) {
       return const SizedBox.shrink();
     }
@@ -446,12 +501,41 @@ class _NatalCardContentState extends State<_NatalCardContent> {
           birthDate:
               personalInfo?.birthDate?.birthDate.toLocalizedShortDate(locale) ??
               '',
-          birthTime: LocaleFormatters.timeOfDay(
-            context,
-            birthTime == null
-                ? const TimeOfDay(hour: 0, minute: 0)
-                : TimeOfDay.fromDateTime(birthTime),
-          ),
+          birthTime: exactTime && birthTime != null
+              ? LocaleFormatters.timeOfDay(
+                  context,
+                  TimeOfDay.fromDateTime(birthTime),
+                )
+              : context.l10n.natalTimeUnknown,
+          chart: NatalWheel.hasPlanets(planetsHousesData)
+              ? Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 460),
+                    child: NatalWheel(
+                      data: planetsHousesData,
+                      hasKnownBirthTime: exactTime,
+                    ),
+                  ),
+                )
+              : loading
+              ? const Center(child: CircularProgressIndicator.adaptive())
+              : Column(
+                  children: [
+                    Text(
+                      context.l10n.natalWheelUnavailable,
+                      style: context.textTheme.inverseUrbanistRegular16,
+                    ),
+                    LotusButtons.text(
+                      onPressed: () => setState(() {
+                        _geometry = di
+                            .get<ContentProvider>()
+                            .loadPurchasedNatalGeometry();
+                      }),
+                      child: Text(context.l10n.retry),
+                    ),
+                  ],
+                ),
+          approximate: !exactTime,
           birthPlace: personalInfo?.birthPlace?.location ?? '',
         ),
         const SizedBox(height: 16),
@@ -474,7 +558,12 @@ class _NatalCardContentState extends State<_NatalCardContent> {
                 context,
                 planetsHousesData,
                 interpretation,
+                exactTime: exactTime,
               ),
+            ),
+            _NatalCardTab.houses when !exactTime => Text(
+              context.l10n.natalHousesNeedTime,
+              style: context.textTheme.inverseUrbanistRegular16,
             ),
             _NatalCardTab.houses => _HousesTab(
               key: const ValueKey(_NatalCardTab.houses),
@@ -486,7 +575,7 @@ class _NatalCardContentState extends State<_NatalCardContent> {
             ),
             _NatalCardTab.elements => _ElementsTab(
               key: const ValueKey(_NatalCardTab.elements),
-              elements: planetsHousesData?.elements,
+              elements: planetsHousesData.elements,
               elementsDescription:
                   interpretation.elementsInterpretation.isNotEmpty
                   ? interpretation.elementsInterpretation
@@ -502,9 +591,20 @@ class _NatalCardContentState extends State<_NatalCardContent> {
   List<NatalCardPlanetDisplayModel> _calculatedPlanetCards(
     BuildContext context,
     PlanetsHousesDataModel? data,
-    NatalCardInterpretationModel? interpretation,
-  ) {
-    if (data == null) return const [];
+    NatalCardInterpretationModel? interpretation, {
+    required bool exactTime,
+  }) {
+    if (data == null || data.positions.isEmpty) {
+      if (!exactTime || interpretation == null) return const [];
+      return [
+        for (final entry in interpretation.planetInterpretations.entries)
+          if (entry.value.trim().isNotEmpty)
+            NatalCardPlanetDisplayModel(
+              code: entry.key,
+              description: entry.value,
+            ),
+      ];
+    }
     return [
       for (final position in data.positions)
         NatalCardPlanetDisplayModel(
@@ -513,6 +613,7 @@ class _NatalCardContentState extends State<_NatalCardContent> {
             context,
             position,
             interpretation?.planetInterpretations[position.code] ?? '',
+            exactTime: exactTime,
           ),
         ),
     ];
@@ -558,12 +659,14 @@ class _NatalCardContentState extends State<_NatalCardContent> {
   String _placementDescription(
     BuildContext context,
     PlanetHousePositionModel position,
-    String interpretation,
-  ) {
+    String interpretation, {
+    required bool exactTime,
+  }) {
     final isRu = Localizations.localeOf(context).languageCode == 'ru';
     final sign = position.signCode.isEmpty
         ? position.sign
         : context.l10n.zodiacSignName(position.signCode);
+    if (!exactTime) return sign;
     final placement = isRu
         ? '$sign, ${position.house} дом'
         : '$sign, house ${position.house}';
@@ -601,11 +704,15 @@ class _GeneralInfoSection extends StatelessWidget {
   final String birthDate;
   final String birthTime;
   final String birthPlace;
+  final Widget chart;
+  final bool approximate;
 
   const _GeneralInfoSection({
     required this.birthDate,
     required this.birthTime,
     required this.birthPlace,
+    required this.chart,
+    required this.approximate,
   });
 
   @override
@@ -622,40 +729,42 @@ class _GeneralInfoSection extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 16),
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            SizedBox(
-              width: 114,
-              child: Column(
-                children: [
-                  _GeneralInfoItem(
-                    title: context.l10n.birthDateLabel,
-                    value: birthDate,
-                  ),
-                  const SizedBox(height: 4),
-                  _GeneralInfoItem(
-                    title: context.l10n.birthTimeLabel,
-                    value: birthTime,
-                  ),
-                  const SizedBox(height: 4),
-                  _GeneralInfoItem(
-                    title: context.l10n.birthPlaceLabel,
-                    value: birthPlace.split(',').first.trim(),
-                    valueMaxLines: 1,
-                  ),
-                ],
-              ),
+        chart,
+        if (approximate)
+          Padding(
+            padding: const EdgeInsets.only(top: 8),
+            child: Text(
+              context.l10n.natalWheelApproximate,
+              style: context.textTheme.inverseUrbanistRegular14,
             ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: Image.asset(
-                'assets/images/home/natal_card_banner_wheel.webp',
-                fit: BoxFit.contain,
-                height: 232,
+          ),
+        const SizedBox(height: 16),
+        IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            spacing: 6,
+            children: [
+              Expanded(
+                child: _GeneralInfoItem(
+                  title: context.l10n.birthDateLabel,
+                  value: birthDate,
+                ),
               ),
-            ),
-          ],
+              Expanded(
+                child: _GeneralInfoItem(
+                  title: context.l10n.birthTimeLabel,
+                  value: birthTime,
+                ),
+              ),
+              Expanded(
+                child: _GeneralInfoItem(
+                  title: context.l10n.birthPlaceLabel,
+                  value: birthPlace.split(',').first.trim(),
+                  valueMaxLines: 1,
+                ),
+              ),
+            ],
+          ),
         ),
       ]),
     );
@@ -678,7 +787,6 @@ class _GeneralInfoItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      // Figma's 114 px card contains a 100 px label starting 8 px from the left.
       padding: const EdgeInsets.fromLTRB(8, 8, 6, 8),
       decoration: CardLensDecoration(
         color: _NatalCardColors.figmaPurple.withValues(alpha: 0.2),
@@ -846,19 +954,15 @@ class _PlanetPositionCard extends StatelessWidget {
   static const _artGap = 10.0;
   static const _textGap = 8.0;
 
-  static TextStyle _titleStyle(BuildContext context) =>
-      context.textTheme.inversePlayfairSemiBold24.copyWith(
-        fontFamily: 'Lora',
-        letterSpacing: 0,
-        height: 1,
-      );
+  static TextStyle _titleStyle(BuildContext context) => context
+      .textTheme
+      .inversePlayfairSemiBold24
+      .copyWith(fontFamily: 'Lora', letterSpacing: 0, height: 1);
 
-  static TextStyle _bodyStyle(BuildContext context) =>
-      context.textTheme.inverseUrbanistRegular16.copyWith(
-        fontFamily: 'Onest',
-        height: 1.2,
-        letterSpacing: -0.408,
-      );
+  static TextStyle _bodyStyle(BuildContext context) => context
+      .textTheme
+      .inverseUrbanistRegular16
+      .copyWith(fontFamily: 'Onest', height: 1.2, letterSpacing: -0.408);
 
   static double tallestHeight(
     BuildContext context,
@@ -872,7 +976,9 @@ class _PlanetPositionCard extends StatelessWidget {
     );
     final defaults = DefaultTextStyle.of(context).style;
     final bold = MediaQuery.boldTextOf(context);
-    final boldStyle = bold ? const TextStyle(fontWeight: FontWeight.bold) : null;
+    final boldStyle = bold
+        ? const TextStyle(fontWeight: FontWeight.bold)
+        : null;
     final title = defaults.merge(_titleStyle(context)).merge(boldStyle);
     final body = defaults.merge(_bodyStyle(context)).merge(boldStyle);
     double measure(String text, TextStyle style) {
@@ -883,7 +989,8 @@ class _PlanetPositionCard extends StatelessWidget {
 
     var height = _artSize;
     for (final planet in planets) {
-      final textHeight = measure(context.l10n.planetName(planet.code), title) +
+      final textHeight =
+          measure(context.l10n.planetName(planet.code), title) +
           _textGap +
           measure(planet.description, body);
       height = math.max(height, textHeight);
@@ -916,10 +1023,7 @@ class _PlanetPositionCard extends StatelessWidget {
                   style: _titleStyle(context),
                 ),
                 const SizedBox(height: _textGap),
-                Text(
-                  planet.description,
-                  style: _bodyStyle(context),
-                ),
+                Text(planet.description, style: _bodyStyle(context)),
               ],
             ),
           ),
@@ -1036,6 +1140,13 @@ class _ElementsTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final quantities = [
+      (int.tryParse(elements?.fire ?? ''), context.l10n.elementFire),
+      (int.tryParse(elements?.water ?? ''), context.l10n.elementWater),
+      (int.tryParse(elements?.air ?? ''), context.l10n.elementAir),
+      (int.tryParse(elements?.earth ?? ''), context.l10n.elementEarth),
+    ];
+    final total = quantities.fold<int>(0, (sum, item) => sum + (item.$1 ?? 0));
     return Column(
       key: key,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -1047,18 +1158,15 @@ class _ElementsTab extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 16),
-        PearlMetricRow(
-          metrics: [
-            for (final (raw, label) in [
-              (elements?.fire, context.l10n.elementFire),
-              (elements?.water, context.l10n.elementWater),
-              (elements?.air, context.l10n.elementAir),
-              (elements?.earth, context.l10n.elementEarth),
-            ])
-              _elementMetric(raw, label),
-          ],
-        ),
-        const SizedBox(height: 16),
+        if (total > 0 && quantities.every((item) => (item.$1 ?? -1) >= 0)) ...[
+          PearlMetricRow(
+            metrics: [
+              for (final (value, label) in quantities)
+                PearlMetric(label, '$value', (value ?? 0) / total),
+            ],
+          ),
+          const SizedBox(height: 16),
+        ],
         Text(
           elementsDescription,
           textAlign: TextAlign.center,
@@ -1071,11 +1179,6 @@ class _ElementsTab extends StatelessWidget {
         _MagicConclusionCard(description: finalConclusion),
       ]),
     );
-  }
-
-  PearlMetric _elementMetric(String? raw, String label) {
-    final value = int.tryParse(raw ?? '') ?? 0;
-    return PearlMetric(label, '$value', value / 8);
   }
 }
 

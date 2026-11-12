@@ -49,6 +49,18 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:crypto/crypto.dart';
 
+typedef _NatalGeometryKey = ({
+  String account,
+  int year,
+  int month,
+  int day,
+  int hour,
+  int minute,
+  bool exactTime,
+  double latitude,
+  double longitude,
+});
+
 class ContentProvider extends ChangeNotifier with WidgetsBindingObserver {
   final DateTime Function() _now;
   final bool _horoscopesEnabled;
@@ -121,6 +133,10 @@ class ContentProvider extends ChangeNotifier with WidgetsBindingObserver {
     }
   }
 
+  _NatalGeometryKey? _wheelKey;
+  Future<PlanetsHousesDataModel?>? _wheelLoad;
+  int _wheelRevision = 0;
+
   late String _lastLocaleTag;
   String? _lastLocationFingerprint;
 
@@ -151,6 +167,14 @@ class ContentProvider extends ChangeNotifier with WidgetsBindingObserver {
   }
 
   void _onUserChanged() {
+    final account = _userProvider.currentUser;
+    if (_wheelKey != null &&
+        (_wheelKey != _natalKey(account) ||
+            account?.natalCard?.hasAnyInterpretation != true)) {
+      _wheelRevision++;
+      _wheelLoad = null;
+      _wheelKey = null;
+    }
     final userId = _userProvider.currentUser?.id;
     final nextLocationFingerprint = _currentLocationFingerprintOrNull();
     if (userId != _lastCachedUserId) {
@@ -1705,16 +1729,22 @@ class ContentProvider extends ChangeNotifier with WidgetsBindingObserver {
         currentUser,
       );
       final birthdateStr = birthdate?.toIsoDate() ?? '';
-      final birthtimeStr = birthtime?.getBirthTime() ?? '00:00';
+      final exactBirthTime =
+          currentUser.personalInfo?.birthDate?.hasExactBirthTime ?? false;
+      final birthtimeStr = exactBirthTime
+          ? birthtime!.getBirthTime()
+          : 'неизвестно';
       final cityName = city ?? 'Москва';
-      final planetsBirthdate = planetsHousesData.toPromptContext(
-        name: name,
-        birthdate: birthdateStr,
-        birthtime: birthtimeStr,
-        city: cityName,
-        latitude: currentUser.personalInfo?.birthPlace?.latitude,
-        longitude: currentUser.personalInfo?.birthPlace?.longitude,
-      );
+      final planetsBirthdate = !exactBirthTime
+          ? planetsHousesData.toApproximateTimePromptContext()
+          : planetsHousesData.toPromptContext(
+              name: name,
+              birthdate: birthdateStr,
+              birthtime: birthtimeStr,
+              city: cityName,
+              latitude: currentUser.personalInfo?.birthPlace?.latitude,
+              longitude: currentUser.personalInfo?.birthPlace?.longitude,
+            );
       final committed = await _executeGeneratedFeature(
         requirePro: requirePro,
         userId: userId,
@@ -1788,28 +1818,96 @@ class ContentProvider extends ChangeNotifier with WidgetsBindingObserver {
       return existing;
     }
 
-    final api = _backendApi;
-    final birthDate = user.personalInfo?.birthDate?.birthDate;
-    final birthTime = user.personalInfo?.birthDate?.birthTime;
-    final birthPlace = user.personalInfo?.birthPlace;
-    if (api == null || birthDate == null || birthPlace == null) {
-      return existing;
+    final key = _natalKey(user);
+    if (_backendApi == null || key == null) return existing;
+    final refreshed = await _fetchNatalCalculation(key);
+    final latest = _userProvider.currentUser;
+    if (latest == null || _natalKey(latest) != key) {
+      throw StateError(
+        'Natal calculation no longer belongs to the active profile',
+      );
     }
-
-    final response = await api.getPlanetsHousesPosition(
-      year: birthDate.year,
-      month: birthDate.month,
-      day: birthDate.day,
-      hour: birthTime?.hour ?? 0,
-      minute: birthTime?.minute ?? 0,
-      latitude: birthPlace.latitude,
-      longitude: birthPlace.longitude,
+    await _userProvider.updateUser(
+      latest.copyWith(planetsHousesData: refreshed),
     );
-    final refreshed = PlanetsHousesDataModel.fromJson(
+    return refreshed;
+  }
+
+  _NatalGeometryKey? _natalKey(UserModel? user) {
+    final birth = user?.personalInfo?.birthDate;
+    final place = user?.personalInfo?.birthPlace;
+    if (user == null || birth == null || place == null) return null;
+    return (
+      account: user.id,
+      year: birth.birthDate.year,
+      month: birth.birthDate.month,
+      day: birth.birthDate.day,
+      hour: birth.birthTime?.hour ?? 0,
+      minute: birth.birthTime?.minute ?? 0,
+      exactTime: birth.hasExactBirthTime,
+      latitude: place.latitude,
+      longitude: place.longitude,
+    );
+  }
+
+  Future<PlanetsHousesDataModel> _fetchNatalCalculation(
+    _NatalGeometryKey key,
+  ) async {
+    final response = await _backendApi!.getPlanetsHousesPosition(
+      year: key.year,
+      month: key.month,
+      day: key.day,
+      hour: key.hour,
+      minute: key.minute,
+      latitude: key.latitude,
+      longitude: key.longitude,
+    );
+    return PlanetsHousesDataModel.fromJson(
       response.data as Map<String, dynamic>,
     );
-    await _userProvider.updateUser(user.copyWith(planetsHousesData: refreshed));
-    return refreshed;
+  }
+
+  /// Upgrades a previously purchased chart on read. This is only a geometry
+  /// query: no purchase, profile mutation or regeneration of the interpretation.
+  Future<PlanetsHousesDataModel?> loadPurchasedNatalGeometry() {
+    final user = _userProvider.currentUser;
+    if (user == null || user.natalCard?.hasAnyInterpretation != true) {
+      return Future.value();
+    }
+    final saved = user.planetsHousesData;
+    final key = _natalKey(user);
+    if (key == null ||
+        _backendApi == null ||
+        (saved.hasPlanetCoordinates &&
+            (!key.exactTime || saved.houseCusps.isNotEmpty))) {
+      return Future.value(saved);
+    }
+    if (_wheelKey == key && _wheelLoad != null) return _wheelLoad!;
+    _wheelKey = key;
+    final revision = ++_wheelRevision;
+    return _wheelLoad = _loadOwnedGeometry(key, revision, saved);
+  }
+
+  Future<PlanetsHousesDataModel?> _loadOwnedGeometry(
+    _NatalGeometryKey key,
+    int revision,
+    PlanetsHousesDataModel saved,
+  ) async {
+    bool stillCurrent() =>
+        revision == _wheelRevision &&
+        _natalKey(_userProvider.currentUser) == key &&
+        _userProvider.currentUser?.natalCard?.hasAnyInterpretation == true;
+    try {
+      final fresh = await _fetchNatalCalculation(key);
+      if (!stillCurrent()) return null;
+      if (fresh.hasPlanetCoordinates) return fresh;
+    } catch (_) {
+      if (!stillCurrent()) return null;
+    }
+    // An offline visit or malformed response must not erase a working chart;
+    // permit a deliberate retry. Successful old-server results can be reused.
+    _wheelLoad = null;
+    return saved;
   }
 
   Future<void> loadMoonPhase() async {
@@ -2289,6 +2387,8 @@ class ContentProvider extends ChangeNotifier with WidgetsBindingObserver {
 
   @override
   void dispose() {
+    _wheelRevision++;
+    _wheelLoad = null;
     WidgetsBinding.instance.removeObserver(this);
     _userProvider.removeListener(_onUserChanged);
     _localeService.removeListener(_onLocaleChanged);

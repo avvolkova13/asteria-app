@@ -310,10 +310,10 @@ class AppLocalizations {
     );
   }
 
-  /// `Tune in to the Moon and reveal your birth chart—it can illuminate your path.`
+  /// `Asteria uses your birth details to work out where the planets were when you were born.`
   String get personalInfoSubtitle {
     return Intl.message(
-      'Tune in to the Moon and reveal your birth chart—it can illuminate your path.',
+      'Asteria uses your birth details to work out where the planets were when you were born.',
       name: 'personalInfoSubtitle',
       desc: '',
       args: [],
@@ -1585,10 +1585,10 @@ class AppLocalizations {
     );
   }
 
-  /// `Elements\nand modalities`
+  /// `Element balance`
   String get natalElementsModalities {
     return Intl.message(
-      'Elements\nand modalities',
+      'Element balance',
       name: 'natalElementsModalities',
       desc: '',
       args: [],
@@ -2820,10 +2820,10 @@ class AppLocalizations {
     );
   }
 
-  /// `No Star Coins required. Your chart is yours to keep.`
+  /// `Your Star Coin balance stays the same.`
   String get natalProAccessDescription {
     return Intl.message(
-      'No Star Coins required. Your chart is yours to keep.',
+      'Your Star Coin balance stays the same.',
       name: 'natalProAccessDescription',
       desc: '',
       args: [],
@@ -2860,10 +2860,10 @@ class AppLocalizations {
     );
   }
 
-  /// `A birth chart is your unique celestial passport, created at the moment you were born.`
+  /// `Explore the sky on the day you were born. Tap a planet on the chart to see its connections.`
   String get natalPaywallIntro {
     return Intl.message(
-      'A birth chart is your unique celestial passport, created at the moment you were born.',
+      'Explore the sky on the day you were born. Tap a planet on the chart to see its connections.',
       name: 'natalPaywallIntro',
       desc: '',
       args: [],
@@ -2880,50 +2880,50 @@ class AppLocalizations {
     );
   }
 
-  /// `— your inner balance of energies.`
+  /// `shows how fire, earth, air and water are represented in your chart.`
   String get natalElementsDescription {
     return Intl.message(
-      '— your inner balance of energies.',
+      'shows how fire, earth, air and water are represented in your chart.',
       name: 'natalElementsDescription',
       desc: '',
       args: [],
     );
   }
 
-  /// `— keys to life areas and your talents.`
+  /// `show which areas of life stand out in your chart. An exact birth time is needed.`
   String get natalHousesDescription {
     return Intl.message(
-      '— keys to life areas and your talents.',
+      'show which areas of life stand out in your chart. An exact birth time is needed.',
       name: 'natalHousesDescription',
       desc: '',
       args: [],
     );
   }
 
-  /// `— a personal message from the Universe.`
+  /// `brings together the main themes of your reading.`
   String get natalSummaryDescription {
     return Intl.message(
-      '— a personal message from the Universe.',
+      'brings together the main themes of your reading.',
       name: 'natalSummaryDescription',
       desc: '',
       args: [],
     );
   }
 
-  /// `Lifetime access`
+  /// `Saved to your account`
   String get natalForeverAccess {
     return Intl.message(
-      'Lifetime access',
+      'Saved to your account',
       name: 'natalForeverAccess',
       desc: '',
       args: [],
     );
   }
 
-  /// `Access opens immediately after payment.`
+  /// `Asteria prepares your reading after purchase.`
   String get natalInstantAccess {
     return Intl.message(
-      'Access opens immediately after payment.',
+      'Asteria prepares your reading after purchase.',
       name: 'natalInstantAccess',
       desc: '',
       args: [],
@@ -3631,10 +3631,10 @@ class AppLocalizations {
     );
   }
 
-  /// `A detailed interpretation that's yours to keep.`
+  /// `Your chart is saved to your account so you can revisit it.`
   String get natalForeverDescription {
     return Intl.message(
-      'A detailed interpretation that\'s yours to keep.',
+      'Your chart is saved to your account so you can revisit it.',
       name: 'natalForeverDescription',
       desc: '',
       args: [],
@@ -3661,9 +3661,64 @@ class AppLocalizations {
     );
   }
 
-  /// `Today`
+  /// `Not provided`
+  String get natalTimeUnknown {
+    return Intl.message(
+      'Not provided',
+      name: 'natalTimeUnknown',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Tap a planet to see its connections`
+  String get natalWheelSelectPlanet {
+    return Intl.message(
+      'Tap a planet to see its connections',
+      name: 'natalWheelSelectPlanet',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Planet positions are currently unavailable. Your saved reading is below.`
+  String get natalWheelUnavailable {
+    return Intl.message(
+      'Planet positions are currently unavailable. Your saved reading is below.',
+      name: 'natalWheelUnavailable',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Without an exact birth time, the planet positions on the chart are approximate.`
+  String get natalWheelApproximate {
+    return Intl.message(
+      'Without an exact birth time, the planet positions on the chart are approximate.',
+      name: 'natalWheelApproximate',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `An exact birth time is needed to calculate the houses.`
+  String get natalHousesNeedTime {
+    return Intl.message(
+      'An exact birth time is needed to calculate the houses.',
+      name: 'natalHousesNeedTime',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Planets`
   String get natalPositionsTab {
-    return Intl.message('Today', name: 'natalPositionsTab', desc: '', args: []);
+    return Intl.message(
+      'Planets',
+      name: 'natalPositionsTab',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Elements`
@@ -3876,10 +3931,10 @@ class AppLocalizations {
     );
   }
 
-  /// `You were born under a sign of stability and deep sensitivity. You have a strong connection to emotion and intuition.`
+  /// `See which signs the planets were in when you were born and how their positions relate.`
   String get personalDefaultDescription {
     return Intl.message(
-      'You were born under a sign of stability and deep sensitivity. You have a strong connection to emotion and intuition.',
+      'See which signs the planets were in when you were born and how their positions relate.',
       name: 'personalDefaultDescription',
       desc: '',
       args: [],
@@ -4201,20 +4256,20 @@ class AppLocalizations {
     );
   }
 
-  /// `Tune in to the Moon's rhythms and open your birth chart—it can guide your path.`
+  /// `Asteria uses your birth details to work out where the planets were when you were born.`
   String get authMoonRhythms {
     return Intl.message(
-      'Tune in to the Moon\'s rhythms and open your birth chart—it can guide your path.',
+      'Asteria uses your birth details to work out where the planets were when you were born.',
       name: 'authMoonRhythms',
       desc: '',
       args: [],
     );
   }
 
-  /// `Enter your birth date, time, and place—and let the Universe speak to you.`
+  /// `Enter your birth date, time, and place`
   String get authBirthDetailsPrompt {
     return Intl.message(
-      'Enter your birth date, time, and place—and let the Universe speak to you.',
+      'Enter your birth date, time, and place',
       name: 'authBirthDetailsPrompt',
       desc: '',
       args: [],
@@ -6960,40 +7015,40 @@ class AppLocalizations {
     );
   }
 
-  /// `Connecting the stars into your destiny pattern…`
+  /// `Placing the planets on your chart…`
   String get natalLoadingPattern {
     return Intl.message(
-      'Connecting the stars into your destiny pattern…',
+      'Placing the planets on your chart…',
       name: 'natalLoadingPattern',
       desc: '',
       args: [],
     );
   }
 
-  /// `Reading the secret language of the planets…`
+  /// `Drawing threads between the planets…`
   String get natalLoadingLanguage {
     return Intl.message(
-      'Reading the secret language of the planets…',
+      'Drawing threads between the planets…',
       name: 'natalLoadingLanguage',
       desc: '',
       args: [],
     );
   }
 
-  /// `Revealing your celestial personality code…`
+  /// `Looking at the elements in your chart…`
   String get natalLoadingCode {
     return Intl.message(
-      'Revealing your celestial personality code…',
+      'Looking at the elements in your chart…',
       name: 'natalLoadingCode',
       desc: '',
       args: [],
     );
   }
 
-  /// `The Universe is creating your star portrait…`
+  /// `Preparing your reading…`
   String get natalLoadingPortrait {
     return Intl.message(
-      'The Universe is creating your star portrait…',
+      'Preparing your reading…',
       name: 'natalLoadingPortrait',
       desc: '',
       args: [],

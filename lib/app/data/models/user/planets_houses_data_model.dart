@@ -4,6 +4,7 @@ class PlanetsHousesDataModel {
   final String data;
   final Elements elements;
   final List<PlanetHousePositionModel> positions;
+  final List<HouseCuspModel> houseCusps;
   final HouseSummaryModel? houseSummary;
   final PlanetsHousesCalculationModel? calculation;
   final String? promptContext;
@@ -12,6 +13,7 @@ class PlanetsHousesDataModel {
     required this.data,
     required this.elements,
     this.positions = const [],
+    this.houseCusps = const [],
     this.houseSummary,
     this.calculation,
     this.promptContext,
@@ -21,15 +23,8 @@ class PlanetsHousesDataModel {
     return PlanetsHousesDataModel(
       data: json['data'] as String,
       elements: Elements.fromJson(json['elements'] as Map<String, dynamic>),
-      positions:
-          (json['positions'] as List<dynamic>?)
-              ?.map(
-                (item) => PlanetHousePositionModel.fromJson(
-                  item as Map<String, dynamic>,
-                ),
-              )
-              .toList() ??
-          const [],
+      positions: PlanetHousePositionModel.parseAvailable(json['positions']),
+      houseCusps: HouseCuspModel.parseCycle(json['house_cusps']),
       houseSummary: json['house_summary'] != null
           ? HouseSummaryModel.fromJson(
               json['house_summary'] as Map<String, dynamic>,
@@ -50,10 +45,44 @@ class PlanetsHousesDataModel {
       'elements': elements.toJson(),
       if (positions.isNotEmpty)
         'positions': positions.map((position) => position.toJson()).toList(),
+      if (houseCusps.isNotEmpty)
+        'house_cusps': houseCusps.map((cusp) => cusp.toJson()).toList(),
       if (houseSummary != null) 'house_summary': houseSummary!.toJson(),
       if (calculation != null) 'calculation': calculation!.toJson(),
       if (promptContext != null) 'prompt_context': promptContext,
     };
+  }
+
+  static const _planetCodes = {
+    'sun',
+    'moon',
+    'mercury',
+    'venus',
+    'mars',
+    'jupiter',
+    'saturn',
+    'uranus',
+    'neptune',
+    'pluto',
+  };
+
+  bool get hasPlanetCoordinates => positions.any(
+    (p) =>
+        _planetCodes.contains(p.code) &&
+        p.longitude.isFinite &&
+        p.longitude >= 0 &&
+        p.longitude < 360,
+  );
+
+  /// Old canonical prose includes exact houses and angles. For approximate
+  /// times pass only planetary positions, never that prose or inferred houses.
+  String toApproximateTimePromptContext() {
+    return [
+      'Точное время рождения неизвестно. Положения планет приблизительны; не делай выводов о домах, асценденте, MC и других углах карты.',
+      for (final p in positions)
+        if (_planetCodes.contains(p.code))
+          '${p.name} | ${p.sign} | ориентировочная долгота ${p.longitude.toStringAsFixed(6)}°',
+    ].join('\n');
   }
 
   String toPromptContext({
@@ -130,6 +159,7 @@ class PlanetsHousesDataModel {
     String? data,
     Elements? elements,
     List<PlanetHousePositionModel>? positions,
+    List<HouseCuspModel>? houseCusps,
     HouseSummaryModel? houseSummary,
     PlanetsHousesCalculationModel? calculation,
     String? promptContext,
@@ -138,11 +168,55 @@ class PlanetsHousesDataModel {
       data: data ?? this.data,
       elements: elements ?? this.elements,
       positions: positions ?? this.positions,
+      houseCusps: houseCusps ?? this.houseCusps,
       houseSummary: houseSummary ?? this.houseSummary,
       calculation: calculation ?? this.calculation,
       promptContext: promptContext ?? this.promptContext,
     );
   }
+}
+
+class HouseCuspModel {
+  final int house;
+  final double longitude;
+
+  const HouseCuspModel({required this.house, required this.longitude});
+
+  /// A partial or noncyclic set cannot describe a house wheel. Never invent
+  /// missing boundaries or turn an absent longitude into zero degrees Aries.
+  static List<HouseCuspModel> parseCycle(Object? raw) {
+    if (raw is! List || raw.length != 12) return const [];
+    final byHouse = <int, HouseCuspModel>{};
+    final longitudes = <double>{};
+    for (final item in raw) {
+      if (item is! Map) return const [];
+      final house = item['house'];
+      final longitude = item['longitude'];
+      if (house is! int ||
+          house < 1 ||
+          house > 12 ||
+          byHouse.containsKey(house) ||
+          longitude is! num ||
+          !longitude.isFinite ||
+          longitude < 0 ||
+          longitude >= 360 ||
+          !longitudes.add(longitude.toDouble())) {
+        return const [];
+      }
+      byHouse[house] = HouseCuspModel(
+        house: house,
+        longitude: longitude.toDouble(),
+      );
+    }
+    final ordered = List.generate(12, (i) => byHouse[i + 1]!);
+    var wraps = 0;
+    for (var i = 0; i < 12; i++) {
+      if (ordered[(i + 1) % 12].longitude < ordered[i].longitude) wraps++;
+    }
+    return wraps == 1 ? List.unmodifiable(ordered) : const [];
+  }
+
+  Map<String, dynamic> toJson() => {'house': house, 'longitude': longitude};
 }
 
 class HouseSummaryModel {
@@ -259,6 +333,24 @@ class PlanetHousePositionModel {
     required this.house,
     required this.longitude,
   });
+
+  static List<PlanetHousePositionModel> parseAvailable(Object? raw) {
+    if (raw is! List) return const [];
+    return [
+      for (final item in raw)
+        if (item is Map<String, dynamic> &&
+            item['code'] is String &&
+            item['name'] is String &&
+            item['sign'] is String &&
+            item['house'] is num &&
+            (item['house'] as num).isFinite &&
+            item['longitude'] is num &&
+            (item['longitude'] as num).isFinite &&
+            (item['longitude'] as num) >= 0 &&
+            (item['longitude'] as num) < 360)
+          PlanetHousePositionModel.fromJson(item),
+    ];
+  }
 
   factory PlanetHousePositionModel.fromJson(Map<String, dynamic> json) {
     return PlanetHousePositionModel(

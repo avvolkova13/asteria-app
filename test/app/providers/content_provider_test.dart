@@ -324,6 +324,120 @@ void main() {
     },
   );
 
+  group('purchased natal geometry', () {
+    late _FakeBackendApi api;
+    late _FakeUserRepository repository;
+    late UserProvider users;
+    late ContentProvider content;
+    final owned = _natalUser().copyWith(
+      natalCard: _natalCard(),
+      planetsHousesData: _completePlanetsHousesData(),
+    );
+    setUp(() {
+      repository = _FakeUserRepository();
+      users = UserProvider(userRepository: repository)
+        ..applyServerUserSnapshot(owned);
+      api = _FakeBackendApi();
+      content = ContentProvider(
+        userProvider: users,
+        contentRepository: _FakeContentRepository(),
+        backendApi: api,
+      );
+    });
+    tearDown(() {
+      content.dispose();
+      users.dispose();
+    });
+    test(
+      'concurrent readers upgrade old positions without mutating the account or purchasing',
+      () async {
+        api.cusps = List.generate(
+          12,
+          (i) => {'house': i + 1, 'longitude': (345 + i * 30) % 360},
+        );
+        final charts = await Future.wait([
+          content.loadPurchasedNatalGeometry(),
+          content.loadPurchasedNatalGeometry(),
+        ]);
+        expect(charts.first?.houseCusps.length, 12);
+        expect(charts.last?.positions.single.longitude, 146.667661);
+        expect(
+          (await content.loadPurchasedNatalGeometry())
+              ?.houseCusps
+              .first
+              .longitude,
+          345,
+        );
+        expect(api.planetsCalls, 1);
+        expect(repository.updatedUser, isNull);
+        expect(users.currentUser?.natalCard, same(owned.natalCard));
+      },
+    );
+    test(
+      'old backend still returns usable positions and does not loop',
+      () async {
+        expect(
+          (await content.loadPurchasedNatalGeometry())?.houseCusps,
+          isEmpty,
+        );
+        await content.loadPurchasedNatalGeometry();
+        expect(api.planetsCalls, 1);
+      },
+    );
+    test(
+      'network failure preserves saved chart and an explicit retry reaches backend',
+      () async {
+        api.planetsGate = Completer<void>();
+        final offline = content.loadPurchasedNatalGeometry();
+        api.planetsGate!.completeError(StateError('offline'));
+        expect((await offline)?.positions.single.longitude, 120.0);
+        api.planetsGate = null;
+        expect(
+          (await content.loadPurchasedNatalGeometry())
+              ?.positions
+              .single
+              .longitude,
+          146.667661,
+        );
+        expect(api.planetsCalls, 2);
+      },
+    );
+    test(
+      'response from previous account is discarded and unpurchased account never requests geometry',
+      () async {
+        api.planetsGate = Completer<void>();
+        final previous = content.loadPurchasedNatalGeometry();
+        users.applyServerUserSnapshot(_natalUser().copyWith(id: 'other'));
+        api.planetsGate!.complete();
+        expect(await previous, isNull);
+        expect(await content.loadPurchasedNatalGeometry(), isNull);
+        expect(api.planetsCalls, 1);
+        expect(repository.updatedUser, isNull);
+      },
+    );
+    test(
+      'approximate time with saved positions needs no house calculation',
+      () async {
+        final info = owned.personalInfo!;
+        users.applyServerUserSnapshot(
+          owned.copyWith(
+            personalInfo: info.copyWith(
+              birthDate: info.birthDate!.copyWith(birthTimeKnown: false),
+            ),
+          ),
+        );
+        expect(
+          (await content.loadPurchasedNatalGeometry())
+              ?.positions
+              .single
+              .longitude,
+          120.0,
+        );
+        expect(api.planetsCalls, 0);
+      },
+    );
+  });
+
   test('buys natal card through backend generated feature execution', () async {
     final userRepository = _FakeUserRepository();
     final userProvider = UserProvider(userRepository: userRepository);
@@ -1240,6 +1354,8 @@ class _FakeContentRepository implements ContentRepository {
 }
 
 class _FakeBackendApi implements BackendApi {
+  List<Map<String, num>>? cusps;
+  Completer<void>? planetsGate;
   int planetsCalls = 0;
   Map<String, dynamic>? lastPlanetsRequest;
 
@@ -1263,8 +1379,10 @@ class _FakeBackendApi implements BackendApi {
       'latitude': latitude,
       'longitude': longitude,
     };
+    if (planetsGate != null) await planetsGate!.future;
     return Response<dynamic>(
       data: {
+        if (cusps != null) 'house_cusps': cusps,
         'data': 'Солнце - Лев - 10',
         'elements': {'fire': '5', 'earth': '4', 'air': '6', 'water': '2'},
         'positions': [

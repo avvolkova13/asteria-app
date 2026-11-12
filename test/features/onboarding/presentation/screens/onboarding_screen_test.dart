@@ -242,6 +242,7 @@ void main() {
         }
         _expectPage(tester, bloc, page);
         expect(tester.takeException(), isNull);
+        await _waitForGoldenImages(tester);
         final boundary = tester.renderObject<RenderRepaintBoundary>(
           find.byKey(const ValueKey('onboarding-screen-golden')),
         );
@@ -288,6 +289,25 @@ void main() {
     expect(analytics.named(AstEvents.onboardingComplete), hasLength(1));
     expect(tester.takeException(), isNull);
   });
+}
+
+// pumpAndSettle waits for scheduled frames, but a cold asset may still be
+// decoding when no frame is scheduled.
+Future<void> _waitForGoldenImages(WidgetTester tester) async {
+  final context = tester.element(find.byType(OnboardingScreen));
+  final images = <ImageProvider>{
+    for (final image in tester.widgetList<Image>(find.byType(Image)))
+      image.image,
+    for (final box in tester.widgetList<DecoratedBox>(
+      find.byType(DecoratedBox),
+    ))
+      if (box.decoration case BoxDecoration(image: final image?)) image.image,
+  };
+  await tester.runAsync(
+    () =>
+        Future.wait(images.map((provider) => precacheImage(provider, context))),
+  );
+  await tester.pump();
 }
 
 Future<void> _pumpOnboarding(

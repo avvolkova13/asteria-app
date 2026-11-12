@@ -394,6 +394,9 @@ class _User extends ChangeNotifier implements UserProvider {
 }
 
 class _Content implements ContentProvider {
+  @override
+  Future<PlanetsHousesDataModel?> loadPurchasedNatalGeometry() async => null;
+
   _Content(this.user);
   final _User user;
   int calls = 0;

@@ -352,13 +352,13 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "attemptsLeftCount": m5,
     "authBirthDetailsPrompt": MessageLookupByLibrary.simpleMessage(
-      "Enter your birth date, time, and place—and let the Universe speak to you.",
+      "Enter your birth date, time, and place",
     ),
     "authCosmicEssence": MessageLookupByLibrary.simpleMessage(
       "Discover your cosmic essence",
     ),
     "authMoonRhythms": MessageLookupByLibrary.simpleMessage(
-      "Tune in to the Moon\'s rhythms and open your birth chart—it can guide your path.",
+      "Asteria uses your birth details to work out where the planets were when you were born.",
     ),
     "authSaveUserError": MessageLookupByLibrary.simpleMessage(
       "We couldn\'t save your profile. Check your connection and try again.",
@@ -1205,17 +1205,17 @@ class MessageLookup extends MessageLookupByLibrary {
       "Destiny and depth",
     ),
     "natalElementsDescription": MessageLookupByLibrary.simpleMessage(
-      "— your inner balance of energies.",
+      "shows how fire, earth, air and water are represented in your chart.",
     ),
     "natalElementsModalities": MessageLookupByLibrary.simpleMessage(
-      "Elements\nand modalities",
+      "Element balance",
     ),
     "natalElementsTab": MessageLookupByLibrary.simpleMessage("Elements"),
     "natalForeverAccess": MessageLookupByLibrary.simpleMessage(
-      "Lifetime access",
+      "Saved to your account",
     ),
     "natalForeverDescription": MessageLookupByLibrary.simpleMessage(
-      "A detailed interpretation that\'s yours to keep.",
+      "Your chart is saved to your account so you can revisit it.",
     ),
     "natalGeneralData": MessageLookupByLibrary.simpleMessage(
       "General information",
@@ -1228,7 +1228,10 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "natalGrowthLife": MessageLookupByLibrary.simpleMessage("Growth and life"),
     "natalHousesDescription": MessageLookupByLibrary.simpleMessage(
-      "— keys to life areas and your talents.",
+      "show which areas of life stand out in your chart. An exact birth time is needed.",
+    ),
+    "natalHousesNeedTime": MessageLookupByLibrary.simpleMessage(
+      "An exact birth time is needed to calculate the houses.",
     ),
     "natalHousesThemes": MessageLookupByLibrary.simpleMessage(
       "Houses and themes",
@@ -1240,29 +1243,29 @@ class MessageLookup extends MessageLookupByLibrary {
       "What you\'ll discover",
     ),
     "natalInstantAccess": MessageLookupByLibrary.simpleMessage(
-      "Access opens immediately after payment.",
+      "Asteria prepares your reading after purchase.",
     ),
     "natalLoadError": MessageLookupByLibrary.simpleMessage(
       "Unable to load your birth chart. Try again.",
     ),
     "natalLoadingCode": MessageLookupByLibrary.simpleMessage(
-      "Revealing your celestial personality code…",
+      "Looking at the elements in your chart…",
     ),
     "natalLoadingLanguage": MessageLookupByLibrary.simpleMessage(
-      "Reading the secret language of the planets…",
+      "Drawing threads between the planets…",
     ),
     "natalLoadingPattern": MessageLookupByLibrary.simpleMessage(
-      "Connecting the stars into your destiny pattern…",
+      "Placing the planets on your chart…",
     ),
     "natalLoadingPortrait": MessageLookupByLibrary.simpleMessage(
-      "The Universe is creating your star portrait…",
+      "Preparing your reading…",
     ),
     "natalMagicSummary": MessageLookupByLibrary.simpleMessage(
       "Magical summary",
     ),
     "natalMainPositions": MessageLookupByLibrary.simpleMessage("Key positions"),
     "natalPaywallIntro": MessageLookupByLibrary.simpleMessage(
-      "A birth chart is your unique celestial passport, created at the moment you were born.",
+      "Explore the sky on the day you were born. Tap a planet on the chart to see its connections.",
     ),
     "natalPaywallTitle": MessageLookupByLibrary.simpleMessage(
       "Your birth chart",
@@ -1270,18 +1273,28 @@ class MessageLookup extends MessageLookupByLibrary {
     "natalPersonalityFoundation": MessageLookupByLibrary.simpleMessage(
       "Personality foundation",
     ),
-    "natalPositionsTab": MessageLookupByLibrary.simpleMessage("Today"),
+    "natalPositionsTab": MessageLookupByLibrary.simpleMessage("Planets"),
     "natalProAccessDescription": MessageLookupByLibrary.simpleMessage(
-      "No Star Coins required. Your chart is yours to keep.",
+      "Your Star Coin balance stays the same.",
     ),
     "natalRelationshipsExpression": MessageLookupByLibrary.simpleMessage(
       "Relationships and expression",
     ),
     "natalStrongHouse": m33,
     "natalSummaryDescription": MessageLookupByLibrary.simpleMessage(
-      "— a personal message from the Universe.",
+      "brings together the main themes of your reading.",
     ),
+    "natalTimeUnknown": MessageLookupByLibrary.simpleMessage("Not provided"),
     "natalWeakHouse": m34,
+    "natalWheelApproximate": MessageLookupByLibrary.simpleMessage(
+      "Without an exact birth time, the planet positions on the chart are approximate.",
+    ),
+    "natalWheelSelectPlanet": MessageLookupByLibrary.simpleMessage(
+      "Tap a planet to see its connections",
+    ),
+    "natalWheelUnavailable": MessageLookupByLibrary.simpleMessage(
+      "Planet positions are currently unavailable. Your saved reading is below.",
+    ),
     "navHome": MessageLookupByLibrary.simpleMessage("Home"),
     "navMoon": MessageLookupByLibrary.simpleMessage("Moon"),
     "navPersonal": MessageLookupByLibrary.simpleMessage("Personal"),
@@ -1474,7 +1487,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "personalCharacter": MessageLookupByLibrary.simpleMessage("Character"),
     "personalDefaultDescription": MessageLookupByLibrary.simpleMessage(
-      "You were born under a sign of stability and deep sensitivity. You have a strong connection to emotion and intuition.",
+      "See which signs the planets were in when you were born and how their positions relate.",
     ),
     "personalElement": MessageLookupByLibrary.simpleMessage("Element"),
     "personalEnergy": MessageLookupByLibrary.simpleMessage("Energy"),
@@ -1498,7 +1511,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Enter your date, time, and place of birth, and let the Universe speak to you.",
     ),
     "personalInfoSubtitle": MessageLookupByLibrary.simpleMessage(
-      "Tune in to the Moon and reveal your birth chart—it can illuminate your path.",
+      "Asteria uses your birth details to work out where the planets were when you were born.",
     ),
     "personalInfoTitle": MessageLookupByLibrary.simpleMessage(
       "Discover your cosmic self",

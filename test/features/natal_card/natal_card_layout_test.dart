@@ -48,11 +48,39 @@ void main() {
 
   testWidgets('long birth city is ellipsized on one line', (tester) async {
     await _pumpChart(tester, 390, 'Описание позиции.');
-    final city = tester.renderObject<RenderParagraph>(find.text('Еманжелинск'));
+    final city = tester.renderObject<RenderParagraph>(
+      find.text('Петропавловск-Камчатский'),
+    );
     expect(city.maxLines, 1);
     expect(city.overflow, TextOverflow.ellipsis);
     expect(city.didExceedMaxLines, isTrue);
   });
+
+  testWidgets(
+    'approximate birth time omits exact houses in the purchased report',
+    (tester) async {
+      await _pumpChart(
+        tester,
+        390,
+        'Сохранённый текст о десятом доме.',
+        exactTime: false,
+      );
+      expect(find.text('Не указано'), findsOneWidget);
+      expect(
+        find.textContaining('Сохранённый текст о десятом доме.'),
+        findsNothing,
+      );
+      final houses = find.textContaining('Дома и');
+      await tester.ensureVisible(houses);
+      await tester.tap(houses);
+      await tester.pumpAndSettle();
+      expect(
+        find.text('Для расчёта домов нужно точное время рождения.'),
+        findsOneWidget,
+      );
+      expect(find.text('Сильный 10 дом'), findsNothing);
+    },
+  );
 
   testWidgets('birth labels keep whole words on each line', (tester) async {
     await _pumpChart(tester, 390, 'Описание позиции.');
@@ -134,13 +162,16 @@ Future<void> _pumpChart(
   String description, {
   Locale locale = const Locale('ru'),
   bool use24Hour = false,
+  bool exactTime = true,
   double textScale = 1,
 }) async {
   tester.view.physicalSize = Size(width, 844);
   tester.view.devicePixelRatio = 1;
   addTearDown(tester.view.resetPhysicalSize);
   addTearDown(tester.view.resetDevicePixelRatio);
-  final user = _TestUserProvider(_user(description, locale.languageCode));
+  final user = _TestUserProvider(
+    _user(description, locale.languageCode, exactTime),
+  );
   final analytics = _TestAnalytics();
   di.registerSingleton<UserProvider>(user);
   di.registerSingleton<ContentProvider>(_TestContent());
@@ -180,70 +211,72 @@ Future<void> _pumpChart(
   await tester.pumpAndSettle();
 }
 
-UserModel _user(String description, String language) => UserModel(
-  id: 'layout-test',
-  balance: 0,
-  userGroup: UserGroup.user,
-  subscriptionType: SubscriptionType.free,
-  createdAt: DateTime(2020),
-  updatedAt: DateTime(2020),
-  sonnikHistory: const [],
-  solarData: const SolarDataModel(data: ''),
-  personalInfo: PersonalInfoModel(
-    birthDate: BirthDateModel(
-      birthDate: DateTime(1995, 5, 13),
-      birthTime: DateTime(1995, 5, 13, 14, 58),
-    ),
-    birthPlace: const BirthPlaceModel(
-      location: 'Еманжелинск, Россия',
-      latitude: 55,
-      longitude: 37,
-    ),
-  ),
-  planetsHousesData: const PlanetsHousesDataModel(
-    data: '',
-    elements: Elements(fire: '3', earth: '6', air: '2', water: '4'),
-    positions: [
-      PlanetHousePositionModel(
-        code: 'sun',
-        name: 'Солнце',
-        signCode: 'taurus',
-        sign: 'Телец',
-        house: 10,
-        longitude: 40,
+UserModel _user(String description, String language, bool exactTime) =>
+    UserModel(
+      id: 'layout-test',
+      balance: 0,
+      userGroup: UserGroup.user,
+      subscriptionType: SubscriptionType.free,
+      createdAt: DateTime(2020),
+      updatedAt: DateTime(2020),
+      sonnikHistory: const [],
+      solarData: const SolarDataModel(data: ''),
+      personalInfo: PersonalInfoModel(
+        birthDate: BirthDateModel(
+          birthDate: DateTime(1995, 5, 13),
+          birthTimeKnown: exactTime,
+          birthTime: DateTime(1995, 5, 13, 14, 58),
+        ),
+        birthPlace: const BirthPlaceModel(
+          location: 'Петропавловск-Камчатский, Россия',
+          latitude: 55,
+          longitude: 37,
+        ),
       ),
-      PlanetHousePositionModel(
-        code: 'venus',
-        name: 'Венера',
-        signCode: 'gemini',
-        sign: 'Близнецы',
-        house: 7,
-        longitude: 65,
+      planetsHousesData: const PlanetsHousesDataModel(
+        data: '',
+        elements: Elements(fire: '3', earth: '6', air: '2', water: '4'),
+        positions: [
+          PlanetHousePositionModel(
+            code: 'sun',
+            name: 'Солнце',
+            signCode: 'taurus',
+            sign: 'Телец',
+            house: 10,
+            longitude: 40,
+          ),
+          PlanetHousePositionModel(
+            code: 'venus',
+            name: 'Венера',
+            signCode: 'gemini',
+            sign: 'Близнецы',
+            house: 7,
+            longitude: 65,
+          ),
+        ],
+        houseSummary: HouseSummaryModel(
+          strongHouse: HouseSummaryEntryModel(houseNumber: 10),
+          weakHouse: HouseSummaryEntryModel(houseNumber: 3),
+          accentHouse: HouseSummaryEntryModel(houseNumber: 7),
+        ),
       ),
-    ],
-    houseSummary: HouseSummaryModel(
-      strongHouse: HouseSummaryEntryModel(houseNumber: 10),
-      weakHouse: HouseSummaryEntryModel(houseNumber: 3),
-      accentHouse: HouseSummaryEntryModel(houseNumber: 7),
-    ),
-  ),
-  natalCard: NatalCardModel.fromJson({
-    'source_language': language,
-    'interpretations': {
-      language: {
-        'planet_interpretations': {
-          'sun': description,
-          'venus': 'Описание Венеры.',
+      natalCard: NatalCardModel.fromJson({
+        'source_language': language,
+        'interpretations': {
+          language: {
+            'planet_interpretations': {
+              'sun': description,
+              'venus': 'Описание Венеры.',
+            },
+            'house_interpretations': {
+              'strong_house': 'Персональное описание сильного дома.',
+              'weak_house': 'Описание слабого дома.',
+              'accent_house': 'Описание акцента.',
+            },
+          },
         },
-        'house_interpretations': {
-          'strong_house': 'Персональное описание сильного дома.',
-          'weak_house': 'Описание слабого дома.',
-          'accent_house': 'Описание акцента.',
-        },
-      },
-    },
-  }),
-);
+      }),
+    );
 
 class _TestUserProvider extends ChangeNotifier implements UserProvider {
   _TestUserProvider(this.currentUser);
@@ -254,6 +287,9 @@ class _TestUserProvider extends ChangeNotifier implements UserProvider {
 }
 
 class _TestContent implements ContentProvider {
+  @override
+  Future<PlanetsHousesDataModel?> loadPurchasedNatalGeometry() async => null;
+
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
