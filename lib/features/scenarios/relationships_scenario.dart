@@ -11,8 +11,8 @@ import 'package:asteria_app/features/compatibility/presentation/screens/compatib
 import 'package:asteria_app/features/compatibility/presentation/screens/create_compatibility_initial_screen.dart';
 import 'package:asteria_app/features/compatibility/presentation/widgets/compatibility_layout.dart';
 import 'package:asteria_app/features/compatibility/presentation/widgets/compability_results.dart';
-import 'package:asteria_app/features/love_deck/love_deck_access.dart';
-import 'package:asteria_app/features/love_deck/love_deck_screen.dart';
+import 'package:asteria_app/app/providers/content_provider.dart';
+import 'package:asteria_app/features/home/presentation/widgets/tarot_card_of_the_day_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
@@ -80,15 +80,10 @@ class _RelationshipsScenarioScreenState
     setState(() => _opening = true);
     try {
       if (!situation.forPair) {
-        await openLoveDeck(
-          context,
-          onOpen: () {
-            _open<void>(
-              context,
-              const LoveDeckScreen(afterReading: _Reflection()),
-            );
-          },
-        );
+        final content = di.get<ContentProvider>();
+        if (content.tarotCards.isEmpty) await content.loadContent();
+        if (!mounted) return;
+        await _open<void>(context, const _RelationshipDailyCard());
         return;
       }
       final users = di.get<UserProvider>();
@@ -150,6 +145,9 @@ class _RelationshipsScenarioScreenState
             ),
             const SizedBox(height: 12),
             CustomButton(
+              isFullWidth: true,
+              height: 50,
+              isLoading: _opening,
               text: choice.forPair
                   ? context.l10n.scenarioRelationshipOpenPair
                   : context.l10n.scenarioRelationshipOpenSpread,
@@ -335,4 +333,62 @@ class _Reflection extends StatelessWidget {
       ),
     ]),
   );
+}
+
+class _RelationshipDailyCard extends StatelessWidget {
+  const _RelationshipDailyCard();
+
+  Future<void> _reveal(BuildContext context, ContentProvider content) async {
+    try {
+      await content.setTodayTarotCardOpened();
+      content.setDailySymbolTarotOpened();
+    } catch (_) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(context.l10n.genericRefreshError)),
+        );
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final content = di.get<ContentProvider>();
+    return ScenarioPage(
+      title: context.l10n.scenarioRelationshipOwnFeelings,
+      child: ListenableBuilder(
+        listenable: content,
+        builder: (context, _) {
+          if (content.tarotCards.isEmpty) {
+            return ErrorScreenWidget(
+              error: context.l10n.tarotLoadError,
+              onRetry: () => content.loadContent(),
+            );
+          }
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                context.l10n.scenarioRelationshipSpreadOffer,
+                style: context.textTheme.inverseUrbanistRegular16,
+              ),
+              const SizedBox(height: 20),
+              TarotCardOfTheDayWidget(
+                tarotCard: content.getTodayTarotCard(),
+                isOpened: content.isTodayTarotCardOpened(),
+                isDarkLayout: true,
+                margin: EdgeInsets.zero,
+                showMoreButton: false,
+                onCardTap: () => _reveal(context, content),
+              ),
+              if (content.isTodayTarotCardOpened()) ...[
+                const SizedBox(height: 24),
+                const _Reflection(),
+              ],
+            ],
+          );
+        },
+      ),
+    );
+  }
 }

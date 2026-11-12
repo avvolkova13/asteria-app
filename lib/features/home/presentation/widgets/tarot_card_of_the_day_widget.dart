@@ -12,7 +12,7 @@ class TarotCardOfTheDayWidget extends StatefulWidget {
   final TarotCardModel? tarotCard;
   final bool isLoading;
   final bool isOpened;
-  final VoidCallback onRefresh;
+  final VoidCallback? onRefresh;
   final VoidCallback? onCardTap;
   final bool? showMoreButton;
   final bool isDarkLayout;
@@ -26,7 +26,7 @@ class TarotCardOfTheDayWidget extends StatefulWidget {
     this.showMoreButton = true,
     this.isDarkLayout = false,
     this.margin = const EdgeInsets.symmetric(horizontal: 16),
-    required this.onRefresh,
+    this.onRefresh,
     this.onCardTap,
   }) : super(key: key);
 
@@ -102,16 +102,17 @@ class _TarotCardOfTheDayWidgetState extends State<TarotCardOfTheDayWidget>
           textAlign: TextAlign.center,
           style: context.textTheme.playfairSemiBold32,
         ).withEntrance(),
-        Semantics(
-          button: true,
-          label: context.l10n.refreshDailyTarotLabel,
-          child: ExcludeSemantics(
-            child: LotusTap(
-              onTap: widget.onRefresh,
-              child: RepeatButtonWidget(),
+        if (widget.onRefresh != null)
+          Semantics(
+            button: true,
+            label: context.l10n.refreshDailyTarotLabel,
+            child: ExcludeSemantics(
+              child: LotusTap(
+                onTap: widget.onRefresh,
+                child: RepeatButtonWidget(),
+              ),
             ),
           ),
-        ),
       ],
     );
   }
@@ -132,27 +133,28 @@ class _TarotCardOfTheDayWidgetState extends State<TarotCardOfTheDayWidget>
               ),
             ).withEntrance(),
           ),
-          Semantics(
-            button: true,
-            label: context.l10n.refreshDailyTarotLabel,
-            child: ExcludeSemantics(
-              child: LotusTap(
-                behavior: HitTestBehavior.opaque,
-                onTap: widget.onRefresh,
-                child: SizedBox(
-                  width: 32,
-                  height: 32,
-                  child: ColorFiltered(
-                    colorFilter: const ColorFilter.mode(
-                      Color(0xFFF3B76A),
-                      BlendMode.srcIn,
+          if (widget.onRefresh != null)
+            Semantics(
+              button: true,
+              label: context.l10n.refreshDailyTarotLabel,
+              child: ExcludeSemantics(
+                child: LotusTap(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: widget.onRefresh,
+                  child: SizedBox(
+                    width: 32,
+                    height: 32,
+                    child: ColorFiltered(
+                      colorFilter: const ColorFilter.mode(
+                        Color(0xFFF3B76A),
+                        BlendMode.srcIn,
+                      ),
+                      child: const RepeatButtonWidget(),
                     ),
-                    child: const RepeatButtonWidget(),
                   ),
                 ),
               ),
             ),
-          ),
         ],
       ),
     );

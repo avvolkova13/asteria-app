@@ -8200,10 +8200,10 @@ class AppLocalizations {
     );
   }
 
-  /// `Draw the cards and reflect on what you want.`
+  /// `Open your free daily card and reflect on your feelings.`
   String get scenarioRelationshipSpreadOffer {
     return Intl.message(
-      'Draw the cards and reflect on what you want.',
+      'Open your free daily card and reflect on your feelings.',
       name: 'scenarioRelationshipSpreadOffer',
       desc: '',
       args: [],
@@ -8260,10 +8260,10 @@ class AppLocalizations {
     );
   }
 
-  /// `Open love spread`
+  /// `Open daily card`
   String get scenarioRelationshipOpenSpread {
     return Intl.message(
-      'Open love spread',
+      'Open daily card',
       name: 'scenarioRelationshipOpenSpread',
       desc: '',
       args: [],

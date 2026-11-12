@@ -1966,7 +1966,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Open pair reading",
     ),
     "scenarioRelationshipOpenSpread": MessageLookupByLibrary.simpleMessage(
-      "Open love spread",
+      "Open daily card",
     ),
     "scenarioRelationshipOwnFeelings": MessageLookupByLibrary.simpleMessage(
       "My feelings and wishes",
@@ -1982,7 +1982,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Share question",
     ),
     "scenarioRelationshipSpreadOffer": MessageLookupByLibrary.simpleMessage(
-      "Draw the cards and reflect on what you want.",
+      "Open your free daily card and reflect on your feelings.",
     ),
     "scenarioRelationshipsSubtitle": MessageLookupByLibrary.simpleMessage(
       "Choose what is on your mind. Asteria will suggest a place to start.",

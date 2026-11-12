@@ -2012,7 +2012,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Открыть разбор пары",
     ),
     "scenarioRelationshipOpenSpread": MessageLookupByLibrary.simpleMessage(
-      "Начать любовный расклад",
+      "Открыть карту дня",
     ),
     "scenarioRelationshipOwnFeelings": MessageLookupByLibrary.simpleMessage(
       "Мои чувства и желания",
@@ -2028,7 +2028,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Поделиться вопросом",
     ),
     "scenarioRelationshipSpreadOffer": MessageLookupByLibrary.simpleMessage(
-      "Вытяните карты и прислушайтесь к тому, чего хочется вам.",
+      "Откройте бесплатную карту дня и прислушайтесь к своим чувствам.",
     ),
     "scenarioRelationshipsSubtitle": MessageLookupByLibrary.simpleMessage(
       "Выберите, что вас волнует в отношениях. Asteria подскажет, с чего начать.",
