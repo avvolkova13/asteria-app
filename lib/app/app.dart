@@ -59,6 +59,11 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   late Future<String> _initFuture;
+  final _splashFinished = Completer<void>();
+
+  void _finishSplash() {
+    if (!_splashFinished.isCompleted) _splashFinished.complete();
+  }
   final _practiceLinks = PracticeLinkIntake(playerRouteName: AffirmationPlayerRoute.routeName);
   ApplePurchaseCoordinator? _appleCoordinator;
   GooglePurchaseRecovery? _googlePurchaseRecovery;
@@ -161,6 +166,11 @@ class _MyAppState extends State<MyApp> {
           currentUserId: userProvider.currentUser?.id,
         );
         DiContainer.registerRouter(initialRoute);
+        // Initialization runs during playback. A stalled decoder must never block entry.
+        await _splashFinished.future.timeout(
+          const Duration(seconds: 6),
+          onTimeout: () {},
+        );
         return initialRoute;
       } else if (state is SplashError) {
         throw Exception(state.message);
@@ -231,7 +241,7 @@ class _MyAppState extends State<MyApp> {
           case ConnectionState.active:
             return _BootstrapApp(
               localeService: widget.localeService,
-              child: const SplashScreen(),
+              child: SplashScreen(onFinished: _finishSplash),
             );
           case ConnectionState.done:
             if (snapshot.hasError) {

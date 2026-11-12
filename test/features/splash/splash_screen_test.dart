@@ -1,82 +1,55 @@
-import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:asteria_app/features/splash/presentation/screens/splash_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('brand mark moves once and settles into the original artwork', (
+  testWidgets('reduced motion skips playback and releases launch immediately', (
     tester,
   ) async {
-    await _mountSplash(tester);
-    final first = await _pixels(tester);
-    await tester.pump(const Duration(milliseconds: 520));
-    expect(await _pixels(tester), isNot(equals(first)));
-    await tester.pump(const Duration(seconds: 2));
-    expect(await _pixels(tester), equals(first));
-    await tester.pumpWidget(const SizedBox());
-    expect(tester.takeException(), isNull);
-  });
-
-  testWidgets('reduced motion keeps the full mark still during launch', (
-    tester,
-  ) async {
-    await _mountSplash(tester, reduced: true);
-    final first = await _pixels(tester);
-    await tester.pump(const Duration(milliseconds: 650));
-    expect(await _pixels(tester), equals(first));
-    expect(find.bySemanticsLabel('Asteria'), findsOneWidget);
-  });
-}
-
-Future<void> _mountSplash(WidgetTester tester, {bool reduced = false}) async {
-  await tester.pumpWidget(
-    MediaQuery(
-      data: MediaQueryData(disableAnimations: reduced),
-      child: const Directionality(
-        textDirection: TextDirection.ltr,
-        child: Center(
-          child: RepaintBoundary(
-            key: ValueKey('mark'),
-            child: SizedBox.square(dimension: 104, child: SplashScreen()),
-          ),
+    var finished = false;
+    await tester.pumpWidget(
+      MediaQuery(
+        data: const MediaQueryData(disableAnimations: true),
+        child: Directionality(
+          textDirection: TextDirection.ltr,
+          child: SplashScreen(onFinished: () => finished = true),
         ),
       ),
-    ),
-  );
-  // Asset decoding uses the engine's image decoder outside the fake clock.
-  for (var i = 0; i < 100; i++) {
-    await tester.runAsync(
-      () => Future<void>.delayed(const Duration(milliseconds: 10)),
     );
-    await tester.pump();
-    if (find
-        .descendant(
-          of: find.byType(SplashScreen),
-          matching: find.byType(CustomPaint),
-        )
-        .evaluate()
-        .isNotEmpty) {
-      return;
-    }
-  }
-  fail('The brand artwork did not decode.');
-}
+    expect(finished, isTrue);
+    expect(find.bySemanticsLabel('Asteria'), findsOneWidget);
+    expect(
+      tester.widget<Image>(find.byType(Image)).image,
+      const AssetImage('assets/images/auth/fluid_launch_still.webp'),
+    );
+  });
 
-Future<Uint8List> _pixels(WidgetTester tester) async {
-  final boundary = tester.renderObject<RenderRepaintBoundary>(
-    find.byKey(const ValueKey('mark')),
-  );
-  return (await tester.runAsync(() async {
-    final image = await boundary.toImage(pixelRatio: 2);
-    try {
-      return (await image.toByteData(
-        format: ui.ImageByteFormat.rawRgba,
-      ))!.buffer.asUint8List();
-    } finally {
-      image.dispose();
-    }
-  }))!;
+  testWidgets('the bundled splash decodes as a complete one-shot sequence', (
+    tester,
+  ) async {
+    await tester.runAsync(() async {
+      final data = await rootBundle.load(
+        'assets/images/auth/fluid_launch.webp',
+      );
+      final codec = await ui.instantiateImageCodec(
+        data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes),
+      );
+      try {
+        expect(codec.repetitionCount, 0);
+        expect(codec.frameCount, greaterThan(30));
+        var duration = Duration.zero;
+        for (var frame = 0; frame < codec.frameCount; frame++) {
+          final info = await codec.getNextFrame();
+          duration += info.duration;
+          info.image.dispose();
+        }
+        expect(duration.inMilliseconds, inInclusiveRange(3650, 4000));
+      } finally {
+        codec.dispose();
+      }
+    });
+  });
 }
