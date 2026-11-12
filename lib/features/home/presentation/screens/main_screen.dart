@@ -201,7 +201,7 @@ class _MainScreenState extends State<MainScreen> {
                                           context,
                                         ).languageCode ==
                                         'ru'
-                                    ? 'Выбрать сценарий'
+                                    ? 'Выберите то, что вам сейчас близко'
                                     : 'Choose a path',
                                 art: 'assets/images/scenarios/compass.webp',
                                 onTap: () => context.push('/first-session'),
