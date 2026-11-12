@@ -51,6 +51,7 @@ class AppColors {
 }
 
 class AppColorsDark {
+  static const Color linkGold = Color(0xFFFFD88A);
   static const Color homeCanvas = Color(0xFF0F0A1A);
   static const Color modal = Color(0xFF35253E);
   static const Color primary = Color(0xFF6C63FF);

@@ -5,6 +5,7 @@ import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/features/affirmation/player/player_artwork.dart';
 import 'package:asteria_app/features/affirmation/player/player_pebble.dart';
 import 'package:asteria_app/features/affirmation/player/practice_playback_controller.dart';
+import 'package:asteria_app/features/scenarios/scenario_sky.dart';
 import 'package:flutter/material.dart';
 
 class AffirmationOfTheDayWidget extends StatefulWidget {
@@ -98,7 +99,7 @@ class _AffirmationOfTheDayState extends State<AffirmationOfTheDayWidget> {
     final player = _player;
     final playing = player?.isPlaying ?? false;
     final strings = context.l10n;
-    const linkColor = AppColorsDark.homeCanvas;
+    const linkColor = AppColorsDark.linkGold;
     const radius = BorderRadius.all(Radius.circular(AsteriaCardRadii.card));
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -117,33 +118,14 @@ class _AffirmationOfTheDayState extends State<AffirmationOfTheDayWidget> {
                       behavior: HitTestBehavior.opaque,
                       onTap: _toggle,
                       child: RepaintBoundary(
-                        child: PlayerArtwork(
-                          position: player?.position ?? _resumeAt,
-                          duration:
-                              player?.duration ?? const Duration(seconds: 75),
-                          playing: playing,
+                        child: ScenarioSkyScope(
+                          child: PlayerArtwork(
+                            position: player?.position ?? _resumeAt,
+                            duration:
+                                player?.duration ?? const Duration(seconds: 75),
+                            playing: playing,
+                          ),
                         ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              const Positioned.fill(
-                child: IgnorePointer(
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          Color(0x80291B36),
-                          Color(0x70291B36),
-                          Color(0x00291B36),
-                          Color(0x00291B36),
-                          Color(0x80F3E4F8),
-                          Color(0xE6F3E4F8),
-                        ],
-                        stops: [0, .16, .42, .58, .84, 1],
                       ),
                     ),
                   ),
