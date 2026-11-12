@@ -137,6 +137,16 @@ void main() {
         findsOneWidget,
       );
 
+      expect(find.text('Go home'), findsNothing);
+      await tester.ensureVisible(find.text('I’ll try this step today'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('I’ll try this step today'));
+      await tester.pumpAndSettle();
+      await tester.ensureVisible(find.text('Go home'));
+      expect(find.text('One step is enough for today.'), findsOneWidget);
+      expect(find.text('Go home'), findsOneWidget);
+      expect(content.reveals, 1);
+
       await tester.pageBack();
       await tester.pumpAndSettle();
       await tester.tap(find.text('Start a conversation'));

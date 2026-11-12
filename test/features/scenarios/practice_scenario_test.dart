@@ -54,6 +54,49 @@ void main() {
     },
   );
 
+  testWidgets(
+    'post-practice check-in gives a next step and a working home action',
+    (tester) async {
+      var wentHome = false;
+      await tester.pumpWidget(
+        MaterialApp(
+          locale: const Locale('en'),
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            ...GlobalMaterialLocalizations.delegates,
+          ],
+          supportedLocales: const [Locale('en'), Locale('ru')],
+          builder: (context, child) => Theme(
+            data: AppThemeDark.instance.getThemeData(context),
+            child: MediaQuery(
+              data: MediaQuery.of(context).copyWith(disableAnimations: true),
+              child: child!,
+            ),
+          ),
+          home: PracticeReflectionScreen(onHome: () => wentHome = true),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('How do you feel now?'), findsOneWidget);
+      await tester.tap(find.text('A little calmer'));
+      await tester.pumpAndSettle();
+      expect(find.textContaining('Keep this pace:'), findsOneWidget);
+      await tester.ensureVisible(find.text('Go home'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Go home'));
+      expect(wentHome, isTrue);
+      await tester.ensureVisible(find.text('About the same'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('About the same'));
+      await tester.pumpAndSettle();
+      expect(
+        find.textContaining('You do not have to feel a change'),
+        findsOneWidget,
+      );
+      expect(tester.takeException(), isNull);
+    },
+  );
+
   testWidgets('matching recordings rotate within the selected mood', (
     tester,
   ) async {

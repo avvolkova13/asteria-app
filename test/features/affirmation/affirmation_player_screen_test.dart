@@ -15,6 +15,7 @@ class _Audio extends PracticePlaybackController {
   Duration elapsed = Duration.zero;
   bool active = false;
   bool loop = false;
+  bool completed = false;
   Completer<void>? loading;
 
   @override
@@ -23,6 +24,8 @@ class _Audio extends PracticePlaybackController {
   bool get isPlaying => active;
   @override
   bool get isLooping => loop;
+  @override
+  bool get isComplete => completed;
   @override
   Future<void> initialize() async {
     await loading?.future;
@@ -43,6 +46,8 @@ class _Audio extends PracticePlaybackController {
   @override
   Future<void> seek(Duration position) async {
     elapsed = position;
+    completed = elapsed >= duration;
+    if (completed) active = false;
     notifyListeners();
   }
 }
@@ -64,6 +69,7 @@ void main() {
     Size size, {
     double textScale = 1,
     bool autoPlay = false,
+    VoidCallback? onCompleted,
     Completer<void>? loading,
   }) async {
     tester.view.devicePixelRatio = 1;
@@ -86,12 +92,81 @@ void main() {
           ),
           child: child!,
         ),
-        home: AffirmationPlayerScreen(controller: audio, autoPlay: autoPlay),
+        home: AffirmationPlayerScreen(
+          controller: audio,
+          autoPlay: autoPlay,
+          onCompleted: onCompleted,
+        ),
       ),
     );
     await tester.pumpAndSettle();
     return audio;
   }
+
+  testWidgets(
+    'natural completion is reported once and preserves caller ownership',
+    (tester) async {
+      var completions = 0;
+      final audio = await show(
+        tester,
+        const Size(393, 852),
+        onCompleted: () => completions++,
+      );
+      await audio.toggle();
+      await tester.pump();
+      audio.active = false;
+      audio.completed = true;
+      audio.notifyListeners();
+      await tester.pump();
+      expect(completions, 1);
+      audio.notifyListeners();
+      await tester.pump();
+      expect(completions, 1);
+      await tester.pumpWidget(const SizedBox.shrink());
+      audio.notifyListeners();
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets('seeking to the end never reports a completed practice', (
+    tester,
+  ) async {
+    var completions = 0;
+    final audio = await show(
+      tester,
+      const Size(393, 852),
+      onCompleted: () => completions++,
+    );
+    await audio.toggle();
+    await tester.pump();
+    final slider = tester.widget<Slider>(find.byType(Slider));
+    slider.onChangeStart?.call(slider.max);
+    slider.onChanged?.call(slider.max);
+    slider.onChangeEnd?.call(slider.max);
+    await tester.pump();
+    await tester.pump();
+    expect(audio.isComplete, isTrue);
+    expect(completions, 0);
+  });
+
+  testWidgets(
+    'repeat playback does not interrupt the practice with completion',
+    (tester) async {
+      var completions = 0;
+      final audio = await show(
+        tester,
+        const Size(393, 852),
+        onCompleted: () => completions++,
+      );
+      await audio.setLooping(true);
+      await audio.toggle();
+      audio.active = false;
+      audio.completed = true;
+      audio.notifyListeners();
+      await tester.pump();
+      expect(completions, 0);
+    },
+  );
 
   testWidgets('scenario autoplay starts when the recording is ready', (
     tester,

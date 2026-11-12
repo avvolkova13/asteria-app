@@ -1,3 +1,4 @@
+import 'scenario_completion.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/app/data/models/lunar_calendar/lunar_month_model.dart';
 import 'package:asteria_app/app/data/models/lunar_calendar/lunar_recommendation_models.dart';
@@ -576,7 +577,8 @@ class _PlanDetails extends StatelessWidget {
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: AsteriaEntrance.sections([
-        if (saved) Text(plan.title, style: c.textTheme.inversePlayfairSemiBold20),
+        if (saved)
+          Text(plan.title, style: c.textTheme.inversePlayfairSemiBold20),
         Text(_dateLabel(c, plan.day)),
         if (plan.title.trim() != _activityLabel(c, plan.activity))
           Text(_activityLabel(c, plan.activity)),
@@ -586,23 +588,32 @@ class _PlanDetails extends StatelessWidget {
         if (di.isRegistered<UserProvider>())
           ListenableBuilder(
             listenable: di.get<UserProvider>(),
-            builder: (_, _) => di.get<UserProvider>().currentUser?.id == plan.owner
+            builder: (_, _) =>
+                di.get<UserProvider>().currentUser?.id == plan.owner
                 ? CalendarPlanReminderControl(plan: plan)
                 : const SizedBox.shrink(),
           ),
-        AuthGradientButton(
-          text: _PlannerPage.tabOf(c) == null
-              ? c.l10n.scenarioGoHome
-              : c.l10n.scenarioCalendarBackToCalendar,
-          onPressed: () {
-            final tab = _PlannerPage.tabOf(c);
-            if (tab != null && tab.isActive) {
-              Navigator.of(c).popUntil((route) => identical(route, tab));
-            } else {
-              scenarioHome(c);
-            }
-          },
-        ),
+        if (saved && _PlannerPage.tabOf(c) == null) ...[
+          const SizedBox(height: 20),
+          ScenarioCompletion(
+            message: Localizations.localeOf(c).languageCode == 'ru'
+                ? 'Ваш план отмечен в лунном календаре. Его можно открыть во вкладке «Луна» → «Мои планы». На главной вас ждут карта дня и аудиопрактика.'
+                : 'Your plan is marked in the lunar calendar. Find it in Moon → My plans. Home also has your daily card and an audio practice.',
+          ),
+        ] else
+          AuthGradientButton(
+            text: _PlannerPage.tabOf(c) == null
+                ? c.l10n.scenarioGoHome
+                : c.l10n.scenarioCalendarBackToCalendar,
+            onPressed: () {
+              final tab = _PlannerPage.tabOf(c);
+              if (tab != null && tab.isActive) {
+                Navigator.of(c).popUntil((route) => identical(route, tab));
+              } else {
+                scenarioHome(c);
+              }
+            },
+          ),
       ]),
     ),
   );

@@ -18,6 +18,8 @@ import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
 
 import 'scenario_ui.dart';
+import 'scenario_completion.dart';
+import 'relationship_question.dart';
 
 enum RelationshipSituation {
   care,
@@ -231,9 +233,12 @@ class RelationshipPairResult extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final interpretation = situation.reading(pair);
-    final question = situation.question(context);
+    final ru = Localizations.localeOf(context).languageCode == 'ru';
     final locale = Localizations.localeOf(context);
+    final overview = pair.compatibilityData.generalCompatibility.trim();
+    final questions = situation == RelationshipSituation.disagreement
+        ? [RelationshipQuestion.deescalate, RelationshipQuestion.beHeard]
+        : [RelationshipQuestion.closeness, RelationshipQuestion.support];
     return CompatibilityLayout(
       showRequestsBadge: false,
       child: Column(
@@ -241,7 +246,7 @@ class RelationshipPairResult extends StatelessWidget {
         children: AsteriaEntrance.sections([
           Text(
             '${pair.firstBirthdate.getZodiacSignName(languageCode: locale.languageCode)} + ${pair.secondBirthdate.getZodiacSignName(languageCode: locale.languageCode)}',
-            style: context.textTheme.tertiaryUrbanistRegular16,
+            style: context.textTheme.inverseUrbanistRegular16,
           ),
           const SizedBox(height: 8),
           Text(
@@ -249,38 +254,34 @@ class RelationshipPairResult extends StatelessWidget {
             style: context.textTheme.inversePlayfairSemiBold32,
           ),
           const SizedBox(height: 20),
-          if (interpretation.isNotEmpty) ...[
-            Text(
-              interpretation,
-              style: context.textTheme.inverseUrbanistRegular16,
-            ),
+          if (overview.isNotEmpty) ...[
+            Text(overview, style: context.textTheme.inverseUrbanistRegular16),
             const SizedBox(height: 24),
           ],
-          CompatibilityGlassCard(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  context.l10n.scenarioRelationshipConversationLabel,
-                  style: context.textTheme.playfairSemiBold20.copyWith(
-                    color: AppColors.textInverse,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  question,
-                  style: context.textTheme.inverseUrbanistRegular16,
-                ),
-              ],
-            ),
+          Text(
+            ru ? 'На чём сосредоточимся?' : 'What would you like to focus on?',
+            style: context.textTheme.inversePlayfairSemiBold24,
+          ),
+          const SizedBox(height: 10),
+          Text(
+            ru
+                ? 'Выберите вопрос. Посмотрим на вашу пару через эту тему и подберём первые слова для разговора.'
+                : 'Choose a question. We’ll look at your pair through this theme and suggest a way to start the conversation.',
+            style: context.textTheme.inverseUrbanistRegular16,
           ),
           const SizedBox(height: 16),
-          Builder(
-            builder: (buttonContext) => CompatibilityGradientButton(
-              text: context.l10n.scenarioRelationshipShareQuestion,
-              onPressed: () => _share(buttonContext, question),
+          for (final question in questions)
+            ScenarioTile(
+              title: question.title(ru),
+              onTap: () => _open<void>(
+                context,
+                _RelationshipAnswer(
+                  pair: pair,
+                  question: question,
+                  onShare: _share,
+                ),
+              ),
             ),
-          ),
           LotusButtons.text(
             onPressed: () => _open<void>(
               context,
@@ -296,9 +297,81 @@ class RelationshipPairResult extends StatelessWidget {
             ),
             child: Text(context.l10n.scenarioRelationshipFullReading),
           ),
-          LotusButtons.text(
-            onPressed: () => scenarioHome(context),
-            child: Text(context.l10n.scenarioGoHome),
+        ]),
+      ),
+    );
+  }
+}
+
+class _RelationshipAnswer extends StatelessWidget {
+  const _RelationshipAnswer({
+    required this.pair,
+    required this.question,
+    required this.onShare,
+  });
+  final SavedCompatibilityModel pair;
+  final RelationshipQuestion question;
+  final Future<void> Function(BuildContext, String) onShare;
+  @override
+  Widget build(BuildContext context) {
+    final ru = Localizations.localeOf(context).languageCode == 'ru';
+    final reading = question.reading(pair.compatibilityData);
+    return ScenarioPage(
+      title: question.title(ru),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: AsteriaEntrance.sections([
+          if (reading.isNotEmpty) ...[
+            Text(
+              ru ? 'В вашем разборе' : 'From your pair reading',
+              style: context.textTheme.inversePlayfairSemiBold20,
+            ),
+            const SizedBox(height: 10),
+            Text(reading, style: context.textTheme.inverseUrbanistRegular16),
+            const SizedBox(height: 24),
+          ],
+          Text(
+            ru ? 'Что можно попробовать' : 'Something to try',
+            style: context.textTheme.inversePlayfairSemiBold24,
+          ),
+          const SizedBox(height: 10),
+          Text(
+            question.suggestion(ru),
+            style: context.textTheme.inverseUrbanistRegular16,
+          ),
+          const SizedBox(height: 24),
+          CompatibilityGlassCard(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  context.l10n.scenarioRelationshipConversationLabel,
+                  style: context.textTheme.inversePlayfairSemiBold20,
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  question.opener(ru),
+                  style: context.textTheme.inverseUrbanistRegular16,
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+          Builder(
+            builder: (buttonContext) => CustomButton(
+              isFullWidth: true,
+              height: 50,
+              type: CustomButtonType.outline,
+              textColor: AppColors.textInverse,
+              text: context.l10n.scenarioRelationshipShareQuestion,
+              onPressed: () => onShare(buttonContext, question.opener(ru)),
+            ),
+          ),
+          const SizedBox(height: 24),
+          ScenarioCompletion(
+            message: ru
+                ? 'Разбор пары останется в «Личном». На главной можно посмотреть лунный календарь или взять минуту для себя с аффирмацией.'
+                : 'Your pair reading stays in Personal. On Home, you can explore the lunar calendar or take a minute with an affirmation.',
           ),
         ]),
       ),
@@ -331,9 +404,11 @@ class _Reflection extends StatelessWidget {
           ],
         ),
       ),
-      LotusButtons.text(
-        onPressed: () => scenarioHome(context),
-        child: Text(context.l10n.scenarioGoHome),
+      const SizedBox(height: 24),
+      ScenarioCompletion(
+        message: Localizations.localeOf(context).languageCode == 'ru'
+            ? 'Карта дня останется на главной. Там же можно послушать аффирмацию или заглянуть в лунный календарь.'
+            : 'Your daily card stays on Home. You can also listen to an affirmation or explore the lunar calendar.',
       ),
     ]),
   );

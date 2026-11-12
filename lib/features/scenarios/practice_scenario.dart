@@ -6,6 +6,7 @@ import 'package:asteria_app/features/affirmation/player/practice_link.dart';
 import 'package:flutter/cupertino.dart';
 
 import 'scenario_ui.dart';
+import 'scenario_completion.dart';
 
 enum PracticeMood {
   slowDown,
@@ -59,8 +60,17 @@ const availablePracticeRecordings = [
 Future<void> _openBundledPractice(BuildContext context) =>
     Navigator.of(context).push<void>(
       CupertinoPageRoute(
-        builder: (_) => const ScenarioSkyScope(
-          child: AffirmationPlayerScreen(showBack: true, autoPlay: true),
+        builder: (playerContext) => ScenarioSkyScope(
+          child: AffirmationPlayerScreen(
+            showBack: true,
+            autoPlay: true,
+            onCompleted: () =>
+                Navigator.of(playerContext).pushReplacement<void, void>(
+                  CupertinoPageRoute(
+                    builder: (_) => const PracticeReflectionScreen(),
+                  ),
+                ),
+          ),
         ),
       ),
     );
@@ -134,4 +144,67 @@ class _PracticeMoodsState extends State<_PracticeMoods> {
             ]),
           ),
   );
+}
+
+/// A short check-in after listening; it does not infer a therapeutic outcome.
+class PracticeReflectionScreen extends StatefulWidget {
+  const PracticeReflectionScreen({super.key, this.onHome});
+
+  final VoidCallback? onHome;
+
+  @override
+  State<PracticeReflectionScreen> createState() =>
+      _PracticeReflectionScreenState();
+}
+
+class _PracticeReflectionScreenState extends State<PracticeReflectionScreen> {
+  bool? _calmer;
+
+  @override
+  Widget build(BuildContext context) {
+    final ru = Localizations.localeOf(context).languageCode == 'ru';
+    return ScenarioPage(
+      title: ru ? 'Как вы сейчас?' : 'How do you feel now?',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: AsteriaEntrance.sections([
+          Text(
+            ru
+                ? 'Минута для себя уже позади. Заметьте, как вы себя чувствуете.'
+                : 'You have taken a moment for yourself. Notice how you feel.',
+          ),
+          const SizedBox(height: 20),
+          ScenarioChoiceCard(
+            title: ru ? 'Стало спокойнее' : 'A little calmer',
+            selected: _calmer == true,
+            art: PracticeMood.slowDown.art,
+            wide: true,
+            onTap: () => setState(() => _calmer = true),
+          ),
+          const SizedBox(height: 12),
+          ScenarioChoiceCard(
+            title: ru ? 'Пока без изменений' : 'About the same',
+            selected: _calmer == false,
+            art: PracticeMood.unwind.art,
+            wide: true,
+            onTap: () => setState(() => _calmer = false),
+          ),
+          if (_calmer != null) ...[
+            const SizedBox(height: 24),
+            ScenarioCompletion(
+              key: ValueKey(_calmer),
+              message: _calmer == true
+                  ? (ru
+                        ? 'Сохраните этот темп: выберите одно небольшое действие, а остальному дайте подождать. На главной можно снова включить аффирмацию или выбрать день для своих планов.'
+                        : 'Keep this pace: choose one small action and let the rest wait. From Home you can play the affirmation again or choose a date for your plans.')
+                  : (ru
+                        ? 'Не обязательно почувствовать перемену сразу. Можно сделать паузу и вернуться к записи позже. На главной вас ждут аффирмация дня и лунный календарь.'
+                        : 'You do not have to feel a change immediately. Take a pause and return to the recording later. Find the daily affirmation and lunar calendar on Home.'),
+              onHome: widget.onHome,
+            ),
+          ],
+        ]),
+      ),
+    );
+  }
 }

@@ -164,8 +164,13 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('42%'));
     await tester.pumpAndSettle();
+    expect(find.text('Общее описание совместимости.'), findsOneWidget);
+    await tester.ensureVisible(find.text('Как снизить напряжение?'));
+    await tester.tap(find.text('Как снизить напряжение?'));
+    await tester.pumpAndSettle();
     expect(find.text('Конфликты'), findsOneWidget);
     expect(find.text('Любовь'), findsNothing);
+    await tester.ensureVisible(find.text('Поделиться вопросом'));
     await tester.tap(find.text('Поделиться вопросом'));
     await tester.pumpAndSettle();
     expect(share?.method, 'share');
@@ -206,7 +211,17 @@ void main() {
       await tester.tap(find.text('Рассчитать'));
       await tester.pumpAndSettle();
       expect(find.byType(RelationshipPairResult), findsOneWidget);
-      expect(find.text('Любовь'), findsOneWidget);
+      expect(find.text('Общее описание совместимости.'), findsOneWidget);
+      await tester.ensureVisible(find.text('Как поддерживать друг друга?'));
+      await tester.tap(find.text('Как поддерживать друг друга?'));
+      await tester.pumpAndSettle();
+      expect(find.text('Семья'), findsOneWidget);
+      expect(find.text('Любовь'), findsNothing);
+      await tester.ensureVisible(find.text('На главную'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('На главную'));
+      await tester.pumpAndSettle();
+      expect(find.byType(PersonalScreen), findsOneWidget);
       expect(user.currentUser!.compatibilityHistory, hasLength(1));
       expect(tester.takeException(), isNull);
       await tester.pumpWidget(const SizedBox.shrink());
@@ -409,6 +424,8 @@ class _User extends ChangeNotifier implements UserProvider {
 
 class _Home extends Cubit<HomeState> implements HomeCubit {
   _Home() : super(const HomeLoaded());
+  @override
+  void changeTab(int index) => emit(HomeLoaded(currentTabIndex: index));
   @override
   Future<void> loadDailySelection() async {}
   @override

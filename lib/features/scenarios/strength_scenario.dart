@@ -18,6 +18,7 @@ import 'package:hive/hive.dart';
 import 'guidance_situation.dart';
 import 'scenario_sky.dart';
 import 'scenario_ui.dart';
+import 'scenario_completion.dart';
 import 'strength_guidance.dart';
 
 class StrengthTipStore {
@@ -105,12 +106,14 @@ class _GuidanceConversationState extends State<_GuidanceConversation>
   );
   final _answer = GlobalKey();
   bool _accountChanged = false;
+  bool? _tryToday;
 
   void _checkOwner() {
     if (_users.currentUser?.id != _owner && !_accountChanged) {
       setState(() {
         _accountChanged = true;
         _card = null;
+        _tryToday = null;
       });
     }
   }
@@ -134,6 +137,7 @@ class _GuidanceConversationState extends State<_GuidanceConversation>
     try {
       if (!_content.isTodayTarotCardOpened()) {
         _card = null;
+        _tryToday = null;
         _flip.value = 0;
       } else if (_content.tarotCards.isNotEmpty) {
         _card = _content.getTodayTarotCard();
@@ -238,10 +242,7 @@ class _GuidanceConversationState extends State<_GuidanceConversation>
               onPressed: _busy ? null : _reveal,
               isLoading: _busy,
             )
-          : AuthGradientButton(
-              text: context.l10n.scenarioGoHome,
-              onPressed: () => scenarioHome(context),
-            ),
+          : null,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: AsteriaEntrance.sections([
@@ -306,6 +307,52 @@ class _GuidanceConversationState extends State<_GuidanceConversation>
             ),
             const SizedBox(height: 14),
             KeyedSubtree(key: _answer, child: _reply(_advice(card, ru), ru)),
+            const SizedBox(height: 20),
+            if (_tryToday == null) ...[
+              Text(
+                ru
+                    ? 'Как хотите продолжить?'
+                    : 'How would you like to continue?',
+                style: context.textTheme.inversePlayfairSemiBold20,
+              ),
+              const SizedBox(height: 12),
+              CustomButton(
+                isFullWidth: true,
+                height: 50,
+                text: ru
+                    ? 'Попробую этот шаг сегодня'
+                    : 'I’ll try this step today',
+                onPressed: () => setState(() => _tryToday = true),
+              ),
+              const SizedBox(height: 8),
+              CustomButton(
+                isFullWidth: true,
+                height: 50,
+                type: CustomButtonType.outline,
+                textColor: AppColors.textInverse,
+                text: ru
+                    ? 'Сначала хочу обдумать'
+                    : 'I’d like to think it over first',
+                onPressed: () => setState(() => _tryToday = false),
+              ),
+            ] else ...[
+              Text(
+                _tryToday!
+                    ? (ru
+                          ? 'Начните с одного шага — этого достаточно на сегодня.'
+                          : 'One step is enough for today.')
+                    : (ru
+                          ? 'Дайте себе время. Вернитесь к карте дня, когда будете готовы.'
+                          : 'Give yourself time. Revisit your daily card when you feel ready.'),
+                style: context.textTheme.inverseUrbanistRegular16,
+              ),
+              const SizedBox(height: 16),
+              ScenarioCompletion(
+                message: ru
+                    ? 'Карта дня доступна на главной. Там можно посмотреть лунный календарь или включить короткую аффирмацию.'
+                    : 'Your daily card is on Home. You can explore the lunar calendar or play a short affirmation there.',
+              ),
+            ],
           ],
         ]),
       ),

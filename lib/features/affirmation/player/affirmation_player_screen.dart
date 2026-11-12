@@ -46,10 +46,14 @@ class AffirmationPlayerScreen extends StatefulWidget {
     this.controller,
     this.showBack = false,
     this.autoPlay = false,
+    this.onCompleted,
   });
 
   final bool showBack;
   final bool autoPlay;
+
+  /// Called once after playback finishes naturally, never after a seek or loop.
+  final VoidCallback? onCompleted;
 
   /// An injected controller belongs to its caller.
   final PracticePlaybackController? controller;
@@ -71,6 +75,9 @@ class _AffirmationPlayerScreenState extends State<AffirmationPlayerScreen> {
   bool _savingFavorite = false;
   bool _sharing = false;
   bool _playbackPressed = false;
+  bool _wasPlaying = false;
+  bool _seeking = false;
+  bool _completionReported = false;
   double? _seekPreview;
   Box<bool>? _favorites;
 
@@ -78,6 +85,8 @@ class _AffirmationPlayerScreenState extends State<AffirmationPlayerScreen> {
   void initState() {
     super.initState();
     _scroll.addListener(_updateReadingProgress);
+    _wasPlaying = _player.isPlaying;
+    _player.addListener(_onPlaybackChanged);
     _readFavorite();
     _perform(() async {
       await _player.initialize();
@@ -87,6 +96,24 @@ class _AffirmationPlayerScreenState extends State<AffirmationPlayerScreen> {
           !_player.isPlaying &&
           ModalRoute.of(context)?.isCurrent != false) {
         await _player.toggle();
+      }
+    });
+  }
+
+  void _onPlaybackChanged() {
+    final finished =
+        _wasPlaying &&
+        !_player.isPlaying &&
+        _player.isComplete &&
+        !_player.isLooping &&
+        !_seeking &&
+        _seekPreview == null;
+    _wasPlaying = _player.isPlaying;
+    if (!finished || _completionReported || widget.onCompleted == null) return;
+    _completionReported = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted && ModalRoute.of(context)?.isCurrent != false) {
+        widget.onCompleted?.call();
       }
     });
   }
@@ -126,7 +153,12 @@ class _AffirmationPlayerScreenState extends State<AffirmationPlayerScreen> {
   Future<void> _commitSeek(Duration position) async {
     if (position == _player.position) return;
     LotusFeedback.selection();
-    await _perform(() => _player.seek(position));
+    _seeking = true;
+    try {
+      await _perform(() => _player.seek(position));
+    } finally {
+      _seeking = false;
+    }
   }
 
   Future<void> _toggleFavorite() async {
@@ -216,6 +248,7 @@ class _AffirmationPlayerScreenState extends State<AffirmationPlayerScreen> {
   @override
   void dispose() {
     _noticeTimer?.cancel();
+    _player.removeListener(_onPlaybackChanged);
     _scroll.dispose();
     _readingProgress.dispose();
     _chevronOffset.dispose();
@@ -588,7 +621,9 @@ class _AffirmationPlayerScreenState extends State<AffirmationPlayerScreen> {
                               onChanged: (v) =>
                                   setState(() => _seekPreview = v),
                               onChangeEnd: (v) async {
-                                await _commitSeek(Duration(milliseconds: v.round()));
+                                await _commitSeek(
+                                  Duration(milliseconds: v.round()),
+                                );
                                 if (mounted) {
                                   setState(() => _seekPreview = null);
                                 }
@@ -697,7 +732,10 @@ class _PlayerHeader extends StatelessWidget {
                         child: Text(
                           strings.affirmationCategoryCalm.toUpperCase(),
                           textAlign: TextAlign.center,
-                          style: AppTypography.h4.copyWith(color: _headerInk, shadows: shadow),
+                          style: AppTypography.h4.copyWith(
+                            color: _headerInk,
+                            shadows: shadow,
+                          ),
                         ),
                       ),
                     ],
@@ -720,7 +758,10 @@ class _PlayerHeader extends StatelessWidget {
                 Text(
                   strings.playerMetadata,
                   textAlign: TextAlign.center,
-                  style: AppTypography.text2.copyWith(color: _headerInk, shadows: shadow),
+                  style: AppTypography.text2.copyWith(
+                    color: _headerInk,
+                    shadows: shadow,
+                  ),
                 ),
               ]),
             ),
@@ -728,19 +769,27 @@ class _PlayerHeader extends StatelessWidget {
           Positioned(
             top: 0,
             left: 0,
-            child: (showBack
-                ? LotusButtons.icon(
-                    tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-                    onPressed: onExit,
-                    icon: const LotusArrowBubble(back: true),
-                  )
-                : PlayerPebble(
-                    glyph: ClayGlyph.close,
-                    label: strings.playerClose,
-                    onTap: onExit,
-                  )).withEntrance(order: 0),
+            child:
+                (showBack
+                        ? LotusButtons.icon(
+                            tooltip: MaterialLocalizations.of(
+                              context,
+                            ).backButtonTooltip,
+                            onPressed: onExit,
+                            icon: const LotusArrowBubble(back: true),
+                          )
+                        : PlayerPebble(
+                            glyph: ClayGlyph.close,
+                            label: strings.playerClose,
+                            onTap: onExit,
+                          ))
+                    .withEntrance(order: 0),
           ),
-          Positioned(top: 0, right: 0, child: repeatButton.withEntrance(order: 1)),
+          Positioned(
+            top: 0,
+            right: 0,
+            child: repeatButton.withEntrance(order: 1),
+          ),
         ],
       ),
     );
