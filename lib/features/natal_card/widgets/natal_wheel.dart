@@ -17,11 +17,14 @@ class NatalWheel extends StatefulWidget {
     required this.data,
     required this.hasKnownBirthTime,
     this.preview = false,
+    this.planetCardBuilder,
   });
 
   final PlanetsHousesDataModel data;
   final bool hasKnownBirthTime;
   final bool preview;
+  final Widget Function(PlanetHousePositionModel planet, String placement)?
+  planetCardBuilder;
 
   static String luminarySummary(
     BuildContext context,
@@ -126,15 +129,17 @@ class _NatalWheelState extends State<NatalWheel> with TickerProviderStateMixin {
     }
   }
 
-  String _description(PlanetHousePositionModel p) {
+  String _placement(PlanetHousePositionModel p) {
     final l10n = context.l10n;
     final sign = l10n.zodiacSignName(_signs[(p.longitude / 30).floor()]);
-    final name = l10n.planetName(p.code);
-    if (!widget.hasKnownBirthTime) return '$name · $sign';
+    if (!widget.hasKnownBirthTime) return sign;
     final minute = ((p.longitude % 30) * 60).floor();
     final minutes = (minute % 60).toString().padLeft(2, '0');
-    return "$name · $sign ${minute ~/ 60}° $minutes'";
+    return "$sign ${minute ~/ 60}° $minutes'";
   }
+
+  String _description(PlanetHousePositionModel planet) =>
+      '${context.l10n.planetName(planet.code)} · ${_placement(planet)}';
 
   @override
   Widget build(BuildContext context) {
@@ -221,13 +226,15 @@ class _NatalWheelState extends State<NatalWheel> with TickerProviderStateMixin {
           const SizedBox(height: 4),
           Semantics(
             liveRegion: true,
-            child: Text(
-              chosen == null
-                  ? context.l10n.natalWheelSelectPlanet
-                  : _description(chosen),
-              style: context.textTheme.inverseUrbanistRegular14,
-              textAlign: TextAlign.center,
-            ),
+            child: chosen != null && widget.planetCardBuilder != null
+                ? widget.planetCardBuilder!(chosen, _placement(chosen))
+                : Text(
+                    chosen == null
+                        ? context.l10n.natalWheelSelectPlanet
+                        : _description(chosen),
+                    style: context.textTheme.inverseUrbanistRegular14,
+                    textAlign: TextAlign.center,
+                  ),
           ),
         ],
       ],

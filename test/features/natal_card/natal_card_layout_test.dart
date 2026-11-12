@@ -46,6 +46,52 @@ void main() {
     });
   }
 
+  for (final exact in [true, false]) {
+    testWidgets(
+      'wheel selects, replaces and dismisses the matching detail card with exact time $exact',
+      (tester) async {
+        await _pumpChart(
+          tester,
+          320,
+          'Описание Солнца.',
+          exactTime: exact,
+          textScale: 1.4,
+        );
+        Finder card(String code) =>
+            find.byKey(ValueKey('selected-planet-card-$code'));
+        Future<void> choose(String code) async {
+          final target = find.byKey(ValueKey('natal-wheel-$code'));
+          await tester.tapAt(tester.getCenter(target));
+          await tester.pumpAndSettle();
+        }
+
+        await choose('sun');
+        expect(
+          find.descendant(of: card('sun'), matching: find.text('Солнце')),
+          findsOneWidget,
+        );
+        await choose('venus');
+        expect(card('sun'), findsNothing);
+        expect(
+          find.descendant(of: card('venus'), matching: find.text('Венера')),
+          findsOneWidget,
+        );
+        final body = find.descendant(
+          of: card('venus'),
+          matching: find.textContaining('Близнецы'),
+        );
+        expect(body, findsOneWidget);
+        final text = tester.widget<Text>(body).data!;
+        expect(text.contains('Описание Венеры.'), exact);
+        expect(text.contains('7 дом'), exact);
+        expect(text.contains('°'), exact);
+        await choose('venus');
+        expect(card('venus'), findsNothing);
+        expect(tester.takeException(), isNull);
+      },
+    );
+  }
+
   testWidgets('long birth city is ellipsized on one line', (tester) async {
     await _pumpChart(tester, 390, 'Описание позиции.');
     final city = tester.renderObject<RenderParagraph>(

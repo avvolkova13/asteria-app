@@ -514,6 +514,37 @@ class _NatalCardContentState extends State<_NatalCardContent> {
                     child: NatalWheel(
                       data: planetsHousesData,
                       hasKnownBirthTime: exactTime,
+                      planetCardBuilder: (planet, placement) {
+                        final house = planet.house;
+                        final showHouse =
+                            exactTime && house >= 1 && house <= 12;
+                        final location = showHouse
+                            ? language == 'ru'
+                                  ? '$placement · $house дом'
+                                  : '$placement · house $house'
+                            : placement;
+                        final interpretationText = exactTime
+                            ? interpretation.planetInterpretations[planet.code]
+                                  ?.trim()
+                            : null;
+                        return SizedBox(
+                          width: double.infinity,
+                          child: _PlanetPositionCard(
+                            key: ValueKey(
+                              'selected-planet-card-${planet.code}',
+                            ),
+                            planet: NatalCardPlanetDisplayModel(
+                              code: planet.code,
+                              description: [
+                                location,
+                                if (interpretationText != null &&
+                                    interpretationText.isNotEmpty)
+                                  interpretationText,
+                              ].join('\n'),
+                            ),
+                          ),
+                        );
+                      },
                     ),
                   ),
                 )
@@ -999,7 +1030,7 @@ class _PlanetPositionCard extends StatelessWidget {
     return (height + 2 * _padding).ceilToDouble();
   }
 
-  const _PlanetPositionCard({required this.planet});
+  const _PlanetPositionCard({super.key, required this.planet});
 
   @override
   Widget build(BuildContext context) {
