@@ -10,9 +10,9 @@ void main() {
     testWidgets('returns localized titles for all statuses', (tester) async {
       final context = await _localizedContext(tester);
 
-      expect(DayStatus.favorable.title(context), 'Благоприятный\nдень');
-      expect(DayStatus.neutral.title(context), 'Нейтральный\nдень');
-      expect(DayStatus.unfavorable.title(context), 'Неблагоприятный\nдень');
+      expect(DayStatus.favorable.title(context), 'Благоприятный день');
+      expect(DayStatus.neutral.title(context), 'Нейтральный день');
+      expect(DayStatus.unfavorable.title(context), 'Неблагоприятный день');
     });
 
     testWidgets('returns a dedicated description for each status', (

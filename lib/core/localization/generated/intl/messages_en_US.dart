@@ -31,6 +31,8 @@ class MessageLookup extends MessageLookupByLibrary {
   static String m23(price) =>
       "7 days free, then ${price}. Renews automatically. Cancel anytime.";
 
+  static String m43(time) => "Reminder at ${time}";
+
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
     "avatarAstrologer": MessageLookupByLibrary.simpleMessage("Astrologer"),
@@ -83,6 +85,27 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "natalWheelUnavailable": MessageLookupByLibrary.simpleMessage(
       "Planet positions are currently unavailable. Your saved reading is below.",
+    ),
+    "planReminderAdd": MessageLookupByLibrary.simpleMessage(
+      "Remind me on the day",
+    ),
+    "planReminderAt": m43,
+    "planReminderDenied": MessageLookupByLibrary.simpleMessage(
+      "To get reminders, allow notifications for Asteria in iPhone Settings.",
+    ),
+    "planReminderEdit": MessageLookupByLibrary.simpleMessage("Change time"),
+    "planReminderNotificationTitle": MessageLookupByLibrary.simpleMessage(
+      "Your plan for today",
+    ),
+    "planReminderPast": MessageLookupByLibrary.simpleMessage(
+      "This time has passed. Choose a later time.",
+    ),
+    "planReminderRemove": MessageLookupByLibrary.simpleMessage(
+      "Remove reminder",
+    ),
+    "planReminderTime": MessageLookupByLibrary.simpleMessage("Reminder time"),
+    "planReminderUnavailable": MessageLookupByLibrary.simpleMessage(
+      "Couldn’t update the reminder. Please try again.",
     ),
     "sonnikLoadingDetails": MessageLookupByLibrary.simpleMessage(
       "The details form a pattern…",

@@ -247,9 +247,9 @@
   "runesPresent": "Настоящее",
   "runesFuture": "Будущее",
   "runesHowToUse": "Как пользоваться рунами",
-  "dayFavorable": "Благоприятный\nдень",
-  "dayNeutral": "Нейтральный\nдень",
-  "dayUnfavorable": "Неблагоприятный\nдень",
+  "dayFavorable": "Благоприятный день",
+  "dayNeutral": "Нейтральный день",
+  "dayUnfavorable": "Неблагоприятный день",
   "moonPhaseChange": "смена фазы Луны",
   "horoscopeEssence": "Твоя суть",
   "horoscopeGeneral": "Общая характеристика",
@@ -1007,5 +1007,21 @@
   "insightLoadingSymbols": "Прислушиваемся к символам…",
   "insightLoadingPerspective": "Взглянем на ситуацию иначе…",
   "insightLoadingAngle": "Ищем новый ракурс…",
-  "insightLoadingTogether": "Собираем подсказку для вас…"
+  "insightLoadingTogether": "Собираем подсказку для вас…",
+  "planReminderAdd": "Напомнить в день плана",
+  "planReminderAt": "Напоминание на {time}",
+  "@planReminderAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "planReminderTime": "Время напоминания",
+  "planReminderEdit": "Изменить время",
+  "planReminderRemove": "Убрать напоминание",
+  "planReminderDenied": "Чтобы получать напоминания, разрешите уведомления для Asteria в настройках iPhone.",
+  "planReminderPast": "Это время уже прошло. Выберите более позднее время.",
+  "planReminderUnavailable": "Не удалось обновить напоминание. Попробуйте ещё раз.",
+  "planReminderNotificationTitle": "План на сегодня"
 }

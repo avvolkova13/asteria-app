@@ -3,6 +3,7 @@ import 'package:asteria_app/features/home/presentation/models/lunar_almanac.dart
 import 'package:intl/intl.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/features/scenarios/calendar_scenario.dart';
+import 'package:asteria_app/features/scenarios/scenario_ui.dart';
 import 'package:asteria_app/app/data/models/lunar_calendar/lunar_recommendation_models.dart';
 import 'package:asteria_app/app/providers/content_provider.dart';
 import 'package:asteria_app/core/analytics/analytics_events.dart';
@@ -196,7 +197,7 @@ class _MoonScreenState extends State<MoonScreen> {
                                       ),
                                     ),
                                     const SizedBox(height: 24),
-                                    const MoonCalendarWidget().withEntrance(),
+                                    _CalendarWithPlans(state: state),
                                     const SizedBox(height: 24),
                                     const SphereSelectionWidget(),
                                     const SizedBox(height: 16),
@@ -247,6 +248,45 @@ class _MoonScreenState extends State<MoonScreen> {
       Sphere.relationships => 'relationships',
     };
   }
+}
+
+class _CalendarWithPlans extends StatelessWidget {
+  const _CalendarWithPlans({required this.state});
+
+  final MoonScreenState state;
+
+  @override
+  Widget build(BuildContext context) => CalendarPlansBuilder(
+    compact: true,
+    builder: (context, plans) {
+      final day = state.selectedDate;
+      final inMonth =
+          day != null &&
+          day.year == state.focusedDay.year &&
+          day.month == state.focusedDay.month;
+      final selectedPlans = plans.where(
+        (plan) => inMonth && DateUtils.isSameDay(plan.day, day),
+      );
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          MoonCalendarWidget(savedPlans: plans).withEntrance(),
+          for (final plan in selectedPlans)
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: ScenarioTile(
+                key: ValueKey('calendar-selected-plan-${plan.id}'),
+                title: plan.title,
+                subtitle: DateFormat.MMMMEEEEd(
+                  Localizations.localeOf(context).toLanguageTag(),
+                ).format(plan.day),
+                onTap: () => openSavedCalendarPlanFromTab(context, plan),
+              ),
+            ),
+        ],
+      );
+    },
+  );
 }
 
 class _MoonScreenAdvice extends StatelessWidget {

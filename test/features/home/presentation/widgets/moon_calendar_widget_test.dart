@@ -11,6 +11,7 @@ import 'package:asteria_app/features/home/presentation/models/day_status.dart';
 import 'package:asteria_app/features/home/presentation/widgets/moon_calendar_widget.dart';
 import 'package:asteria_app/features/home/presentation/widgets/moon_design_tokens.dart';
 import 'package:asteria_app/features/home/presentation/widgets/moon_phase_marker.dart';
+import 'package:asteria_app/features/scenarios/calendar_plan.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -179,6 +180,71 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets(
+    'shows the saved haircut with the day rating and phase, announces every plan',
+    (tester) async {
+      _setCalendarViewport(tester);
+      tester.view.physicalSize = const Size(320, 844);
+      final cubit = _TestMoonScreenCubit();
+      addTearDown(cubit.close);
+      final date = DateTime(2026, 5, 12);
+      final oldPlans = [
+        for (final activity in [
+          CalendarActivity.transplant,
+          CalendarActivity.haircut,
+        ])
+          CalendarPlan.fromJson({
+            'id': activity.name,
+            'owner': 'owner',
+            'day': '2026-05-12',
+            'activity': activity.name,
+            'title': activity == CalendarActivity.haircut
+                ? 'Стрижка'
+                : 'Пересадка',
+          }),
+      ];
+      cubit.replaceState(
+        MoonScreenState(
+          focusedDay: date,
+          primaryPhaseDates: {date},
+          dayStatuses: {date: DayStatus.neutral},
+        ),
+      );
+      await tester.pumpWidget(
+        _calendarApp(cubit, textScale: 1.6, plans: oldPlans),
+      );
+      await tester.pumpAndSettle();
+      final scissors = find.byWidgetPredicate(
+        (w) =>
+            w is Image &&
+            _assetName(w) ==
+                'assets/images/prediction_images/moon_card_beauty_haircut.webp',
+      );
+      expect(scissors, findsOneWidget);
+      expect(find.byType(MoonPhaseMarker), findsOneWidget);
+      expect(
+        find.bySemanticsLabel(
+          RegExp('Мои планы: Пересадка, Стрижка, Нейтральный день'),
+        ),
+        findsOneWidget,
+      );
+      final star = find.byWidgetPredicate(
+        (w) =>
+            w is Image &&
+            _assetName(w) == 'assets/icons/day_status_neutral_star.png',
+      );
+      expect(tester.getRect(star).overlaps(tester.getRect(scissors)), isFalse);
+      await tester.tap(find.text('12'));
+      await tester.pumpAndSettle();
+      expect(cubit.state.selectedDate?.day, 12);
+      expect(scissors, findsOneWidget);
+      cubit.replaceState(MoonScreenState(focusedDay: DateTime(2026, 6)));
+      await tester.pumpAndSettle();
+      expect(scissors, findsNothing);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
   testWidgets('renders selected day as a warm gradient without outer glow', (
     tester,
   ) async {
@@ -278,7 +344,11 @@ void main() {
   });
 }
 
-Widget _calendarApp(MoonScreenCubit cubit, {double textScale = 0.5}) {
+Widget _calendarApp(
+  MoonScreenCubit cubit, {
+  double textScale = 0.5,
+  List<CalendarPlan> plans = const [],
+}) {
   return BlocProvider<MoonScreenCubit>.value(
     value: cubit,
     child: MaterialApp(
@@ -295,7 +365,7 @@ Widget _calendarApp(MoonScreenCubit cubit, {double textScale = 0.5}) {
           ).copyWith(textScaler: TextScaler.linear(textScale)),
           child: Theme(
             data: AppThemeDark.instance.getThemeData(context),
-            child: const Scaffold(body: MoonCalendarWidget()),
+            child: Scaffold(body: MoonCalendarWidget(savedPlans: plans)),
           ),
         ),
       ),

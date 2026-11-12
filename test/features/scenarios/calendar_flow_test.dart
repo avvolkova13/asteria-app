@@ -189,6 +189,10 @@ void main() {
       calendar.empty = true;
       await tap(start);
       await tap(find.text('Haircuts'));
+      expect(
+        find.bySemanticsLabel(RegExp(r'My plans: Repot the ficus')),
+        findsOneWidget,
+      );
       await tap(find.text('12').first);
       await tap(find.text('13').first);
       await tap(find.text('Compare dates'));
@@ -209,8 +213,25 @@ void main() {
       );
       await tap(find.text('Save'));
       await tap(find.text('Back to calendar'));
-      await tap(find.text('My plans'));
-      await tap(find.text('Trim without lunar rating'));
+      final savedDay = find.bySemanticsLabel(
+        RegExp(r'My plans: .*Trim without lunar rating'),
+      );
+      expect(savedDay, findsOneWidget);
+      await tap(find.text('12').first);
+      final selectedPlan = find.byWidgetPredicate(
+        (w) =>
+            w.key is ValueKey<String> &&
+            (w.key as ValueKey<String>).value.startsWith(
+              'calendar-selected-plan-',
+            ),
+      );
+      expect(selectedPlan, findsNWidgets(2));
+      await tap(
+        find.descendant(
+          of: selectedPlan,
+          matching: find.text('Trim without lunar rating'),
+        ),
+      );
       expect(find.text('Haircuts'), findsOneWidget);
       expect(tester.takeException(), isNull);
     },

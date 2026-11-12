@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/services/calendar_plan_reminders.dart';
 import 'package:asteria_app/core/payments/apple/apple_purchase_coordinator.dart';
 import 'package:asteria_app/core/payments/apple/apple_models.dart';
 import 'package:asteria_app/core/payments/apple/apple_attempt_store.dart';
@@ -111,8 +112,8 @@ class DiContainer {
     debugPrint('DI initialized');
 
     // Services
-    di.registerLazySingleton<AuthSessionService>(
-      () => BackendAuthSessionService(
+    di.registerLazySingleton<AuthSessionService>(() {
+      final session = BackendAuthSessionService(
         environment: di.get<Environment>(),
         onIdentityDeleted: (uid) async {
           final box = HiveService.appSettingsBox;
@@ -124,8 +125,19 @@ class DiContainer {
               .toList();
           await box.deleteAll(keys);
         },
-      ),
-    );
+      );
+      var previousOwner = session.currentUid;
+      session.addListener(() {
+        final owner = session.currentUid;
+        final departed = previousOwner;
+        if (departed == owner) return;
+        previousOwner = owner;
+        if (departed != null) {
+          unawaited(const CalendarPlanReminders().cancelOwner(departed));
+        }
+      });
+      return session;
+    });
     di.registerSingleton<AnalyticsStore>(AnalyticsStore.deferred());
     final installedVersion = await readAnalyticsAppVersion();
     if (installedVersion == null) {

@@ -3,6 +3,7 @@ import AdSupport
 import AppTrackingTransparency
 import StoreKit
 import UIKit
+import UserNotifications
 
 @available(iOS 15.0, *)
 private final class StorefrontUpdatesHandler: NSObject, FlutterStreamHandler {
@@ -28,6 +29,7 @@ private final class StorefrontUpdatesHandler: NSObject, FlutterStreamHandler {
 
 @main
 @objc class AppDelegate: FlutterAppDelegate, FlutterImplicitEngineDelegate {
+  private var planReminders: CalendarPlanReminders?
   private var practiceAudio: PracticeAudioBridge?
   private var appleTransactionsBridge: AnyObject?
   private var storefrontUpdatesHandler: AnyObject?
@@ -38,12 +40,26 @@ private final class StorefrontUpdatesHandler: NSObject, FlutterStreamHandler {
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
+    UNUserNotificationCenter.current().delegate = self
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+  }
+
+  override func userNotificationCenter(
+    _ center: UNUserNotificationCenter,
+    willPresent notification: UNNotification,
+    withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
+  ) {
+    if notification.request.identifier.hasPrefix(CalendarPlanReminders.prefix) {
+      completionHandler([.banner, .list, .sound])
+    } else {
+      super.userNotificationCenter(center, willPresent: notification, withCompletionHandler: completionHandler)
+    }
   }
 
   func didInitializeImplicitFlutterEngine(_ engineBridge: FlutterImplicitEngineBridge) {
     GeneratedPluginRegistrant.register(with: engineBridge.pluginRegistry)
     let messenger = engineBridge.applicationRegistrar.messenger()
+    planReminders = CalendarPlanReminders(messenger: messenger)
     practiceAudio = PracticeAudioBridge(messenger: messenger)
     let calendar = FlutterMethodChannel(name: "asteria/calendar", binaryMessenger: messenger)
     calendar.setMethodCallHandler { call, result in

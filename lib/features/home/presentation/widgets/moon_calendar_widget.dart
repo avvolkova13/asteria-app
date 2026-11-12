@@ -8,13 +8,15 @@ import 'package:asteria_app/features/home/presentation/models/day_status.dart';
 import 'package:asteria_app/features/home/presentation/widgets/day_status_icon.dart';
 import 'package:asteria_app/features/home/presentation/widgets/moon_design_tokens.dart';
 import 'package:asteria_app/features/home/presentation/widgets/moon_phase_marker.dart';
+import 'package:asteria_app/features/home/presentation/widgets/lunar_card_image.dart';
+import 'package:asteria_app/features/scenarios/calendar_plan.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class MoonCalendarWidget extends StatelessWidget {
-  const MoonCalendarWidget({super.key})
+  const MoonCalendarWidget({super.key, this.savedPlans = const []})
     : planningState = null,
       planningSelection = const {},
       firstSelectableDay = null,
@@ -23,6 +25,7 @@ class MoonCalendarWidget extends StatelessWidget {
 
   const MoonCalendarWidget.planning({
     super.key,
+    this.savedPlans = const [],
     required this.planningState,
     required this.planningSelection,
     required this.firstSelectableDay,
@@ -30,6 +33,7 @@ class MoonCalendarWidget extends StatelessWidget {
     required this.onPlanMonth,
   });
 
+  final List<CalendarPlan> savedPlans;
   final MoonScreenState? planningState;
   final Set<DateTime> planningSelection;
   final DateTime? firstSelectableDay;
@@ -63,12 +67,28 @@ class MoonCalendarWidget extends StatelessWidget {
     final weekdayHeight = textScaler.scale(13) * 18 / 13 + 8;
     final monthLabel = DateFormat('LLLL y', localeTag).format(state.focusedDay);
     final title = monthLabel[0].toUpperCase() + monthLabel.substring(1);
+    final plansByDay = <DateTime, List<CalendarPlan>>{};
+    for (final plan in savedPlans) {
+      if (_isSameMonth(state.focusedDay, plan.day)) {
+        (plansByDay[calendarDay(plan.day)] ??= []).add(plan);
+      }
+    }
+    final showMarkers =
+        state.selectedSphere != null ||
+        state.dayStatuses.isNotEmpty ||
+        plansByDay.isNotEmpty;
+
     Widget dayCell(
       DateTime day, {
       bool selected = false,
       bool outside = false,
     }) {
       final status = outside ? null : _getDayStatus(day, state.dayStatuses);
+      final plans = plansByDay[calendarDay(day)] ?? const <CalendarPlan>[];
+      final marker =
+          plans.any((plan) => plan.activity == CalendarActivity.haircut)
+          ? CalendarActivity.haircut
+          : plans.firstOrNull?.activity;
       final primaryPhase =
           !outside &&
           state.selectedSphere == null &&
@@ -82,7 +102,8 @@ class MoonCalendarWidget extends StatelessWidget {
                   day,
                   status,
                   primaryPhase,
-                  state.selectedSphere != null || state.dayStatuses.isNotEmpty,
+                  showMarkers,
+                  marker,
                   dayHeight,
                 )
               : _buildDayCell(
@@ -90,7 +111,8 @@ class MoonCalendarWidget extends StatelessWidget {
                   day,
                   status,
                   primaryPhase,
-                  state.selectedSphere != null || state.dayStatuses.isNotEmpty,
+                  showMarkers,
+                  marker,
                   dayHeight,
                 ),
         ),
@@ -220,6 +242,7 @@ class MoonCalendarWidget extends StatelessWidget {
                           state,
                           rowHeight,
                           weekdayHeight,
+                          plansByDay,
                         ),
                       ),
                     ],
@@ -238,6 +261,7 @@ class MoonCalendarWidget extends StatelessWidget {
     MoonScreenState state,
     double rowHeight,
     double daysOfWeekHeight,
+    Map<DateTime, List<CalendarPlan>> plansByDay,
   ) {
     final localeTag = Localizations.localeOf(context).toLanguageTag();
     final focusedMonth = DateTime.utc(
@@ -299,6 +323,8 @@ class MoonCalendarWidget extends StatelessWidget {
                         label: [
                           dayLabel,
                           if (phaseChange) context.l10n.moonPhaseChange,
+                          if (plansByDay[day] case final plans?)
+                            '${context.l10n.scenarioCalendarMyPlans}: ${plans.map((p) => p.title).join(', ')}',
                           if (status != null)
                             _statusSemanticsLabel(context, status),
                         ].join(', '),
@@ -385,6 +411,7 @@ class MoonCalendarWidget extends StatelessWidget {
     DayStatus? status,
     bool hasPrimaryPhase,
     bool showStatusRow,
+    CalendarActivity? activity,
     double rowHeight,
   ) {
     return Semantics(
@@ -407,16 +434,7 @@ class MoonCalendarWidget extends StatelessWidget {
               ),
               if (showStatusRow) ...[
                 const SizedBox(height: 5),
-                SizedBox.square(
-                  dimension: 14,
-                  child: status == null
-                      ? null
-                      : DayStatusIcon(
-                          status: status,
-                          size: 14,
-                          excludeFromSemantics: true,
-                        ),
-                ),
+                _DayMarkers(status: status, activity: activity),
               ],
             ],
           ),
@@ -432,9 +450,10 @@ class MoonCalendarWidget extends StatelessWidget {
     DayStatus? status,
     bool hasPrimaryPhase,
     bool showStatusRow,
+    CalendarActivity? activity,
     double rowHeight,
   ) {
-    final highlightHeight = rowHeight;
+    final highlightWidth = activity != null && status != null ? 40.0 : 32.0;
 
     return Semantics(
       button: true,
@@ -444,13 +463,13 @@ class MoonCalendarWidget extends StatelessWidget {
       ).format(day),
       child: ExcludeSemantics(
         child: SizedBox(
-          width: 32,
+          width: highlightWidth,
           height: rowHeight,
           child: Center(
             child: _SelectedDayHighlight(
               date: day,
-              width: 32,
-              height: highlightHeight,
+              width: highlightWidth,
+              height: rowHeight,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
@@ -477,15 +496,10 @@ class MoonCalendarWidget extends StatelessWidget {
                   ),
                   if (showStatusRow) ...[
                     const SizedBox(height: 5),
-                    SizedBox.square(
-                      dimension: 14,
-                      child: status == null
-                          ? null
-                          : DayStatusIcon(
-                              status: status,
-                              size: 14,
-                              excludeFromSemantics: true,
-                            ),
+                    _DayMarkers(
+                      status: status,
+                      activity: activity,
+                      selected: true,
                     ),
                   ],
                 ],
@@ -506,6 +520,58 @@ class MoonCalendarWidget extends StatelessWidget {
       case DayStatus.neutral:
         return context.l10n.dayNeutral.replaceAll('\n', ' ');
     }
+  }
+}
+
+class _DayMarkers extends StatelessWidget {
+  const _DayMarkers({
+    required this.status,
+    required this.activity,
+    this.selected = false,
+  });
+  final bool selected;
+  final DayStatus? status;
+  final CalendarActivity? activity;
+
+  @override
+  Widget build(BuildContext context) {
+    final task = activity;
+    final asset = task == null
+        ? null
+        : LunarCardAsset.forTaskKey(task.keys.first);
+    return SizedBox(
+      height: 16,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (status case final dayStatus?)
+            DayStatusIcon(
+              status: dayStatus,
+              size: 14,
+              excludeFromSemantics: true,
+            ),
+          if (asset != null) ...[
+            if (status != null) const SizedBox(width: 2),
+            DecoratedBox(
+              decoration: BoxDecoration(
+                color: selected
+                    ? AppColors.textPrimary.withValues(alpha: 0.68)
+                    : Colors.transparent,
+                shape: BoxShape.circle,
+              ),
+              child: Image.asset(
+                LunarCardAsset.path(asset),
+                width: 16,
+                height: 16,
+                cacheWidth: (16 * MediaQuery.devicePixelRatioOf(context))
+                    .ceil(),
+                excludeFromSemantics: true,
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
   }
 }
 

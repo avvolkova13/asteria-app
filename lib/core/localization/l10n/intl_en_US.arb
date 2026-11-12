@@ -40,5 +40,21 @@
   "insightLoadingSymbols": "Listening to the symbols…",
   "insightLoadingPerspective": "Seeing the situation differently…",
   "insightLoadingAngle": "Looking for a fresh perspective…",
-  "insightLoadingTogether": "Bringing your insight together…"
+  "insightLoadingTogether": "Bringing your insight together…",
+  "planReminderAdd": "Remind me on the day",
+  "planReminderAt": "Reminder at {time}",
+  "@planReminderAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "planReminderTime": "Reminder time",
+  "planReminderEdit": "Change time",
+  "planReminderRemove": "Remove reminder",
+  "planReminderDenied": "To get reminders, allow notifications for Asteria in iPhone Settings.",
+  "planReminderPast": "This time has passed. Choose a later time.",
+  "planReminderUnavailable": "Couldn’t update the reminder. Please try again.",
+  "planReminderNotificationTitle": "Your plan for today"
 }

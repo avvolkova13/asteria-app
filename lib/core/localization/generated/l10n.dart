@@ -2230,25 +2230,25 @@ class AppLocalizations {
     );
   }
 
-  /// `Favorable\nday`
+  /// `Favorable day`
   String get dayFavorable {
     return Intl.message(
-      'Favorable\nday',
+      'Favorable day',
       name: 'dayFavorable',
       desc: '',
       args: [],
     );
   }
 
-  /// `Neutral\nday`
+  /// `Neutral day`
   String get dayNeutral {
-    return Intl.message('Neutral\nday', name: 'dayNeutral', desc: '', args: []);
+    return Intl.message('Neutral day', name: 'dayNeutral', desc: '', args: []);
   }
 
-  /// `Unfavorable\nday`
+  /// `Unfavorable day`
   String get dayUnfavorable {
     return Intl.message(
-      'Unfavorable\nday',
+      'Unfavorable day',
       name: 'dayUnfavorable',
       desc: '',
       args: [],
@@ -8890,6 +8890,96 @@ class AppLocalizations {
     return Intl.message(
       'Bringing your insight together…',
       name: 'insightLoadingTogether',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Remind me on the day`
+  String get planReminderAdd {
+    return Intl.message(
+      'Remind me on the day',
+      name: 'planReminderAdd',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Reminder at {time}`
+  String planReminderAt(String time) {
+    return Intl.message(
+      'Reminder at $time',
+      name: 'planReminderAt',
+      desc: '',
+      args: [time],
+    );
+  }
+
+  /// `Reminder time`
+  String get planReminderTime {
+    return Intl.message(
+      'Reminder time',
+      name: 'planReminderTime',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Change time`
+  String get planReminderEdit {
+    return Intl.message(
+      'Change time',
+      name: 'planReminderEdit',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Remove reminder`
+  String get planReminderRemove {
+    return Intl.message(
+      'Remove reminder',
+      name: 'planReminderRemove',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `To get reminders, allow notifications for Asteria in iPhone Settings.`
+  String get planReminderDenied {
+    return Intl.message(
+      'To get reminders, allow notifications for Asteria in iPhone Settings.',
+      name: 'planReminderDenied',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `This time has passed. Choose a later time.`
+  String get planReminderPast {
+    return Intl.message(
+      'This time has passed. Choose a later time.',
+      name: 'planReminderPast',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Couldn’t update the reminder. Please try again.`
+  String get planReminderUnavailable {
+    return Intl.message(
+      'Couldn’t update the reminder. Please try again.',
+      name: 'planReminderUnavailable',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Your plan for today`
+  String get planReminderNotificationTitle {
+    return Intl.message(
+      'Your plan for today',
+      name: 'planReminderNotificationTitle',
       desc: '',
       args: [],
     );

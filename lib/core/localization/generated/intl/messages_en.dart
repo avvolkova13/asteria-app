@@ -117,64 +117,66 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m42(price) => "Weak points for ${price}";
 
-  static String m43(title, price) => "Buy ${title} for ${price} Star Coins";
+  static String m43(time) => "Reminder at ${time}";
 
-  static String m44(title, price) => "Buy ${title} for ${price}";
+  static String m44(title, price) => "Buy ${title} for ${price} Star Coins";
 
-  static String m45(count) =>
+  static String m45(title, price) => "Buy ${title} for ${price}";
+
+  static String m46(count) =>
       "Buy ${Intl.plural(count, one: '${count} request', other: '${count} requests')}";
 
-  static String m46(price) => "1 question = ${price}";
-
-  static String m47(count) =>
-      "The limit will reset in ${Intl.plural(count, one: '${count} day', other: '${count} days')}.";
+  static String m47(price) => "1 question = ${price}";
 
   static String m48(count) =>
+      "The limit will reset in ${Intl.plural(count, one: '${count} day', other: '${count} days')}.";
+
+  static String m49(count) =>
       "${Intl.plural(count, one: '${count} request', other: '${count} requests')}";
 
-  static String m49(count, price) =>
+  static String m50(count, price) =>
       "${Intl.plural(count, one: '${count} request for ${price} Star Coins', other: '${count} requests for ${price} Star Coins')}";
 
-  static String m50(count) =>
+  static String m51(count) =>
       "${Intl.plural(count, zero: 'No requests left', one: '${count} request left', other: '${count} requests left')}";
 
-  static String m51(count, total) => "${count}/${total} requests left";
+  static String m52(count, total) => "${count}/${total} requests left";
 
-  static String m52(count) =>
+  static String m53(count) =>
       "${Intl.plural(count, zero: 'No free requests left this week', one: '${count} free request left this week', other: '${count} free requests left this week')}";
 
-  static String m53(count, total) => "${count} of ${total} requests left";
+  static String m54(count, total) => "${count} of ${total} requests left";
 
-  static String m54(link) =>
+  static String m55(link) =>
       "Explore Tarot and the lunar calendar with Asteria: ${link}";
 
-  static String m55(title) => "${title} is locked";
+  static String m56(title) => "${title} is locked";
 
-  static String m56(title) => "Open the meaning of the future rune ${title}";
+  static String m57(title) => "Open the meaning of the future rune ${title}";
 
-  static String m57(title) => "Open ${title}";
+  static String m58(title) => "Open ${title}";
 
-  static String m58(title) => "Open the meaning of the past rune ${title}";
+  static String m59(title) => "Open the meaning of the past rune ${title}";
 
-  static String m59(title) => "Open the meaning of the present rune ${title}";
+  static String m60(title) => "Open the meaning of the present rune ${title}";
 
-  static String m60(count) => "${count} pcs";
+  static String m61(count) => "${count} pcs";
 
-  static String m61(price) => "price per item = ${price}";
+  static String m62(price) => "price per item = ${price}";
 
-  static String m62(date) => "Your next payment\nwill be charged on\n${date}";
+  static String m63(date) => "Your next payment\nwill be charged on\n${date}";
 
-  static String m63(count) => "Purchases restored: ${count}";
+  static String m64(count) => "Purchases restored: ${count}";
 
-  static String m64(title) => "${title} is locked";
+  static String m65(title) => "${title} is locked";
 
-  static String m65(title) => "Open ${title}";
+  static String m66(title) => "Open ${title}";
 
-  static String m66(position) => "Open card ${position} of 3";
+  static String m67(position) => "Open card ${position} of 3";
 
-  static String m67(position, card) => "Card ${position} of 3: ${card}";
+  static String m68(position, card) => "Card ${position} of 3: ${card}";
 
-  static String m68(price) =>
+  static String m69(price) =>
       "Your personal yearly horoscope\nfor ${price} Star Coins";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
@@ -659,16 +661,16 @@ class MessageLookup extends MessageLookupByLibrary {
     "dailyTarotTitle": MessageLookupByLibrary.simpleMessage(
       "Tarot card of the day",
     ),
-    "dayFavorable": MessageLookupByLibrary.simpleMessage("Favorable\nday"),
+    "dayFavorable": MessageLookupByLibrary.simpleMessage("Favorable day"),
     "dayFavorableDescription": MessageLookupByLibrary.simpleMessage(
       "The Moon supports your plans today. Make important plans, act with confidence, and choose what helps you move forward.",
     ),
-    "dayNeutral": MessageLookupByLibrary.simpleMessage("Neutral\nday"),
+    "dayNeutral": MessageLookupByLibrary.simpleMessage("Neutral day"),
     "dayNeutralDescription": MessageLookupByLibrary.simpleMessage(
       "This is a pause between impulse and action. The Moon neither adds nor takes away energy. Don\'t wait for inspiration—take care of yourself and avoid overload. Inner quiet is a strength too.",
     ),
     "dayTimeOptionLabel": MessageLookupByLibrary.simpleMessage("Daytime"),
-    "dayUnfavorable": MessageLookupByLibrary.simpleMessage("Unfavorable\nday"),
+    "dayUnfavorable": MessageLookupByLibrary.simpleMessage("Unfavorable day"),
     "dayUnfavorableDescription": MessageLookupByLibrary.simpleMessage(
       "Ease your workload today and don\'t force events. Postpone abrupt decisions, conserve your energy, and choose a calmer pace.",
     ),
@@ -1556,6 +1558,27 @@ class MessageLookup extends MessageLookupByLibrary {
       "Your horoscope",
     ),
     "placeLabel": MessageLookupByLibrary.simpleMessage("Place of birth"),
+    "planReminderAdd": MessageLookupByLibrary.simpleMessage(
+      "Remind me on the day",
+    ),
+    "planReminderAt": m43,
+    "planReminderDenied": MessageLookupByLibrary.simpleMessage(
+      "To get reminders, allow notifications for Asteria in iPhone Settings.",
+    ),
+    "planReminderEdit": MessageLookupByLibrary.simpleMessage("Change time"),
+    "planReminderNotificationTitle": MessageLookupByLibrary.simpleMessage(
+      "Your plan for today",
+    ),
+    "planReminderPast": MessageLookupByLibrary.simpleMessage(
+      "This time has passed. Choose a later time.",
+    ),
+    "planReminderRemove": MessageLookupByLibrary.simpleMessage(
+      "Remove reminder",
+    ),
+    "planReminderTime": MessageLookupByLibrary.simpleMessage("Reminder time"),
+    "planReminderUnavailable": MessageLookupByLibrary.simpleMessage(
+      "Couldn’t update the reminder. Please try again.",
+    ),
     "planetChiron": MessageLookupByLibrary.simpleMessage("Chiron"),
     "planetJupiter": MessageLookupByLibrary.simpleMessage("Jupiter"),
     "planetLilith": MessageLookupByLibrary.simpleMessage("Lilith"),
@@ -1647,8 +1670,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "purchaseErrorTryAgain": MessageLookupByLibrary.simpleMessage(
       "Something went wrong. Try again later.",
     ),
-    "purchaseForCoinsLabel": m43,
-    "purchaseForPrice": m44,
+    "purchaseForCoinsLabel": m44,
+    "purchaseForPrice": m45,
     "purchaseGoToChat": MessageLookupByLibrary.simpleMessage("Go to chat"),
     "purchaseMonthHoroscope": MessageLookupByLibrary.simpleMessage(
       "Unlock monthly horoscope",
@@ -1662,7 +1685,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "purchaseNotEnoughRequests": MessageLookupByLibrary.simpleMessage(
       "Not enough to buy requests",
     ),
-    "purchaseRequestsTitle": m45,
+    "purchaseRequestsTitle": m46,
     "purchaseRequired": MessageLookupByLibrary.simpleMessage(
       "Required for purchase",
     ),
@@ -1682,7 +1705,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "purchasedAttemptsCombine": MessageLookupByLibrary.simpleMessage(
       "Purchased requests are added to your free requests",
     ),
-    "questionCoinPrice": m46,
+    "questionCoinPrice": m47,
     "readingComplete": MessageLookupByLibrary.simpleMessage(
       "Your reading is complete",
     ),
@@ -1702,16 +1725,16 @@ class MessageLookup extends MessageLookupByLibrary {
     "refreshTarotSpreadLabel": MessageLookupByLibrary.simpleMessage(
       "Refresh Tarot spread",
     ),
-    "requestLimitResetIn": m47,
-    "requestPackageCount": m48,
-    "requestPackageForCoins": m49,
+    "requestLimitResetIn": m48,
+    "requestPackageCount": m49,
+    "requestPackageForCoins": m50,
     "requestsExhausted": MessageLookupByLibrary.simpleMessage(
       "You\'ve used all your requests.\nWant to continue?",
     ),
-    "requestsLeftCount": m50,
-    "requestsLeftOfTotal": m51,
-    "requestsLeftThisWeek": m52,
-    "requestsRemaining": m53,
+    "requestsLeftCount": m51,
+    "requestsLeftOfTotal": m52,
+    "requestsLeftThisWeek": m53,
+    "requestsRemaining": m54,
     "resendCodeButtonText": MessageLookupByLibrary.simpleMessage(
       "Send a new code",
     ),
@@ -1745,7 +1768,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "rewardShareSubject": MessageLookupByLibrary.simpleMessage(
       "Asteria—your personal astrology guide",
     ),
-    "rewardShareText": m54,
+    "rewardShareText": m55,
     "rewardStartError": MessageLookupByLibrary.simpleMessage(
       "Unable to start rewards.",
     ),
@@ -1755,18 +1778,18 @@ class MessageLookup extends MessageLookupByLibrary {
     "rewardsHowEarn": MessageLookupByLibrary.simpleMessage(
       "How can I earn more?",
     ),
-    "runeLockedLabel": m55,
+    "runeLockedLabel": m56,
     "runeOpenFuture": MessageLookupByLibrary.simpleMessage(
       "Open the future rune",
     ),
-    "runeOpenFutureMeaning": m56,
-    "runeOpenLabel": m57,
+    "runeOpenFutureMeaning": m57,
+    "runeOpenLabel": m58,
     "runeOpenPast": MessageLookupByLibrary.simpleMessage("Open the past rune"),
-    "runeOpenPastMeaning": m58,
+    "runeOpenPastMeaning": m59,
     "runeOpenPresent": MessageLookupByLibrary.simpleMessage(
       "Open the present rune",
     ),
-    "runeOpenPresentMeaning": m59,
+    "runeOpenPresentMeaning": m60,
     "runeRefreshSubscriptionRequired": MessageLookupByLibrary.simpleMessage(
       "Refreshing the rune of the day is available with a subscription. Subscribe to receive a new rune every day.",
     ),
@@ -2048,7 +2071,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "shopIncreaseQuantity": MessageLookupByLibrary.simpleMessage(
       "Increase quantity",
     ),
-    "shopItemCount": m60,
+    "shopItemCount": m61,
     "shopItemSuffix": MessageLookupByLibrary.simpleMessage("items"),
     "shopItemsLeft": MessageLookupByLibrary.simpleMessage("Left"),
     "shopLoadError": MessageLookupByLibrary.simpleMessage(
@@ -2071,7 +2094,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "shopTitle": MessageLookupByLibrary.simpleMessage("Shop"),
     "shopUnitPrice": MessageLookupByLibrary.simpleMessage("price per item"),
-    "shopUnitPriceValue": m61,
+    "shopUnitPriceValue": m62,
     "sonnikLoadingDetails": MessageLookupByLibrary.simpleMessage(
       "The details form a pattern…",
     ),
@@ -2207,7 +2230,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "subscriptionNextPaymentInline": MessageLookupByLibrary.simpleMessage(
       "Your next payment will be\ncharged on ",
     ),
-    "subscriptionNextPaymentOn": m62,
+    "subscriptionNextPaymentOn": m63,
     "subscriptionNoPurchasesToRestore": MessageLookupByLibrary.simpleMessage(
       "No purchases were found to restore",
     ),
@@ -2223,7 +2246,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "subscriptionPlansUnavailable": MessageLookupByLibrary.simpleMessage(
       "Subscriptions are currently unavailable. Try again later.",
     ),
-    "subscriptionPurchasesRestored": m63,
+    "subscriptionPurchasesRestored": m64,
     "subscriptionRestoreInProgress": MessageLookupByLibrary.simpleMessage(
       "Restoring purchases…",
     ),
@@ -2251,10 +2274,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "tarotLoadError": MessageLookupByLibrary.simpleMessage(
       "Unable to load Tarot cards.",
     ),
-    "tarotLockedCardLabel": m64,
-    "tarotOpenCardLabel": m65,
-    "tarotOpenSpreadCard": m66,
-    "tarotOpenedSpreadCard": m67,
+    "tarotLockedCardLabel": m65,
+    "tarotOpenCardLabel": m66,
+    "tarotOpenSpreadCard": m67,
+    "tarotOpenedSpreadCard": m68,
     "tarotRefreshSubscriptionRequired": MessageLookupByLibrary.simpleMessage(
       "Refreshing the Tarot card is available with a subscription. Subscribe to receive a new card every day.",
     ),
@@ -2301,6 +2324,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "yearHoroscopeIntro": MessageLookupByLibrary.simpleMessage(
       "Open your map of destiny and glimpse the future created just for you.",
     ),
-    "yearHoroscopePriceTitle": m68,
+    "yearHoroscopePriceTitle": m69,
   };
 }

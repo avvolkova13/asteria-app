@@ -23,6 +23,7 @@ import 'package:uuid/uuid.dart';
 
 import 'package:asteria_app/features/home/presentation/models/lunar_almanac.dart';
 import 'calendar_plan.dart';
+import 'calendar_plan_reminder_control.dart';
 import 'scenario_ui.dart';
 
 String _dateLabel(BuildContext c, DateTime date) => DateFormat.yMMMMEEEEd(
@@ -63,6 +64,11 @@ class _PlannerPage<T> extends MaterialPageRoute<T> {
 Future<void> _open(BuildContext c, Widget page, {bool fromTab = false}) async {
   await Navigator.of(c).push(_PlannerPage<void>(c, page, fromTab: fromTab));
 }
+
+Future<void> openSavedCalendarPlanFromTab(
+  BuildContext context,
+  CalendarPlan plan,
+) => _open(context, _PlanDetails(plan: plan), fromTab: true);
 
 class CalendarScenarioScreen extends StatelessWidget {
   const CalendarScenarioScreen({super.key});
@@ -280,15 +286,19 @@ class _DaySelectionState extends State<_DaySelection> {
             ),
           ),
           const SizedBox(height: 16),
-          MoonCalendarWidget.planning(
-            planningState: MoonScreenState(
-              focusedDay: _focused,
-              dayStatuses: statuses,
+          CalendarPlansBuilder(
+            compact: true,
+            builder: (context, plans) => MoonCalendarWidget.planning(
+              savedPlans: plans,
+              planningState: MoonScreenState(
+                focusedDay: _focused,
+                dayStatuses: statuses,
+              ),
+              planningSelection: _selected,
+              firstSelectableDay: _today,
+              onPlanDay: _toggle,
+              onPlanMonth: _showMonth,
             ),
-            planningSelection: _selected,
-            firstSelectableDay: _today,
-            onPlanDay: _toggle,
-            onPlanMonth: _showMonth,
           ),
           const SizedBox(height: 8),
           if (_loading)
@@ -566,12 +576,20 @@ class _PlanDetails extends StatelessWidget {
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: AsteriaEntrance.sections([
-        if (saved) Text(plan.title, style: c.textTheme.playfairSemiBold20),
+        if (saved) Text(plan.title, style: c.textTheme.inversePlayfairSemiBold20),
         Text(_dateLabel(c, plan.day)),
-        Text(_activityLabel(c, plan.activity)),
+        if (plan.title.trim() != _activityLabel(c, plan.activity))
+          Text(_activityLabel(c, plan.activity)),
         const SizedBox(height: 16),
         if (plan.recommendation case final rec?) _Recommendation(rec),
         const SizedBox(height: 16),
+        if (di.isRegistered<UserProvider>())
+          ListenableBuilder(
+            listenable: di.get<UserProvider>(),
+            builder: (_, _) => di.get<UserProvider>().currentUser?.id == plan.owner
+                ? CalendarPlanReminderControl(plan: plan)
+                : const SizedBox.shrink(),
+          ),
         AuthGradientButton(
           text: _PlannerPage.tabOf(c) == null
               ? c.l10n.scenarioGoHome
@@ -607,7 +625,7 @@ class _PlansScreen extends StatelessWidget {
   @override
   Widget build(BuildContext c) => ScenarioPage(
     title: c.l10n.scenarioCalendarMyPlans,
-    child: _SavedPlans(
+    child: CalendarPlansBuilder(
       builder: (c, plans) => Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: AsteriaEntrance.sections([
@@ -646,7 +664,7 @@ class CalendarPlanningEntry extends StatelessWidget {
             _open(c, const CalendarScenarioScreen(), fromTab: true),
       ).withEntrance(),
       const CalendarPlansButton(fromTab: true).withEntrance(),
-      _SavedPlans(
+      CalendarPlansBuilder(
         compact: true,
         builder: (c, plans) {
           final next = plans
@@ -669,8 +687,12 @@ class CalendarPlanningEntry extends StatelessWidget {
   );
 }
 
-class _SavedPlans extends StatelessWidget {
-  const _SavedPlans({required this.builder, this.compact = false});
+class CalendarPlansBuilder extends StatelessWidget {
+  const CalendarPlansBuilder({
+    super.key,
+    required this.builder,
+    this.compact = false,
+  });
   final Widget Function(BuildContext, List<CalendarPlan>) builder;
   final bool compact;
   @override
@@ -723,22 +745,22 @@ class _AccountPlansState extends State<_AccountPlans> {
     future: _openBox,
     builder: (c, snapshot) {
       if (snapshot.hasError) {
-        if (widget.compact) return const SizedBox.shrink();
+        if (widget.compact) return widget.builder(c, const []);
         return _Retry(
           text: c.l10n.scenarioCalendarPlansError,
           onRetry: () => setState(() => _openBox = CalendarPlans.open()),
         );
       }
       final box = snapshot.data;
-      if (box == null) {
-        return widget.compact
-            ? const SizedBox.shrink()
-            : const Center(child: CircularProgressIndicator());
+      if (box == null && !widget.compact) {
+        return const Center(child: CircularProgressIndicator());
       }
       return StreamBuilder<BoxEvent>(
-        stream: box.watch(),
-        builder: (c, _) =>
-            widget.builder(c, CalendarPlans.read(box, widget.owner)),
+        stream: box?.watch(),
+        builder: (c, _) => widget.builder(
+          c,
+          box == null ? const [] : CalendarPlans.read(box, widget.owner),
+        ),
       );
     },
   );
