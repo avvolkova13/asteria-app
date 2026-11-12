@@ -84,34 +84,7 @@ class AffirmationCardWidget extends StatelessWidget {
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
-                    Image.asset(
-                      imageAssetPath,
-                      fit: BoxFit.fill,
-                      cacheWidth: 3,
-                      excludeFromSemantics: true,
-                    ),
-                    Center(
-                      child: AspectRatio(
-                        aspectRatio: 2 / 3,
-                        child: ShaderMask(
-                          blendMode: BlendMode.dstIn,
-                          shaderCallback: const LinearGradient(
-                            colors: [
-                              Colors.transparent,
-                              Colors.white,
-                              Colors.white,
-                              Colors.transparent,
-                            ],
-                            stops: [0, .1, .9, 1],
-                          ).createShader,
-                          child: Image.asset(
-                            imageAssetPath,
-                            fit: BoxFit.contain,
-                            excludeFromSemantics: true,
-                          ),
-                        ),
-                      ),
-                    ),
+                    _CardArtwork(asset: imageAssetPath),
                     if (isFront)
                       const Positioned(
                         top: 12,
@@ -119,10 +92,8 @@ class AffirmationCardWidget extends StatelessWidget {
                         child: _CardIconButton(icon: Icons.play_arrow),
                       ),
                     if (isFront && showSwipeHint)
-                      const Positioned(
-                        bottom: 12,
-                        right: 14,
-                        child: _CardIconButton(icon: Icons.swap_vert_rounded),
+                      const Center(
+                        child: IgnorePointer(child: _SwipeHandHint()),
                       ),
                   ],
                 ),
@@ -147,6 +118,153 @@ class AffirmationCardWidget extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+// Keep the subject proportional and extend only the outer edges of its
+// original scenery into the margins of the wide card.
+class _CardArtwork extends StatelessWidget {
+  const _CardArtwork({required this.asset});
+  final String asset;
+  static const alignment = Alignment(0, -.35);
+
+  @override
+  Widget build(BuildContext context) {
+    final image = AssetImage(asset);
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final height = constraints.maxHeight;
+        final width = (height * .83)
+            .clamp(0.0, constraints.maxWidth)
+            .toDouble();
+
+        final edgeWidth = width * .08;
+        Widget slice(double sliceWidth, Alignment anchor, Widget content) =>
+            SizedBox(
+              width: sliceWidth,
+              height: height,
+              child: ClipRect(
+                child: OverflowBox(
+                  alignment: anchor,
+                  minWidth: width,
+                  maxWidth: width,
+                  child: content,
+                ),
+              ),
+            );
+        final scenery = DecoratedBox(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: image,
+              fit: BoxFit.cover,
+              alignment: alignment,
+            ),
+          ),
+          child: const SizedBox.expand(),
+        );
+        Widget margin(Alignment side) => Expanded(
+          child: FittedBox(
+            fit: BoxFit.fill,
+            child: slice(edgeWidth, side, scenery),
+          ),
+        );
+        return Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            margin(Alignment.centerLeft),
+            slice(
+              width - 2 * edgeWidth,
+              Alignment.center,
+              Image(
+                image: image,
+                fit: BoxFit.cover,
+                alignment: alignment,
+                excludeFromSemantics: true,
+              ),
+            ),
+            margin(Alignment.centerRight),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class _SwipeHandHint extends StatelessWidget {
+  const _SwipeHandHint();
+
+  @override
+  Widget build(BuildContext context) {
+    const hand = Image(
+      image: AssetImage('assets/icons/clay/swipe_hand.webp'),
+      width: 60,
+      height: 60,
+      excludeFromSemantics: true,
+    );
+    if (MediaQuery.disableAnimationsOf(context)) return hand;
+    return TweenAnimationBuilder<double>(
+      duration: const Duration(milliseconds: 3600),
+      tween: Tween(begin: 0, end: 2),
+      child: hand,
+      builder: (_, value, child) {
+        final phase = value == 2 ? 1.0 : value % 1;
+        final travel = const Interval(
+          .23,
+          .75,
+          curve: Curves.easeInOutCubic,
+        ).transform(phase);
+        final touch = const Interval(
+          .10,
+          .23,
+          curve: Curves.easeOut,
+        ).transform(phase);
+        final release = const Interval(
+          .75,
+          .88,
+          curve: Curves.easeOut,
+        ).transform(phase);
+        final opacity =
+            const Interval(0, .10).transform(phase) *
+            (1 - const Interval(.81, .97).transform(phase));
+        return Opacity(
+          opacity: opacity,
+          child: SizedBox(
+            width: 80,
+            height: 150,
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                Positioned(
+                  bottom: 45,
+                  child: Container(
+                    width: 4,
+                    height: 84 * travel,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(2),
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          AppColors.white.withValues(alpha: .85),
+                          AppColors.white.withValues(alpha: .08),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                Transform.translate(
+                  offset: Offset(0, 42 - 84 * travel),
+                  child: Transform.scale(
+                    scale: 1 - .12 * (touch - release),
+                    child: child,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }

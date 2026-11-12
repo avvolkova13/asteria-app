@@ -338,7 +338,10 @@ void main() {
                   child: Scaffold(
                     body: SizedBox(
                       width: 358,
-                      child: AffirmationCardStack(affirmations: affirmations),
+                      child: AffirmationCardStack(
+                        affirmations: affirmations,
+                        showSwipeHint: true,
+                      ),
                     ),
                   ),
                 );
@@ -355,6 +358,18 @@ void main() {
           (widget) =>
               widget is GestureDetector && widget.onVerticalDragEnd != null,
         );
+        final hand = find.image(
+          const AssetImage('assets/icons/clay/swipe_hand.webp'),
+        );
+        await tester.pump(const Duration(milliseconds: 430));
+        final start = tester.getCenter(hand);
+        final center = tester.getCenter(swipeDetector);
+        expect(start.dx, closeTo(center.dx, 1));
+        expect(start.dy, greaterThan(center.dy + 35));
+        await tester.pump(const Duration(milliseconds: 950));
+        final end = tester.getCenter(hand);
+        expect(end.dx, closeTo(start.dx, 1));
+        expect(end.dy, lessThan(start.dy - 75));
         final visibleBehindBeforeLeftSwipe = _visibleBehindImageAssetPath(
           tester,
         );
@@ -363,6 +378,7 @@ void main() {
 
         _expectThreeUniqueLoveImages(tester);
         expect(_frontImageAssetPath(tester), visibleBehindBeforeLeftSwipe);
+        expect(hand, findsNothing);
 
         await tester.drag(swipeDetector, const Offset(0, 120));
         await tester.pumpAndSettle();

@@ -432,7 +432,8 @@ class _AffirmationCardStackState extends State<AffirmationCardStack> {
     }
 
     final count = widget.affirmations.length.clamp(1, 3);
-    final step = 9.0 * scale;
+    final topStep = 12.0 * scale;
+    final sideStep = 28.0 * scale;
     final hasChoices = widget.affirmations.length > 1;
     final reduced = MediaQuery.disableAnimationsOf(context);
     final direction = _isAnimatingOut
@@ -443,9 +444,9 @@ class _AffirmationCardStackState extends State<AffirmationCardStack> {
       final index = _wrapIndex(_frontIndex - direction * depth);
       cards.add(
         Positioned(
-          top: (count - depth - 1) * step,
-          left: depth * step,
-          right: depth * step,
+          top: (count - depth - 1) * topStep,
+          left: depth * sideStep,
+          right: depth * sideStep,
           child: IgnorePointer(
             child: AffirmationCardWidget(
               affirmation: widget.affirmations[index],
@@ -461,7 +462,7 @@ class _AffirmationCardStackState extends State<AffirmationCardStack> {
         : _animationDuration;
     cards.add(
       Padding(
-        padding: EdgeInsets.only(top: (count - 1) * step),
+        padding: EdgeInsets.only(top: (count - 1) * topStep),
         child: TweenAnimationBuilder<double>(
           key: ValueKey(widget.affirmations[_frontIndex].id),
           tween: Tween(begin: reduced ? 1.0 : 0.0, end: 1.0),
