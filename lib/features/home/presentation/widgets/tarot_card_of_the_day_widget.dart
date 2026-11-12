@@ -282,7 +282,7 @@ class _TarotCardOfTheDayWidgetState extends State<TarotCardOfTheDayWidget>
         child: TarotCardFrame(
           radius: borderRadius.topLeft.x,
           child: Image.asset(
-            'assets/images/cards/card_back_default.png',
+            'assets/images/home/daily_symbol_tarot_back.webp',
             width: 219,
             height: 328,
             fit: BoxFit.fitWidth,
