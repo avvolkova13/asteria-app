@@ -15,7 +15,7 @@ class TarotCardFrame extends StatelessWidget {
       position: DecorationPosition.foreground,
       decoration: BoxDecoration(
         border: Border.all(
-          color: AppColorsDark.linkGold.withValues(alpha: 0.5),
+          color: AppColorsDark.linkGold.withValues(alpha: 0.375),
           width: 1,
         ),
         borderRadius: borderRadius,
