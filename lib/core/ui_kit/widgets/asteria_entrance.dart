@@ -80,11 +80,11 @@ class AsteriaEntrance extends SingleChildRenderObjectWidget {
     }).toList();
   }
 
-  static List<ScrollPosition> _scrollsOf(BuildContext context) {
-    final positions = <ScrollPosition>[];
+  static List<ScrollableState> _scrollsOf(BuildContext context) {
+    final positions = <ScrollableState>[];
     context.visitAncestorElements((element) {
       if (element is StatefulElement && element.state is ScrollableState) {
-        positions.add((element.state as ScrollableState).position);
+        positions.add(element.state as ScrollableState);
       }
       return true;
     });
@@ -123,7 +123,7 @@ class _RenderEntrance extends RenderProxyBox {
     required int? order,
     required bool initially,
     required Object? replayKey,
-    required List<ScrollPosition> scroll,
+    required List<ScrollableState> scroll,
   }) : _active = active,
        _reduced = reduced,
        _order = order,
@@ -138,7 +138,10 @@ class _RenderEntrance extends RenderProxyBox {
   Duration _delay = Duration.zero;
   bool _done;
   Object? _replayKey;
-  List<ScrollPosition> _scroll;
+  // Scrollable can replace and dispose its position while retaining this
+  // render object (for example after a physics change or hot reload).
+  List<ScrollableState> _scroll;
+  List<ScrollPosition> _listenedPositions = const [];
   bool _waitingForScroll = false;
   VoidCallback? _removeViewportCheck;
   Ticker? _ticker;
@@ -151,7 +154,7 @@ class _RenderEntrance extends RenderProxyBox {
     required bool allowReplay,
     required int? order,
     required Object? replayKey,
-    required List<ScrollPosition> scroll,
+    required List<ScrollableState> scroll,
   }) {
     _order = order;
     if (scroll.length != _scroll.length ||
@@ -183,17 +186,29 @@ class _RenderEntrance extends RenderProxyBox {
     _removeViewportCheck?.call();
     _removeViewportCheck = null;
     if (!_waitingForScroll) return;
-    for (final position in _scroll) {
+    for (final position in _listenedPositions) {
       position.removeListener(markNeedsPaint);
     }
+    _listenedPositions = const [];
     _waitingForScroll = false;
   }
 
   void _waitForViewport(PaintingContext context) {
+    final positions = [
+      for (final scrollable in _scroll)
+        if (scrollable.mounted) scrollable.position,
+    ];
+    if (positions.length != _listenedPositions.length ||
+        !positions.asMap().entries.every(
+          (entry) => identical(entry.value, _listenedPositions[entry.key]),
+        )) {
+      _stopWaiting();
+    }
     if (!_waitingForScroll) {
-      for (final position in _scroll) {
+      for (final position in positions) {
         position.addListener(markNeedsPaint);
       }
+      _listenedPositions = positions;
       _waitingForScroll = true;
     }
     // A cached layer can enter the viewport without scrolling or repainting

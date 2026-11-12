@@ -236,6 +236,66 @@ void main() {
     expect(_fades(tester), isEmpty);
   });
 
+  for (final innerAxis in Axis.values) {
+    testWidgets(
+      'a retained reveal follows replaced nested ${innerAxis.name} scroll positions',
+      (tester) async {
+        final visible = ValueNotifier(false);
+        addTearDown(visible.dispose);
+        const reveal = AsteriaEntrance(child: _tile);
+        final retained = ValueListenableBuilder<bool>(
+          valueListenable: visible,
+          child: reveal,
+          builder: (context, shown, child) =>
+              Offstage(offstage: !shown, child: child),
+        );
+        Widget scene(ScrollPhysics physics) => _screen(
+          SizedBox(
+            width: 160,
+            height: 60,
+            child: SingleChildScrollView(
+              physics: physics,
+              child: Column(
+                children: [
+                  const SizedBox(height: 180),
+                  SizedBox(
+                    height: 40,
+                    child: SingleChildScrollView(
+                      physics: physics,
+                      scrollDirection: innerAxis,
+                      child: Flex(
+                        direction: innerAxis,
+                        children: [
+                          retained,
+                          const SizedBox(width: 240, height: 240),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 180),
+                ],
+              ),
+            ),
+          ),
+        );
+        await tester.pumpWidget(scene(const ClampingScrollPhysics()));
+        await tester.pumpAndSettle();
+        await tester.pumpWidget(scene(const BouncingScrollPhysics()));
+        await tester.pumpAndSettle();
+        visible.value = true;
+        await tester.pumpAndSettle();
+        expect(tester.takeException(), isNull);
+        await tester.drag(
+          find.byType(SingleChildScrollView).first,
+          const Offset(0, -160),
+        );
+        await tester.pumpAndSettle();
+        expect(tester.takeException(), isNull);
+        expect(_fades(tester), isEmpty);
+      },
+    );
+  }
+
   testWidgets('zero-height content waits for its first visible layout', (
     tester,
   ) async {
