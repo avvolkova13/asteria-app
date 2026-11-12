@@ -262,7 +262,9 @@ class RelationshipPairResult extends StatelessWidget {
               children: [
                 Text(
                   context.l10n.scenarioRelationshipConversationLabel,
-                  style: context.textTheme.playfairSemiBold20,
+                  style: context.textTheme.playfairSemiBold20.copyWith(
+                    color: AppColors.textInverse,
+                  ),
                 ),
                 const SizedBox(height: 8),
                 Text(
@@ -317,7 +319,9 @@ class _Reflection extends StatelessWidget {
           children: [
             Text(
               context.l10n.scenarioRelationshipReflectionLabel,
-              style: context.textTheme.playfairSemiBold20,
+              style: context.textTheme.playfairSemiBold20.copyWith(
+                color: AppColors.textInverse,
+              ),
             ),
             const SizedBox(height: 8),
             Text(
