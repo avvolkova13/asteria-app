@@ -1,3 +1,5 @@
+import 'package:asteria_app/app/data/models/user/user_model.dart';
+import 'package:asteria_app/features/natal_card/widgets/natal_wheel.dart';
 import 'package:asteria_app/core/ui_kit/widgets/pearl_metric_row.dart';
 import 'package:asteria_app/core/config/app_feature_visibility.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
@@ -197,16 +199,52 @@ class _PersonalScreenState extends State<PersonalScreen> {
     );
   }
 
-  String _natalCardDescription(UserProvider userProvider) {
-    final natalCard = userProvider.currentUser?.natalCard;
-    final language = Localizations.localeOf(context).languageCode;
-    if (natalCard != null && natalCard.hasLanguage(language)) {
-      final personality = natalCard.interpretationFor(language).personality;
-      if (personality.isEmpty) return context.l10n.personalDefaultDescription;
-      return personality;
+  Widget _natalBanner(BuildContext context, UserModel? user) {
+    Widget banner(PlanetsHousesDataModel? data) {
+      final exactTime =
+          user?.personalInfo?.birthDate?.hasExactBirthTime ?? false;
+      final hasChart = data != null && NatalWheel.hasPlanets(data);
+      final summary = hasChart
+          ? (exactTime
+                ? NatalWheel.luminarySummary(context, data)
+                : context.l10n.natalWheelApproximate)
+          : '';
+      return CardAdvertisementWidget(
+        horizontalMargin: 0,
+        variant: CardAdvertisementVariant.natalCardBanner,
+        title: context.l10n.natalChartTitle,
+        description: summary.isEmpty
+            ? context.l10n.personalDefaultDescription
+            : summary,
+        buttonText: context.l10n.personalOpenChart,
+        onPressed: _onNatalCardPressed,
+        natalChartPreview: hasChart
+            ? NatalWheel(
+                data: data,
+                hasKnownBirthTime: exactTime,
+                preview: true,
+              )
+            : null,
+      );
     }
 
-    return context.l10n.personalDefaultDescription;
+    if (user == null || user.natalCard?.hasAnyInterpretation != true) {
+      return banner(null);
+    }
+    final birth = user.personalInfo?.birthDate;
+    final place = user.personalInfo?.birthPlace;
+    return _OwnedNatalPreview(
+      key: ValueKey((
+        user.id,
+        birth?.birthDate,
+        birth?.birthTime,
+        birth?.hasExactBirthTime,
+        place?.latitude,
+        place?.longitude,
+      )),
+      saved: user.planetsHousesData,
+      builder: banner,
+    );
   }
 
   bool _isLocalizedHoroscope(Object? json) {
@@ -285,14 +323,7 @@ class _PersonalScreenState extends State<PersonalScreen> {
       children: [
         if (AppFeatureVisibility.horoscopes)
           ..._horoscopeSection(context, userProvider),
-        CardAdvertisementWidget(
-          horizontalMargin: 0,
-          variant: CardAdvertisementVariant.natalCardBanner,
-          title: context.l10n.natalChartTitle,
-          description: _natalCardDescription(userProvider),
-          buttonText: context.l10n.personalOpenChart,
-          onPressed: _onNatalCardPressed,
-        ).withEntrance(),
+        _natalBanner(context, userProvider.currentUser).withEntrance(),
         const SizedBox(height: 24),
         _PersonalCompatibilitySection(
           onPressed: _onCompatibilityPressed,
@@ -1343,9 +1374,8 @@ class _WeeklyAreaCard extends StatelessWidget {
                     alignment: Alignment.centerLeft,
                     child: Text(
                       data.title,
-                      style: context.textTheme.inversePlayfairSemiBold24.copyWith(
-                        height: 1,
-                      ),
+                      style: context.textTheme.inversePlayfairSemiBold24
+                          .copyWith(height: 1),
                     ),
                   ),
                 ),
@@ -2227,4 +2257,27 @@ class _GradientText extends StatelessWidget {
       ),
     );
   }
+}
+
+class _OwnedNatalPreview extends StatefulWidget {
+  const _OwnedNatalPreview({
+    super.key,
+    required this.saved,
+    required this.builder,
+  });
+  final PlanetsHousesDataModel saved;
+  final Widget Function(PlanetsHousesDataModel?) builder;
+
+  @override
+  State<_OwnedNatalPreview> createState() => _OwnedNatalPreviewState();
+}
+
+class _OwnedNatalPreviewState extends State<_OwnedNatalPreview> {
+  late final _geometry = di.get<ContentProvider>().loadPurchasedNatalGeometry();
+
+  @override
+  Widget build(BuildContext context) => FutureBuilder<PlanetsHousesDataModel?>(
+    future: _geometry,
+    builder: (_, snapshot) => widget.builder(snapshot.data ?? widget.saved),
+  );
 }

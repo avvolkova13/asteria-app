@@ -18,6 +18,7 @@ class CardAdvertisementWidget extends StatelessWidget {
   static const _natalCardBannerBackground = Color(0xFF2A2038);
   static const _balanceSubscriptionBackground = Color(0xFF332D3B);
 
+  final Widget? natalChartPreview;
   final String title;
   final String description;
   final String buttonText;
@@ -32,6 +33,7 @@ class CardAdvertisementWidget extends StatelessWidget {
     required this.buttonText,
     required this.onPressed,
     this.horizontalMargin,
+    this.natalChartPreview,
     this.variant = CardAdvertisementVariant.legacy,
   });
 
@@ -81,7 +83,7 @@ class CardAdvertisementWidget extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         final cardWidth = constraints.maxWidth - 2 * (horizontalMargin ?? 16);
-        final wheelSize = (cardWidth * .34).clamp(0.0, 138.0).toDouble();
+        final wheelSize = (cardWidth * .44).clamp(0.0, 174.0).toDouble();
         final roomyCopy =
             cardWidth < 330 || MediaQuery.textScalerOf(context).scale(16) > 20;
         final heading = Text(
@@ -118,11 +120,13 @@ class CardAdvertisementWidget extends StatelessWidget {
                       ],
                     ),
                   ),
-                  const SizedBox(width: 12),
-                  SizedBox.square(
-                    dimension: wheelSize,
-                    child: const _NatalCardWheel(),
-                  ),
+                  if (natalChartPreview != null) ...[
+                    const SizedBox(width: 12),
+                    SizedBox.square(
+                      dimension: wheelSize,
+                      child: natalChartPreview,
+                    ),
+                  ],
                 ],
               ),
               if (roomyCopy) ...[const SizedBox(height: 8), body],
@@ -233,19 +237,6 @@ class CardAdvertisementWidget extends StatelessWidget {
   }
 }
 
-class _NatalCardWheel extends StatelessWidget {
-  const _NatalCardWheel();
-
-  @override
-  Widget build(BuildContext context) {
-    return Image.asset(
-      'assets/images/home/natal_card_banner_wheel.webp',
-      fit: BoxFit.contain,
-      excludeFromSemantics: true,
-    );
-  }
-}
-
 class _NatalCardButton extends StatelessWidget {
   final String text;
   final VoidCallback onPressed;
@@ -254,9 +245,11 @@ class _NatalCardButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final button = SizedBox(
-      width: double.infinity,
-      height: 44,
+    final button = ConstrainedBox(
+      constraints: const BoxConstraints(
+        minWidth: double.infinity,
+        minHeight: 44,
+      ),
       child: Material(
         color: Colors.transparent,
         child: LotusInkTap(
@@ -266,25 +259,14 @@ class _NatalCardButton extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 20),
             decoration: CardLensDecoration.button(
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: const Color(0xFF6E4BFF)),
+              color: AppColorsDark.linkGold,
             ),
             child: Center(
-              child: ShaderMask(
-                blendMode: BlendMode.srcIn,
-                shaderCallback: (bounds) {
-                  return const LinearGradient(
-                    colors: [Color(0xFF6E4BFF), Color(0xFF5A3FD1)],
-                  ).createShader(Offset.zero & bounds.size);
-                },
-                child: Text(
-                  text,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  textAlign: TextAlign.center,
-                  style: context.textTheme.inverseUrbanistRegular17.copyWith(
-                    color: AppColors.textInverse,
-                    height: 1.2,
-                  ),
+              child: Text(
+                text,
+                textAlign: TextAlign.center,
+                style: AppTypography.text1SemiBold.copyWith(
+                  color: AppColorsDark.homeCanvas,
                 ),
               ),
             ),

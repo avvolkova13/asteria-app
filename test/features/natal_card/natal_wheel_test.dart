@@ -11,6 +11,29 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   testWidgets(
+    'compact preview draws the saved planets and summarizes their signs',
+    (tester) async {
+      await _pump(
+        tester,
+        [_planet('moon', 219), _planet('sun', 52)],
+        exact: true,
+        preview: true,
+      );
+      final wheel = find.byType(NatalWheel);
+      final data = tester.widget<NatalWheel>(wheel).data;
+      expect(
+        NatalWheel.luminarySummary(tester.element(wheel), data),
+        'Солнце — Телец\nЛуна — Скорпион',
+      );
+      expect(find.byKey(const ValueKey('natal-wheel-sun')), findsOneWidget);
+      expect(
+        find.text('Коснись планеты, чтобы увидеть её связи'),
+        findsNothing,
+      );
+      expect(tester.takeException(), isNull);
+    },
+  );
+  testWidgets(
     'all ten clustered planets can be selected across the Aries boundary on a compact phone',
     (tester) async {
       final positions = [
@@ -149,6 +172,7 @@ Future<void> _pump(
   WidgetTester tester,
   List<PlanetHousePositionModel> positions, {
   required bool exact,
+  bool preview = false,
   List<HouseCuspModel> cusps = const [],
 }) async {
   await tester.pumpWidget(
@@ -170,9 +194,10 @@ Future<void> _pump(
             child: Scaffold(
               body: Center(
                 child: SizedBox(
-                  width: 320,
+                  width: preview ? 145 : 320,
                   child: NatalWheel(
                     hasKnownBirthTime: exact,
+                    preview: preview,
                     data: PlanetsHousesDataModel(
                       data: '',
                       elements: const Elements(

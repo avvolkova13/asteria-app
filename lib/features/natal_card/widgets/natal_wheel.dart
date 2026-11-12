@@ -16,10 +16,30 @@ class NatalWheel extends StatefulWidget {
     super.key,
     required this.data,
     required this.hasKnownBirthTime,
+    this.preview = false,
   });
 
   final PlanetsHousesDataModel data;
   final bool hasKnownBirthTime;
+  final bool preview;
+
+  static String luminarySummary(
+    BuildContext context,
+    PlanetsHousesDataModel data,
+  ) {
+    final lines = <String>[];
+    for (final code in ['sun', 'moon']) {
+      final p = data.positions
+          .where((p) => p.code == code && _valid(p.longitude))
+          .firstOrNull;
+      if (p == null) continue;
+      final sign = context.l10n.zodiacSignName(
+        _signs[(p.longitude / 30).floor()],
+      );
+      lines.add('${context.l10n.planetName(code)} — $sign');
+    }
+    return lines.join('\n');
+  }
 
   static bool hasPlanets(PlanetsHousesDataModel data) =>
       data.hasPlanetCoordinates;
@@ -121,7 +141,7 @@ class _NatalWheelState extends State<NatalWheel> with TickerProviderStateMixin {
     final chosen = _layout.planets
         .where((p) => p.code == _selected)
         .firstOrNull;
-    return Column(
+    final content = Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         ConstrainedBox(
@@ -197,19 +217,26 @@ class _NatalWheelState extends State<NatalWheel> with TickerProviderStateMixin {
             ),
           ),
         ),
-        const SizedBox(height: 4),
-        Semantics(
-          liveRegion: true,
-          child: Text(
-            chosen == null
-                ? context.l10n.natalWheelSelectPlanet
-                : _description(chosen),
-            style: context.textTheme.inverseUrbanistRegular14,
-            textAlign: TextAlign.center,
+        if (!widget.preview) ...[
+          const SizedBox(height: 4),
+          Semantics(
+            liveRegion: true,
+            child: Text(
+              chosen == null
+                  ? context.l10n.natalWheelSelectPlanet
+                  : _description(chosen),
+              style: context.textTheme.inverseUrbanistRegular14,
+              textAlign: TextAlign.center,
+            ),
           ),
-        ),
+        ],
       ],
     );
+    return widget.preview
+        ? ExcludeFocus(
+            child: ExcludeSemantics(child: IgnorePointer(child: content)),
+          )
+        : content;
   }
 
   Widget _planet(
