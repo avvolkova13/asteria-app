@@ -1,4 +1,5 @@
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
+import 'package:asteria_app/features/auth/presentation/widgets/auth_flow_widgets.dart';
 import 'package:asteria_app/features/compatibility/presentation/widgets/compatibility_layout.dart';
 import 'package:flutter/material.dart';
 import 'scenario_ui.dart';
@@ -28,9 +29,7 @@ class ScenarioCompletion extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 16),
-        CustomButton(
-          isFullWidth: true,
-          height: 50,
+        AuthGradientButton(
           text: context.l10n.scenarioGoHome,
           onPressed: onHome ?? () => scenarioHome(context),
         ),
