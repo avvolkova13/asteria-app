@@ -194,15 +194,15 @@ class _MainScreenState extends State<MainScreen> {
                                           context,
                                         ).languageCode ==
                                         'ru'
-                                    ? 'Что вам сейчас нужно?'
-                                    : 'What do you need right now?',
+                                    ? 'Что вам сейчас близко?'
+                                    : 'What speaks to you right now?',
                                 subtitle:
                                     Localizations.localeOf(
                                           context,
                                         ).languageCode ==
                                         'ru'
-                                    ? 'Выберите то, что вам сейчас близко'
-                                    : 'Choose a path',
+                                    ? 'Выберите день, практику или личную подсказку'
+                                    : 'Choose a day, a practice or personal guidance',
                                 art: 'assets/images/scenarios/compass.webp',
                                 onTap: () => context.push('/first-session'),
                               ),

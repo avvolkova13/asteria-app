@@ -61,15 +61,36 @@ void main() {
     },
   );
   test(
-    'existing accounts skip the chooser; unfinished choice persists across relaunch',
+    'existing and new accounts see the introduction once; choice survives relaunch',
     () async {
       await FirstSession.begin('new');
       await Hive.close();
       await Hive.openBox<Map>(HiveBoxNames.appSettings);
       expect(await launch(uid: 'new'), FirstSession.path);
+      expect(await launch(uid: 'existing'), FirstSession.path);
+      await FirstSession.finish('existing');
       expect(await launch(uid: 'existing'), '/home');
       await FirstSession.finish('new');
       expect(await launch(uid: 'new'), '/home');
     },
   );
+  test(
+    'seen introduction survives storage restart and stays account specific',
+    () async {
+      await FirstSession.finish('seen');
+      await Hive.close();
+      await Hive.openBox<Map>(HiveBoxNames.appSettings);
+      expect(await launch(uid: 'seen'), '/home');
+      expect(await launch(uid: 'other'), FirstSession.path);
+    },
+  );
+
+  test('legacy pending data receives the new introduction', () async {
+    await Hive.box<Map>(
+      HiveBoxNames.appSettings,
+    ).put('first-session-pending/legacy', {'pending': true});
+    expect(await launch(uid: 'legacy'), FirstSession.path);
+    await FirstSession.finish('legacy');
+    expect(await launch(uid: 'legacy'), '/home');
+  });
 }
