@@ -21,6 +21,7 @@ import 'package:asteria_app/core/location/city_search_service.dart';
 import 'package:asteria_app/core/location/device_location_service.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/features/compatibility/domain/repositories/compatibility_repository.dart';
+import 'package:asteria_app/features/home/presentation/widgets/home_glass_surface.dart';
 import 'package:asteria_app/features/home/presentation/widgets/moon_phase_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -474,6 +475,8 @@ void main() {
           .first;
       expect(tester.getSize(chip), const Size(58, 114));
       expect(tester.widget<Text>(today).style?.fontSize, 12);
+      final lunarChip = find.byKey(const ValueKey('moon-phase-lunar-day-chip'));
+      final cardTop = tester.getTopLeft(lunarChip).dy;
       final selectedX = tester.getCenter(today).dx;
       final initialDistance = (tester.getCenter(next).dx - selectedX).abs();
       await tester.tap(next);
@@ -482,9 +485,20 @@ void main() {
 
       final distance = (tester.getCenter(next).dx - selectedX).abs();
       expect(distance, inExclusiveRange(1, initialDistance - 1));
-      final shifts = tester
-          .widgetList<SlideTransition>(find.byType(SlideTransition))
-          .map((w) => w.position.value.dx);
+      expect(lunarChip, findsNWidgets(2));
+      for (final chip in [lunarChip.first, lunarChip.last]) {
+        expect(tester.getTopLeft(chip).dy, closeTo(cardTop, .01));
+      }
+      final shifts = <double>[];
+      for (final chip in [lunarChip.first, lunarChip.last]) {
+        final slide = tester.widget<SlideTransition>(
+          find.ancestor(of: chip, matching: find.byType(SlideTransition)).first,
+        );
+        expect(slide.position.value.dy, 0);
+        expect(slide.child, isA<HomeGlassSurface>());
+        expect((slide.child! as HomeGlassSurface).animateEntrance, isFalse);
+        shifts.add(slide.position.value.dx);
+      }
       expect(shifts.any((dx) => dx < -.05), isTrue);
       expect(shifts.any((dx) => dx > .05), isTrue);
       await tester.tap(today);

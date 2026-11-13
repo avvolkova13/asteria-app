@@ -8,11 +8,13 @@ import 'package:flutter/material.dart';
 class HomeGlassSurface extends StatelessWidget {
   const HomeGlassSurface({
     super.key,
+    this.animateEntrance = true,
     this.radius = AsteriaCardRadii.card,
     this.tint = const Color(0x339A7DB8),
     required this.child,
   });
 
+  final bool animateEntrance;
   final double radius;
   final Color tint;
   final Widget child;
@@ -20,6 +22,7 @@ class HomeGlassSurface extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AsteriaEntrance(
+      animateInitially: animateEntrance,
       child: ClipRRect(
         borderRadius: BorderRadius.circular(radius),
         child: DecoratedBox(

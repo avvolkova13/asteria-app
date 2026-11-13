@@ -16,10 +16,12 @@ class LotusFeedback extends StatefulWidget {
     required this.onActivate,
     required this.builder,
     this.keyboard = false,
+    this.animateEntrance = true,
   });
 
   final VoidCallback? onActivate;
   final bool keyboard;
+  final bool animateEntrance;
   final Widget Function(VoidCallback? activate) builder;
 
   static void selection() => unawaited(HapticFeedback.selectionClick());
@@ -158,6 +160,7 @@ class _LotusFeedbackState extends State<LotusFeedback>
     final enabled = widget.onActivate != null;
     final control = widget.builder(enabled ? _activate : null);
     return AsteriaEntrance(
+      animateInitially: widget.animateEntrance,
       child: Listener(
         onPointerDown: enabled ? _down : null,
         onPointerMove: _move,

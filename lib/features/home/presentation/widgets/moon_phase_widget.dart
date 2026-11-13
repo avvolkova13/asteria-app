@@ -801,6 +801,7 @@ class _MoonDayTile extends StatelessWidget {
     final locale = Localizations.localeOf(context);
 
     return LotusFeedback(
+      animateEntrance: false,
       onActivate: onTap,
       keyboard: true,
       builder: (activate) => Semantics(
@@ -981,17 +982,18 @@ class _MoonPhaseCard extends StatelessWidget {
           transitionBuilder: (child, animation) {
             final incoming = child.key == dateKey;
             final direction = slideDirectionIsNext ? 1.0 : -1.0;
-            final offset = Offset(direction * (incoming ? .63 : -.63), 0);
+            final offset = Offset(incoming ? direction : -direction, 0);
             return SlideTransition(
               position: Tween<Offset>(
                 begin: offset,
                 end: Offset.zero,
               ).animate(animation),
-              child: FadeTransition(opacity: animation, child: child),
+              child: child,
             );
           },
           child: HomeGlassSurface(
             key: dateKey,
+            animateEntrance: false,
             radius: AsteriaCardRadii.card,
             tint: _MoonPhaseWidgetState._dayCardBackground,
             child: Container(
