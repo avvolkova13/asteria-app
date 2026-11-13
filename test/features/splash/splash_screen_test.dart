@@ -1,55 +1,43 @@
-import 'dart:ui' as ui;
-
 import 'package:asteria_app/features/splash/presentation/screens/splash_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('reduced motion skips playback and releases launch immediately', (
-    tester,
-  ) async {
-    var finished = false;
-    await tester.pumpWidget(
-      MediaQuery(
-        data: const MediaQueryData(disableAnimations: true),
-        child: Directionality(
-          textDirection: TextDirection.ltr,
-          child: SplashScreen(onFinished: () => finished = true),
-        ),
-      ),
-    );
-    expect(finished, isTrue);
-    expect(find.bySemanticsLabel('Asteria'), findsOneWidget);
-    expect(
-      tester.widget<Image>(find.byType(Image)).image,
-      const AssetImage('assets/images/auth/fluid_launch_still.webp'),
-    );
-  });
+  Widget scene(bool reduced, VoidCallback done) => MediaQuery(
+    data: MediaQueryData(disableAnimations: reduced),
+    child: Directionality(
+      textDirection: TextDirection.ltr,
+      child: SplashScreen(onFinished: done),
+    ),
+  );
 
-  testWidgets('the bundled splash decodes as a complete one-shot sequence', (
+  testWidgets('one-shot launch holds until the drawing finishes', (
     tester,
   ) async {
-    await tester.runAsync(() async {
-      final data = await rootBundle.load(
-        'assets/images/auth/fluid_launch.webp',
-      );
-      final codec = await ui.instantiateImageCodec(
-        data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes),
-      );
-      try {
-        expect(codec.repetitionCount, 0);
-        expect(codec.frameCount, greaterThan(30));
-        var duration = Duration.zero;
-        for (var frame = 0; frame < codec.frameCount; frame++) {
-          final info = await codec.getNextFrame();
-          duration += info.duration;
-          info.image.dispose();
-        }
-        expect(duration.inMilliseconds, inInclusiveRange(3650, 4000));
-      } finally {
-        codec.dispose();
-      }
-    });
+    var calls = 0;
+    await tester.pumpWidget(scene(false, () => calls++));
+    await tester.pump(const Duration(seconds: 2));
+    expect(calls, 0);
+    await tester.pump(const Duration(seconds: 2));
+    expect(calls, 1);
+    await tester.pump(const Duration(seconds: 5));
+    expect(calls, 1);
   });
+  for (final alreadyPlaying in [false, true]) {
+    testWidgets(
+      'reduced motion releases launch once (already playing: $alreadyPlaying)',
+      (tester) async {
+        var calls = 0;
+        if (alreadyPlaying) {
+          await tester.pumpWidget(scene(false, () => calls++));
+          await tester.pump(const Duration(milliseconds: 800));
+        }
+        await tester.pumpWidget(scene(true, () => calls++));
+        expect(find.bySemanticsLabel('Asteria'), findsOneWidget);
+        expect(calls, 1);
+        await tester.pump(const Duration(seconds: 4));
+        expect(calls, 1);
+      },
+    );
+  }
 }

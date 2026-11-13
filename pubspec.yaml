@@ -113,6 +113,7 @@ flutter:
 
 
   shaders:
+    - assets/shaders/splash_fluid.frag
     - assets/shaders/anakra_glass.frag
     - assets/shaders/affirmation_lotus.frag
 
