@@ -135,6 +135,12 @@ void main() {
     expect(controller.isRefreshing, isTrue);
     expect(find.text('+5'), findsOneWidget);
     expect(find.byType(AsteriaActivityIndicator), findsOneWidget);
+    expect(
+      tester.getBottomLeft(find.byType(AsteriaActivityIndicator)).dy + 6,
+      lessThanOrEqualTo(
+        tester.getTopLeft(find.byKey(const Key('history-filters'))).dy,
+      ),
+    );
     pending.completeError(Exception('offline'));
     await tester.pumpAndSettle();
     expect(find.byType(AsteriaActivityIndicator), findsNothing);
