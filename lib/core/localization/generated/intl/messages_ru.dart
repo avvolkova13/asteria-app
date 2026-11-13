@@ -2034,7 +2034,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Поделиться вопросом",
     ),
     "scenarioRelationshipSpreadOffer": MessageLookupByLibrary.simpleMessage(
-      "Откройте бесплатную карту дня и прислушайтесь к своим чувствам.",
+      "Откройте карту и прислушайтесь к чувствам.",
     ),
     "scenarioRelationshipsSubtitle": MessageLookupByLibrary.simpleMessage(
       "Выберите, что вас волнует в отношениях. Asteria подскажет, с чего начать.",
