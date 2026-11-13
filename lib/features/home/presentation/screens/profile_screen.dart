@@ -15,9 +15,6 @@ import 'package:asteria_app/features/monetization/presentation/monetization_prov
 import 'package:asteria_app/features/home/presentation/widgets/subscription_status_widget.dart';
 import 'package:asteria_app/features/home/presentation/widgets/profile_avatar.dart';
 import 'package:asteria_app/features/profile_flow/profile_flow_ui.dart';
-import 'package:asteria_app/features/scenarios/first_session.dart';
-import 'package:asteria_app/features/scenarios/scenario_ui.dart';
-import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -261,11 +258,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           : () => ProfileAvatarRoute.push(context),
                     ),
                     const SizedBox(height: 8),
-                    ScenarioTile(
-                      title: context.l10n.scenarioStartTitle,
-                      art: 'assets/images/scenarios/compass.webp',
-                      onTap: () => context.push<void>(FirstSession.path),
-                    ),
                     LayoutBuilder(
                       builder: (context, constraints) {
                         final labelSize = MediaQuery.textScalerOf(
