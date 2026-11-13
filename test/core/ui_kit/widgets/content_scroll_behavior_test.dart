@@ -3,6 +3,34 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets('mobile scroll thumb decorates vertical content only', (
+    tester,
+  ) async {
+    for (final platform in [TargetPlatform.iOS, TargetPlatform.android]) {
+      for (final direction in Axis.values) {
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: ThemeData(platform: platform),
+            scrollBehavior: const ContentScrollBehavior(),
+            home: ListView(
+              scrollDirection: direction,
+              children: const [SizedBox(width: 2000, height: 2000)],
+            ),
+          ),
+        );
+        final thumb = find.byType(RawScrollbar);
+        if (direction == Axis.vertical) {
+          expect(thumb, findsOneWidget);
+          final widget = tester.widget<RawScrollbar>(thumb);
+          expect(widget.interactive, isFalse);
+          expect(widget.thickness, 3);
+        } else {
+          expect(thumb, findsNothing);
+        }
+      }
+    }
+  });
+
   testWidgets(
     'iOS vertical content stops at its bottom and can pull at the top',
     (tester) async {

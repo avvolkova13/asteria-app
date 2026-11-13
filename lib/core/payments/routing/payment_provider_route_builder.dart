@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:asteria_app/core/ui_kit/widgets/asteria_activity_indicator.dart';
 import 'package:asteria_app/core/payments/routing/payment_provider_route.dart';
 import 'package:flutter/material.dart';
 
@@ -77,7 +78,7 @@ class _PaymentProviderRouteBuilderState
   Widget build(BuildContext context) {
     final route = _route;
     if (route == null) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      return const Scaffold(body: Center(child: AsteriaActivityIndicator()));
     }
     return widget.builder(context, route);
   }

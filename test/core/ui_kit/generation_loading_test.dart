@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_activity_indicator.dart';
 import 'package:asteria_app/core/localization/localization.dart';
 import 'package:asteria_app/core/services/global_loader_service.dart';
 import 'package:asteria_app/core/ui_kit/theme/theme.dart';
@@ -175,7 +176,7 @@ void main() {
     service.show();
     await tester.pump();
     expect(find.byType(GenerationLoadingView), findsNothing);
-    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+    expect(find.byType(AsteriaActivityIndicator), findsOneWidget);
     expect(focus.hasFocus, isFalse);
     service.hide();
     await tester.pumpWidget(const SizedBox());

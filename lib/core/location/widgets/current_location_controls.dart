@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_activity_indicator.dart';
 import 'package:asteria_app/core/ui_kit/widgets/modal_glass_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
@@ -391,7 +392,7 @@ class _LocationSecondaryButton extends StatelessWidget {
               ? const SizedBox(
                   width: 18,
                   height: 18,
-                  child: CircularProgressIndicator(strokeWidth: 2),
+                  child: AsteriaActivityIndicator(),
                 )
               : ClayIcon(icon, color: const Color(0xFFE6994D)),
           label: Text(
@@ -440,7 +441,7 @@ class _LocationPrimaryButton extends StatelessWidget {
               ? const SizedBox(
                   width: 18,
                   height: 18,
-                  child: CircularProgressIndicator(strokeWidth: 2),
+                  child: AsteriaActivityIndicator(),
                 )
               : ClayIcon(icon, color: AppColors.white),
           label: Text(

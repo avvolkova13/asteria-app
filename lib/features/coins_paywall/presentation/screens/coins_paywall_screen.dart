@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_activity_indicator.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/ui_kit/card_radii.dart';
@@ -319,7 +320,7 @@ class _AndroidPaywallContent extends StatelessWidget {
     if (state is ArcPayProductsLoading || state is ArcPayCheckoutInitial) {
       return const _AndroidPaywallStateCard(
         child: Center(
-          child: CircularProgressIndicator(color: ProfileFlowColors.accent),
+          child: AsteriaActivityIndicator(),
         ),
       );
     }
@@ -854,7 +855,7 @@ class _IosPaywallContent extends StatelessWidget {
         state is PaywallVerifying) {
       return const _AndroidPaywallStateCard(
         child: Center(
-          child: CircularProgressIndicator(color: ProfileFlowColors.accent),
+          child: AsteriaActivityIndicator(),
         ),
       );
     }

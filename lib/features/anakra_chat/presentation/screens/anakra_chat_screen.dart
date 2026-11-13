@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_activity_indicator.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/analytics/analytics_events.dart';
 import 'package:asteria_app/core/analytics/analytics_facade.dart';
@@ -332,13 +333,7 @@ class _AnakraChatScreenState extends State<AnakraChatScreen> {
                                     SizedBox(
                                       width: 20,
                                       height: 20,
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 2,
-                                        valueColor:
-                                            AlwaysStoppedAnimation<Color>(
-                                              AnakraPalette.orange,
-                                            ),
-                                      ),
+                                      child: AsteriaActivityIndicator(),
                                     ),
                                     const SizedBox(width: 12),
                                     Text(

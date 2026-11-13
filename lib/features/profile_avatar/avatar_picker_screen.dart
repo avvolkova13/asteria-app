@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_activity_indicator.dart';
 import 'package:asteria_app/app/data/models/user/user_model.dart';
 import 'package:asteria_app/core/localization/generated/l10n.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
@@ -173,8 +174,7 @@ class _AvatarPickerScreenState extends State<AvatarPickerScreen> {
                         child: _saving
                             ? SizedBox.square(
                                 dimension: 20,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
+                                child: AsteriaActivityIndicator(
                                   semanticsLabel: strings.avatarSave,
                                 ),
                               )

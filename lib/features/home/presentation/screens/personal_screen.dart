@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_activity_indicator.dart';
 import 'package:asteria_app/features/home/home_tabs.dart';
 import 'package:asteria_app/features/home/presentation/widgets/home_section_heading.dart';
 import 'package:asteria_app/features/home/presentation/widgets/advertising_block_widget.dart';
@@ -434,9 +435,8 @@ class _PersonalScreenState extends State<PersonalScreen> {
             return Padding(
               padding: const EdgeInsets.symmetric(vertical: 24),
               child: Center(
-                child: CircularProgressIndicator(
+                child: AsteriaActivityIndicator(
                   semanticsLabel: context.l10n.loading,
-                  color: AppColors.primary,
                 ),
               ),
             );

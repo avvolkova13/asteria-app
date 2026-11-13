@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_activity_indicator.dart';
 import 'package:asteria_app/core/services/global_loader_service.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/core/ui_kit/widgets/generation_loading_view.dart';
@@ -33,7 +34,7 @@ class GlobalLoaderWidget extends StatelessWidget {
                 child: type == null
                     ? Material(
                         color: Colors.black.withValues(alpha: .5),
-                        child: const Center(child: CircularProgressIndicator()),
+                        child: const Center(child: AsteriaActivityIndicator(size: 48, color: AppColors.cardTinted)),
                       )
                     : GenerationLoadingView(
                         key: ValueKey(type),

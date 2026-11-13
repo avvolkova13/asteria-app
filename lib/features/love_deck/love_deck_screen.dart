@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_activity_indicator.dart';
 import 'package:asteria_app/core/ui_kit/widgets/top_bar_geometry.dart';
 import 'package:asteria_app/core/ui_kit/widgets/modal_glass_surface.dart';
 import 'package:asteria_app/features/scenarios/scenario_sky.dart';
@@ -181,9 +182,7 @@ class _LoveDeckScreenState extends State<LoveDeckScreen> {
                               child: Padding(
                                 padding: EdgeInsets.symmetric(vertical: 32),
                                 child: AsteriaEntrance(
-                                  child: CircularProgressIndicator(
-                                    color: AppColors.primary,
-                                  ),
+                                  child: AsteriaActivityIndicator(),
                                 ),
                               ),
                             )

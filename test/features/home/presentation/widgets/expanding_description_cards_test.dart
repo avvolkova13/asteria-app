@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_activity_indicator.dart';
 import 'package:asteria_app/core/config/app_feature_visibility.dart';
 import '../../../compatibility/support/selection_test_support.dart';
 
@@ -734,7 +735,7 @@ void main() {
       }
       expect(contentProvider.calls, hasLength(1));
       expect(find.text('Открыть бесплатно'), findsNothing);
-      expect(find.byType(CircularProgressIndicator), findsOneWidget);
+      expect(find.byType(AsteriaActivityIndicator), findsOneWidget);
       expect(find.text('Совет на день'), findsNothing);
       active.value = false;
       await tester.pump();

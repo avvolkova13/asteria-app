@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_activity_indicator.dart';
 import 'package:asteria_app/core/config/app_feature_visibility.dart';
 import 'package:go_router/go_router.dart';
 import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
@@ -232,9 +233,7 @@ class _HoroscopeScreenState extends State<HoroscopeScreen> {
                           const Center(
                             child: Padding(
                               padding: EdgeInsets.only(top: 96),
-                              child: CircularProgressIndicator(
-                                color: AppColors.primary,
-                              ),
+                              child: AsteriaActivityIndicator(),
                             ),
                           )
                         else if (_isCreating)

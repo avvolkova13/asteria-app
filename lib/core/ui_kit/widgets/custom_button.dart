@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_activity_indicator.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
@@ -162,7 +163,7 @@ class CustomButton extends StatelessWidget {
 
   Widget _buildButtonContent(BuildContext context) {
     if (isLoading) {
-      return const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2));
+      return const AsteriaActivityIndicator(size: 20);
     }
 
     // Получаем стиль в зависимости от типа кнопки

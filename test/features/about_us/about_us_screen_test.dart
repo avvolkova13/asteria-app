@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_activity_indicator.dart';
 import 'package:asteria_app/app/data/repositories/user/user_repository.dart';
 import 'package:asteria_app/app/providers/user_provider.dart';
 import 'package:asteria_app/core/ui_kit/theme/theme.dart';
@@ -465,7 +466,7 @@ Future<void> _finishExpansion(WidgetTester tester) async {
 
   // Large legal assets are decoded on a background isolate in widget tests.
   for (var attempt = 0; attempt < 40; attempt++) {
-    if (find.byType(CircularProgressIndicator).evaluate().isEmpty) break;
+    if (find.byType(AsteriaActivityIndicator).evaluate().isEmpty) break;
 
     await tester.runAsync(
       () => Future<void>.delayed(const Duration(milliseconds: 50)),
@@ -473,7 +474,7 @@ Future<void> _finishExpansion(WidgetTester tester) async {
     await tester.pump();
   }
 
-  expect(find.byType(CircularProgressIndicator), findsNothing);
+  expect(find.byType(AsteriaActivityIndicator), findsNothing);
   await tester.pump(const Duration(milliseconds: 250));
   await tester.pump();
 }

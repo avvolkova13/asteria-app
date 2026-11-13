@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_activity_indicator.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'scenario_completion.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
@@ -304,7 +305,7 @@ class _DaySelectionState extends State<_DaySelection> {
           ),
           const SizedBox(height: 8),
           if (_loading)
-            const LinearProgressIndicator()
+            const AsteriaLoadingLine()
           else if (_needsLocation) ...[
             Text(context.l10n.moonLocationSetupDescription),
             CurrentLocationControls(
@@ -754,7 +755,7 @@ class _AccountPlansState extends State<_AccountPlans> {
       }
       final box = snapshot.data;
       if (box == null && !widget.compact) {
-        return const Center(child: CircularProgressIndicator());
+        return const Center(child: AsteriaActivityIndicator());
       }
       return StreamBuilder<BoxEvent>(
         stream: box?.watch(),

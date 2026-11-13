@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_activity_indicator.dart';
 import 'package:asteria_app/core/config/app_feature_visibility.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/modal_glass_surface.dart';
@@ -461,7 +462,7 @@ class _IosSubscriptionPlans extends StatelessWidget {
             return const Padding(
               padding: EdgeInsets.symmetric(vertical: 24),
               child: Center(
-                child: CircularProgressIndicator(color: AppColors.white),
+                child: AsteriaActivityIndicator(),
               ),
             );
           }
@@ -472,7 +473,7 @@ class _IosSubscriptionPlans extends StatelessWidget {
             return const Padding(
               padding: EdgeInsets.symmetric(vertical: 24),
               child: Center(
-                child: CircularProgressIndicator(color: AppColors.white),
+                child: AsteriaActivityIndicator(),
               ),
             );
           }
@@ -511,7 +512,7 @@ class _ArcPayOneTimeProPlans extends StatelessWidget {
               padding: EdgeInsets.symmetric(vertical: 24),
               child: Center(
                 child: AsteriaEntrance(
-                  child: CircularProgressIndicator(color: AppColors.white),
+                  child: AsteriaActivityIndicator(),
                 ),
               ),
             );
@@ -669,7 +670,7 @@ class _ArcPaySubscriptionPlansState extends State<_ArcPaySubscriptionPlans> {
             return const Padding(
               padding: EdgeInsets.symmetric(vertical: 24),
               child: Center(
-                child: CircularProgressIndicator(color: AppColors.white),
+                child: AsteriaActivityIndicator(),
               ),
             );
           }
@@ -685,7 +686,7 @@ class _ArcPaySubscriptionPlansState extends State<_ArcPaySubscriptionPlans> {
               padding: const EdgeInsets.all(16),
               child: Column(
                 children: [
-                  const CircularProgressIndicator(color: AppColors.white),
+                  const AsteriaActivityIndicator(),
                   const SizedBox(height: 12),
                   Text(
                     context.l10n.subscriptionConfirmingCard,
@@ -1111,10 +1112,7 @@ class _RestorePurchasesButton extends StatelessWidget {
                 child: isBusy
                     ? const Padding(
                         padding: EdgeInsets.all(3),
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: ProfileFlowColors.accent,
-                        ),
+                        child: AsteriaActivityIndicator(),
                       )
                     : const LotusArrowBubble(),
               ),

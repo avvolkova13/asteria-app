@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_activity_indicator.dart';
 import '../../core/payments/apple/apple_checkout_fixture.dart';
 import 'dart:async';
 
@@ -201,7 +202,7 @@ void main() {
       expect(facade.outcomes, ['success']);
       expect(realCubit.state, isA<PaywallProductsLoaded>());
       expect(find.text(r'$0.99'), findsOneWidget);
-      expect(find.byType(CircularProgressIndicator), findsNothing);
+      expect(find.byType(AsteriaActivityIndicator), findsNothing);
       await tester.pump(const Duration(minutes: 2));
       expect(facade.outcomes, ['success']);
       expect(apple.contexts, hasLength(1));

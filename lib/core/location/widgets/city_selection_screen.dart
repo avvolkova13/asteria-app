@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_activity_indicator.dart';
 import 'package:asteria_app/core/ui_kit/widgets/input_bubble_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/pro_badge_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
@@ -238,7 +239,7 @@ class _CitySelectionScreenState extends State<CitySelectionScreen> {
                   ),
                   const SizedBox(height: 16),
                   _buildSearchField(context),
-                  if (_isLoading) const LinearProgressIndicator(minHeight: 2),
+                  if (_isLoading) const AsteriaLoadingLine(minHeight: 2),
                   if (_error != null ||
                       (!_isLoading &&
                           _suggestions.isEmpty &&
@@ -278,7 +279,7 @@ class _CitySelectionScreenState extends State<CitySelectionScreen> {
               _buildSearchField(context),
               if (_isLoading) ...[
                 const SizedBox(height: 12),
-                const LinearProgressIndicator(minHeight: 2),
+                const AsteriaLoadingLine(minHeight: 2),
               ],
               if (_error != null) ...[
                 const SizedBox(height: 12),

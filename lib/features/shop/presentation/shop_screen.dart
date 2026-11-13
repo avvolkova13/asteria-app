@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_activity_indicator.dart';
 import 'package:asteria_app/core/ui_kit/widgets/top_bar_geometry.dart';
 import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/ui_kit/card_radii.dart';
@@ -653,10 +654,7 @@ class _ShopLoadingState extends StatelessWidget {
       padding: EdgeInsets.only(top: 28),
       child: Center(
         child: AsteriaEntrance(
-          child: CircularProgressIndicator(
-            color: _ShopColors.gold,
-            strokeWidth: 2,
-          ),
+          child: AsteriaActivityIndicator(),
         ),
       ),
     );

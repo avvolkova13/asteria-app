@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_activity_indicator.dart';
 import 'package:asteria_app/core/ui_kit/widgets/modal_glass_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
@@ -417,9 +418,8 @@ class _PaymentsScreenState extends State<PaymentsScreen>
               child: loading
                   ? const SizedBox.square(
                       dimension: 22,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2.2,
-                        color: AppColors.white,
+                      child: AsteriaActivityIndicator(
+                        color: AppColors.cardTinted,
                       ),
                     )
                   : ClayIcon(icon!, size: 26, color: AppColors.white),

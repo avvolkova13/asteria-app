@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_activity_indicator.dart';
 import 'package:asteria_app/core/ui_kit/widgets/top_bar_geometry.dart';
 import 'package:asteria_app/features/taro_cards/widgets/tarot_sphere_chip.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
@@ -523,7 +524,7 @@ class _TaroCardsContentState extends State<_TaroCardsContent> {
                 const Center(
                   child: Padding(
                     padding: EdgeInsets.symmetric(vertical: 32),
-                    child: CircularProgressIndicator(color: AppColors.primary),
+                    child: AsteriaActivityIndicator(),
                   ),
                 )
               else

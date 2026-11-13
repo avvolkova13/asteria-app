@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_activity_indicator.dart';
 import 'package:asteria_app/features/home/home_tabs.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
@@ -305,7 +306,7 @@ class _MoonPhaseWidgetState extends State<MoonPhaseWidget> {
                   const SizedBox(
                     width: 28,
                     height: 28,
-                    child: CircularProgressIndicator(strokeWidth: 2.5),
+                    child: AsteriaActivityIndicator(),
                   ),
                 const SizedBox(height: 18),
                 Text(

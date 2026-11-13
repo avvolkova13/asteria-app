@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:asteria_app/core/ui_kit/widgets/asteria_activity_indicator.dart';
 import 'package:asteria_app/core/ui_kit/theme/theme.dart';
 import 'package:asteria_app/core/localization/generated/l10n.dart';
 import 'package:asteria_app/features/balance/presentation/balance_history_controller.dart';
@@ -110,10 +113,12 @@ void main() {
   testWidgets('pull to refresh retains rows when request fails', (
     tester,
   ) async {
-    var fail = false;
+    var firstPage = true;
+    final pending = Completer<WalletHistoryPageModel>();
     final controller = BalanceHistoryController(
       loadPage: ({required filter, beforeSequence}) async {
-        if (fail) throw Exception('offline');
+        if (!firstPage) return pending.future;
+        firstPage = false;
         return page([1]);
       },
     );
@@ -121,12 +126,18 @@ void main() {
     controller.setAccount('a');
     await tester.pumpWidget(historyApp(controller));
     await tester.pumpAndSettle();
-    fail = true;
     await tester.drag(
       find.byKey(const Key('history-scroll')),
       const Offset(0, 400),
     );
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 250));
+    expect(controller.isRefreshing, isTrue);
+    expect(find.text('+5'), findsOneWidget);
+    expect(find.byType(AsteriaActivityIndicator), findsOneWidget);
+    pending.completeError(Exception('offline'));
     await tester.pumpAndSettle();
+    expect(find.byType(AsteriaActivityIndicator), findsNothing);
     expect(find.text('+5'), findsOneWidget);
     expect(find.text('Не удалось обновить историю'), findsOneWidget);
     expect(find.byKey(const Key('history-empty')), findsNothing);

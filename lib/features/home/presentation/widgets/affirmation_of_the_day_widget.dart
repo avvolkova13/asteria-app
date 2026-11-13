@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_activity_indicator.dart';
 import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/ui_kit/card_radii.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
@@ -182,8 +183,7 @@ class _AffirmationOfTheDayState extends State<AffirmationOfTheDayWidget> {
                               child: _opening
                                   ? const SizedBox.square(
                                       dimension: 20,
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 2,
+                                      child: AsteriaActivityIndicator(
                                         color: linkColor,
                                       ),
                                     )

@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_activity_indicator.dart';
 import '../../core/payments/apple/apple_checkout_fixture.dart';
 import 'package:asteria_app/core/payments/apple/apple_transactions.dart';
 import 'package:asteria_app/core/routing/app_route.dart';
@@ -291,7 +292,7 @@ void main() {
         }
         await tester.pumpAndSettle();
         final expectedOutcome = outcome.endsWith('error') ? 'failed' : outcome;
-        expect(find.byType(CircularProgressIndicator), findsNothing);
+        expect(find.byType(AsteriaActivityIndicator), findsNothing);
         expect(find.text(l10n.subscriptionRestoreInProgress), findsNothing);
         expect(find.byType(SnackBar), findsOneWidget);
         if (outcome == 'success') {
@@ -359,7 +360,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(cubit.state, isA<PaywallProductsLoaded>());
       expect(find.text(r'$4.99'), findsOneWidget);
-      expect(find.byType(CircularProgressIndicator), findsNothing);
+      expect(find.byType(AsteriaActivityIndicator), findsNothing);
       expect(monetization.effectivePro, isFalse);
       expect(facade.outcomes, isEmpty);
       await tester.pumpWidget(const SizedBox());
@@ -435,7 +436,7 @@ void main() {
       await tester.pump(const Duration(milliseconds: 100));
       expect(realCubit.state, isA<PaywallProductsLoaded>());
       expect(find.text(r'$4.99'), findsOneWidget);
-      expect(find.byType(CircularProgressIndicator), findsNothing);
+      expect(find.byType(AsteriaActivityIndicator), findsNothing);
       expect(facade.outcomes, ['cancelled']);
       expect(backgroundUpdates, isEmpty);
       expect(apple.contexts, isEmpty);
@@ -458,7 +459,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(facade.outcomes, isEmpty);
-      expect(find.byType(CircularProgressIndicator), findsNothing);
+      expect(find.byType(AsteriaActivityIndicator), findsNothing);
       final l10n = AppLocalizations.of(
         tester.element(find.byType(SubscriptionScreen)),
       );

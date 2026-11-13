@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_activity_indicator.dart';
 import 'package:asteria_app/core/ui_kit/widgets/top_bar_geometry.dart';
 import 'package:asteria_app/features/monetization/domain/purchase_visibility.dart';
 import 'package:asteria_app/core/ui_kit/card_radii.dart';
@@ -81,6 +82,16 @@ class _BalanceHistoryViewState extends State<BalanceHistoryView> {
   final _scroll = ScrollController();
   final _presentedEntries = <String>{};
   bool _checkScheduled = false;
+  bool _pullReady = false;
+
+  void _updatePull(RefreshIndicatorStatus? status) {
+    final ready =
+        status == RefreshIndicatorStatus.armed ||
+        status == RefreshIndicatorStatus.snap ||
+        status == RefreshIndicatorStatus.refresh;
+    if (_pullReady != ready) setState(() => _pullReady = ready);
+  }
+
   BalanceHistoryController get history => widget.controller;
 
   @override
@@ -140,128 +151,172 @@ class _BalanceHistoryViewState extends State<BalanceHistoryView> {
                   listenable: history,
                   builder: (context, _) {
                     _checkNextPage();
-                    return RefreshIndicator(
-                      onRefresh: history.refresh,
-                      color: const Color(0xFFF3B76A),
-                      backgroundColor: BalanceHistoryStyle.modal,
-                      child: CustomScrollView(
-                        key: const Key('history-scroll'),
-                        controller: _scroll,
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        slivers: [
-                          if (!history.isGloballyEmpty)
-                            SliverPadding(
-                              padding: const EdgeInsets.fromLTRB(
-                                16,
-                                18,
-                                16,
-                                18,
-                              ),
-                              sliver: SliverToBoxAdapter(
-                                child: _FilterTabs(
-                                  selectedFilter: history.filter,
-                                  onFilterChanged: _selectFilter,
+                    return Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        RefreshIndicator.noSpinner(
+                          onRefresh: history.refresh,
+                          onStatusChange: _updatePull,
+                          notificationPredicate: (notification) =>
+                              !history.isLoading &&
+                              defaultScrollNotificationPredicate(notification),
+                          child: CustomScrollView(
+                            key: const Key('history-scroll'),
+                            controller: _scroll,
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            slivers: [
+                              if (!history.isGloballyEmpty)
+                                SliverPadding(
+                                  padding: const EdgeInsets.fromLTRB(
+                                    16,
+                                    18,
+                                    16,
+                                    18,
+                                  ),
+                                  sliver: SliverToBoxAdapter(
+                                    child: _FilterTabs(
+                                      selectedFilter: history.filter,
+                                      onFilterChanged: _selectFilter,
+                                    ),
+                                  ),
                                 ),
-                              ),
-                            ),
-                          if (history.isLoading)
-                            const SliverToBoxAdapter(child: _LoadingHistory())
-                          else if (history.error != null)
-                            SliverToBoxAdapter(
-                              child: _HistoryError(
-                                key: const Key('history-error'),
-                                message: context.l10n.balanceHistoryLoadError,
-                                onRetry: history.refresh,
-                              ),
-                            )
-                          else ...[
-                            if (history.isRefreshing)
-                              const SliverToBoxAdapter(
-                                child: _LoadingHistory(),
-                              ),
-                            if (history.refreshError != null)
+                              if (history.isLoading)
+                                const SliverToBoxAdapter(
+                                  child: _LoadingHistory(),
+                                )
+                              else if (history.error != null)
+                                SliverToBoxAdapter(
+                                  child: _HistoryError(
+                                    key: const Key('history-error'),
+                                    message:
+                                        context.l10n.balanceHistoryLoadError,
+                                    onRetry: history.refresh,
+                                  ),
+                                )
+                              else ...[
+                                if (history.refreshError != null)
+                                  SliverToBoxAdapter(
+                                    child: _HistoryError(
+                                      message: context
+                                          .l10n
+                                          .balanceHistoryRefreshError,
+                                      onRetry: history.refresh,
+                                    ),
+                                  ),
+                                if (history.isGloballyEmpty)
+                                  const SliverPadding(
+                                    padding: EdgeInsets.fromLTRB(
+                                      16,
+                                      24,
+                                      16,
+                                      24,
+                                    ),
+                                    sliver: SliverToBoxAdapter(
+                                      child: AsteriaEntrance(
+                                        child: _EmptyState(),
+                                      ),
+                                    ),
+                                  )
+                                else if (history.items.isEmpty)
+                                  SliverToBoxAdapter(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(24),
+                                      child: AsteriaEntrance(
+                                        replayKey: history.filter,
+                                        child: Text(
+                                          history.filter ==
+                                                  WalletHistoryFilter
+                                                      .withdrawals
+                                              ? context
+                                                    .l10n
+                                                    .balanceHistoryNoWithdrawals
+                                              : context
+                                                    .l10n
+                                                    .balanceHistoryNoDeposits,
+                                          textAlign: TextAlign.center,
+                                          style: BalanceHistoryStyle.body
+                                              .copyWith(
+                                                color:
+                                                    BalanceHistoryStyle.muted,
+                                              ),
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                else
+                                  SliverPadding(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 16,
+                                    ),
+                                    sliver: SliverList.builder(
+                                      addRepaintBoundaries: false,
+                                      itemCount: history.items.length,
+                                      itemBuilder: (context, index) {
+                                        final item = history.items[index];
+                                        return AsteriaEntrance(
+                                          key: ValueKey(item.entryId),
+                                          animateInitially: _presentedEntries
+                                              .add(item.entryId),
+                                          child: Padding(
+                                            padding: const EdgeInsets.only(
+                                              bottom: 8,
+                                            ),
+                                            child: _HistoryItem(item: item),
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                if (history.isLoadingMore)
+                                  const SliverToBoxAdapter(
+                                    child: _LoadingHistory(),
+                                  ),
+                                if (history.pageError != null)
+                                  SliverToBoxAdapter(
+                                    child: _HistoryError(
+                                      key: const Key('history-page-error'),
+                                      message:
+                                          context.l10n.balanceHistoryLoadError,
+                                      onRetry: history.loadMore,
+                                    ),
+                                  ),
+                              ],
                               SliverToBoxAdapter(
-                                child: _HistoryError(
-                                  message:
-                                      context.l10n.balanceHistoryRefreshError,
-                                  onRetry: history.refresh,
+                                child: SizedBox(
+                                  height:
+                                      MediaQuery.paddingOf(context).bottom + 24,
                                 ),
                               ),
-                            if (history.isGloballyEmpty)
-                              const SliverPadding(
-                                padding: EdgeInsets.fromLTRB(16, 24, 16, 24),
-                                sliver: SliverToBoxAdapter(
-                                  child: AsteriaEntrance(child: _EmptyState()),
-                                ),
-                              )
-                            else if (history.items.isEmpty)
-                              SliverToBoxAdapter(
-                                child: Padding(
-                                  padding: const EdgeInsets.all(24),
-                                  child: AsteriaEntrance(
-                                    replayKey: history.filter,
-                                    child: Text(
-                                      history.filter ==
-                                              WalletHistoryFilter.withdrawals
-                                          ? context
-                                                .l10n
-                                                .balanceHistoryNoWithdrawals
-                                          : context
-                                                .l10n
-                                                .balanceHistoryNoDeposits,
-                                      textAlign: TextAlign.center,
-                                      style: BalanceHistoryStyle.body.copyWith(
-                                        color: BalanceHistoryStyle.muted,
+                            ],
+                          ),
+                        ),
+                        if (_pullReady || history.isRefreshing)
+                          Positioned(
+                            top: 8,
+                            left: 0,
+                            right: 0,
+                            child: IgnorePointer(
+                              child: Center(
+                                child: SizedBox.square(
+                                  dimension: 40,
+                                  child: LotusIconSurface(
+                                    diameter: 40,
+                                    child: Center(
+                                      child: AsteriaActivityIndicator(
+                                        size: 24,
+                                        color: AppColors.cardTinted,
+                                        semanticsLabel:
+                                            MaterialLocalizations.of(
+                                              context,
+                                            ).refreshIndicatorSemanticLabel,
                                       ),
                                     ),
                                   ),
                                 ),
-                              )
-                            else
-                              SliverPadding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                ),
-                                sliver: SliverList.builder(
-                                  addRepaintBoundaries: false,
-                                  itemCount: history.items.length,
-                                  itemBuilder: (context, index) {
-                                    final item = history.items[index];
-                                    return AsteriaEntrance(
-                                      key: ValueKey(item.entryId),
-                                      animateInitially: _presentedEntries.add(
-                                        item.entryId,
-                                      ),
-                                      child: Padding(
-                                        padding: const EdgeInsets.only(
-                                          bottom: 8,
-                                        ),
-                                        child: _HistoryItem(item: item),
-                                      ),
-                                    );
-                                  },
-                                ),
                               ),
-                            if (history.isLoadingMore)
-                              const SliverToBoxAdapter(
-                                child: _LoadingHistory(),
-                              ),
-                            if (history.pageError != null)
-                              SliverToBoxAdapter(
-                                child: _HistoryError(
-                                  key: const Key('history-page-error'),
-                                  message: context.l10n.balanceHistoryLoadError,
-                                  onRetry: history.loadMore,
-                                ),
-                              ),
-                          ],
-                          SliverToBoxAdapter(
-                            child: SizedBox(
-                              height: MediaQuery.paddingOf(context).bottom + 24,
                             ),
                           ),
-                        ],
-                      ),
+                      ],
                     );
                   },
                 ),
@@ -524,12 +579,7 @@ class _LoadingHistory extends StatelessWidget {
       child: SizedBox(
         width: 24,
         height: 24,
-        child: AsteriaEntrance(
-          child: CircularProgressIndicator(
-            strokeWidth: 2,
-            color: Color(0xFFF3B76A),
-          ),
-        ),
+        child: AsteriaEntrance(child: AsteriaActivityIndicator()),
       ),
     ),
   );

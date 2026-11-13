@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_activity_indicator.dart';
 import 'package:asteria_app/core/ui_kit/widgets/top_bar_geometry.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
@@ -169,9 +170,7 @@ class _KeltDeckScreenState extends State<KeltDeckScreen> {
                     if (_isRefreshing)
                       const Center(
                         child: AsteriaEntrance(
-                          child: CircularProgressIndicator(
-                            color: AppColors.primary,
-                          ),
+                          child: AsteriaActivityIndicator(),
                         ),
                       )
                     else if (userProvider

@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_activity_indicator.dart';
 import 'package:asteria_app/core/ui_kit/widgets/top_bar_geometry.dart';
 import 'dart:math' as math;
 
@@ -552,7 +553,7 @@ class _NatalCardContentState extends State<_NatalCardContent> {
                   ),
                 )
               : loading
-              ? const Center(child: CircularProgressIndicator.adaptive())
+              ? const Center(child: AsteriaActivityIndicator())
               : Column(
                   children: [
                     Text(

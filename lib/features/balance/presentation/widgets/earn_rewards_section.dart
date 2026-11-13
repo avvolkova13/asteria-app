@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_activity_indicator.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
@@ -30,10 +31,7 @@ class EarnRewardsSection extends StatelessWidget {
                 if (provider.isLoading)
                   const SizedBox.square(
                     dimension: 20,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: ProfileFlowColors.accent,
-                    ),
+                    child: AsteriaActivityIndicator(),
                   ),
               ],
             ),
@@ -307,10 +305,7 @@ class _RewardAmount extends StatelessWidget {
     if (isSharing) {
       return const SizedBox.square(
         dimension: 20,
-        child: CircularProgressIndicator(
-          strokeWidth: 2,
-          color: ProfileFlowColors.accent,
-        ),
+        child: AsteriaActivityIndicator(),
       );
     }
 
