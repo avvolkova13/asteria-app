@@ -489,19 +489,39 @@ void main() {
       for (final chip in [lunarChip.first, lunarChip.last]) {
         expect(tester.getTopLeft(chip).dy, closeTo(cardTop, .01));
       }
-      final shifts = <double>[];
-      for (final chip in [lunarChip.first, lunarChip.last]) {
-        final slide = tester.widget<SlideTransition>(
-          find.ancestor(of: chip, matching: find.byType(SlideTransition)).first,
-        );
-        expect(slide.position.value.dy, 0);
-        expect(slide.child, isA<HomeGlassSurface>());
-        expect((slide.child! as HomeGlassSurface).animateEntrance, isFalse);
-        shifts.add(slide.position.value.dx);
+      Rect panelRect(Finder chip) {
+        final panel = find
+            .ancestor(of: chip, matching: find.byType(HomeGlassSurface))
+            .first;
+        expect(tester.widget<HomeGlassSurface>(panel).animateEntrance, isFalse);
+        return tester.getRect(panel);
       }
-      expect(shifts.any((dx) => dx < -.05), isTrue);
-      expect(shifts.any((dx) => dx > .05), isTrue);
+
+      void expectSeparatedPanels() {
+        expect(lunarChip, findsNWidgets(2));
+        final bounds = [panelRect(lunarChip.first), panelRect(lunarChip.last)]
+          ..sort((a, b) => a.left.compareTo(b.left));
+        expect(bounds.last.left - bounds.first.right, closeTo(16, .01));
+        expect(bounds.first.top, closeTo(bounds.last.top, .01));
+        expect(
+          (tester.getCenter(today).dx - tester.getCenter(next).dx).abs(),
+          closeTo(initialDistance, .01),
+        );
+      }
+
+      expectSeparatedPanels();
+      await tester.pump(const Duration(milliseconds: 60));
+      expectSeparatedPanels();
+      final beforeReversal = panelRect(lunarChip.first);
       await tester.tap(today);
+      await tester.pump();
+      expectSeparatedPanels();
+      expect(
+        panelRect(lunarChip.first).left,
+        closeTo(beforeReversal.left, .01),
+      );
+      await tester.pump(const Duration(milliseconds: 70));
+      expectSeparatedPanels();
       await tester.pumpAndSettle();
       expect(tester.getCenter(today).dx, closeTo(selectedX, .5));
       expect(

@@ -965,79 +965,53 @@ class _MoonPhaseCard extends StatelessWidget {
     final description = personalizedDay.dailyBackground.summary;
     final eventTime = moonPhase.phaseEvent?.localTimeLabel;
 
-    final duration = MediaQuery.disableAnimationsOf(context)
-        ? Duration.zero
-        : const Duration(milliseconds: 410);
-    final dateKey = ValueKey(moonPhase.date);
-    return ClipRect(
-      child: AnimatedSize(
-        duration: duration,
-        alignment: Alignment.topCenter,
-        curve: Curves.easeInOutCubic,
-        child: AnimatedSwitcher(
-          duration: duration,
-          switchInCurve: Curves.easeInOutCubic,
-          switchOutCurve: Curves.easeInOutCubic,
-          layoutBuilder: _overlayPrevious,
-          transitionBuilder: (child, animation) {
-            final incoming = child.key == dateKey;
-            final direction = slideDirectionIsNext ? 1.0 : -1.0;
-            final offset = Offset(incoming ? direction : -direction, 0);
-            return SlideTransition(
-              position: Tween<Offset>(
-                begin: offset,
-                end: Offset.zero,
-              ).animate(animation),
-              child: child,
-            );
-          },
-          child: HomeGlassSurface(
-            key: dateKey,
-            animateEntrance: false,
-            radius: AsteriaCardRadii.card,
-            tint: _MoonPhaseWidgetState._dayCardBackground,
-            child: Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _MoonPhaseBadgeRow(lunarDay: lunarDay, status: status),
-                  const SizedBox(height: 8),
-                  _GradientText(
-                    text: _phaseTitle(context, phase),
-                    gradient: _MoonPhaseWidgetState._orangeGradient,
-                    style: context.textTheme.playfairMedium20.copyWith(
-                      fontFamily: 'Lora',
-                      height: 1.1,
-                    ),
-                  ),
-                  if (eventTime != null && eventTime.isNotEmpty) ...[
-                    const SizedBox(height: 6),
-                    Text(
-                      context.l10n.moonPhaseEventTime(eventTime),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: context.textTheme.urbanistRegular14.copyWith(
-                        color: AppColors.textInverse.withValues(alpha: 0.8),
-                        height: 1.2,
-                        letterSpacing: 0,
-                      ),
-                    ),
-                  ],
-                  const SizedBox(height: 8),
-                  Text(
-                    description,
-                    style: context.textTheme.urbanistRegular16.copyWith(
-                      fontFamily: 'Onest',
-                      color: AppColors.textInverse,
-                      height: 1.2,
-                      letterSpacing: -0.408,
-                    ),
-                  ),
-                ],
+    return _DayCardPager(
+      forward: slideDirectionIsNext,
+      child: HomeGlassSurface(
+        key: ValueKey(moonPhase.date),
+        animateEntrance: false,
+        radius: AsteriaCardRadii.card,
+        tint: _MoonPhaseWidgetState._dayCardBackground,
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _MoonPhaseBadgeRow(lunarDay: lunarDay, status: status),
+              const SizedBox(height: 8),
+              _GradientText(
+                text: _phaseTitle(context, phase),
+                gradient: _MoonPhaseWidgetState._orangeGradient,
+                style: context.textTheme.playfairMedium20.copyWith(
+                  fontFamily: 'Lora',
+                  height: 1.1,
+                ),
               ),
-            ),
+              if (eventTime != null && eventTime.isNotEmpty) ...[
+                const SizedBox(height: 6),
+                Text(
+                  context.l10n.moonPhaseEventTime(eventTime),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: context.textTheme.urbanistRegular14.copyWith(
+                    color: AppColors.textInverse.withValues(alpha: 0.8),
+                    height: 1.2,
+                    letterSpacing: 0,
+                  ),
+                ),
+              ],
+              const SizedBox(height: 8),
+              Text(
+                description,
+                style: context.textTheme.urbanistRegular16.copyWith(
+                  fontFamily: 'Onest',
+                  color: AppColors.textInverse,
+                  height: 1.2,
+                  letterSpacing: -0.408,
+                ),
+              ),
+            ],
           ),
         ),
       ),
@@ -1056,6 +1030,120 @@ class _MoonPhaseCard extends StatelessWidget {
         'waning_crescent' => context.l10n.moonPhaseWaningCrescent,
         _ => context.l10n.moonPhaseUnknown,
       };
+}
+
+// Keep both panels on one track, even when the selection changes mid-slide.
+class _DayCardPager extends StatefulWidget {
+  const _DayCardPager({required this.forward, required this.child});
+
+  final bool forward;
+  final Widget child;
+
+  @override
+  State<_DayCardPager> createState() => _DayCardPagerState();
+}
+
+class _DayCardPagerState extends State<_DayCardPager>
+    with SingleTickerProviderStateMixin {
+  late final _controller = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 410),
+  )..addStatusListener(_onStatus);
+  late Widget _start = widget.child;
+  Widget? _end;
+  double _direction = 1;
+  bool _reduceMotion = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _reduceMotion = MediaQuery.disableAnimationsOf(context);
+    if (_reduceMotion) {
+      _controller.stop();
+      _start = widget.child;
+      _end = null;
+    }
+  }
+
+  @override
+  void didUpdateWidget(_DayCardPager oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _select();
+  }
+
+  void _select() {
+    final child = widget.child;
+    if (_reduceMotion) {
+      _start = child;
+      _end = null;
+    } else if (child.key == _start.key) {
+      _start = child;
+      if (_end != null && _controller.status == AnimationStatus.forward) {
+        _controller.reverse();
+      }
+      if (_controller.isDismissed) _end = null;
+    } else if (_end == null) {
+      _controller.value = 0;
+      _end = child;
+      _direction = widget.forward ? 1 : -1;
+      _controller.forward();
+    } else if (child.key == _end!.key) {
+      _end = child;
+      if (_controller.status == AnimationStatus.reverse) _controller.forward();
+    }
+    // A third selection starts from the panel reached at the end of this slide.
+  }
+
+  void _onStatus(AnimationStatus status) {
+    if (_end == null ||
+        (status != AnimationStatus.completed &&
+            status != AnimationStatus.dismissed)) {
+      return;
+    }
+    setState(() {
+      if (status == AnimationStatus.completed) _start = _end!;
+      _end = null;
+      _select();
+    });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRect(
+      child: AnimatedSize(
+        duration: _reduceMotion ? Duration.zero : _controller.duration!,
+        alignment: Alignment.topCenter,
+        curve: Curves.easeInOutCubic,
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final end = _end;
+            if (end == null) return _start;
+            final stride =
+                constraints.maxWidth + _MoonPhaseWidgetState._dayTileGap;
+            return AnimatedBuilder(
+              animation: _controller,
+              builder: (context, _) {
+                final progress = Curves.easeInOutCubic.transform(
+                  _controller.value,
+                );
+                Widget panel(Widget child, double index) => Transform.translate(
+                  offset: Offset((index - progress) * stride * _direction, 0),
+                  child: child,
+                );
+                return _overlayPrevious(panel(end, 1), [panel(_start, 0)]);
+              },
+            );
+          },
+        ),
+      ),
+    );
+  }
 }
 
 class _MoonPhaseBadgeRow extends StatelessWidget {
