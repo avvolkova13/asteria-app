@@ -180,7 +180,17 @@ class _LaunchPainter extends CustomPainter {
       markImage.height.toDouble(),
     );
     final ink = Paint()..filterQuality = FilterQuality.medium;
-    if (t < 3.18) {
+    final finish = _ramp((t - 2.75) / .58);
+    final blending = finish > 0 && finish < 1;
+    // Mix premultiplied pixels in isolation so translucent rims do not double up.
+    if (blending) canvas.saveLayer(destination, Paint());
+    if (finish < 1) {
+      if (blending) {
+        canvas.saveLayer(
+          destination,
+          Paint()..color = Colors.white.withValues(alpha: 1 - finish),
+        );
+      }
       // Align the opaque bounds of the generated base with the original relief.
       canvas.drawImageRect(
         baseImage,
@@ -253,15 +263,19 @@ class _LaunchPainter extends CustomPainter {
         canvas.restore();
         texture.dispose();
       }
+      if (blending) canvas.restore();
     }
-    if (t > 2.75) {
+    if (finish > 0) {
       canvas.drawImageRect(
         markImage,
         original,
         destination,
-        ink..color = Colors.white.withValues(alpha: _ramp((t - 2.75) / .43)),
+        ink
+          ..color = Colors.white.withValues(alpha: finish)
+          ..blendMode = blending ? BlendMode.plus : BlendMode.srcOver,
       );
     }
+    if (blending) canvas.restore();
     canvas.restore();
   }
 
