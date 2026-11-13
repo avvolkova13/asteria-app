@@ -575,7 +575,7 @@ class _PurchaseModalActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final borderRadius = BorderRadius.circular(12);
+    final borderRadius = BorderRadius.circular(16);
     final textStyle = context.textTheme.button.copyWith(
       color: isPrimary ? AppColors.textInverse : ModalGlassTokens.text,
     );
@@ -588,7 +588,7 @@ class _PurchaseModalActionButton extends StatelessWidget {
       child: ExcludeSemantics(
         child: ConstrainedBox(
           constraints: const BoxConstraints(
-            minHeight: 44,
+            minHeight: 50,
             minWidth: double.infinity,
           ),
           child: Material(

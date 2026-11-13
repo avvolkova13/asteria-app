@@ -272,17 +272,22 @@ class ProfilePrimaryButton extends StatelessWidget {
       child: DecoratedBox(
         decoration: CardLensDecoration.button(
           enabled: onPressed != null && !isLoading,
-          borderRadius: BorderRadius.circular(14),
-          gradient: const LinearGradient(
-            colors: [Color(0xFF7C4DFF), Color(0xFF6B39E9)],
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: const Color(0xFF6B39E9).withValues(alpha: 0.42),
-              blurRadius: 28,
-              offset: const Offset(0, 8),
-            ),
-          ],
+          borderRadius: BorderRadius.circular(16),
+          color: onPressed != null && !isLoading
+              ? null
+              : context.colors.customButtonDisabledBackground,
+          gradient: onPressed != null && !isLoading
+              ? CardLensDecoration.buttonFill(const Color(0xFF6B39E9))
+              : null,
+          boxShadow: onPressed != null && !isLoading
+              ? [
+                  BoxShadow(
+                    color: const Color(0xFF6B39E9).withValues(alpha: 0.42),
+                    blurRadius: 28,
+                    offset: const Offset(0, 8),
+                  ),
+                ]
+              : null,
         ),
         child: LotusButtons.elevated(
           onPressed: isLoading ? null : onPressed,
@@ -293,7 +298,7 @@ class ProfilePrimaryButton extends StatelessWidget {
             foregroundColor: AppColors.white,
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: BorderRadius.circular(16),
             ),
           ),
           child: isLoading

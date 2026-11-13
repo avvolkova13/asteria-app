@@ -22,8 +22,23 @@ class CardLensDecoration extends BoxDecoration {
     super.gradient,
     super.border,
     super.boxShadow,
-  }) : intensity = enabled ? .62 : .18,
+  }) : intensity = enabled ? .92 : .18,
        super(borderRadius: borderRadius);
+
+  /// Curved lighting follows the existing fill so gold and purple controls
+  /// keep their semantic colour while sharing the same soft volume.
+  static LinearGradient buttonFill(Color color) => LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [
+      Color.alphaBlend(Colors.white.withValues(alpha: .24), color),
+      Color.alphaBlend(Colors.white.withValues(alpha: .08), color),
+      color,
+      Color.alphaBlend(Colors.black.withValues(alpha: .12), color),
+      Color.alphaBlend(Colors.white.withValues(alpha: .12), color),
+    ],
+    stops: const [0, .20, .48, .78, 1],
+  );
 
   final double intensity;
 

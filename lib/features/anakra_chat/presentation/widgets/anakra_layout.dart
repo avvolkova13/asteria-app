@@ -362,7 +362,8 @@ class AnakraGradientButton extends StatelessWidget {
           duration: const Duration(milliseconds: 150),
           opacity: enabled ? 1 : 0.64,
           child: Container(
-            height: height,
+            constraints: BoxConstraints(minHeight: height),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             alignment: Alignment.center,
             decoration: CardLensDecoration.button(
               enabled: enabled,
@@ -373,8 +374,7 @@ class AnakraGradientButton extends StatelessWidget {
             child: Text(
               text,
               style: context.textTheme.inverseUrbanistRegular16,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.center,
             ),
           ),
         ),

@@ -221,7 +221,8 @@ class _GradientBuyButton extends StatelessWidget {
           duration: const Duration(milliseconds: 150),
           opacity: enabled ? 1 : 0.64,
           child: Container(
-            height: 50,
+            constraints: const BoxConstraints(minHeight: 50),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             alignment: Alignment.center,
             decoration: CardLensDecoration.button(
               enabled: enabled,
@@ -238,8 +239,7 @@ class _GradientBuyButton extends StatelessWidget {
               style: AppTypography.text1SemiBold.copyWith(
                 color: AppColors.textInverse,
               ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.center,
             ),
           ),
         ),

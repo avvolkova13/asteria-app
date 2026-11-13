@@ -623,7 +623,7 @@ class _GradientUnderlineButton extends StatelessWidget {
       fontWeight: FontWeight.w600,
       height: 1.2,
       letterSpacing: -0.408,
-      decoration: TextDecoration.underline,
+      decoration: TextDecoration.none,
       decorationColor: AppColors.white,
       decorationThickness: 1,
     );
@@ -637,7 +637,7 @@ class _GradientUnderlineButton extends StatelessWidget {
           behavior: HitTestBehavior.opaque,
           onTap: onPressed,
           child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 4),
+            padding: const EdgeInsets.symmetric(vertical: 14),
             child: ShaderMask(
               blendMode: BlendMode.srcIn,
               shaderCallback: (bounds) =>

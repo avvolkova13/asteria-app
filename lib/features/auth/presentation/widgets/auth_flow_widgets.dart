@@ -203,11 +203,7 @@ class AuthGradientButton extends StatelessWidget {
                 enabled: _isEnabled,
                 color: _isEnabled ? null : _authDisabledButtonFill,
                 gradient: _isEnabled
-                    ? const LinearGradient(
-                        begin: Alignment.centerLeft,
-                        end: Alignment.centerRight,
-                        colors: [_authButtonStart, _authButtonEnd],
-                      )
+                    ? CardLensDecoration.buttonFill(_authButtonStart)
                     : null,
                 borderRadius: borderRadius,
                 boxShadow: _isEnabled

@@ -312,6 +312,12 @@ abstract final class LotusButtons {
           decoration: CardLensDecoration.button(
             borderRadius: radius,
             enabled: !states.contains(WidgetState.disabled),
+            gradient:
+                color != null &&
+                    color.a > 0 &&
+                    !states.contains(WidgetState.disabled)
+                ? CardLensDecoration.buttonFill(color)
+                : null,
           ),
           child: child,
         );

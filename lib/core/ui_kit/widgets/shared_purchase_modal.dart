@@ -662,7 +662,10 @@ class _ModalActionButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(16),
             child: Ink(
               decoration: CardLensDecoration.button(
-                gradient: isPrimary ? _modalButtonGradient : null,
+                enabled: onPressed != null,
+                gradient: isPrimary && onPressed != null
+                    ? _modalButtonGradient
+                    : null,
                 borderRadius: BorderRadius.circular(16),
                 border: isPrimary ? null : Border.all(color: _modalPurple),
               ),

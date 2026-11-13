@@ -142,6 +142,7 @@ class _SubscriptionButton extends StatelessWidget {
         width: double.infinity,
         child: DecoratedBox(
           decoration: CardLensDecoration.button(
+            enabled: onPressed != null,
             borderRadius: BorderRadius.circular(16),
             gradient: const LinearGradient(
               colors: [Color(0xFF6E4BFF), Color(0xFF5A3FD1)],
