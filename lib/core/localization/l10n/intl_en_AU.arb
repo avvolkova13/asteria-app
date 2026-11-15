@@ -1,6 +1,6 @@
 {
   "@@locale": "en_AU",
-  "onboardingPage2Description": "Moon phases, daily energy,\nfavourable periods, and guidance",
+  "onboardingPage2Description": "Listen to “I have time” and notice how you feel.",
   "dayFavorable": "Favourable day",
   "googleSubscriptionPerWeek": "{price} per week",
   "@googleSubscriptionPerWeek": {"placeholders": {"price": {"type": "String"}}},
@@ -58,5 +58,34 @@
   "planReminderDenied": "To get reminders, allow notifications for Asteria in iPhone Settings.",
   "planReminderPast": "This time has passed. Choose a later time.",
   "planReminderUnavailable": "Couldn’t update the reminder. Please try again.",
-  "planReminderNotificationTitle": "Your plan for today"
+  "planReminderNotificationTitle": "Your plan for today",
+  "introSkip": "Skip",
+  "introStart": "Get started",
+  "introProgress": "Page {current} of {total}",
+  "introCalendarExample": "Example: choosing a day",
+  "introPairExample": "Example couple’s reading",
+  "introDateOne": "November 12",
+  "introDateTwo": "December 11",
+  "introNeutral": "Neutral day",
+  "introFavorable": "Favorable day",
+  "introNeutralTip": "Refresh your style or trim the ends.",
+  "introFavorableTip": "A day to consider trying a new style.",
+  "introPairTip": "One person wants to talk right away; the other needs time.",
+  "introPairQuestion": "A question for both of you",
+  "introPairPrompt": "“I’d like to return to our conversation. Would now or a little later work better for you?”",
+  "introReplay": "Replay the card reveal",
+  "introAnakraMessage": "Which part already interests you? Start there and give yourself ten minutes.",
+  "introAudioError": "Unable to play the recording.",
+  "introPause": "Pause",
+  "introPlay": "Listen to “I have time”",
+  "@introProgress": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  }
 }

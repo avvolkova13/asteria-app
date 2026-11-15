@@ -57,6 +57,7 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
     emit(
       state.copyWith(
         pages: event.pages,
+        isCompleted: false,
         currentPageIndex: 0,
         isLastPage: event.pages.length == 1,
         clearError: true,

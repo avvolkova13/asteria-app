@@ -1,13 +1,13 @@
 {
   "@@locale": "en",
-  "onboardingPage1Title": "Asteria\nThe Moon and\nyour daily rhythm",
-  "onboardingPage1Description": "Moon phases, tarot, your birth chart,\nand personal guidance every day",
-  "onboardingPage2Title": "Discover\nwhat today holds\nfor you",
-  "onboardingPage2Description": "Moon phases, daily energy,\nfavorable periods, and guidance",
-  "onboardingPage3Title": "Find answers\nthrough tarot\nand an AI astrologer",
-  "onboardingPage3Description": "Readings, advice,\nand personal interpretations",
-  "onboardingPage4Title": "Learn more\nabout yourself and\nyour energy",
-  "onboardingPage4Description": "Your birth chart and compatibility\nwith the people in your life",
+  "onboardingPage1Title": "Which day works for you?",
+  "onboardingPage1Description": "Compare dates in the lunar calendar and save a plan, such as a haircut.",
+  "onboardingPage2Title": "A moment to breathe",
+  "onboardingPage2Description": "Listen to “I have time” and notice how you feel.",
+  "onboardingPage3Title": "How do you talk after a disagreement?",
+  "onboardingPage3Description": "Explore a couple’s reading and find a question to start a calmer conversation.",
+  "onboardingPage4Title": "Where do you begin?",
+  "onboardingPage4Description": "Tarot offers another perspective. You can discuss your next step with Anakra.",
   "step1Title": "Discover new possibilities",
   "step1Description": "Explore every feature and start using Asteria today",
   "step2Title": "Simple and convenient",
@@ -1027,5 +1027,34 @@
   "navigationToday": "Today",
   "navigationCalendar": "Calendar",
   "navigationReadings": "Readings",
-  "readingsIntro": "Explore your birth chart, understand a connection or revisit a dream."
+  "readingsIntro": "Explore your birth chart, understand a connection or revisit a dream.",
+  "introSkip": "Skip",
+  "introStart": "Get started",
+  "introProgress": "Page {current} of {total}",
+  "introCalendarExample": "Example: choosing a day",
+  "introPairExample": "Example couple’s reading",
+  "introDateOne": "November 12",
+  "introDateTwo": "December 11",
+  "introNeutral": "Neutral day",
+  "introFavorable": "Favorable day",
+  "introNeutralTip": "Refresh your style or trim the ends.",
+  "introFavorableTip": "A day to consider trying a new style.",
+  "introPairTip": "One person wants to talk right away; the other needs time.",
+  "introPairQuestion": "A question for both of you",
+  "introPairPrompt": "“I’d like to return to our conversation. Would now or a little later work better for you?”",
+  "introReplay": "Replay the card reveal",
+  "introAnakraMessage": "Which part already interests you? Start there and give yourself ten minutes.",
+  "introAudioError": "Unable to play the recording.",
+  "introPause": "Pause",
+  "introPlay": "Listen to “I have time”",
+  "@introProgress": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  }
 }

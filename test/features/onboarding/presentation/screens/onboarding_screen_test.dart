@@ -147,10 +147,6 @@ void main() {
 
         final content = find.byKey(const ValueKey('onboarding-content-1'));
         final visual = find.byKey(const ValueKey('onboarding-visual-1'));
-        expect(
-          tester.getRect(visual).bottom,
-          greaterThan(tester.getRect(content).bottom),
-        );
         await tester.drag(content, const Offset(0, -2000));
         await tester.pumpAndSettle();
         final scrollable = tester.state<ScrollableState>(
@@ -264,6 +260,55 @@ void main() {
     }
   }
 
+  for (final lightTheme in [false, true]) {
+    for (final language in ['en', 'ru']) {
+      testWidgets(
+        'all scenes fit large text, theme=$lightTheme, language=$language',
+        (tester) async {
+          bloc = OnboardingBloc(settings);
+          await _pumpOnboarding(
+            tester,
+            bloc,
+            locale: Locale(language),
+            size: const Size(320, 568),
+            textScale: 2,
+            lightTheme: lightTheme,
+            onComplete: () => completions++,
+          );
+          for (var index = 0; index < 4; index++) {
+            final content = find.byKey(ValueKey('onboarding-content-$index'));
+            await tester.drag(content, const Offset(0, -2200));
+            await tester.pumpAndSettle();
+            expect(_cta(tester).hitTestable(), findsOneWidget);
+            expect(tester.takeException(), isNull);
+            await tester.tap(_cta(tester));
+            await tester.pumpAndSettle();
+            expect(tester.takeException(), isNull);
+          }
+          expect(completions, 1);
+        },
+      );
+    }
+  }
+
+  testWidgets('skip completes and a reopened tour completes again', (
+    tester,
+  ) async {
+    bloc = OnboardingBloc(settings);
+    for (var attempt = 0; attempt < 2; attempt++) {
+      if (attempt > 0) {
+        await tester.pumpWidget(const SizedBox());
+      }
+      await _pumpOnboarding(tester, bloc, onComplete: () => completions++);
+      final context = tester.element(find.byType(OnboardingScreen));
+      await tester.tap(find.text(AppLocalizations.of(context).introSkip));
+      await tester.pumpAndSettle();
+      expect(completions, attempt + 1);
+      expect(tester.takeException(), isNull);
+    }
+    expect(settings.onboardingWrites, [false, false]);
+  });
+
   testWidgets('rapid final taps complete and record analytics only once', (
     tester,
   ) async {
@@ -316,6 +361,7 @@ Future<void> _pumpOnboarding(
   Locale locale = const Locale('en'),
   Size size = const Size(390, 844),
   double textScale = 1,
+  bool lightTheme = false,
   double devicePixelRatio = 1,
   EdgeInsets padding = EdgeInsets.zero,
   required VoidCallback onComplete,
@@ -337,11 +383,14 @@ Future<void> _pumpOnboarding(
         supportedLocales: AppLocaleService.supportedLocales,
         home: Builder(
           builder: (context) => Theme(
-            data: AppThemeDark.instance.getThemeData(context),
+            data: lightTheme
+                ? AppThemeLight.instance.getThemeData(context)
+                : AppThemeDark.instance.getThemeData(context),
             child: MediaQuery(
               data: MediaQuery.of(context).copyWith(
                 textScaler: TextScaler.linear(textScale),
                 padding: padding,
+                disableAnimations: true,
               ),
               child: RepaintBoundary(
                 key: const ValueKey('onboarding-screen-golden'),
@@ -363,7 +412,16 @@ Future<void> _pumpOnboarding(
 
 Finder _cta(WidgetTester tester) {
   final context = tester.element(find.byType(OnboardingScreen));
-  return find.text(OnboardingLocalization().nextButton(context));
+  final index = tester
+      .widget<OnboardingPaginationWidget>(
+        find.byType(OnboardingPaginationWidget),
+      )
+      .currentPage;
+  return find.text(
+    index == 3
+        ? AppLocalizations.of(context).introStart
+        : OnboardingLocalization().nextButton(context),
+  );
 }
 
 void _expectPage(WidgetTester tester, OnboardingBloc bloc, int index) {

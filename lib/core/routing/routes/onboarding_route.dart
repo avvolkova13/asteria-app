@@ -24,11 +24,11 @@ class OnboardingRoute extends AppRoute {
                pages: OnboardingData.getPages(context),
                localization: OnboardingLocalization(),
                onComplete: () {
-                 params?.onComplete?.call();
-                 // TODO: real logic for onboarding completion
-
-                 AuthLoginRoute.go(context);
-                 // Testing:
+                 if (params?.onComplete != null) {
+                   params!.onComplete!();
+                 } else {
+                   AuthLoginRoute.go(context);
+                 }
                },
              ),
            );

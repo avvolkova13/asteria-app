@@ -55,80 +55,80 @@ class AppLocalizations {
     return Localizations.of<AppLocalizations>(context, AppLocalizations);
   }
 
-  /// `Asteria\nThe Moon and\nyour daily rhythm`
+  /// `Which day works for you?`
   String get onboardingPage1Title {
     return Intl.message(
-      'Asteria\nThe Moon and\nyour daily rhythm',
+      'Which day works for you?',
       name: 'onboardingPage1Title',
       desc: '',
       args: [],
     );
   }
 
-  /// `Moon phases, tarot, your birth chart,\nand personal guidance every day`
+  /// `Compare dates in the lunar calendar and save a plan, such as a haircut.`
   String get onboardingPage1Description {
     return Intl.message(
-      'Moon phases, tarot, your birth chart,\nand personal guidance every day',
+      'Compare dates in the lunar calendar and save a plan, such as a haircut.',
       name: 'onboardingPage1Description',
       desc: '',
       args: [],
     );
   }
 
-  /// `Discover\nwhat today holds\nfor you`
+  /// `A moment to breathe`
   String get onboardingPage2Title {
     return Intl.message(
-      'Discover\nwhat today holds\nfor you',
+      'A moment to breathe',
       name: 'onboardingPage2Title',
       desc: '',
       args: [],
     );
   }
 
-  /// `Moon phases, daily energy,\nfavorable periods, and guidance`
+  /// `Listen to “I have time” and notice how you feel.`
   String get onboardingPage2Description {
     return Intl.message(
-      'Moon phases, daily energy,\nfavorable periods, and guidance',
+      'Listen to “I have time” and notice how you feel.',
       name: 'onboardingPage2Description',
       desc: '',
       args: [],
     );
   }
 
-  /// `Find answers\nthrough tarot\nand an AI astrologer`
+  /// `How do you talk after a disagreement?`
   String get onboardingPage3Title {
     return Intl.message(
-      'Find answers\nthrough tarot\nand an AI astrologer',
+      'How do you talk after a disagreement?',
       name: 'onboardingPage3Title',
       desc: '',
       args: [],
     );
   }
 
-  /// `Readings, advice,\nand personal interpretations`
+  /// `Explore a couple’s reading and find a question to start a calmer conversation.`
   String get onboardingPage3Description {
     return Intl.message(
-      'Readings, advice,\nand personal interpretations',
+      'Explore a couple’s reading and find a question to start a calmer conversation.',
       name: 'onboardingPage3Description',
       desc: '',
       args: [],
     );
   }
 
-  /// `Learn more\nabout yourself and\nyour energy`
+  /// `Where do you begin?`
   String get onboardingPage4Title {
     return Intl.message(
-      'Learn more\nabout yourself and\nyour energy',
+      'Where do you begin?',
       name: 'onboardingPage4Title',
       desc: '',
       args: [],
     );
   }
 
-  /// `Your birth chart and compatibility\nwith the people in your life`
+  /// `Tarot offers another perspective. You can discuss your next step with Anakra.`
   String get onboardingPage4Description {
     return Intl.message(
-      'Your birth chart and compatibility\nwith the people in your life',
+      'Tarot offers another perspective. You can discuss your next step with Anakra.',
       name: 'onboardingPage4Description',
       desc: '',
       args: [],
@@ -9015,6 +9015,181 @@ class AppLocalizations {
     return Intl.message(
       'Explore your birth chart, understand a connection or revisit a dream.',
       name: 'readingsIntro',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Skip`
+  String get introSkip {
+    return Intl.message('Skip', name: 'introSkip', desc: '', args: []);
+  }
+
+  /// `Get started`
+  String get introStart {
+    return Intl.message('Get started', name: 'introStart', desc: '', args: []);
+  }
+
+  /// `Page {current} of {total}`
+  String introProgress(int current, int total) {
+    return Intl.message(
+      'Page $current of $total',
+      name: 'introProgress',
+      desc: '',
+      args: [current, total],
+    );
+  }
+
+  /// `Example: choosing a day`
+  String get introCalendarExample {
+    return Intl.message(
+      'Example: choosing a day',
+      name: 'introCalendarExample',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Example couple’s reading`
+  String get introPairExample {
+    return Intl.message(
+      'Example couple’s reading',
+      name: 'introPairExample',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `November 12`
+  String get introDateOne {
+    return Intl.message(
+      'November 12',
+      name: 'introDateOne',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `December 11`
+  String get introDateTwo {
+    return Intl.message(
+      'December 11',
+      name: 'introDateTwo',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Neutral day`
+  String get introNeutral {
+    return Intl.message(
+      'Neutral day',
+      name: 'introNeutral',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Favorable day`
+  String get introFavorable {
+    return Intl.message(
+      'Favorable day',
+      name: 'introFavorable',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Refresh your style or trim the ends.`
+  String get introNeutralTip {
+    return Intl.message(
+      'Refresh your style or trim the ends.',
+      name: 'introNeutralTip',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `A day to consider trying a new style.`
+  String get introFavorableTip {
+    return Intl.message(
+      'A day to consider trying a new style.',
+      name: 'introFavorableTip',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `One person wants to talk right away; the other needs time.`
+  String get introPairTip {
+    return Intl.message(
+      'One person wants to talk right away; the other needs time.',
+      name: 'introPairTip',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `A question for both of you`
+  String get introPairQuestion {
+    return Intl.message(
+      'A question for both of you',
+      name: 'introPairQuestion',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `“I’d like to return to our conversation. Would now or a little later work better for you?”`
+  String get introPairPrompt {
+    return Intl.message(
+      '“I’d like to return to our conversation. Would now or a little later work better for you?”',
+      name: 'introPairPrompt',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Replay the card reveal`
+  String get introReplay {
+    return Intl.message(
+      'Replay the card reveal',
+      name: 'introReplay',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Which part already interests you? Start there and give yourself ten minutes.`
+  String get introAnakraMessage {
+    return Intl.message(
+      'Which part already interests you? Start there and give yourself ten minutes.',
+      name: 'introAnakraMessage',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Unable to play the recording.`
+  String get introAudioError {
+    return Intl.message(
+      'Unable to play the recording.',
+      name: 'introAudioError',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Pause`
+  String get introPause {
+    return Intl.message('Pause', name: 'introPause', desc: '', args: []);
+  }
+
+  /// `Listen to “I have time”`
+  String get introPlay {
+    return Intl.message(
+      'Listen to “I have time”',
+      name: 'introPlay',
       desc: '',
       args: [],
     );

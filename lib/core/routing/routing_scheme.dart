@@ -14,11 +14,7 @@ final _routes = [
       child: const ScenarioPicker(),
     ),
   ),
-  GoRoute(
-    path: OnboardingRoute.routeName,
-    name: OnboardingRoute.routeName,
-    redirect: (_, __) => AuthRoutes.loginRouteName,
-  ),
+  OnboardingRoute(),
   HomeRoute(routes: [HomeProfileRoute()]),
   SettingsRoute(),
   SubscriptionRoute(),

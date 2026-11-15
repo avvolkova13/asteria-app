@@ -31,7 +31,9 @@ class MessageLookup extends MessageLookupByLibrary {
   static String m23(price) =>
       "7 days free, then ${price}. Renews automatically. Cancel anytime.";
 
-  static String m43(time) => "Reminder at ${time}";
+  static String m24(current, total) => "Page ${current} of ${total}";
+
+  static String m44(time) => "Reminder at ${time}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -74,6 +76,47 @@ class MessageLookup extends MessageLookupByLibrary {
     "insightLoadingTogether": MessageLookupByLibrary.simpleMessage(
       "Bringing your insight together…",
     ),
+    "introAnakraMessage": MessageLookupByLibrary.simpleMessage(
+      "Which part already interests you? Start there and give yourself ten minutes.",
+    ),
+    "introAudioError": MessageLookupByLibrary.simpleMessage(
+      "Unable to play the recording.",
+    ),
+    "introCalendarExample": MessageLookupByLibrary.simpleMessage(
+      "Example: choosing a day",
+    ),
+    "introDateOne": MessageLookupByLibrary.simpleMessage("November 12"),
+    "introDateTwo": MessageLookupByLibrary.simpleMessage("December 11"),
+    "introFavorable": MessageLookupByLibrary.simpleMessage("Favorable day"),
+    "introFavorableTip": MessageLookupByLibrary.simpleMessage(
+      "A day to consider trying a new style.",
+    ),
+    "introNeutral": MessageLookupByLibrary.simpleMessage("Neutral day"),
+    "introNeutralTip": MessageLookupByLibrary.simpleMessage(
+      "Refresh your style or trim the ends.",
+    ),
+    "introPairExample": MessageLookupByLibrary.simpleMessage(
+      "Example couple’s reading",
+    ),
+    "introPairPrompt": MessageLookupByLibrary.simpleMessage(
+      "“I’d like to return to our conversation. Would now or a little later work better for you?”",
+    ),
+    "introPairQuestion": MessageLookupByLibrary.simpleMessage(
+      "A question for both of you",
+    ),
+    "introPairTip": MessageLookupByLibrary.simpleMessage(
+      "One person wants to talk right away; the other needs time.",
+    ),
+    "introPause": MessageLookupByLibrary.simpleMessage("Pause"),
+    "introPlay": MessageLookupByLibrary.simpleMessage(
+      "Listen to “I have time”",
+    ),
+    "introProgress": m24,
+    "introReplay": MessageLookupByLibrary.simpleMessage(
+      "Replay the card reveal",
+    ),
+    "introSkip": MessageLookupByLibrary.simpleMessage("Skip"),
+    "introStart": MessageLookupByLibrary.simpleMessage("Get started"),
     "natalHousesNeedTime": MessageLookupByLibrary.simpleMessage(
       "An exact birth time is needed to calculate the houses.",
     ),
@@ -87,13 +130,34 @@ class MessageLookup extends MessageLookupByLibrary {
     "natalWheelUnavailable": MessageLookupByLibrary.simpleMessage(
       "Planet positions are currently unavailable. Your saved reading is below.",
     ),
+    "onboardingPage1Description": MessageLookupByLibrary.simpleMessage(
+      "Compare dates in the lunar calendar and save a plan, such as a haircut.",
+    ),
+    "onboardingPage1Title": MessageLookupByLibrary.simpleMessage(
+      "Which day works for you?",
+    ),
     "onboardingPage2Description": MessageLookupByLibrary.simpleMessage(
-      "Moon phases, daily energy,\nfavourable periods, and guidance",
+      "Listen to “I have time” and notice how you feel.",
+    ),
+    "onboardingPage2Title": MessageLookupByLibrary.simpleMessage(
+      "A moment to breathe",
+    ),
+    "onboardingPage3Description": MessageLookupByLibrary.simpleMessage(
+      "Explore a couple’s reading and find a question to start a calmer conversation.",
+    ),
+    "onboardingPage3Title": MessageLookupByLibrary.simpleMessage(
+      "How do you talk after a disagreement?",
+    ),
+    "onboardingPage4Description": MessageLookupByLibrary.simpleMessage(
+      "Tarot offers another perspective. You can discuss your next step with Anakra.",
+    ),
+    "onboardingPage4Title": MessageLookupByLibrary.simpleMessage(
+      "Where do you begin?",
     ),
     "planReminderAdd": MessageLookupByLibrary.simpleMessage(
       "Remind me on the day",
     ),
-    "planReminderAt": m43,
+    "planReminderAt": m44,
     "planReminderDenied": MessageLookupByLibrary.simpleMessage(
       "To get reminders, allow notifications for Asteria in iPhone Settings.",
     ),

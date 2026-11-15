@@ -530,6 +530,7 @@ class DiContainer {
     );
     di.registerLazySingleton<SplashBloc>(
       () => SplashBloc(
+        appSettings: di.get<AppSettingsRepository>(),
         userRepository: di.get<UserRepository>(),
         authSessionService: di.get<AuthSessionService>(),
       ),

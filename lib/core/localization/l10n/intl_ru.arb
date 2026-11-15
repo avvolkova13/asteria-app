@@ -1,13 +1,13 @@
 {
   "@@locale": "ru",
-  "onboardingPage1Title": "Asteria\nЛуна, символы\nи ритм дня",
-  "onboardingPage1Description": "Луна, таро, натальная карта\nи персональные подсказки каждый день",
-  "onboardingPage2Title": "Узнавай,\nкакой сегодня день\nдля тебя",
-  "onboardingPage2Description": "Фазы луны, энергия дня,\nудачные периоды и подсказки",
-  "onboardingPage3Title": "Получай ответы\nчерез таро\nи AI-астролога",
-  "onboardingPage3Description": "Расклады, советы\nи персональные интерпретации",
-  "onboardingPage4Title": "Узнай больше\nо себе и своей\nэнергии",
-  "onboardingPage4Description": "Натальная карта и совместимость\nс близкими людьми",
+  "onboardingPage1Title": "На какой день записаться?",
+  "onboardingPage1Description": "Сравните даты в лунном календаре и сохраните план — например, стрижку.",
+  "onboardingPage2Title": "Минута, чтобы выдохнуть",
+  "onboardingPage2Description": "Включите аудиопрактику «У меня есть время» и прислушайтесь к себе.",
+  "onboardingPage3Title": "Как поговорить после спора?",
+  "onboardingPage3Description": "Посмотрите разбор пары и возьмите вопрос для спокойного разговора.",
+  "onboardingPage4Title": "С чего начать новое дело?",
+  "onboardingPage4Description": "Таро поможет посмотреть на вопрос иначе. А с Анакрой можно обсудить первый шаг.",
   "step1Title": "Откройте для себя новые возможности",
   "step1Description": "Изучите все функции приложения и начните использовать их уже сегодня",
   "step2Title": "Быстро и удобно",
@@ -1027,5 +1027,34 @@
   "navigationToday": "Сегодня",
   "navigationCalendar": "Календарь",
   "navigationReadings": "Разборы",
-  "readingsIntro": "Узнайте себя лучше, посмотрите разбор пары или вернитесь к запомнившемуся сну."
+  "readingsIntro": "Узнайте себя лучше, посмотрите разбор пары или вернитесь к запомнившемуся сну.",
+  "introSkip": "Пропустить",
+  "introStart": "Начать",
+  "introProgress": "Экран {current} из {total}",
+  "introCalendarExample": "Пример выбора дня",
+  "introPairExample": "Пример разбора пары",
+  "introDateOne": "12 ноября",
+  "introDateTwo": "11 декабря",
+  "introNeutral": "Нейтральный день",
+  "introFavorable": "Благоприятный день",
+  "introNeutralTip": "Можно освежить форму и подровнять кончики.",
+  "introFavorableTip": "Подходящий день, чтобы попробовать новую форму.",
+  "introPairTip": "Одному хочется обсудить всё сразу, другому нужно время.",
+  "introPairQuestion": "Вопрос для двоих",
+  "introPairPrompt": "«Я хочу вернуться к нашему разговору. Тебе удобнее сейчас или чуть позже?»",
+  "introReplay": "Посмотреть расклад ещё раз",
+  "introAnakraMessage": "Какая часть дела вам уже интересна? Начните с неё и дайте себе десять минут.",
+  "introAudioError": "Не удалось воспроизвести запись.",
+  "introPause": "Пауза",
+  "introPlay": "Слушать «У меня есть время»",
+  "@introProgress": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  }
 }

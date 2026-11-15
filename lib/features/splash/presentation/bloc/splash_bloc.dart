@@ -1,4 +1,5 @@
 import 'package:asteria_app/features/scenarios/first_session.dart';
+import 'package:asteria_app/app/data/repositories/app_settings/app_settings_repository.dart';
 import 'package:asteria_app/app/data/repositories/user/user_repository.dart';
 import 'package:asteria_app/core/services/auth/auth_session_service.dart';
 import 'package:equatable/equatable.dart';
@@ -9,9 +10,11 @@ part 'splash_state.dart';
 
 class SplashBloc extends Bloc<SplashEvent, SplashState> {
   final UserRepository _userRepository;
+  final AppSettingsRepository? appSettings;
   final AuthSessionService _authSessionService;
 
   SplashBloc({
+    this.appSettings,
     required UserRepository userRepository,
     required AuthSessionService authSessionService,
   }) : _userRepository = userRepository,
@@ -40,7 +43,13 @@ class SplashBloc extends Bloc<SplashEvent, SplashState> {
       } else if (_authSessionService.hasSession) {
         emit(const SplashSuccess(initialRoute: '/auth/personal-info'));
       } else {
-        emit(const SplashSuccess(initialRoute: '/auth/login'));
+        emit(
+          SplashSuccess(
+            initialRoute: appSettings?.getShowOnboarding() == true
+                ? '/onboarding'
+                : '/auth/login',
+          ),
+        );
       }
     } catch (e) {
       emit(SplashError(message: 'Initialization error: $e'));
