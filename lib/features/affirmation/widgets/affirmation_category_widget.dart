@@ -396,8 +396,10 @@ class _AffirmationCardStackState extends State<AffirmationCardStack>
                   width: stackWidth,
                   child: AnimatedBuilder(
                     animation: _motion,
-                    builder: (context, _) =>
-                        Stack(children: _buildLayerCards(context, scale)),
+                    builder: (context, _) => Stack(
+                      clipBehavior: Clip.none,
+                      children: _buildLayerCards(context, scale),
+                    ),
                   ),
                 ),
               ),
@@ -423,42 +425,104 @@ class _AffirmationCardStackState extends State<AffirmationCardStack>
     }
 
     final count = widget.affirmations.length.clamp(1, 3);
-    final topStep = 12.0 * scale;
-    final sideStep = 28.0 * scale;
-    final hasChoices = widget.affirmations.length > 1;
-    final reduced = MediaQuery.disableAnimationsOf(context);
-    final progress = reduced ? 0.0 : _motion.value.abs();
-    final step = _motion.value.isNegative ? 1 : -1;
+    final step = 12.0 * scale;
+    final frontTop = (count - 1) * step;
+    final value = MediaQuery.disableAnimationsOf(context) ? 0.0 : _motion.value;
+    final progress = value.abs();
+    final target = _wrapIndex(_frontIndex + (value < 0 ? 1 : -1));
+    final origin = <int, int>{
+      for (var d = 1; d < count; d++) _wrapIndex(_frontIndex + d): d,
+    };
+    final destination = <int, int>{
+      if (progress > 0)
+        for (var d = 0; d < count; d++) _wrapIndex(target + d): d,
+    };
+    final layers = <({int index, double depth, double opacity})>[];
+    for (final index in {...origin.keys, ...destination.keys}) {
+      final from = origin[index] ?? count;
+      final to = destination[index] ?? count;
+      final opacity = !origin.containsKey(index)
+          ? progress
+          : progress > 0 && !destination.containsKey(index)
+          ? 1 - progress
+          : 1.0;
+      layers.add((
+        index: index,
+        depth: from + (to - from) * progress,
+        opacity: opacity,
+      ));
+    }
+    layers.sort((a, b) => b.depth.compareTo(a.depth));
     final cards = <Widget>[];
-    for (var depth = count - 1; depth >= 0; depth--) {
-      final index = _wrapIndex(_frontIndex + depth);
-      final front = depth == 0;
-      final card = AffirmationCardWidget(
-        affirmation: widget.affirmations[index],
-        imageIndex: index,
-        deck: widget.affirmations,
-        previewIndex: progress > 0 ? _wrapIndex(index + step) : null,
-        progress: progress,
-        isFront: front,
-        showSwipeHint: front && hasChoices && _showHint,
-        onSwipe: front && hasChoices ? _handleDragUpdate : null,
-        onSwipeEnd: front && hasChoices ? _handleDragEnd : null,
-        onSwipeCancel: front && hasChoices ? _resetDrag : null,
-      );
+    for (final layer in layers) {
+      // A full-size face is scaled as one sheet. Its caption and corners arrive
+      // with its artwork instead of growing from a clipped preview.
+      final incoming = layer.index == target && progress > 0;
       cards.add(
-        front
-            ? Padding(
-                padding: EdgeInsets.only(top: (count - 1) * topStep),
-                child: card,
-              )
-            : Positioned(
-                top: (count - depth - 1) * topStep,
-                left: depth * sideStep,
-                right: depth * sideStep,
-                child: IgnorePointer(child: card),
+        Positioned(
+          key: ValueKey('deck-layer-${layer.index}'),
+          top: frontTop - layer.depth.clamp(0.0, (count - 1).toDouble()) * step,
+          left: 0,
+          right: 0,
+          child: IgnorePointer(
+            child: ExcludeSemantics(
+              child: Transform.scale(
+                alignment: Alignment.topCenter,
+                scale: 1 - layer.depth * (56 / _designWidth),
+                child: Opacity(
+                  opacity: layer.opacity,
+                  child: RepaintBoundary(
+                    child: AffirmationCardWidget(
+                      affirmation: widget.affirmations[layer.index],
+                      imageIndex: layer.index,
+                      deck: incoming ? widget.affirmations : null,
+                      isFront: incoming,
+                    ),
+                  ),
+                ),
               ),
+            ),
+          ),
+        ),
       );
     }
+
+    // Turn the outgoing sheet towards its thin edge. Translation and tilt
+    // follow the same signed progress through drag, cancellation and release.
+    final angle = value * 1.48;
+    final fade =
+        1 -
+        Curves.easeInOut.transform(((progress - .72) / .28).clamp(0.0, 1.0));
+    final hasChoices = count > 1;
+    cards.add(
+      Padding(
+        key: const ValueKey('deck-turning-sheet'),
+        padding: EdgeInsets.only(top: frontTop),
+        child: FractionalTranslation(
+          translation: Offset(0, value * .30),
+          child: Transform(
+            alignment: Alignment.center,
+            transform: Matrix4.identity()
+              ..setEntry(3, 2, .0008)
+              ..rotateX(-angle),
+            child: Opacity(
+              opacity: fade,
+              child: RepaintBoundary(
+                child: AffirmationCardWidget(
+                  affirmation: widget.affirmations[_frontIndex],
+                  imageIndex: _frontIndex,
+                  deck: widget.affirmations,
+                  showSwipeHint: hasChoices && _showHint,
+                  onSwipe: hasChoices ? _handleDragUpdate : null,
+                  onSwipeEnd: hasChoices ? _handleDragEnd : null,
+                  onSwipeCancel: hasChoices ? _resetDrag : null,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
     return cards;
   }
 }

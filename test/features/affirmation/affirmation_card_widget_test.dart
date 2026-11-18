@@ -211,8 +211,9 @@ void main() {
                   body: ListenableBuilder(
                     listenable: Listenable.merge([deck, reduced]),
                     builder: (context, _) => MediaQuery(
-                      data: MediaQuery.of(context)
-                          .copyWith(disableAnimations: reduced.value),
+                      data: MediaQuery.of(
+                        context,
+                      ).copyWith(disableAnimations: reduced.value),
                       child: SizedBox(
                         width: 358,
                         child: AffirmationCardStack(affirmations: deck.value),
@@ -369,30 +370,29 @@ void main() {
         final visibleBehindBeforeLeftSwipe = _visibleBehindImageAssetPath(
           tester,
         );
-        // A partial swipe previews the next card inside the existing frame.
-        // Reversing the drag must restore the same card without a timer.
-        final front = find.byWidgetPredicate(
-          (widget) => widget is AffirmationCardWidget && widget.isFront,
+        final front = find.descendant(
+          of: find.byKey(const ValueKey('deck-turning-sheet')),
+          matching: find.byType(AffirmationCardWidget),
         );
-        final frame = tester.getRect(front);
+        final rest = tester.getCenter(front);
         final gesture = await tester.startGesture(center);
         await gesture.moveBy(const Offset(0, -24));
         await gesture.moveBy(const Offset(0, -56));
         await tester.pump();
-        AffirmationCardWidget face() =>
-            tester.widget<AffirmationCardWidget>(front);
-        expect(face().progress, inExclusiveRange(0.0, 1.0));
-        expect(face().previewIndex, 1);
-        expect(tester.getRect(front), frame);
-        final progress = face().progress;
+        final lifted = tester.getCenter(front);
+        expect(lifted.dy, lessThan(rest.dy - 12));
+        final incoming = find.descendant(
+          of: find.byKey(const ValueKey('deck-layer-1')),
+          matching: find.byType(AffirmationCardWidget),
+        );
+        expect(tester.widget<AffirmationCardWidget>(incoming).isFront, isTrue);
         await gesture.moveBy(const Offset(0, 32));
         await tester.pump();
-        expect(face().progress, lessThan(progress));
+        expect(tester.getCenter(front).dy, greaterThan(lifted.dy));
         await gesture.cancel();
         await tester.pumpAndSettle();
-        expect(face().imageIndex, 0);
-        expect(face().previewIndex, isNull);
-        expect(tester.getRect(front), frame);
+        expect(tester.getCenter(front), rest);
+        expect(tester.widget<AffirmationCardWidget>(front).imageIndex, 0);
 
         await tester.drag(swipeDetector, const Offset(0, -120));
         await tester.pumpAndSettle();

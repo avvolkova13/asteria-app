@@ -3,14 +3,13 @@ import 'package:asteria_app/app/data/models/affirmation/affirmation_model.dart';
 import 'package:asteria_app/core/ui_kit/card_radii.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 class AffirmationCardWidget extends StatelessWidget {
   final AffirmationModel affirmation;
   final int imageIndex;
   final List<AffirmationModel>? deck;
-  final int? previewIndex;
-  final double progress;
   final double borderOpacity;
   final bool isFront;
   final bool showSwipeHint;
@@ -24,8 +23,6 @@ class AffirmationCardWidget extends StatelessWidget {
     required this.affirmation,
     required this.imageIndex,
     this.deck,
-    this.previewIndex,
-    this.progress = 0,
     this.borderOpacity = 0.1,
     this.isFront = true,
     this.showSwipeHint = false,
@@ -35,8 +32,8 @@ class AffirmationCardWidget extends StatelessWidget {
     this.onSwipeCancel,
   });
 
-  String _getImageName(AffirmationModel card) {
-    switch (card.effectiveCategoryId) {
+  String _getImageName() {
+    switch (affirmation.effectiveCategoryId) {
       case 'love':
         return 'love';
       case 'abundance':
@@ -54,26 +51,18 @@ class AffirmationCardWidget extends StatelessWidget {
     }
   }
 
-  String get imageAssetPath => _assetFor(affirmation, imageIndex);
-
-  String _assetFor(AffirmationModel card, int index) {
-    final normalizedImageIndex = (index % 3 + 3) % 3;
+  String get imageAssetPath {
+    final normalizedImageIndex = (imageIndex % 3 + 3) % 3;
     final imageSuffix = normalizedImageIndex == 0
         ? ''
         : '_${normalizedImageIndex + 1}';
 
     return 'assets/images/affirmation/'
-        'category_${_getImageName(card)}$imageSuffix.webp';
+        'category_${_getImageName()}$imageSuffix.webp';
   }
 
   @override
   Widget build(BuildContext context) {
-    final incoming = previewIndex;
-    final preview = incoming == null ? null : deck?[incoming];
-    // Change the caption at its transparent midpoint while IndexedStack
-    // reserves the tallest caption, including at accessibility text sizes.
-    final showIncoming = preview != null && progress >= .5;
-    final captionOpacity = preview == null ? 1.0 : (2 * progress - 1).abs();
     return ClipRRect(
       borderRadius: BorderRadius.circular(AsteriaCardRadii.card),
       child: Container(
@@ -90,6 +79,7 @@ class AffirmationCardWidget extends StatelessWidget {
           children: [
             GestureDetector(
               behavior: HitTestBehavior.opaque,
+              dragStartBehavior: DragStartBehavior.down,
               onVerticalDragUpdate: onSwipe,
               onVerticalDragEnd: onSwipeEnd,
               onVerticalDragCancel: onSwipeCancel,
@@ -99,13 +89,6 @@ class AffirmationCardWidget extends StatelessWidget {
                   fit: StackFit.expand,
                   children: [
                     _CardArtwork(asset: imageAssetPath),
-                    if (incoming != null && preview != null)
-                      Opacity(
-                        opacity: progress,
-                        child: _CardArtwork(
-                          asset: _assetFor(preview, incoming),
-                        ),
-                      ),
                     if (isFront && showOpenIndicator)
                       const Positioned(
                         top: 12,
@@ -123,22 +106,17 @@ class AffirmationCardWidget extends StatelessWidget {
             if (isFront)
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 14, 16, 18),
-                child: Opacity(
-                  opacity: captionOpacity,
-                  child: IndexedStack(
-                    index: showIncoming
-                        ? incoming
-                        : (deck == null ? 0 : imageIndex),
-                    children: [
-                      for (final card in deck ?? [affirmation])
-                        Text(
-                          card.text,
-                          style: context.textTheme.inverseUrbanistRegular16
-                              .copyWith(height: 1.3),
-                          textAlign: TextAlign.start,
-                        ),
-                    ],
-                  ),
+                child: IndexedStack(
+                  index: deck == null ? 0 : imageIndex,
+                  children: [
+                    for (final card in deck ?? [affirmation])
+                      Text(
+                        card.text,
+                        style: context.textTheme.inverseUrbanistRegular16
+                            .copyWith(height: 1.3),
+                        textAlign: TextAlign.start,
+                      ),
+                  ],
                 ),
               ),
           ],
