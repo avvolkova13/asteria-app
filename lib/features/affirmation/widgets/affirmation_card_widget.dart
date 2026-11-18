@@ -3,7 +3,6 @@ import 'package:asteria_app/app/data/models/affirmation/affirmation_model.dart';
 import 'package:asteria_app/core/ui_kit/card_radii.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 class AffirmationCardWidget extends StatelessWidget {
@@ -79,7 +78,6 @@ class AffirmationCardWidget extends StatelessWidget {
           children: [
             GestureDetector(
               behavior: HitTestBehavior.opaque,
-              dragStartBehavior: DragStartBehavior.down,
               onVerticalDragUpdate: onSwipe,
               onVerticalDragEnd: onSwipeEnd,
               onVerticalDragCancel: onSwipeCancel,

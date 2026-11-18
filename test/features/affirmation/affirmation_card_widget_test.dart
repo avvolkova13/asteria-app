@@ -370,30 +370,6 @@ void main() {
         final visibleBehindBeforeLeftSwipe = _visibleBehindImageAssetPath(
           tester,
         );
-        final front = find.descendant(
-          of: find.byKey(const ValueKey('deck-turning-sheet')),
-          matching: find.byType(AffirmationCardWidget),
-        );
-        final rest = tester.getCenter(front);
-        final gesture = await tester.startGesture(center);
-        await gesture.moveBy(const Offset(0, -24));
-        await gesture.moveBy(const Offset(0, -56));
-        await tester.pump();
-        final lifted = tester.getCenter(front);
-        expect(lifted.dy, lessThan(rest.dy - 12));
-        final incoming = find.descendant(
-          of: find.byKey(const ValueKey('deck-layer-1')),
-          matching: find.byType(AffirmationCardWidget),
-        );
-        expect(tester.widget<AffirmationCardWidget>(incoming).isFront, isTrue);
-        await gesture.moveBy(const Offset(0, 32));
-        await tester.pump();
-        expect(tester.getCenter(front).dy, greaterThan(lifted.dy));
-        await gesture.cancel();
-        await tester.pumpAndSettle();
-        expect(tester.getCenter(front), rest);
-        expect(tester.widget<AffirmationCardWidget>(front).imageIndex, 0);
-
         await tester.drag(swipeDetector, const Offset(0, -120));
         await tester.pumpAndSettle();
 
