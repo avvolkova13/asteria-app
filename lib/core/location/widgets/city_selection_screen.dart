@@ -1,6 +1,6 @@
 import 'package:asteria_app/core/ui_kit/widgets/asteria_activity_indicator.dart';
 import 'package:asteria_app/core/ui_kit/widgets/input_bubble_surface.dart';
-import 'package:asteria_app/core/ui_kit/widgets/pro_badge_surface.dart';
+import 'package:asteria_app/core/ui_kit/widgets/subscription_widget.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/modal_glass_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
@@ -450,7 +450,7 @@ class _CitySelectionHeader extends StatelessWidget {
           height: 14,
         ),
         const SizedBox(width: 10),
-        ProBadgeSurface(isActive: isPro),
+        SubscriptionWidget(isActive: isPro, labelStyle: AppTypography.navTitle),
       ],
     );
   }

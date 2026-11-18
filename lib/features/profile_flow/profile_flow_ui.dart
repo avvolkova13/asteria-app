@@ -1,6 +1,6 @@
 import 'package:asteria_app/core/ui_kit/widgets/asteria_action_button.dart';
 import 'package:asteria_app/core/ui_kit/widgets/top_bar_geometry.dart';
-import 'package:asteria_app/core/ui_kit/widgets/pro_badge_surface.dart';
+import 'package:asteria_app/core/ui_kit/widgets/subscription_widget.dart';
 import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/ui_kit/card_radii.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
@@ -162,7 +162,10 @@ class ProfileProPill extends StatelessWidget {
   final bool isActive;
 
   @override
-  Widget build(BuildContext context) => ProBadgeSurface(isActive: isActive);
+  Widget build(BuildContext context) => SubscriptionWidget(
+    isActive: isActive,
+    labelStyle: AppTypography.navTitle,
+  );
 }
 
 class ProfileGlassCard extends StatelessWidget {

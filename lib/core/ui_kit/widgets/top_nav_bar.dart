@@ -633,11 +633,7 @@ List<Widget> _moonActionItems(
       ),
     ),
   ),
-  SizedBox(
-    width: 76,
-    height: 28,
-    child: SubscriptionWidget(labelStyle: labelStyle),
-  ),
+  SubscriptionWidget(labelStyle: labelStyle),
 ];
 
 class _HomeTopNavBarWidget extends StatelessWidget {

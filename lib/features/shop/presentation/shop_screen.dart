@@ -505,7 +505,7 @@ class _ShopHeader extends StatelessWidget {
         ),
       ),
     );
-    const pro = SizedBox(width: 76, height: 28, child: SubscriptionWidget());
+    const pro = SubscriptionWidget();
     return AsteriaAdaptiveTopBar(
       title: context.l10n.shopTitle,
       titleStyle: titleStyle,

@@ -1,5 +1,5 @@
 import 'package:asteria_app/core/ui_kit/widgets/top_bar_geometry.dart';
-import 'package:asteria_app/core/ui_kit/widgets/pro_badge_surface.dart';
+import 'package:asteria_app/core/ui_kit/widgets/subscription_widget.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
@@ -247,19 +247,13 @@ class _AffirmationProBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Semantics(
-      button: !isActive,
-      label: isActive
+    return SubscriptionWidget(
+      isActive: isActive,
+      semanticLabel: isActive
           ? context.l10n.subscriptionActive
           : context.l10n.offerProTitle,
-      child: LotusTap(
-        behavior: HitTestBehavior.opaque,
-        onTap: isActive ? null : () => _openSubscriptionFromProBadge(context),
-        child: ProBadgeSurface(
-          isActive: isActive,
-          labelStyle: context.textTheme.inversePlayfairSemiBold17,
-        ),
-      ),
+      originSurface: 'affirmation_top_nav_pro',
+      onTap: isActive ? null : () => _openSubscriptionFromProBadge(context),
     );
   }
 

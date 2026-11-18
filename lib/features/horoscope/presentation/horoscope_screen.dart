@@ -613,17 +613,7 @@ class _HoroscopeTopBar extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 8),
-                const SizedBox(
-                  width: 76,
-                  height: 44,
-                  child: Center(
-                    child: SizedBox(
-                      width: 76,
-                      height: 28,
-                      child: SubscriptionWidget(),
-                    ),
-                  ),
-                ),
+                const SubscriptionWidget(),
               ],
             ),
           ),
