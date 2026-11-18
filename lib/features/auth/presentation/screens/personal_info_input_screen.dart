@@ -157,9 +157,7 @@ class _PersonalInfoInputScreenState extends State<PersonalInfoInputScreen> {
           }
 
           return AuthFlowScaffold(
-            backgroundAsset: 'assets/images/auth/personal_info_background.webp',
-            backgroundOpacity: 1,
-            backgroundHeightFactor: 1,
+            background: const AuthSilkBackground(),
             child: SafeArea(
               bottom: false,
               child: LayoutBuilder(

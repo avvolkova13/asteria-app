@@ -70,6 +70,7 @@ class _EmailCodeScreenState extends State<EmailCodeScreen> {
     final l10n = AppLocalizations.of(context);
     return AuthFlowScaffold(
       showBackButton: true,
+      background: const AuthSilkBackground(),
       child: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {

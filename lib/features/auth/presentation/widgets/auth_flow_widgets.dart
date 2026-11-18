@@ -22,6 +22,33 @@ const authGoldGradient = LinearGradient(
   stops: [0, 0.5, 1],
 );
 
+/// A still from the splash silk, framed against the full window so focusing
+/// a field does not scale or move the fold behind the form.
+class AuthSilkBackground extends StatelessWidget {
+  const AuthSilkBackground({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final height = MediaQuery.sizeOf(context).height;
+    return IgnorePointer(
+      child: ClipRect(
+        child: OverflowBox(
+          alignment: Alignment.topCenter,
+          minHeight: height,
+          maxHeight: height,
+          child: Image.asset(
+            'assets/images/auth/auth_silk.webp',
+            width: double.infinity,
+            height: height,
+            fit: BoxFit.cover,
+            excludeFromSemantics: true,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class AuthFlowScaffold extends StatelessWidget {
   final Widget child;
   final Widget? background;
@@ -278,7 +305,7 @@ class _AuthTextInputState extends State<AuthTextInput> {
                     decoration: InputDecoration(
                       hintText: widget.hintText,
                       hintStyle: AppTypography.placeholder.copyWith(
-                        color: AppColors.textTertiary,
+                        color: AppColorsDark.textSecondary,
                       ),
                       border: InputBorder.none,
                       enabledBorder: InputBorder.none,
@@ -302,7 +329,7 @@ class _AuthTextInputState extends State<AuthTextInput> {
                     tooltip: context.l10n.commonClear,
                     icon: const ClayIcon(
                       CupertinoIcons.clear_circled_solid,
-                      color: AppColors.textTertiary,
+                      color: AppColorsDark.textSecondary,
                       size: 20,
                     ),
                     padding: const EdgeInsets.only(right: 14),

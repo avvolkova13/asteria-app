@@ -82,7 +82,9 @@ class _SubscriptionStatusCard extends StatelessWidget {
           final stackContent =
               constraints.maxWidth <
               MediaQuery.textScalerOf(context).scale(16) * 18;
-          final artWidth = (constraints.maxWidth * .32).clamp(68.0, 116.0);
+          final artWidth = buttonText == null
+              ? (constraints.maxWidth * .41).clamp(80.0, 152.0)
+              : (constraints.maxWidth * .35).clamp(76.0, 122.0);
           return Container(
             key: const ValueKey('profile-subscription-status-card'),
             constraints: const BoxConstraints(minHeight: _cardHeight),
@@ -98,6 +100,7 @@ class _SubscriptionStatusCard extends StatelessWidget {
                   children: [
                     Flexible(
                       flex: stackContent ? 0 : 1,
+                      fit: stackContent ? FlexFit.loose : FlexFit.tight,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [

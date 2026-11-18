@@ -193,19 +193,19 @@ class AffirmationCardStack extends StatefulWidget {
   State<AffirmationCardStack> createState() => _AffirmationCardStackState();
 }
 
-class _AffirmationCardStackState extends State<AffirmationCardStack> {
+class _AffirmationCardStackState extends State<AffirmationCardStack>
+    with SingleTickerProviderStateMixin {
   static const double _designWidth = 358;
   static const double _swipeThreshold = 80;
   static const double _velocityThreshold = 400;
-  static const Duration _animationDuration = Duration(milliseconds: 220);
+  // One point of drag advances the same fraction of the card transition
+  // whether the finger moves forward, reverses, or returns to its start.
+  static const double _swipeTravel = 200;
+  late final _motion = AnimationController.unbounded(vsync: this);
 
   int _frontIndex = 0;
-  int _deckRevision = 0;
-  double _dragOffset = 0;
-  double _exitOffset = 0;
-  bool _isAnimatingOut = false;
+  bool _committing = false;
   bool _showHint = false;
-  int _transitionDirection = -1;
   String? _trackedContentId;
 
   @override
@@ -228,18 +228,22 @@ class _AffirmationCardStackState extends State<AffirmationCardStack> {
     }
 
     if (signatureChanged) {
-      _deckRevision++;
+      _motion.value = 0;
       _frontIndex = 0;
       _trackedContentId = null;
-      _dragOffset = 0;
-      _exitOffset = 0;
-      _isAnimatingOut = false;
+      _committing = false;
     }
 
     if (signatureChanged || oldWidget.showSwipeHint != widget.showSwipeHint) {
-      _showHint = widget.showSwipeHint && _dragOffset == 0;
+      _showHint = widget.showSwipeHint && _motion.value == 0;
       WidgetsBinding.instance.addPostFrameCallback((_) => _trackFrontCard());
     }
+  }
+
+  @override
+  void dispose() {
+    _motion.dispose();
+    super.dispose();
   }
 
   String _affirmationSignature(List<AffirmationModel> affirmations) {
@@ -263,53 +267,41 @@ class _AffirmationCardStackState extends State<AffirmationCardStack> {
   }
 
   void _handleDragUpdate(DragUpdateDetails details) {
-    if (_isAnimatingOut || widget.affirmations.length < 2) {
-      return;
-    }
-
-    setState(() {
-      _showHint = false;
-      _dragOffset = (_dragOffset + details.delta.dy)
-          .clamp(-140.0, 140.0)
-          .toDouble();
-    });
+    if (_committing || widget.affirmations.length < 2) return;
+    if (_showHint) setState(() => _showHint = false);
+    _motion.value = (_motion.value + details.delta.dy / _swipeTravel)
+        .clamp(-1.0, 1.0)
+        .toDouble();
   }
 
   void _handleDragEnd(DragEndDetails details) {
-    if (_isAnimatingOut || widget.affirmations.length < 2) {
-      _resetDrag();
-      return;
-    }
-
+    if (_committing || widget.affirmations.length < 2) return;
     final velocity = details.primaryVelocity ?? 0;
-    final shouldSwipe =
-        _dragOffset.abs() >= _swipeThreshold ||
-        velocity.abs() >= _velocityThreshold;
-
-    if (!shouldSwipe) {
+    final drag = _motion.value * _swipeTravel;
+    if (drag.abs() < _swipeThreshold && velocity.abs() < _velocityThreshold) {
       _resetDrag();
       return;
     }
-
-    final direction = _dragOffset == 0
-        ? (velocity < 0 ? -1 : 1)
-        : (_dragOffset < 0 ? -1 : 1);
-    _animateSwipe(direction);
+    _animateSwipe((drag == 0 ? velocity : drag).isNegative ? -1 : 1);
   }
 
   void _resetDrag() {
-    if (!mounted) {
-      return;
+    if (_committing || _motion.value == 0) return;
+    if (MediaQuery.disableAnimationsOf(context)) {
+      _motion.value = 0;
+    } else {
+      _motion.animateTo(
+        0,
+        duration: const Duration(milliseconds: 160),
+        curve: Curves.easeOutCubic,
+      );
     }
-
-    setState(() => _dragOffset = 0);
   }
 
   Future<void> _animateSwipe(int direction) async {
-    if (_isAnimatingOut || widget.affirmations.length < 2) {
-      return;
-    }
-
+    if (_committing || widget.affirmations.length < 2) return;
+    _committing = true;
+    if (_showHint) setState(() => _showHint = false);
     LotusFeedback.selection();
     final contentId = widget.affirmations[_frontIndex].id;
 
@@ -319,23 +311,25 @@ class _AffirmationCardStackState extends State<AffirmationCardStack> {
     );
 
     if (!MediaQuery.disableAnimationsOf(context)) {
-      final revision = _deckRevision;
-      setState(() {
-        _isAnimatingOut = true;
-        _transitionDirection = direction;
-        _exitOffset = direction * 58;
-        _dragOffset = 0;
-        _showHint = false;
-      });
-      await Future<void>.delayed(_animationDuration);
-      if (!mounted || revision != _deckRevision) return;
+      final remaining = (direction - _motion.value).abs();
+      try {
+        await _motion
+            .animateTo(
+              direction.toDouble(),
+              duration: Duration(milliseconds: (110 + 150 * remaining).round()),
+              curve: Curves.easeOutCubic,
+            )
+            .orCancel;
+      } on TickerCanceled {
+        // The owner disposed the controller or replaced the deck.
+        return;
+      }
     }
-
+    if (!mounted) return;
     setState(() {
-      _showHint = false;
       _frontIndex = _wrapIndex(_frontIndex - direction);
-      _isAnimatingOut = false;
-      _exitOffset = 0;
+      _committing = false;
+      _motion.value = 0;
     });
     _trackFrontCard();
   }
@@ -348,7 +342,7 @@ class _AffirmationCardStackState extends State<AffirmationCardStack> {
   bool _playerOpen = false;
 
   Future<void> _openPlayer() async {
-    if (_playerOpen || _isAnimatingOut || widget.affirmations.isEmpty) return;
+    if (_playerOpen || _committing || widget.affirmations.isEmpty) return;
     _playerOpen = true;
     try {
       await AffirmationPlayerRoute.push(
@@ -400,15 +394,10 @@ class _AffirmationCardStackState extends State<AffirmationCardStack> {
                 onTap: activate,
                 child: SizedBox(
                   width: stackWidth,
-                  child: ClipRect(
-                    child: AnimatedSize(
-                      duration: MediaQuery.disableAnimationsOf(context)
-                          ? Duration.zero
-                          : _animationDuration,
-                      curve: Curves.easeOutCubic,
-                      alignment: Alignment.topCenter,
-                      child: Stack(children: _buildLayerCards(context, scale)),
-                    ),
+                  child: AnimatedBuilder(
+                    animation: _motion,
+                    builder: (context, _) =>
+                        Stack(children: _buildLayerCards(context, scale)),
                   ),
                 ),
               ),
@@ -438,67 +427,38 @@ class _AffirmationCardStackState extends State<AffirmationCardStack> {
     final sideStep = 28.0 * scale;
     final hasChoices = widget.affirmations.length > 1;
     final reduced = MediaQuery.disableAnimationsOf(context);
-    final direction = _isAnimatingOut
-        ? _transitionDirection
-        : (_dragOffset > 0 ? 1 : -1);
+    final progress = reduced ? 0.0 : _motion.value.abs();
+    final step = _motion.value.isNegative ? 1 : -1;
     final cards = <Widget>[];
-    for (var depth = count - 1; depth > 0; depth--) {
-      final index = _wrapIndex(_frontIndex - direction * depth);
+    for (var depth = count - 1; depth >= 0; depth--) {
+      final index = _wrapIndex(_frontIndex + depth);
+      final front = depth == 0;
+      final card = AffirmationCardWidget(
+        affirmation: widget.affirmations[index],
+        imageIndex: index,
+        deck: widget.affirmations,
+        previewIndex: progress > 0 ? _wrapIndex(index + step) : null,
+        progress: progress,
+        isFront: front,
+        showSwipeHint: front && hasChoices && _showHint,
+        onSwipe: front && hasChoices ? _handleDragUpdate : null,
+        onSwipeEnd: front && hasChoices ? _handleDragEnd : null,
+        onSwipeCancel: front && hasChoices ? _resetDrag : null,
+      );
       cards.add(
-        Positioned(
-          top: (count - depth - 1) * topStep,
-          left: depth * sideStep,
-          right: depth * sideStep,
-          child: IgnorePointer(
-            child: AffirmationCardWidget(
-              affirmation: widget.affirmations[index],
-              imageIndex: index,
-              isFront: false,
-            ),
-          ),
-        ),
+        front
+            ? Padding(
+                padding: EdgeInsets.only(top: (count - 1) * topStep),
+                child: card,
+              )
+            : Positioned(
+                top: (count - depth - 1) * topStep,
+                left: depth * sideStep,
+                right: depth * sideStep,
+                child: IgnorePointer(child: card),
+              ),
       );
     }
-    final duration = reduced || (_dragOffset != 0 && !_isAnimatingOut)
-        ? Duration.zero
-        : _animationDuration;
-    cards.add(
-      Padding(
-        padding: EdgeInsets.only(top: (count - 1) * topStep),
-        child: TweenAnimationBuilder<double>(
-          key: ValueKey(widget.affirmations[_frontIndex].id),
-          tween: Tween(begin: reduced ? 1.0 : 0.0, end: 1.0),
-          duration: reduced ? Duration.zero : _animationDuration,
-          curve: Curves.easeOutCubic,
-          builder: (_, progress, child) => Transform.translate(
-            offset: Offset(0, -_transitionDirection * 12 * (1 - progress)),
-            child: child,
-          ),
-          child: AnimatedContainer(
-            duration: duration,
-            curve: Curves.easeOutCubic,
-            transform: Matrix4.translationValues(
-              0,
-              reduced ? 0 : (_isAnimatingOut ? _exitOffset : _dragOffset * .28),
-              0,
-            ),
-            child: AnimatedOpacity(
-              duration: duration,
-              opacity: _isAnimatingOut ? 0 : 1,
-              child: AffirmationCardWidget(
-                affirmation: widget.affirmations[_frontIndex],
-                imageIndex: _frontIndex,
-                deck: widget.affirmations,
-                showSwipeHint: hasChoices && _showHint,
-                onSwipe: hasChoices ? _handleDragUpdate : null,
-                onSwipeEnd: hasChoices ? _handleDragEnd : null,
-                onSwipeCancel: hasChoices ? _resetDrag : null,
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
     return cards;
   }
 }

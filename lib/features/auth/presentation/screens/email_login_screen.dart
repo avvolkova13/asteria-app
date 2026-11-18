@@ -82,7 +82,7 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
     final l10n = AppLocalizations.of(context);
     return AuthFlowScaffold(
       showBackButton: !widget.isRoot,
-      backgroundOpacity: 0.38,
+      background: const AuthSilkBackground(),
       child: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {
@@ -103,7 +103,17 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: AsteriaEntrance.sections([
-                            SizedBox(height: isCompact ? 58 : 68),
+                            if (widget.isRoot) ...[
+                              SizedBox(height: isCompact ? 16 : 28),
+                              Image.asset(
+                                'assets/images/auth/asteria_mark.png',
+                                width: isCompact ? 44 : 56,
+                                height: isCompact ? 44 : 56,
+                                excludeFromSemantics: true,
+                              ),
+                              const SizedBox(height: 12),
+                            ] else
+                              SizedBox(height: isCompact ? 58 : 68),
                             Text(
                               l10n.emailAuthTitle,
                               style: context.textTheme.inversePlayfairSemiBold24

@@ -211,9 +211,8 @@ void main() {
                   body: ListenableBuilder(
                     listenable: Listenable.merge([deck, reduced]),
                     builder: (context, _) => MediaQuery(
-                      data: MediaQuery.of(
-                        context,
-                      ).copyWith(disableAnimations: reduced.value),
+                      data: MediaQuery.of(context)
+                          .copyWith(disableAnimations: reduced.value),
                       child: SizedBox(
                         width: 358,
                         child: AffirmationCardStack(affirmations: deck.value),
@@ -370,6 +369,31 @@ void main() {
         final visibleBehindBeforeLeftSwipe = _visibleBehindImageAssetPath(
           tester,
         );
+        // A partial swipe previews the next card inside the existing frame.
+        // Reversing the drag must restore the same card without a timer.
+        final front = find.byWidgetPredicate(
+          (widget) => widget is AffirmationCardWidget && widget.isFront,
+        );
+        final frame = tester.getRect(front);
+        final gesture = await tester.startGesture(center);
+        await gesture.moveBy(const Offset(0, -24));
+        await gesture.moveBy(const Offset(0, -56));
+        await tester.pump();
+        AffirmationCardWidget face() =>
+            tester.widget<AffirmationCardWidget>(front);
+        expect(face().progress, inExclusiveRange(0.0, 1.0));
+        expect(face().previewIndex, 1);
+        expect(tester.getRect(front), frame);
+        final progress = face().progress;
+        await gesture.moveBy(const Offset(0, 32));
+        await tester.pump();
+        expect(face().progress, lessThan(progress));
+        await gesture.cancel();
+        await tester.pumpAndSettle();
+        expect(face().imageIndex, 0);
+        expect(face().previewIndex, isNull);
+        expect(tester.getRect(front), frame);
+
         await tester.drag(swipeDetector, const Offset(0, -120));
         await tester.pumpAndSettle();
 

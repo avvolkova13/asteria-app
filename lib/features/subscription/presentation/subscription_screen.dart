@@ -970,14 +970,17 @@ class _SubscriptionInfoCard extends StatelessWidget {
                       ),
                     ],
                     const SizedBox(height: 12),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: Image.asset(
-                        'assets/images/sonnik/pro_crystal.webp',
-                        width: artSize,
-                        height: artSize,
-                        fit: BoxFit.contain,
-                        excludeFromSemantics: true,
+                    Padding(
+                      padding: const EdgeInsets.only(right: 8),
+                      child: Align(
+                        alignment: Alignment.centerRight,
+                        child: Image.asset(
+                          'assets/images/sonnik/pro_crystal.webp',
+                          width: artSize,
+                          height: artSize,
+                          fit: BoxFit.contain,
+                          excludeFromSemantics: true,
+                        ),
                       ),
                     ),
                   ],
@@ -1036,6 +1039,7 @@ class _SubscriptionInfoCard extends StatelessWidget {
                       ),
                     ),
                   ),
+                  SizedBox(width: compact ? 8 : 16),
                 ],
               );
             },

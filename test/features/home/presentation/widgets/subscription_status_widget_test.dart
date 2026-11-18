@@ -55,6 +55,24 @@ void main() {
       expect(tester.takeException(), isNull);
     },
   );
+  testWidgets('active subscription artwork stays against the trailing inset', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _testApp(SubscriptionActiveStatusWidget(onTap: () {})),
+    );
+
+    final card = tester.getRect(
+      find.byKey(const ValueKey('profile-subscription-status-card')),
+    );
+    final art = tester.getRect(
+      find.byKey(const ValueKey('profile-subscription-status-art')),
+    );
+    expect(card.right - art.right, closeTo(12, 1));
+    expect(art.width, greaterThan(card.width * .39));
+    expect(tester.takeException(), isNull);
+  });
+
   for (final active in [true, false]) {
     testWidgets(
       'scaled PRO copy uses full width and clears its action (active=$active)',
