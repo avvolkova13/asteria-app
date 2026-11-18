@@ -145,7 +145,7 @@ void main() {
       );
       await tester.pumpAndSettle();
       expect(tester.takeException(), isNull);
-      expect(tester.getSize(find.byKey(key)), const Size(390, 265));
+      expect(tester.getSize(find.byKey(key)), const Size(390, 267));
       final description = tester.renderObject<RenderParagraph>(
         find.text('Недостаточно для покупки расклада'),
       );

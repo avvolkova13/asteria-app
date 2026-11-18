@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_action_button.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_activity_indicator.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
@@ -48,7 +49,10 @@ class CustomButton extends StatelessWidget {
     if (isFullWidth || width != null || height != null) {
       return ConstrainedBox(
         constraints: BoxConstraints(minHeight: height ?? 50),
-        child: SizedBox(width: isFullWidth ? double.infinity : width, child: buttonWidget),
+        child: SizedBox(
+          width: isFullWidth ? double.infinity : width,
+          child: buttonWidget,
+        ),
       );
     }
 
@@ -56,92 +60,21 @@ class CustomButton extends StatelessWidget {
   }
 
   Widget _buildButtonWidget(BuildContext context) {
-    switch (type) {
-      case CustomButtonType.primary:
-        return _buildPrimaryButton(context);
-      case CustomButtonType.secondary:
-        return _buildSecondaryButton(context);
-      case CustomButtonType.outline:
-        return _buildOutlineButton(context);
-      case CustomButtonType.text:
-        return _buildTextButton(context);
-      case CustomButtonType.deepPurple:
-        return _buildDeepPurpleButton(context);
-    }
-  }
-
-  Widget _buildPrimaryButton(BuildContext context) {
-    return LotusButtons.elevated(
-      onPressed: isLoading ? null : onPressed,
-      style: ElevatedButton.styleFrom(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        backgroundColor: context.colors.customButtonPrimaryBackground,
-        foregroundColor: context.colors.customButtonPrimaryText,
-        disabledBackgroundColor: context.colors.customButtonDisabledBackground,
-        disabledForegroundColor: context.colors.customButtonDisabledText,
-      ),
-      child: _buildButtonContent(context),
-    );
-  }
-
-  Widget _buildSecondaryButton(BuildContext context) {
-    return LotusButtons.elevated(
-      onPressed: isLoading ? null : onPressed,
-      style: ElevatedButton.styleFrom(
-        backgroundColor: context.colors.surface,
-        foregroundColor: context.colors.textPrimary,
-        disabledBackgroundColor: context.colors.customButtonDisabledBackground,
-        disabledForegroundColor: context.colors.customButtonDisabledText,
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      ),
-      child: _buildButtonContent(context),
-    );
-  }
-
-  Widget _buildOutlineButton(BuildContext context) {
-    return LotusButtons.outlined(
-      onPressed: isLoading ? null : onPressed,
-      style: OutlinedButton.styleFrom(
-        foregroundColor: context.colors.customButtonOutlineText,
-        disabledForegroundColor: context.colors.customButtonDisabledText,
-        side: BorderSide(
-          color: (isLoading || onPressed == null)
-              ? context.colors.customButtonDisabledBackground
-              : context.colors.customButtonOutlineBorder,
+    if (type == CustomButtonType.text) {
+      return LotusButtons.text(
+        onPressed: isLoading ? null : onPressed,
+        style: TextButton.styleFrom(
+          foregroundColor: context.colors.customButtonOutlineText,
+          disabledForegroundColor: context.colors.customButtonDisabledText,
         ),
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      ),
-      child: _buildButtonContent(context),
-    );
-  }
-
-  Widget _buildTextButton(BuildContext context) {
-    return LotusButtons.text(
-      onPressed: isLoading ? null : onPressed,
-      style: TextButton.styleFrom(
-        foregroundColor: context.colors.customButtonOutlineText,
-        disabledForegroundColor: context.colors.customButtonDisabledText,
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      ),
-      child: _buildButtonContent(context),
-    );
-  }
-
-  Widget _buildDeepPurpleButton(BuildContext context) {
-    return LotusButtons.elevated(
-      onPressed: isLoading ? null : onPressed,
-      style: ElevatedButton.styleFrom(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        backgroundColor: AppColors.deepPurple,
-        foregroundColor: AppColors.white,
-        disabledBackgroundColor: context.colors.customButtonDisabledBackground,
-        disabledForegroundColor: context.colors.customButtonDisabledText,
-      ),
+        child: _buildButtonContent(context),
+      );
+    }
+    return AsteriaActionButton(
+      onPressed: onPressed,
+      isLoading: isLoading,
+      height: height ?? 50,
+      width: isFullWidth ? double.infinity : width,
       child: _buildButtonContent(context),
     );
   }
@@ -155,7 +88,9 @@ class CustomButton extends StatelessWidget {
       case CustomButtonType.outline:
         return context.textTheme.buttonOutline;
       case CustomButtonType.text:
-        return context.textTheme.button.copyWith(decoration: TextDecoration.underline);
+        return context.textTheme.button.copyWith(
+          decoration: TextDecoration.underline,
+        );
       case CustomButtonType.deepPurple:
         return context.textTheme.button.copyWith(color: AppColors.white);
     }
@@ -170,10 +105,18 @@ class CustomButton extends StatelessWidget {
     final buttonTextStyle = _getTextStyleForType(context, type);
     const double defaultIconSize = 20;
 
-    final label = Text(
-      text,
-      textAlign: TextAlign.center,
-      style: buttonTextStyle.copyWith(fontWeight: fontWeight, color: textColor ?? buttonTextStyle.color),
+    final label = Builder(
+      builder: (buttonContext) => Text(
+        text,
+        textAlign: TextAlign.center,
+        style: buttonTextStyle.copyWith(
+          fontWeight: fontWeight,
+          color: onPressed == null
+              ? DefaultTextStyle.of(buttonContext).style.color
+              : (type == CustomButtonType.text ? textColor : null) ??
+                    DefaultTextStyle.of(buttonContext).style.color,
+        ),
+      ),
     );
 
     if (imageAsset != null) {
@@ -185,7 +128,12 @@ class CustomButton extends StatelessWidget {
         children: [
           Flexible(child: label),
           const SizedBox(width: 10),
-          LotusRasterIcon(imageAsset!, width: width, height: height, fit: BoxFit.contain),
+          LotusRasterIcon(
+            imageAsset!,
+            width: width,
+            height: height,
+            fit: BoxFit.contain,
+          ),
         ],
       );
     }

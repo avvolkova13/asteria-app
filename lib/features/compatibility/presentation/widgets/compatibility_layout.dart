@@ -1,9 +1,9 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_action_button.dart';
 import 'package:asteria_app/core/ui_kit/widgets/top_bar_geometry.dart';
 import 'package:asteria_app/features/scenarios/scenario_sky.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/ui_kit/card_radii.dart';
-import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/core/ui_kit/widgets/top_nav_bar.dart';
 import 'package:asteria_app/features/monetization/presentation/monetization_provider.dart';
@@ -51,7 +51,8 @@ class CompatibilityLayout extends StatelessWidget {
                 SliverPersistentHeader(
                   pinned: true,
                   floating: false,
-                  delegate: TopNavBarDelegate(
+                  delegate: TopNavBarDelegate.adaptive(
+                    context,
                     topInset: MediaQuery.paddingOf(context).top,
                     toolbarHeight: AsteriaTopBarMetrics.heightOf(context),
                     userName: context.l10n.compatibilityTitle,
@@ -194,45 +195,11 @@ class CompatibilityGradientButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final enabled = onPressed != null;
-
-    return Semantics(
-      button: true,
-      enabled: enabled,
-      label: text,
-      child: ExcludeSemantics(
-        child: LotusTap(
-          onTap: enabled ? onPressed : null,
-          child: AnimatedOpacity(
-            duration: const Duration(milliseconds: 150),
-            opacity: enabled ? 1 : 0.68,
-            child: Container(
-              constraints: BoxConstraints(minHeight: height),
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
-              alignment: Alignment.center,
-              decoration: CardLensDecoration.button(
-                enabled: enabled,
-                borderRadius: BorderRadius.circular(16),
-                gradient: enabled
-                    ? const LinearGradient(
-                        colors: [Color(0xFF7C4DFF), Color(0xFF5436D9)],
-                      )
-                    : null,
-                color: enabled ? null : const Color(0xFF3B2E7B),
-              ),
-              child: Text(
-                text,
-                textAlign: TextAlign.center,
-                style: context.textTheme.inverseUrbanistRegular16.copyWith(
-                  color: enabled
-                      ? AppColors.white
-                      : AppColors.white.withValues(alpha: 0.64),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
+    return AsteriaActionButton(
+      text: text,
+      onPressed: onPressed,
+      height: height,
+      width: double.infinity,
     );
   }
 }

@@ -1,7 +1,8 @@
+import 'package:asteria_app/core/ui_kit/widgets/responsive_heading.dart';
+import 'package:asteria_app/core/ui_kit/widgets/purchase_modal_actions.dart';
+import 'package:asteria_app/core/ui_kit/widgets/asteria_action_button.dart';
 import 'package:asteria_app/core/ui_kit/widgets/modal_glass_surface.dart';
-import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
-import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
 import 'package:asteria_app/core/analytics/dictionaries/failure_reason.dart';
 import 'package:asteria_app/core/analytics/dictionaries/offer_type.dart';
@@ -23,11 +24,6 @@ enum PurchaseModalState { initial, notEnoughBalance, success }
 const double _purchaseModalSheetHeight = 300;
 const double _successPurchaseModalSheetHeight = 320;
 const Color _modalBackground = ModalGlassTokens.surface;
-const Color _modalPurple = Color(0xFF6E4BFF);
-const Color _modalPurpleDark = Color(0xFF5436D9);
-const LinearGradient _modalButtonGradient = LinearGradient(
-  colors: [_modalPurple, _modalPurpleDark],
-);
 
 class SharedPurchaseModal extends StatefulWidget {
   final String? featureKey;
@@ -80,6 +76,7 @@ class SharedPurchaseModal extends StatefulWidget {
 class _SharedPurchaseModalState extends State<SharedPurchaseModal> {
   PurchaseModalState _state = PurchaseModalState.initial;
   bool _isSubmitting = false;
+  bool _hasPurchaseError = false;
   String? _idempotencyKey;
   String? _originUid;
 
@@ -100,7 +97,10 @@ class _SharedPurchaseModalState extends State<SharedPurchaseModal> {
         !provider.isCurrentUser(_originUid!)) {
       return;
     }
-    setState(() => _isSubmitting = true);
+    setState(() {
+      _isSubmitting = true;
+      _hasPurchaseError = false;
+    });
     try {
       await openContextualPurchase(
         context,
@@ -125,7 +125,7 @@ class _SharedPurchaseModalState extends State<SharedPurchaseModal> {
             : PurchaseModalState.notEnoughBalance;
       });
     } catch (_) {
-      if (mounted) showAccessError(context);
+      if (mounted) setState(() => _hasPurchaseError = true);
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
     }
@@ -172,6 +172,9 @@ class _SharedPurchaseModalState extends State<SharedPurchaseModal> {
                     ? () => _openCheckout(true)
                     : null,
                 isBusy: _isSubmitting,
+                errorMessage: _hasPurchaseError
+                    ? context.l10n.purchaseErrorTryAgain
+                    : null,
               );
             }
 
@@ -228,7 +231,7 @@ class _SharedPurchaseModalState extends State<SharedPurchaseModal> {
           Column(
             mainAxisSize: MainAxisSize.min,
             children: AsteriaEntrance.sections([
-              Text(
+              ResponsiveHeading(
                 context.l10n.purchaseConfirmTitle,
                 style: context.textTheme.inversePlayfairSemiBold24.copyWith(
                   height: 1,
@@ -247,29 +250,31 @@ class _SharedPurchaseModalState extends State<SharedPurchaseModal> {
               ),
             ]),
           ),
+          if (_hasPurchaseError)
+            Padding(
+              padding: const EdgeInsets.only(top: 16),
+              child: Semantics(
+                liveRegion: true,
+                child: Text(
+                  context.l10n.purchaseErrorTryAgain,
+                  key: const ValueKey('purchase-inline-error'),
+                  style: context.textTheme.inverseUrbanistRegular16,
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ),
           Padding(
             padding: const EdgeInsets.only(top: 24, bottom: 32),
-            child: IntrinsicHeight(
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Expanded(
-                    child: _ModalActionButton.outline(
-                      onPressed: () => Navigator.pop(context),
-                      text: context.l10n.commonCancel,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: _ModalActionButton.primary(
-                      onPressed: _isSubmitting
-                          ? null
-                          : () =>
-                                _handlePurchase(context, monetizationProvider),
-                      text: context.l10n.commonBuy,
-                    ),
-                  ),
-                ],
+            child: PurchaseModalActions(
+              cancelLabel: context.l10n.commonCancel,
+              onCancel: () => Navigator.pop(context),
+              primary: AsteriaActionButton(
+                text: context.l10n.commonBuy,
+                width: double.infinity,
+                isLoading: _isSubmitting,
+                onPressed: _isSubmitting
+                    ? null
+                    : () => _handlePurchase(context, monetizationProvider),
               ),
             ),
           ).withEntrance(),
@@ -288,13 +293,18 @@ class _SharedPurchaseModalState extends State<SharedPurchaseModal> {
       Navigator.pop(context);
       return;
     }
-    setState(() => _isSubmitting = true);
+    setState(() {
+      _isSubmitting = true;
+      _hasPurchaseError = false;
+    });
     try {
       await monetizationProvider.refreshForAccess();
     } catch (_) {
       if (context.mounted) {
-        setState(() => _isSubmitting = false);
-        showAccessError(context);
+        setState(() {
+          _isSubmitting = false;
+          _hasPurchaseError = true;
+        });
       }
       return;
     }
@@ -397,12 +407,8 @@ class _SharedPurchaseModalState extends State<SharedPurchaseModal> {
       if (mounted) {
         setState(() {
           _isSubmitting = false;
+          _hasPurchaseError = true;
         });
-      }
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(context.l10n.purchaseErrorTryAgain)),
-        );
       }
     }
   }
@@ -632,67 +638,18 @@ class _ArrowIcon extends StatelessWidget {
 class _ModalActionButton extends StatelessWidget {
   final String text;
   final VoidCallback? onPressed;
-  final bool isPrimary;
 
   const _ModalActionButton.primary({
     required this.text,
     required this.onPressed,
-  }) : isPrimary = true;
-
-  const _ModalActionButton.outline({
-    required this.text,
-    required this.onPressed,
-  }) : isPrimary = false;
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Semantics(
-      button: true,
-      label: text,
-      enabled: onPressed != null,
-      onTap: onPressed == null ? null : LotusFeedback.action(onPressed!),
-      child: ExcludeSemantics(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(
-            minHeight: 50,
-            minWidth: double.infinity,
-          ),
-          child: Material(
-            color: Colors.transparent,
-            borderRadius: BorderRadius.circular(16),
-            child: Ink(
-              decoration: CardLensDecoration.button(
-                enabled: onPressed != null,
-                gradient: isPrimary && onPressed != null
-                    ? _modalButtonGradient
-                    : null,
-                borderRadius: BorderRadius.circular(16),
-                border: isPrimary ? null : Border.all(color: _modalPurple),
-              ),
-              child: LotusInkTap(
-                onTap: onPressed,
-                borderRadius: BorderRadius.circular(16),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 8,
-                  ),
-                  child: Center(
-                    heightFactor: 1,
-                    child: Text(
-                      text,
-                      style: context.textTheme.button.copyWith(
-                        color: ModalGlassTokens.text,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
+    return AsteriaActionButton(
+      text: text,
+      onPressed: onPressed,
+      width: double.infinity,
     );
   }
 }

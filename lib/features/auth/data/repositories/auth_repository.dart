@@ -48,7 +48,7 @@ class AuthRepositoryImpl implements AuthRepository {
         ),
       );
     } catch (e) {
-      debugPrint('Error: $e');
+      debugPrint('auth_user_create_failed');
       throw Exception('Ошибка при создании пользователя: $e');
     }
   }

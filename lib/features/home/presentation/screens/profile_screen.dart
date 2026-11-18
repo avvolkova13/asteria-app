@@ -432,6 +432,7 @@ class _ProfileMenuCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final stackIcon = MediaQuery.textScalerOf(context).scale(17) > 24;
     final icon = ProfileIconBox(
       iconAsset: iconAsset,
       iconSize: 34,
@@ -439,7 +440,7 @@ class _ProfileMenuCard extends StatelessWidget {
     );
     final label = Text(
       title,
-      textAlign: horizontal ? TextAlign.start : TextAlign.center,
+      textAlign: horizontal && !stackIcon ? TextAlign.start : TextAlign.center,
       style: context.textTheme.inverseUrbanistRegular17.copyWith(height: 1.1),
     );
     return ProfileGlassCard(
@@ -449,7 +450,7 @@ class _ProfileMenuCard extends StatelessWidget {
         horizontal: horizontal ? 16 : 8,
         vertical: 14,
       ),
-      child: horizontal
+      child: horizontal && !stackIcon
           ? Row(
               children: [
                 icon,
@@ -481,20 +482,23 @@ class _LogoutButton extends StatelessWidget {
             child: GestureDetector(
               behavior: HitTestBehavior.opaque,
               onTap: activate,
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const ProfileIconBox(
-                    iconAsset: 'assets/icons/exit_icon.svg',
-                    size: 34,
-                    iconSize: 22,
-                  ),
-                  const SizedBox(width: 10),
-                  Text(
-                    context.l10n.logoutButton,
-                    style: context.textTheme.inverseUrbanistRegular17,
-                  ),
-                ],
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(minHeight: 44),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const ProfileIconBox(
+                      iconAsset: 'assets/icons/exit_icon.svg',
+                      size: 34,
+                      iconSize: 22,
+                    ),
+                    const SizedBox(width: 10),
+                    Text(
+                      context.l10n.logoutButton,
+                      style: context.textTheme.inverseUrbanistRegular17,
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

@@ -15,6 +15,15 @@
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="Ze5-6b-2t3">
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" clipsSubviews="YES" image="SplashSilk" translatesAutoresizingMaskIntoConstraints="NO" id="sLK-oP-en0"/>
+                        </subviews>
+                        <constraints>
+                            <constraint firstItem="sLK-oP-en0" firstAttribute="leading" secondItem="Ze5-6b-2t3" secondAttribute="leading" id="sLK-ed-g01"/>
+                            <constraint firstItem="sLK-oP-en0" firstAttribute="trailing" secondItem="Ze5-6b-2t3" secondAttribute="trailing" id="sLK-ed-g02"/>
+                            <constraint firstItem="sLK-oP-en0" firstAttribute="top" secondItem="Ze5-6b-2t3" secondAttribute="top" id="sLK-ed-g03"/>
+                            <constraint firstItem="sLK-oP-en0" firstAttribute="bottom" secondItem="Ze5-6b-2t3" secondAttribute="bottom" id="sLK-ed-g04"/>
+                        </constraints>
                         <color key="backgroundColor" red="0.06274510" green="0.05098039" blue="0.10980392" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </view>
                 </viewController>
@@ -23,4 +32,7 @@
             <point key="canvasLocation" x="53" y="375"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="SplashSilk" width="393" height="852"/>
+    </resources>
 </document>

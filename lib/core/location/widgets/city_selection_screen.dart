@@ -342,7 +342,7 @@ class _CitySelectionScreenState extends State<CitySelectionScreen> {
                         ? null
                         : context.l10n.locationManualInputHint,
                     hintStyle: AppTypography.placeholder.copyWith(
-                      color: AppColors.white.withValues(alpha: 0.45),
+                      color: AppColorsDark.textTertiary,
                     ),
                     filled: false,
                     fillColor: Colors.transparent,
@@ -532,7 +532,9 @@ class _CitySuggestionTile extends StatelessWidget {
                 height: asSheet ? 20 : 16,
                 tint: isSelected
                     ? null
-                    : (asSheet ? AppColors.textTertiary : Colors.white54),
+                    : (asSheet
+                          ? AppColors.textTertiary
+                          : AppColorsDark.textTertiary),
                 excludeFromSemantics: true,
               ),
             ),

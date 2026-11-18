@@ -153,7 +153,8 @@ class _LoveDeckScreenState extends State<LoveDeckScreen> {
               SliverPersistentHeader(
                 pinned: true,
                 floating: false,
-                delegate: TopNavBarDelegate(
+                delegate: TopNavBarDelegate.adaptive(
+                  context,
                   topInset: MediaQuery.paddingOf(context).top,
                   toolbarHeight: AsteriaTopBarMetrics.heightOf(context),
                   canPop: true,
@@ -335,7 +336,6 @@ class _LoveDeckContent extends StatelessWidget {
             if (afterReading != null &&
                 userProvider.isAllCardsOpened('love_deck'))
               afterReading!,
-            const SizedBox(height: 16),
           ]),
         );
       },
@@ -414,8 +414,6 @@ class _GradientUnderlineButton extends StatelessWidget {
               _LoveDeckColors.goldGradient.createShader(bounds),
           child: Text(
             text,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
             style: style.copyWith(color: AppColors.white),
             textAlign: TextAlign.center,
           ),

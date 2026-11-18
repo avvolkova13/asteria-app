@@ -147,7 +147,8 @@ class _KeltDeckScreenState extends State<KeltDeckScreen> {
             SliverPersistentHeader(
               pinned: true,
               floating: false,
-              delegate: TopNavBarDelegate(
+              delegate: TopNavBarDelegate.adaptive(
+                context,
                 topInset: MediaQuery.paddingOf(context).top,
                 toolbarHeight: AsteriaTopBarMetrics.heightOf(context),
                 canPop: true,
@@ -286,7 +287,6 @@ class _KeltDeckContent extends StatelessWidget {
               else
                 Text(interpretation, style: _bodyStyle(context)).withEntrance(),
             ],
-            const SizedBox(height: 64),
           ]),
         );
       },
@@ -386,8 +386,8 @@ class _GradientLink extends StatelessWidget {
       child: LotusTap(
         behavior: HitTestBehavior.opaque,
         onTap: onTap,
-        child: SizedBox(
-          height: 48,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: 48),
           child: Center(
             child: _GradientText(
               text: text,
@@ -396,8 +396,6 @@ class _GradientLink extends StatelessWidget {
                 fontWeight: FontWeight.w600,
                 height: 1.2,
                 letterSpacing: -0.408,
-                decoration: TextDecoration.underline,
-                decorationThickness: 1,
               ),
             ),
           ),

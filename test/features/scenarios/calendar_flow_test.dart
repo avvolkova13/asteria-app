@@ -1,3 +1,4 @@
+import 'package:asteria_app/features/scenarios/calendar_plan.dart';
 import 'package:asteria_app/app/data/models/lunar_calendar/lunar_month_model.dart';
 import 'package:asteria_app/app/data/models/lunar_calendar/lunar_recommendation_models.dart';
 import 'package:asteria_app/app/providers/content_provider.dart';
@@ -143,7 +144,8 @@ void main() {
       await tap(find.text('12').first);
       await tap(find.byTooltip('Next month'));
       await tap(find.text('13').first);
-      await tap(find.text('Compare dates'));
+      expect(find.text('Compare dates'), findsOneWidget);
+      expect(find.text('Choose this day'), findsNWidgets(2));
       expect(find.text('Repotting on ${month.month}/12'), findsOneWidget);
       expect(
         find.text(
@@ -153,7 +155,8 @@ void main() {
       );
       await tap(find.text('Change date'));
       await tap(find.text('12').first);
-      await tap(find.text('Compare dates'));
+      expect(find.text('Compare dates'), findsOneWidget);
+      expect(find.text('Choose this day'), findsNWidgets(2));
       expect(
         find.text('Both dates have the same rating for this activity.'),
         findsOneWidget,
@@ -165,31 +168,60 @@ void main() {
         await tester.pumpAndSettle();
       }
 
-      await back(); // Comparison → selected dates.
-      expect(find.text('Compare dates'), findsOneWidget);
       await back(); // Dates → the same activity list and scroll position.
       expect(find.text('Repotting plants').hitTestable(), findsOneWidget);
       await back(); // Activity → original lunar tab.
       expect(find.text('Lunar calendar'), findsOneWidget);
       await tap(find.text('My plans'));
-      expect(
-        find.text('Activities you schedule will appear here.'),
-        findsOneWidget,
-      );
+      expect(find.text('No plans for this day yet.'), findsOneWidget);
       await back();
       expect(start.hitTestable(), findsOneWidget);
       final originalTab = tester.state(find.byType(MoonScreen));
       await tap(start);
       await tap(find.text('Repotting plants'));
       await tap(find.text('12').first);
-      await tap(find.text('View this day'));
+      expect(find.text('View this day'), findsNothing);
+      expect(find.text('Choose this day').hitTestable(), findsOneWidget);
+      expect(find.text('Repotting on ${month.month}/12'), findsOneWidget);
       await tap(find.text('Choose this day'));
+      await tester.enterText(find.byType(TextField), '');
+      tester.view.physicalSize = const Size(320, 720);
+      tester.platformDispatcher.textScaleFactorTestValue = 1.4;
+      addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+      await tester.pumpAndSettle();
+      for (final activity in CalendarActivity.values) {
+        await tap(find.byKey(ValueKey('plan-activity-${activity.name}')));
+        expect(
+          tester.widget<TextField>(find.byType(TextField)).controller!.text,
+          isNotEmpty,
+        );
+        expect(tester.takeException(), isNull);
+      }
+      tester.view.physicalSize = const Size(390, 844);
+      tester.platformDispatcher.clearTextScaleFactorTestValue();
+      await tester.pumpAndSettle();
+      await tap(find.byKey(const ValueKey('plan-activity-transplant')));
+      expect(find.text('Repotting on ${month.month}/12'), findsOneWidget);
       await tester.enterText(find.byType(TextField), 'Repot the ficus');
+      await tap(find.byKey(const ValueKey('plan-activity-haircut')));
+      expect(find.text('Repotting on ${month.month}/12'), findsNothing);
+      expect(
+        tester.widget<TextField>(find.byType(TextField)).controller!.text,
+        'Repot the ficus',
+      );
+      await tap(find.byKey(const ValueKey('plan-activity-transplant')));
       await tap(find.text('Save'));
       expect(find.text('Plan saved'), findsOneWidget);
       await tap(find.text('Back to calendar'));
       expect(tester.state(find.byType(MoonScreen)), same(originalTab));
       await tap(find.text('My plans'));
+      await tap(
+        find.byKey(
+          ValueKey(
+            'plans-date-${calendarDateKey(DateTime(month.year, month.month, 12))}',
+          ),
+        ),
+      );
       await tap(find.text('Repot the ficus'));
       expect(find.text('Repotting on ${month.month}/12'), findsOneWidget);
       await tap(find.text('Back to calendar'));
@@ -204,7 +236,8 @@ void main() {
       );
       await tap(find.text('12').first);
       await tap(find.text('13').first);
-      await tap(find.text('Compare dates'));
+      expect(find.text('Compare dates'), findsOneWidget);
+      expect(find.text('Choose this day'), findsNWidgets(2));
       expect(
         find.text(
           'There is no recommendation for this activity on this date yet.',
@@ -216,6 +249,7 @@ void main() {
         findsNothing,
       );
       await tap(find.text('Choose this day').first);
+      await tap(find.byKey(const ValueKey('plan-activity-watering')));
       await tester.enterText(
         find.byType(TextField),
         'Trim without lunar rating',
@@ -241,7 +275,17 @@ void main() {
           matching: find.text('Trim without lunar rating'),
         ),
       );
-      expect(find.text('Haircuts'), findsOneWidget);
+      expect(find.text('Watering and fertilizing'), findsOneWidget);
+      final saved = CalendarPlans.read(
+        await CalendarPlans.open(),
+        'test-calendar-user',
+      );
+      expect(
+        saved
+            .singleWhere((plan) => plan.title == 'Trim without lunar rating')
+            .activity,
+        CalendarActivity.watering,
+      );
       expect(tester.takeException(), isNull);
     },
   );

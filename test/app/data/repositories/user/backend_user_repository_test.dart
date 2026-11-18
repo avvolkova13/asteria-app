@@ -9,6 +9,25 @@ import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  for (final status in [404, 500]) {
+    test('profile HTTP $status distinguishes absence from failure', () async {
+      final adapter = _UserProfileAdapter()..getStatus = status;
+      final dio = Dio(BaseOptions(baseUrl: 'https://api.example.com/'))
+        ..httpClientAdapter = adapter;
+      final session = _FakeSession();
+      final repository = UserRepositoryImpl(
+        profileApi: UserProfileApi.forDio(dio, session),
+        authSessionService: session,
+      );
+      addTearDown(repository.dispose);
+      if (status == 404) {
+        expect(await repository.getCurrentUser(), isNull);
+      } else {
+        await expectLater(repository.getCurrentUser(), throwsException);
+      }
+    });
+  }
+
   test('loads current user from backend /users/me', () async {
     final adapter = _UserProfileAdapter();
     final dio = Dio(BaseOptions(baseUrl: 'https://api.example.com/'))
@@ -328,6 +347,7 @@ class _SwitchingSession implements AuthSessionService {
 
 class _UserProfileAdapter implements HttpClientAdapter {
   final requests = <RequestOptions>[];
+  int? getStatus;
   bool deleted = false;
 
   @override
@@ -340,6 +360,13 @@ class _UserProfileAdapter implements HttpClientAdapter {
     const headers = {
       Headers.contentTypeHeader: [Headers.jsonContentType],
     };
+    if (options.method == 'GET' && getStatus != null) {
+      return ResponseBody.fromString(
+        jsonEncode({'detail': 'Unavailable'}),
+        getStatus!,
+        headers: headers,
+      );
+    }
     if (options.method == 'DELETE') {
       deleted = true;
       return ResponseBody.fromString(

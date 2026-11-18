@@ -1,4 +1,5 @@
 import '../test/features/compatibility/support/selection_test_support.dart';
+
 import 'dart:io';
 
 import 'package:asteria_app/app/data/models/prompt_response.dart';
@@ -108,6 +109,9 @@ void main() {
       'ast127-${Platform.operatingSystem}-personal-compatibility',
     );
     expect(personalScreenshot, isNotEmpty);
+    final dir = Directory('${Directory.systemTemp.path}/ast127')
+      ..createSync(recursive: true);
+    await File('${dir.path}/personal.png').writeAsBytes(personalScreenshot);
 
     await tester.pumpWidget(
       MaterialApp(
@@ -145,6 +149,8 @@ void main() {
       'ast127-${Platform.operatingSystem}-compatibility-result',
     );
     expect(resultScreenshot, isNotEmpty);
+    await File('${dir.path}/result.png').writeAsBytes(resultScreenshot);
+    debugPrint('AST127_SCREENSHOTS=${dir.path}');
   });
 }
 

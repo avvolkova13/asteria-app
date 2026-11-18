@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/app/data/models/sonnik/sonnik_model.dart';
 import 'package:asteria_app/app/providers/user_provider.dart';
@@ -73,41 +74,51 @@ class _SonnikHistoryItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SonnikGlassPanel(
-      onTap: onTap,
-      padding: const EdgeInsets.fromLTRB(16, 14, 14, 14),
-      borderRadius: BorderRadius.circular(20),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  sonnik.dateGenerated.toLocalizedShortDate(
-                    Localizations.localeOf(context),
+    return Semantics(
+      button: true,
+      enabled: true,
+      label:
+          '${sonnik.dateGenerated.toLocalizedShortDate(Localizations.localeOf(context))}. ${sonnik.title}',
+      onTap: LotusFeedback.action(onTap),
+      excludeSemantics: true,
+      child: SonnikGlassPanel(
+        onTap: onTap,
+        padding: const EdgeInsets.fromLTRB(16, 14, 14, 14),
+        borderRadius: BorderRadius.circular(20),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    sonnik.dateGenerated.toLocalizedShortDate(
+                      Localizations.localeOf(context),
+                    ),
+                    style: context.textTheme.urbanistSemiBold16.copyWith(
+                      color: SonnikPalette.gold,
+                    ),
                   ),
-                  style: context.textTheme.urbanistSemiBold16.copyWith(
-                    color: SonnikPalette.gold,
+                  const SizedBox(height: 6),
+                  Text(
+                    sonnik.title,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTypography.h4.copyWith(
+                      color: SonnikPalette.white,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  sonnik.title,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: AppTypography.h4.copyWith(color: SonnikPalette.white),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          const SizedBox(width: 12),
-          const ClayIcon(
-            Icons.arrow_forward_ios_rounded,
-            color: SonnikPalette.white,
-            size: 18,
-          ),
-        ],
+            const SizedBox(width: 12),
+            const ClayIcon(
+              Icons.arrow_forward_ios_rounded,
+              color: SonnikPalette.white,
+              size: 18,
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -49,10 +49,11 @@ void main() {
 
     expect(find.byKey(const ValueKey('home-pro-subscription-card')), findsOne);
     expect(find.text('Больше знаков\nот звёзд'), findsOneWidget);
-    expect(find.text('Попробовать 7 дней бесплатно'), findsOneWidget);
+    expect(find.text('Подключить PRO'), findsOneWidget);
+    expect(find.text('Попробовать 7 дней бесплатно'), findsNothing);
 
-    await tester.ensureVisible(find.text('Попробовать 7 дней бесплатно'));
-    await tester.tap(find.text('Попробовать 7 дней бесплатно'));
+    await tester.ensureVisible(find.text('Подключить PRO'));
+    await tester.tap(find.text('Подключить PRO'));
     await tester.pumpAndSettle();
 
     expect(find.text('subscription destination'), findsOneWidget);

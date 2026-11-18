@@ -66,7 +66,8 @@ class RunesScreen extends StatelessWidget {
           SliverPersistentHeader(
             pinned: true,
             floating: false,
-            delegate: TopNavBarDelegate(
+            delegate: TopNavBarDelegate.adaptive(
+              context,
               topInset: MediaQuery.paddingOf(context).top,
               toolbarHeight: AsteriaTopBarMetrics.heightOf(context),
               canPop: true,
@@ -337,7 +338,6 @@ class _RunesContentState extends State<_RunesContent> {
                           }
                         },
                       ),
-                      const SizedBox(height: 48),
                     ],
                   );
                 },
@@ -353,7 +353,6 @@ class _RunesContentState extends State<_RunesContent> {
               // Все руны
               const AllRunesTab(),
             ),
-            const SizedBox(height: 64),
           ],
         );
       },
@@ -410,7 +409,7 @@ class _RuneLayoutTabState extends State<_RuneLayoutTab> {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: AsteriaEntrance.sections([
+      children: [
         ConstrainedBox(
           constraints: const BoxConstraints(
             minHeight: LotusArrowBubble.hitExtent,
@@ -520,7 +519,7 @@ class _RuneLayoutTabState extends State<_RuneLayoutTab> {
 
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: AsteriaEntrance.sections([
+                children: [
                   RunesBlock(
                     rune1: widget.contentProvider.getRuneInDeck(
                       KeysConst.runeDeckLeftKey,
@@ -553,7 +552,7 @@ class _RuneLayoutTabState extends State<_RuneLayoutTab> {
                         .isRuneInDeckOpened(KeysConst.runeDeckCenterKey),
                     isRuneRightOpened: widget.contentProvider
                         .isRuneInDeckOpened(KeysConst.runeDeckRightKey),
-                  ).withEntrance(),
+                  ),
                   if (allRunesOpened) ...[
                     const SizedBox(height: 16),
                     if (hasLocalizedInterpretation)
@@ -581,12 +580,11 @@ class _RuneLayoutTabState extends State<_RuneLayoutTab> {
                       ),
                     ),
                   ],
-                ]),
+                ],
               );
             },
           ),
-        const SizedBox(height: 32),
-      ]),
+      ],
     );
   }
 }
@@ -673,8 +671,6 @@ class _GradientUnderlineButton extends StatelessWidget {
                   _RunesColors.goldGradient.createShader(bounds),
               child: Text(
                 text,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
                 style: style.copyWith(color: AppColors.white),
                 textAlign: TextAlign.center,
               ),

@@ -19,15 +19,13 @@ class AuthDataSourceImpl implements AuthDataSource {
         clearPhoneNumber: true,
         authMethod: AuthMethod.email,
       );
-      final userData = emailUser.toJson();
-
-      debugPrint('Creating user with data: $userData');
+      debugPrint('auth_profile_create_started');
 
       final created = await _userProfileApi.createUser(emailUser);
-      debugPrint('User created successfully with ID: ${created.id}');
+      debugPrint('auth_profile_create_completed');
       return created;
     } catch (e) {
-      debugPrint('Error creating user: $e');
+      debugPrint('auth_profile_create_failed');
       throw Exception('Ошибка создания документа: $e');
     }
   }

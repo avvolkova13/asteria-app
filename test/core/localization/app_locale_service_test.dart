@@ -52,16 +52,16 @@ void main() {
   test('regional English ARB overrides use local spelling', () async {
     final us = (await AppLocalizations.load(
       const Locale('en', 'US'),
-    )).onboardingPage2Description;
+    )).moonStatusFavorableShort;
     final gb = (await AppLocalizations.load(
       const Locale('en', 'GB'),
-    )).onboardingPage2Description;
+    )).moonStatusFavorableShort;
     final au = (await AppLocalizations.load(
       const Locale('en', 'AU'),
-    )).onboardingPage2Description;
+    )).moonStatusFavorableShort;
     final ca = (await AppLocalizations.load(
       const Locale('en', 'CA'),
-    )).onboardingPage2Description;
+    )).moonStatusFavorableShort;
 
     expect(us, contains('favorable'));
     expect(gb, contains('favourable'));

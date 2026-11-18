@@ -13,10 +13,12 @@ class OnboardingScreen extends StatefulWidget {
     required this.pages,
     required this.localization,
     this.onComplete,
+    this.now = DateTime.now,
   });
   final List<OnboardingPageModel> pages;
   final OnboardingLocalizationContract localization;
   final VoidCallback? onComplete;
+  final DateTime Function() now;
   @override
   State<OnboardingScreen> createState() => _OnboardingScreenState();
 }
@@ -42,7 +44,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             !previous.isCompleted && current.isCompleted,
         listener: (_, state) => widget.onComplete?.call(),
         builder: (context, state) {
-          if (state.error != null || widget.pages.length != 4) {
+          if (state.error != null || widget.pages.isEmpty) {
             return Scaffold(
               body: SafeArea(
                 child: ErrorScreenWidget(
@@ -56,6 +58,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           }
           return OnboardingTour(
             pages: widget.pages,
+            now: widget.now,
             onComplete: _finish,
             onPageChanged: (index) => context.read<OnboardingBloc>().add(
               OnboardingPageChanged(index),

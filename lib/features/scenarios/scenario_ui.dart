@@ -148,7 +148,8 @@ class ScenarioTile extends StatelessWidget {
                 ),
                 child: Row(
                   children: [
-                    if (art != null) ...[
+                    if (art != null &&
+                        MediaQuery.textScalerOf(context).scale(16) <= 22) ...[
                       ExcludeSemantics(
                         child: LotusRasterIcon(
                           art!,

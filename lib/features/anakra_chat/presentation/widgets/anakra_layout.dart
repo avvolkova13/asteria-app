@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_action_button.dart';
 import 'package:asteria_app/core/ui_kit/widgets/top_bar_geometry.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
@@ -31,7 +32,7 @@ abstract final class AnakraPalette {
   static const violetGlass = Color(0x339A7DB8);
   static const orange = Color(0xFFE6994D);
   static const white = Colors.white;
-  static const textMuted = Color(0xFFB5AAB8);
+  static const textMuted = AppColorsDark.textSecondary;
 
   static const primaryGradient = LinearGradient(
     begin: Alignment.centerLeft,
@@ -102,8 +103,60 @@ class AnakraTopNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AsteriaTopBarFrame(
-      child: Row(
+    final balance = MonetizationProvider.maybeOf(context)?.balance ?? 0;
+    final titleStyle = AppTypography.navTitle.copyWith(color: Colors.white);
+    return AsteriaAdaptiveTopBar(
+      title: context.l10n.anakraTitle,
+      titleStyle: titleStyle,
+      leadingWidth: 48,
+      leading: SizedBox(
+        width: 44,
+        height: 44,
+        child: canPop
+            ? LotusButtons.icon(
+                onPressed: () => Navigator.of(context).pop(),
+                tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+                icon: const LotusArrowBubble(back: true),
+                padding: EdgeInsets.zero,
+              )
+            : null,
+      ),
+      actions: [
+        Consumer<MonetizationProvider>(
+          builder: (context, monetizationProvider, child) {
+            final balance = monetizationProvider.balance;
+            return Semantics(
+              button: true,
+              label: '${context.l10n.balanceTitle}: $balance',
+              excludeSemantics: true,
+              child: LotusTap(
+                onTap: () => BalanceRoute.push(context),
+                behavior: HitTestBehavior.opaque,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      '$balance',
+                      style: AppTypography.navTitle.copyWith(
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    LotusRasterIcon(AnakraAssets.coin, height: 16),
+                  ],
+                ),
+              ),
+            );
+          },
+        ),
+        const SubscriptionWidget(),
+      ],
+      actionWidths: [
+        AsteriaTopBarLayout.textSize(context, '$balance', titleStyle).width +
+            20,
+        76,
+      ],
+      inline: Row(
         children: [
           SizedBox(
             width: 44,
@@ -350,35 +403,11 @@ class AnakraGradientButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final enabled = onPressed != null;
-
-    return Semantics(
-      button: true,
-      enabled: enabled,
-      label: text,
-      child: LotusTap(
-        onTap: enabled ? onPressed : null,
-        child: AnimatedOpacity(
-          duration: const Duration(milliseconds: 150),
-          opacity: enabled ? 1 : 0.64,
-          child: Container(
-            constraints: BoxConstraints(minHeight: height),
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            alignment: Alignment.center,
-            decoration: CardLensDecoration.button(
-              enabled: enabled,
-              borderRadius: BorderRadius.circular(16),
-              gradient: enabled ? AnakraPalette.primaryGradient : null,
-              color: enabled ? null : AnakraPalette.purpleDark,
-            ),
-            child: Text(
-              text,
-              style: context.textTheme.inverseUrbanistRegular16,
-              textAlign: TextAlign.center,
-            ),
-          ),
-        ),
-      ),
+    return AsteriaActionButton(
+      text: text,
+      onPressed: onPressed,
+      height: height,
+      width: double.infinity,
     );
   }
 }

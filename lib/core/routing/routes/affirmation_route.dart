@@ -7,16 +7,16 @@ class AffirmationRoute extends AppRoute {
     super.onExit,
     super.routes,
   }) : super(
-          name: routeName,
-          path: routeName,
-          pageBuilder: (context, state) {
-            return AsteriaPage<void>(
-              name: routeName,
-              key: state.pageKey,
-              child: const AffirmationScreen(),
-            );
-          },
-        );
+         name: routeName,
+         path: routeName,
+         pageBuilder: (context, state) {
+           return AsteriaPage<void>(
+             name: routeName,
+             key: state.pageKey,
+             child: const AffirmationScreen(),
+           );
+         },
+       );
 
   static const routeName = '/affirmation';
 
@@ -24,7 +24,8 @@ class AffirmationRoute extends AppRoute {
 
   static void push(BuildContext context) => context.pushNamed(routeName);
 
-  static void pushReplacement(BuildContext context) => context.pushReplacementNamed(routeName);
+  static void pushReplacement(BuildContext context) =>
+      context.pushReplacementNamed(routeName);
 }
 
 class AffirmationPlayerRoute extends AppRoute {
@@ -35,13 +36,21 @@ class AffirmationPlayerRoute extends AppRoute {
         pageBuilder: (context, state) => AsteriaPage<void>(
           key: state.pageKey,
           name: routeName,
-          child: const AffirmationPlayerScreen(),
+          child: switch (state.extra) {
+            AffirmationSelection selection => AffirmationDetailScreen(
+              selection: selection,
+            ),
+            _ => const AffirmationPlayerScreen(),
+          },
         ),
       );
 
   static const routeName = '/affirmation/player';
 
-  static Future<void> push(BuildContext context) async {
-    await context.pushNamed<void>(routeName);
+  static Future<void> push(
+    BuildContext context, {
+    AffirmationSelection? selection,
+  }) async {
+    await context.pushNamed<void>(routeName, extra: selection);
   }
 }

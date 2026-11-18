@@ -4,7 +4,9 @@ import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
+
 import 'dart:async';
+
 import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
 
 import 'package:asteria_app/app/data/models/article/article_model.dart';
@@ -15,6 +17,7 @@ import 'package:asteria_app/core/analytics/analytics_facade.dart';
 import 'package:asteria_app/core/routing/app_route.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/core/ui_kit/widgets/subscription_widget.dart';
+import 'package:asteria_app/features/article/presentation/article_card_title.dart';
 import 'package:asteria_app/features/home/presentation/widgets/articles_section_widget.dart';
 import 'package:asteria_app/features/balance/presentation/provider/rewards_provider.dart';
 import 'package:asteria_app/features/monetization/presentation/monetization_provider.dart';
@@ -135,7 +138,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
                     _ArticleContentCard(article: article).withEntrance(),
                     SizedBox(key: _articleEndKey, height: 24),
                     ArticlesSectionWidget(excludeArticleId: article.id),
-                    const SizedBox(height: 64),
+                    SizedBox(height: MediaQuery.paddingOf(context).bottom + 24),
                   ],
                 ),
               ),
@@ -191,12 +194,22 @@ class _ArticleTopBar extends StatelessWidget {
                   offset: const Offset(0, -2),
                   child: Row(
                     children: [
-                      LotusTap(
-                        behavior: HitTestBehavior.opaque,
-                        onTap: () => Navigator.of(context).pop(),
-                        child: const SizedBox.square(
-                          dimension: LotusArrowBubble.hitExtent,
-                          child: Center(child: LotusArrowBubble(back: true)),
+                      Semantics(
+                        button: true,
+                        enabled: true,
+                        label: MaterialLocalizations.of(context)
+                            .backButtonTooltip,
+                        onTap: LotusFeedback.action(
+                          () => Navigator.of(context).pop(),
+                        ),
+                        excludeSemantics: true,
+                        child: LotusTap(
+                          behavior: HitTestBehavior.opaque,
+                          onTap: () => Navigator.of(context).pop(),
+                          child: const SizedBox.square(
+                            dimension: LotusArrowBubble.hitExtent,
+                            child: Center(child: LotusArrowBubble(back: true)),
+                          ),
                         ),
                       ),
                       Flexible(
@@ -211,31 +224,40 @@ class _ArticleTopBar extends StatelessWidget {
                   ),
                 ),
               ),
-              LotusTap(
-                behavior: HitTestBehavior.opaque,
-                onTap: () => BalanceRoute.push(context),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Consumer<UserProvider>(
-                      builder: (context, userProvider, child) {
-                        return Padding(
-                          padding: const EdgeInsets.only(bottom: 4),
-                          child: Text(
-                            '${MonetizationProvider.maybeOf(context)?.balance ?? 0} ',
-                            style: navTextStyle,
-                          ).withEntrance(),
-                        );
-                      },
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 4),
-                      child: LotusRasterIcon(
-                        'assets/icons/star_coin_icon.png',
-                        height: 16,
+              Semantics(
+                button: true,
+                enabled: true,
+                label: context.l10n.balanceStarsLabel(
+                  MonetizationProvider.maybeOf(context)?.balance ?? 0,
+                ),
+                onTap: LotusFeedback.action(() => BalanceRoute.push(context)),
+                excludeSemantics: true,
+                child: LotusTap(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () => BalanceRoute.push(context),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Consumer<UserProvider>(
+                        builder: (context, userProvider, child) {
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 4),
+                            child: Text(
+                              '${MonetizationProvider.maybeOf(context)?.balance ?? 0} ',
+                              style: navTextStyle,
+                            ).withEntrance(),
+                          );
+                        },
                       ),
-                    ),
-                  ],
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 4),
+                        child: LotusRasterIcon(
+                          'assets/icons/star_coin_icon.png',
+                          height: 16,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
               const SizedBox(width: 8),
@@ -310,15 +332,13 @@ class _ArticleContentCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Center(
-              child: Text(
-                article.title,
-                style: AppTypography.h2.copyWith(
-                  color: AppColors.white,
-                  height: 1.2,
-                ),
-                textAlign: TextAlign.center,
+            Text(
+              articleCardTitle(article, Localizations.localeOf(context)),
+              style: AppTypography.h2.copyWith(
+                color: AppColors.white,
+                height: 1.2,
               ),
+              textAlign: TextAlign.start,
             ),
             const SizedBox(height: 16),
             _ArticleParagraphs(

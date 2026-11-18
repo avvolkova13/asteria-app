@@ -47,6 +47,9 @@ class AuthCubit extends Cubit<AuthState> {
        super(AuthInitial());
 
   void initializeUser(AuthIdentity identity) {
+    _isTimeUnknown = false;
+    _lastSelectedTimeOption = null;
+    _birthDataCompleteSent = false;
     _currentUser = UserModel(
       id: identity.userId,
       email: identity.email,
@@ -171,6 +174,8 @@ class AuthCubit extends Cubit<AuthState> {
       return;
     }
 
+    // Leave the previous error so a failed retry is observable again.
+    _emitUserUpdated();
     _globalLoaderService.show();
 
     try {
@@ -184,7 +189,7 @@ class AuthCubit extends Cubit<AuthState> {
 
       await FirstSession.begin(userToCreate.id);
       final savedUser = await _authRepository.createUser(userToCreate);
-      debugPrint('savedUser: ${savedUser.id}');
+      debugPrint('auth_profile_save_completed');
       _currentUser = savedUser;
       await _userRepository.setCurrentUser(savedUser);
       await _userProvider.setUser(savedUser);
@@ -205,7 +210,7 @@ class AuthCubit extends Cubit<AuthState> {
       emit(UserSaved(savedUser));
     } catch (e) {
       _globalLoaderService.hide();
-      debugPrint('Error saving user: $e');
+      debugPrint('auth_profile_save_failed');
       emit(const UserSaveError(AuthErrorCode.saveUser));
     }
   }
@@ -219,7 +224,7 @@ class AuthCubit extends Cubit<AuthState> {
       // Account creation must not fail because the retry queue is
       // temporarily unavailable. Authenticated startup submits the same
       // idempotent onboarding event again.
-      debugPrint('[AuthCubit] rewards initialization failed: $error');
+      debugPrint('auth_rewards_initialization_failed');
     }
   }
 

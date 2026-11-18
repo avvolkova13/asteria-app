@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/responsive_heading.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_activity_indicator.dart';
 import 'package:asteria_app/core/ui_kit/widgets/modal_glass_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
@@ -7,6 +8,7 @@ import 'package:asteria_app/features/profile_flow/profile_flow_ui.dart';
 import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/ui_kit/card_radii.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
+
 import 'dart:async';
 
 import 'package:asteria_app/core/analytics/analytics_events.dart';
@@ -103,9 +105,8 @@ class _PaymentsScreenState extends State<PaymentsScreen>
       launched = false;
     }
     if (!launched && mounted) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(context.l10n.paymentOpenError)));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(context.l10n.paymentOpenError)));
     }
   }
 
@@ -404,7 +405,10 @@ class _PaymentsScreenState extends State<PaymentsScreen>
   }) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+      padding: EdgeInsets.symmetric(
+        horizontal: MediaQuery.textScalerOf(context).scale(16) > 22 ? 8 : 20,
+        vertical: 24,
+      ),
       decoration: CardLensDecoration(
         color: AppColorsDark.modal,
         borderRadius: BorderRadius.circular(AsteriaCardRadii.card),
@@ -429,7 +433,7 @@ class _PaymentsScreenState extends State<PaymentsScreen>
           Semantics(
             header: true,
             liveRegion: true,
-            child: Text(
+            child: ResponsiveHeading(
               title,
               textAlign: TextAlign.center,
               style: context.textTheme.inversePlayfairSemiBold24,

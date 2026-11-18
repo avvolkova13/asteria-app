@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/services/auth/auth_session_service.dart';
 import 'package:asteria_app/features/scenarios/scenario_picker.dart';
 import 'package:asteria_app/features/scenarios/first_session.dart';
 import 'package:flutter/cupertino.dart';
@@ -16,7 +17,10 @@ abstract final class AppRouter {
   static GoRouter? _cachedRouter;
 
   static GoRouter getRouter(String initialLocation) {
+    final session = di.get<AuthSessionService>();
     _cachedRouter ??= GoRouter(
+      refreshListenable: session is Listenable ? session as Listenable : null,
+      redirect: (_, state) => authSessionRedirect(session, state.uri.path),
       routes: _routes,
       debugLogDiagnostics: true,
       initialLocation: initialLocation,
@@ -29,4 +33,20 @@ abstract final class AppRouter {
   static GoRouter createRouter(String initialLocation) {
     return getRouter(initialLocation);
   }
+}
+
+String? authSessionRedirect(AuthSessionService session, String path) {
+  if (session is SessionIdentityVersion &&
+      !(session as SessionIdentityVersion).identityReady) {
+    return null;
+  }
+  if (session.hasSession) return null;
+  if (path == AuthRoutes.loginRouteName ||
+      path == AuthRoutes.emailRouteName ||
+      path == AuthRoutes.emailCodeRouteName ||
+      path == AboutUsRoute.routeName ||
+      path == OnboardingRoute.routeName) {
+    return null;
+  }
+  return AuthRoutes.loginRouteName;
 }

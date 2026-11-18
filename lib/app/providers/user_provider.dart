@@ -56,7 +56,31 @@ class UserProvider extends ChangeNotifier {
        _authSessionService = authSessionService,
        _featureExecutionApi = featureExecutionApi,
        _pendingFeatureExecutionStore = pendingFeatureExecutionStore,
-       _catalogRevisionLoader = catalogRevisionLoader;
+       _catalogRevisionLoader = catalogRevisionLoader {
+    final session = _authSessionService;
+    if (session is Listenable) {
+      (session as Listenable).addListener(_onSessionChanged);
+    }
+  }
+
+  void _onSessionChanged() {
+    final session = _authSessionService;
+    if (session == null ||
+        _currentUser == null ||
+        _currentUser!.id == session.currentUid) {
+      return;
+    }
+    _profileGeneration += 1;
+    _currentUser = null;
+    _lastAuthoritativeUser = null;
+    _knownAchievementStatistics.clear();
+    for (final cards in _openedDeckCards.values) {
+      cards.clear();
+    }
+    _isLoading = false;
+    _error = null;
+    _safeNotifyListeners();
+  }
 
   /// Текущий пользователь
   UserModel? get currentUser => _currentUser;
@@ -80,6 +104,12 @@ class UserProvider extends ChangeNotifier {
       // Подписываемся на поток изменений пользователя
       _userSubscription = _userRepository.getMe().listen(
         (user) {
+          final session = _authSessionService;
+          if (user != null &&
+              session != null &&
+              user.id != session.currentUid) {
+            return;
+          }
           _profileGeneration += 1;
           _currentUser = _withAchievementStatistics(user);
           _lastAuthoritativeUser = _currentUser;
@@ -172,6 +202,8 @@ class UserProvider extends ChangeNotifier {
   /// Applies authoritative server state locally without writing it back through
   /// profile PATCH. Paid fulfillment is already persisted by the backend.
   void applyServerUserSnapshot(UserModel user) {
+    final session = _authSessionService;
+    if (session != null && user.id != session.currentUid) return;
     _profileGeneration += 1;
     _isLoading = false;
     _error = null;
@@ -722,6 +754,10 @@ class UserProvider extends ChangeNotifier {
 
   @override
   void dispose() {
+    final session = _authSessionService;
+    if (session is Listenable) {
+      (session as Listenable).removeListener(_onSessionChanged);
+    }
     _userSubscription?.cancel();
     super.dispose();
   }

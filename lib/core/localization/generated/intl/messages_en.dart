@@ -74,111 +74,117 @@ class MessageLookup extends MessageLookupByLibrary {
   static String m23(price) =>
       "7 days free, then ${price}. Renews automatically. Cancel anytime.";
 
-  static String m24(current, total) => "Page ${current} of ${total}";
+  static String m24(date) => "Upcoming days · from ${date}";
 
-  static String m25(number, position) => "Card ${number} — ${position}";
+  static String m25(date) => "Chosen day: ${date}";
 
-  static String m26(count) =>
+  static String m26(current, total) => "Page ${current} of ${total}";
+
+  static String m27(number, position) => "Card ${number} — ${position}";
+
+  static String m28(count) =>
       "Your limit resets in ${Intl.plural(count, one: '${count} day', other: '${count} days')}.";
 
-  static String m27(title) => "Day tone: ${title}";
+  static String m29(title) => "Day tone: ${title}";
 
-  static String m28(number) => "Lunar day ${number}";
+  static String m30(number) => "Lunar day ${number}";
 
-  static String m29(phase, date) => "The next phase is ${phase} on ${date}.";
+  static String m31(phase, date) => "The next phase is ${phase} on ${date}.";
 
-  static String m30(time) => "Occurs at ${time} in your local time";
+  static String m32(time) => "Occurs at ${time} in your local time";
 
-  static String m31(sphere, status) => "${sphere}: ${status}";
+  static String m33(sphere, status) => "${sphere}: ${status}";
 
-  static String m32(number) => "Emphasis on house ${number}";
+  static String m34(number) => "Emphasis on house ${number}";
 
-  static String m33(price) => "Your birth chart\nfor ${price} Star Coins";
+  static String m35(price) => "Your birth chart\nfor ${price} Star Coins";
 
-  static String m34(number) => "Strong house ${number}";
+  static String m36(number) => "Strong house ${number}";
 
-  static String m35(number) => "Weak house ${number}";
+  static String m37(number) => "Weak house ${number}";
 
-  static String m36(title) => "Open article: ${title}";
+  static String m38(title) => "Open article: ${title}";
 
-  static String m37(count) =>
+  static String m39(count) =>
       "${Intl.plural(count, zero: 'No purchased requests', one: '${count} purchased request', other: '${count} purchased requests')}";
 
-  static String m38(coins, balance) =>
+  static String m40(coins, balance) =>
       "${coins} coins credited. Balance: ${balance}";
 
-  static String m39(coins) =>
+  static String m41(coins) =>
       "${coins} coins credited. Your balance was updated.";
 
-  static String m40(countryCode, provider) =>
+  static String m42(countryCode, provider) =>
       "Payment diagnostics\nStore region: ${countryCode}\nSelected provider: ${provider}";
 
-  static String m41(price) => "Unlock forecast\nfor ${price} Star Coins";
+  static String m43(price) => "Unlock forecast\nfor ${price} Star Coins";
 
-  static String m42(name) => "Hello, ${name}!";
+  static String m44(name) => "Hello, ${name}!";
 
-  static String m43(price) => "Weak points for ${price}";
+  static String m45(price) => "Weak points for ${price}";
 
-  static String m44(time) => "Reminder at ${time}";
+  static String m46(time) => "Reminder at ${time}";
 
-  static String m45(title, price) => "Buy ${title} for ${price} Star Coins";
+  static String m47(title, price) => "Buy ${title} for ${price} Star Coins";
 
-  static String m46(title, price) => "Buy ${title} for ${price}";
-
-  static String m47(count) =>
-      "Buy ${Intl.plural(count, one: '${count} request', other: '${count} requests')}";
-
-  static String m48(price) => "1 question = ${price}";
+  static String m48(title, price) => "Buy ${title} for ${price}";
 
   static String m49(count) =>
+      "Buy ${Intl.plural(count, one: '${count} request', other: '${count} requests')}";
+
+  static String m50(price) => "1 question = ${price}";
+
+  static String m51(count) =>
       "The limit will reset in ${Intl.plural(count, one: '${count} day', other: '${count} days')}.";
 
-  static String m50(count) =>
+  static String m52(count) =>
       "${Intl.plural(count, one: '${count} request', other: '${count} requests')}";
 
-  static String m51(count, price) =>
+  static String m53(count, price) =>
       "${Intl.plural(count, one: '${count} request for ${price} Star Coins', other: '${count} requests for ${price} Star Coins')}";
 
-  static String m52(count) =>
+  static String m54(count) =>
       "${Intl.plural(count, zero: 'No requests left', one: '${count} request left', other: '${count} requests left')}";
 
-  static String m53(count, total) => "${count}/${total} requests left";
+  static String m55(count, total) => "${count}/${total} requests left";
 
-  static String m54(count) =>
+  static String m56(count) =>
       "${Intl.plural(count, zero: 'No free requests left this week', one: '${count} free request left this week', other: '${count} free requests left this week')}";
 
-  static String m55(count, total) => "${count} of ${total} requests left";
+  static String m57(count, total) => "${count} of ${total} requests left";
 
-  static String m56(link) =>
+  static String m58(link) =>
       "Explore Tarot and the lunar calendar with Asteria: ${link}";
 
-  static String m57(title) => "${title} is locked";
+  static String m59(title) => "${title} is locked";
 
-  static String m58(title) => "Open the meaning of the future rune ${title}";
+  static String m60(title) => "Open the meaning of the future rune ${title}";
 
-  static String m59(title) => "Open ${title}";
+  static String m61(title) => "Open ${title}";
 
-  static String m60(title) => "Open the meaning of the past rune ${title}";
+  static String m62(title) => "Open the meaning of the past rune ${title}";
 
-  static String m61(title) => "Open the meaning of the present rune ${title}";
+  static String m63(title) => "Open the meaning of the present rune ${title}";
 
-  static String m62(count) => "${count} pcs";
+  static String m64(count) => "Plans: ${count}";
 
-  static String m63(price) => "price per item = ${price}";
+  static String m65(count) => "${count} pcs";
 
-  static String m64(date) => "Your next payment\nwill be charged on\n${date}";
+  static String m66(price) => "price per item = ${price}";
 
-  static String m65(count) => "Purchases restored: ${count}";
+  static String m67(date) => "Your next payment\nwill be charged on\n${date}";
 
-  static String m66(title) => "${title} is locked";
+  static String m68(count) => "Purchases restored: ${count}";
 
-  static String m67(title) => "Open ${title}";
+  static String m69(title) => "${title} is locked";
 
-  static String m68(position) => "Open card ${position} of 3";
+  static String m70(title) => "Open ${title}";
 
-  static String m69(position, card) => "Card ${position} of 3: ${card}";
+  static String m71(position) => "Open card ${position} of 3";
 
-  static String m70(price) =>
+  static String m72(position, card) => "Card ${position} of 3: ${card}";
+
+  static String m73(price) =>
       "Your personal yearly horoscope\nfor ${price} Star Coins";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
@@ -880,19 +886,85 @@ class MessageLookup extends MessageLookupByLibrary {
       "Bringing your insight together…",
     ),
     "introAnakraMessage": MessageLookupByLibrary.simpleMessage(
-      "Which part already interests you? Start there and give yourself ten minutes.",
+      "Give one small step ten minutes. Just try it.",
     ),
     "introAudioError": MessageLookupByLibrary.simpleMessage(
       "Unable to play the recording.",
     ),
+    "introCalendarCompare": MessageLookupByLibrary.simpleMessage(
+      "Compare the next few days",
+    ),
+    "introCalendarCompleted": MessageLookupByLibrary.simpleMessage(
+      "Everything is planned",
+    ),
+    "introCalendarCompletedBody": MessageLookupByLibrary.simpleMessage(
+      "Your haircut is in the calendar. A reminder is set for the day before.",
+    ),
     "introCalendarExample": MessageLookupByLibrary.simpleMessage(
       "Example: choosing a day",
     ),
-    "introDateOne": MessageLookupByLibrary.simpleMessage("November 12"),
-    "introDateTwo": MessageLookupByLibrary.simpleMessage("December 11"),
+    "introCalendarFrom": m24,
+    "introCalendarInsight": MessageLookupByLibrary.simpleMessage(
+      "A favorable time for a new haircut.",
+    ),
+    "introCalendarReminderChoice": MessageLookupByLibrary.simpleMessage(
+      "One day before",
+    ),
+    "introCalendarReminderEnabled": MessageLookupByLibrary.simpleMessage(
+      "Reminder is on",
+    ),
+    "introCalendarReminderTitle": MessageLookupByLibrary.simpleMessage(
+      "Remind me about this plan",
+    ),
+    "introCalendarRequest": MessageLookupByLibrary.simpleMessage(
+      "I want a new haircut.\nWhen should I book it?",
+    ),
+    "introCalendarResult": m25,
+    "introCalendarSavedText": MessageLookupByLibrary.simpleMessage(
+      "Added to my plans",
+    ),
+    "introCalendarSavedTitle": MessageLookupByLibrary.simpleMessage("Haircut"),
+    "introDemoLabel": MessageLookupByLibrary.simpleMessage("Example reading"),
     "introFavorable": MessageLookupByLibrary.simpleMessage("Favorable day"),
     "introFavorableTip": MessageLookupByLibrary.simpleMessage(
       "A day to consider trying a new style.",
+    ),
+    "introMoodAffirmation": MessageLookupByLibrary.simpleMessage(
+      "You can take this moment at your own pace.",
+    ),
+    "introMoodCalm": MessageLookupByLibrary.simpleMessage("Looking for calm"),
+    "introMoodMatched": MessageLookupByLibrary.simpleMessage("Your own pace"),
+    "introMoodPractice": MessageLookupByLibrary.simpleMessage(
+      "Relax your shoulders. Breathe out slowly.",
+    ),
+    "introMoodPracticeTitle": MessageLookupByLibrary.simpleMessage(
+      "A short practice",
+    ),
+    "introMoodRequest": MessageLookupByLibrary.simpleMessage(
+      "I’m always rushing.\nI need a moment to breathe.",
+    ),
+    "introMoodRush": MessageLookupByLibrary.simpleMessage("Always rushing"),
+    "introMoodTired": MessageLookupByLibrary.simpleMessage("Low on energy"),
+    "introNatalDate": MessageLookupByLibrary.simpleMessage(
+      "Example data · 13 May 1995",
+    ),
+    "introNatalPattern": MessageLookupByLibrary.simpleMessage(
+      "Change may bring a need for more clarity and time.",
+    ),
+    "introNatalPatternTitle": MessageLookupByLibrary.simpleMessage(
+      "A familiar reaction",
+    ),
+    "introNatalQuestion": MessageLookupByLibrary.simpleMessage(
+      "What helps you feel grounded before a new step?",
+    ),
+    "introNatalQuestionTitle": MessageLookupByLibrary.simpleMessage(
+      "A question to reflect on",
+    ),
+    "introNatalStrength": MessageLookupByLibrary.simpleMessage(
+      "Following through and finishing what you start.",
+    ),
+    "introNatalStrengthTitle": MessageLookupByLibrary.simpleMessage(
+      "A strength",
     ),
     "introNeutral": MessageLookupByLibrary.simpleMessage("Neutral day"),
     "introNeutralTip": MessageLookupByLibrary.simpleMessage(
@@ -901,26 +973,62 @@ class MessageLookup extends MessageLookupByLibrary {
     "introPairExample": MessageLookupByLibrary.simpleMessage(
       "Example couple’s reading",
     ),
+    "introPairFirst": MessageLookupByLibrary.simpleMessage("Taurus"),
+    "introPairNeedTalk": MessageLookupByLibrary.simpleMessage(
+      "“Talking about what happened helps me.”",
+    ),
+    "introPairNeedTime": MessageLookupByLibrary.simpleMessage(
+      "“I need time to understand how I feel.”",
+    ),
     "introPairPrompt": MessageLookupByLibrary.simpleMessage(
-      "“I’d like to return to our conversation. Would now or a little later work better for you?”",
+      "“This conversation matters to me. Is now a good time, or would later be better?”",
     ),
     "introPairQuestion": MessageLookupByLibrary.simpleMessage(
-      "A question for both of you",
+      "Try starting with this",
     ),
+    "introPairRequest": MessageLookupByLibrary.simpleMessage(
+      "I go quiet after an argument. My partner wants to talk.",
+    ),
+    "introPairSecond": MessageLookupByLibrary.simpleMessage("Gemini"),
     "introPairTip": MessageLookupByLibrary.simpleMessage(
-      "One person wants to talk right away; the other needs time.",
+      "A different pace doesn’t mean they don’t care.",
     ),
     "introPause": MessageLookupByLibrary.simpleMessage("Pause"),
     "introPlay": MessageLookupByLibrary.simpleMessage(
       "Listen to “I have time”",
     ),
-    "introProgress": m24,
+    "introProgress": m26,
     "introReplay": MessageLookupByLibrary.simpleMessage(
       "Replay the card reveal",
     ),
     "introSkip": MessageLookupByLibrary.simpleMessage("Skip"),
     "introStart": MessageLookupByLibrary.simpleMessage("Get started"),
-    "keltCardPositionTitle": m25,
+    "introStoryExample": MessageLookupByLibrary.simpleMessage("Example story"),
+    "introStoryPause": MessageLookupByLibrary.simpleMessage("Pause story"),
+    "introStoryReplay": MessageLookupByLibrary.simpleMessage("Replay"),
+    "introStoryResume": MessageLookupByLibrary.simpleMessage("Resume story"),
+    "introTarotFollowup": MessageLookupByLibrary.simpleMessage(
+      "What if it does not work out?",
+    ),
+    "introTarotHint": MessageLookupByLibrary.simpleMessage(
+      "One question. Three new perspectives.",
+    ),
+    "introTarotInsight": MessageLookupByLibrary.simpleMessage(
+      "Anakra’s advice",
+    ),
+    "introTarotMeaning": MessageLookupByLibrary.simpleMessage(
+      "Start with the part that interests you.",
+    ),
+    "introTarotMeaningTitle": MessageLookupByLibrary.simpleMessage(
+      "A way to read these cards",
+    ),
+    "introTarotReflection": MessageLookupByLibrary.simpleMessage(
+      "What if you followed your curiosity?",
+    ),
+    "introTarotRequest": MessageLookupByLibrary.simpleMessage(
+      "I want to start something new,\nbut I keep putting it off.",
+    ),
+    "keltCardPositionTitle": m27,
     "keltDeckCompletedDescription": MessageLookupByLibrary.simpleMessage(
       "You\'ve opened all 10 cards of the Celtic Cross. This spread offers a complete view of the situation: from roots in the past to future trends, and from inner motives to outside influences.\n✨ Reflect on the question you brought. What resonates most now? Did one card stand out?\nTo explore the spread more deeply:\n• Return to key positions 1, 4, and 6\n• Notice what repeats\n• Consider the guidance in position 10",
     ),
@@ -1024,7 +1132,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "licensesTitle": MessageLookupByLibrary.simpleMessage(
       "Materials and licenses",
     ),
-    "limitResetsIn": m26,
+    "limitResetsIn": m28,
     "loading": MessageLookupByLibrary.simpleMessage("Loading…"),
     "loadingDataError": MessageLookupByLibrary.simpleMessage(
       "Unable to load data",
@@ -1144,7 +1252,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "lunarWork": MessageLookupByLibrary.simpleMessage("Work"),
     "maleGender": MessageLookupByLibrary.simpleMessage("Man"),
     "manage": MessageLookupByLibrary.simpleMessage("Manage"),
-    "moonBackgroundTitle": m27,
+    "moonBackgroundTitle": m29,
     "moonCalendarLoadingDayDescription": MessageLookupByLibrary.simpleMessage(
       "Checking today\'s date, Moon phase, and recommendations.",
     ),
@@ -1154,7 +1262,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "moonDayDetailsUnavailable": MessageLookupByLibrary.simpleMessage(
       "The lunar note for this date is unavailable. Explore another day or plan an activity.",
     ),
-    "moonDayNumber": m28,
+    "moonDayNumber": m30,
     "moonDescriptionDefault": MessageLookupByLibrary.simpleMessage(
       "Slow down, check in with yourself, and choose what supports your energy.",
     ),
@@ -1194,11 +1302,11 @@ class MessageLookup extends MessageLookupByLibrary {
     "moonLocationSetupTitle": MessageLookupByLibrary.simpleMessage(
       "Set your current location",
     ),
-    "moonNextPhaseDate": m29,
+    "moonNextPhaseDate": m31,
     "moonPhaseChange": MessageLookupByLibrary.simpleMessage(
       "Moon phase change",
     ),
-    "moonPhaseEventTime": m30,
+    "moonPhaseEventTime": m32,
     "moonPhaseFirstQuarter": MessageLookupByLibrary.simpleMessage(
       "First Quarter",
     ),
@@ -1227,7 +1335,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "moonPhaseWaxingGibbous": MessageLookupByLibrary.simpleMessage(
       "Waxing Gibbous",
     ),
-    "moonSphereStatusTitle": m31,
+    "moonSphereStatusTitle": m33,
     "moonStatusFavorableShort": MessageLookupByLibrary.simpleMessage(
       "favorable",
     ),
@@ -1236,12 +1344,12 @@ class MessageLookup extends MessageLookupByLibrary {
       "unfavorable",
     ),
     "nameLabel": MessageLookupByLibrary.simpleMessage("Name"),
-    "natalAccentHouse": m32,
+    "natalAccentHouse": m34,
     "natalAccessUnavailable": MessageLookupByLibrary.simpleMessage(
       "Could not check your subscription. Please try again.",
     ),
     "natalBuy": MessageLookupByLibrary.simpleMessage("Unlock birth chart"),
-    "natalCardPriceTitle": m33,
+    "natalCardPriceTitle": m35,
     "natalChartTitle": MessageLookupByLibrary.simpleMessage("Birth chart"),
     "natalCreateCard": MessageLookupByLibrary.simpleMessage(
       "Create your birth chart",
@@ -1325,12 +1433,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "natalRelationshipsExpression": MessageLookupByLibrary.simpleMessage(
       "Relationships and expression",
     ),
-    "natalStrongHouse": m34,
+    "natalStrongHouse": m36,
     "natalSummaryDescription": MessageLookupByLibrary.simpleMessage(
       "brings together the main themes of your reading.",
     ),
     "natalTimeUnknown": MessageLookupByLibrary.simpleMessage("Not provided"),
-    "natalWeakHouse": m35,
+    "natalWeakHouse": m37,
     "natalWheelApproximate": MessageLookupByLibrary.simpleMessage(
       "Without an exact birth time, the planet positions on the chart are approximate.",
     ),
@@ -1396,28 +1504,32 @@ class MessageLookup extends MessageLookupByLibrary {
       "This onboarding page is unavailable.",
     ),
     "onboardingPage1Description": MessageLookupByLibrary.simpleMessage(
-      "Compare dates in the lunar calendar and save a plan, such as a haircut.",
+      "From a suitable day to a plan with a reminder.",
     ),
-    "onboardingPage1Title": MessageLookupByLibrary.simpleMessage(
-      "Which day works for you?",
-    ),
+    "onboardingPage1Title": MessageLookupByLibrary.simpleMessage("Your day"),
     "onboardingPage2Description": MessageLookupByLibrary.simpleMessage(
-      "Listen to “I have time” and notice how you feel.",
+      "Strengths, familiar reactions and new questions to ask yourself.",
     ),
     "onboardingPage2Title": MessageLookupByLibrary.simpleMessage(
-      "A moment to breathe",
+      "Your character",
     ),
     "onboardingPage3Description": MessageLookupByLibrary.simpleMessage(
-      "Explore a couple’s reading and find a question to start a calmer conversation.",
+      "Understand different reactions and find a way to talk.",
     ),
     "onboardingPage3Title": MessageLookupByLibrary.simpleMessage(
-      "How do you talk after a disagreement?",
+      "Your relationship",
     ),
     "onboardingPage4Description": MessageLookupByLibrary.simpleMessage(
-      "Tarot offers another perspective. You can discuss your next step with Anakra.",
+      "From a Tarot reading to reflection and a conversation with Anakra.",
     ),
     "onboardingPage4Title": MessageLookupByLibrary.simpleMessage(
-      "Where do you begin?",
+      "Your question",
+    ),
+    "onboardingPage5Description": MessageLookupByLibrary.simpleMessage(
+      "Affirmations and short practices for a pause in your day.",
+    ),
+    "onboardingPage5Title": MessageLookupByLibrary.simpleMessage(
+      "Time for yourself",
     ),
     "onboardingPreviewAffirmation": MessageLookupByLibrary.simpleMessage(
       "My inner strength grows with every breath, filling me with confidence and calm in every moment of life.",
@@ -1434,7 +1546,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "onboardingPreviewRiskPhrase": MessageLookupByLibrary.simpleMessage(
       "Lower attention and focus",
     ),
-    "openArticleLabel": m36,
+    "openArticleLabel": m38,
     "openCompatibilityLabel": MessageLookupByLibrary.simpleMessage(
       "Open compatibility",
     ),
@@ -1444,7 +1556,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "openSubscription": MessageLookupByLibrary.simpleMessage(
       "View subscription options",
     ),
-    "paidRequestsLeft": m37,
+    "paidRequestsLeft": m39,
     "paymentAbandonedLocal": MessageLookupByLibrary.simpleMessage(
       "The attempt was closed on this device. The server will continue to process any bank confirmation safely.",
     ),
@@ -1457,8 +1569,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "paymentAuthenticationRequired": MessageLookupByLibrary.simpleMessage(
       "Sign in to continue with this payment.",
     ),
-    "paymentCoinsCredited": m38,
-    "paymentCoinsCreditedBalanceUpdated": m39,
+    "paymentCoinsCredited": m40,
+    "paymentCoinsCreditedBalanceUpdated": m41,
     "paymentConfirming": MessageLookupByLibrary.simpleMessage(
       "Confirming payment",
     ),
@@ -1479,7 +1591,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "paymentDeclined": MessageLookupByLibrary.simpleMessage(
       "Your bank declined the payment.",
     ),
-    "paymentDiagnostics": m40,
+    "paymentDiagnostics": m42,
     "paymentExpired": MessageLookupByLibrary.simpleMessage(
       "The payment expired.",
     ),
@@ -1546,8 +1658,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "personalFinancialStability": MessageLookupByLibrary.simpleMessage(
       "Financial stability",
     ),
-    "personalForecastPrice": m41,
-    "personalGreeting": m42,
+    "personalForecastPrice": m43,
+    "personalGreeting": m44,
     "personalGreetingGeneral": MessageLookupByLibrary.simpleMessage("Hello!"),
     "personalHarmony": MessageLookupByLibrary.simpleMessage(
       "Inner harmony balance",
@@ -1592,7 +1704,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "personalUnlockWeaknesses": MessageLookupByLibrary.simpleMessage(
       "Unlock weak points",
     ),
-    "personalWeaknessesPrice": m43,
+    "personalWeaknessesPrice": m45,
     "personalWeekPurchaseDescription": MessageLookupByLibrary.simpleMessage(
       "A detailed personal horoscope for the week is available as a one-time purchase.",
     ),
@@ -1607,7 +1719,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "planReminderAdd": MessageLookupByLibrary.simpleMessage(
       "Remind me on the day",
     ),
-    "planReminderAt": m44,
+    "planReminderAt": m46,
     "planReminderDenied": MessageLookupByLibrary.simpleMessage(
       "To get reminders, allow notifications for Asteria in iPhone Settings.",
     ),
@@ -1716,8 +1828,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "purchaseErrorTryAgain": MessageLookupByLibrary.simpleMessage(
       "Something went wrong. Try again later.",
     ),
-    "purchaseForCoinsLabel": m45,
-    "purchaseForPrice": m46,
+    "purchaseForCoinsLabel": m47,
+    "purchaseForPrice": m48,
     "purchaseGoToChat": MessageLookupByLibrary.simpleMessage("Go to chat"),
     "purchaseMonthHoroscope": MessageLookupByLibrary.simpleMessage(
       "Unlock monthly horoscope",
@@ -1731,7 +1843,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "purchaseNotEnoughRequests": MessageLookupByLibrary.simpleMessage(
       "Not enough to buy requests",
     ),
-    "purchaseRequestsTitle": m47,
+    "purchaseRequestsTitle": m49,
     "purchaseRequired": MessageLookupByLibrary.simpleMessage(
       "Required for purchase",
     ),
@@ -1751,7 +1863,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "purchasedAttemptsCombine": MessageLookupByLibrary.simpleMessage(
       "Purchased requests are added to your free requests",
     ),
-    "questionCoinPrice": m48,
+    "questionCoinPrice": m50,
     "readingComplete": MessageLookupByLibrary.simpleMessage(
       "Your reading is complete",
     ),
@@ -1774,16 +1886,16 @@ class MessageLookup extends MessageLookupByLibrary {
     "refreshTarotSpreadLabel": MessageLookupByLibrary.simpleMessage(
       "Refresh Tarot spread",
     ),
-    "requestLimitResetIn": m49,
-    "requestPackageCount": m50,
-    "requestPackageForCoins": m51,
+    "requestLimitResetIn": m51,
+    "requestPackageCount": m52,
+    "requestPackageForCoins": m53,
     "requestsExhausted": MessageLookupByLibrary.simpleMessage(
       "You\'ve used all your requests.\nWant to continue?",
     ),
-    "requestsLeftCount": m52,
-    "requestsLeftOfTotal": m53,
-    "requestsLeftThisWeek": m54,
-    "requestsRemaining": m55,
+    "requestsLeftCount": m54,
+    "requestsLeftOfTotal": m55,
+    "requestsLeftThisWeek": m56,
+    "requestsRemaining": m57,
     "resendCodeButtonText": MessageLookupByLibrary.simpleMessage(
       "Send a new code",
     ),
@@ -1817,7 +1929,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "rewardShareSubject": MessageLookupByLibrary.simpleMessage(
       "Asteria—your personal astrology guide",
     ),
-    "rewardShareText": m56,
+    "rewardShareText": m58,
     "rewardStartError": MessageLookupByLibrary.simpleMessage(
       "Unable to start rewards.",
     ),
@@ -1827,18 +1939,18 @@ class MessageLookup extends MessageLookupByLibrary {
     "rewardsHowEarn": MessageLookupByLibrary.simpleMessage(
       "How can I earn more?",
     ),
-    "runeLockedLabel": m57,
+    "runeLockedLabel": m59,
     "runeOpenFuture": MessageLookupByLibrary.simpleMessage(
       "Open the future rune",
     ),
-    "runeOpenFutureMeaning": m58,
-    "runeOpenLabel": m59,
+    "runeOpenFutureMeaning": m60,
+    "runeOpenLabel": m61,
     "runeOpenPast": MessageLookupByLibrary.simpleMessage("Open the past rune"),
-    "runeOpenPastMeaning": m60,
+    "runeOpenPastMeaning": m62,
     "runeOpenPresent": MessageLookupByLibrary.simpleMessage(
       "Open the present rune",
     ),
-    "runeOpenPresentMeaning": m61,
+    "runeOpenPresentMeaning": m63,
     "runeRefreshSubscriptionRequired": MessageLookupByLibrary.simpleMessage(
       "Refreshing the rune of the day is available with a subscription. Subscribe to receive a new rune every day.",
     ),
@@ -1964,6 +2076,22 @@ class MessageLookup extends MessageLookupByLibrary {
       "There are no lunar notes for this activity yet. You can still compare Moon phases and save a date.",
     ),
     "scenarioGoHome": MessageLookupByLibrary.simpleMessage("Go home"),
+    "scenarioPlansAllDay": MessageLookupByLibrary.simpleMessage("No time set"),
+    "scenarioPlansCount": m64,
+    "scenarioPlansDay": MessageLookupByLibrary.simpleMessage("Day"),
+    "scenarioPlansEmptyDay": MessageLookupByLibrary.simpleMessage(
+      "No plans for this day yet.",
+    ),
+    "scenarioPlansEmptyWeek": MessageLookupByLibrary.simpleMessage(
+      "No plans for this week yet.",
+    ),
+    "scenarioPlansMonth": MessageLookupByLibrary.simpleMessage("Month"),
+    "scenarioPlansNext": MessageLookupByLibrary.simpleMessage("Next period"),
+    "scenarioPlansPrevious": MessageLookupByLibrary.simpleMessage(
+      "Previous period",
+    ),
+    "scenarioPlansToday": MessageLookupByLibrary.simpleMessage("Today"),
+    "scenarioPlansWeek": MessageLookupByLibrary.simpleMessage("Week"),
     "scenarioPracticeChooseMood": MessageLookupByLibrary.simpleMessage(
       "What do you need right now?",
     ),
@@ -2120,7 +2248,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "shopIncreaseQuantity": MessageLookupByLibrary.simpleMessage(
       "Increase quantity",
     ),
-    "shopItemCount": m62,
+    "shopItemCount": m65,
     "shopItemSuffix": MessageLookupByLibrary.simpleMessage("items"),
     "shopItemsLeft": MessageLookupByLibrary.simpleMessage("Left"),
     "shopLoadError": MessageLookupByLibrary.simpleMessage(
@@ -2143,7 +2271,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "shopTitle": MessageLookupByLibrary.simpleMessage("Shop"),
     "shopUnitPrice": MessageLookupByLibrary.simpleMessage("price per item"),
-    "shopUnitPriceValue": m63,
+    "shopUnitPriceValue": m66,
     "sonnikLoadingDetails": MessageLookupByLibrary.simpleMessage(
       "The details form a pattern…",
     ),
@@ -2279,7 +2407,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "subscriptionNextPaymentInline": MessageLookupByLibrary.simpleMessage(
       "Your next payment will be\ncharged on ",
     ),
-    "subscriptionNextPaymentOn": m64,
+    "subscriptionNextPaymentOn": m67,
     "subscriptionNoPurchasesToRestore": MessageLookupByLibrary.simpleMessage(
       "No purchases were found to restore",
     ),
@@ -2295,7 +2423,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "subscriptionPlansUnavailable": MessageLookupByLibrary.simpleMessage(
       "Subscriptions are currently unavailable. Try again later.",
     ),
-    "subscriptionPurchasesRestored": m65,
+    "subscriptionPurchasesRestored": m68,
     "subscriptionRestoreInProgress": MessageLookupByLibrary.simpleMessage(
       "Restoring purchases…",
     ),
@@ -2323,10 +2451,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "tarotLoadError": MessageLookupByLibrary.simpleMessage(
       "Unable to load Tarot cards.",
     ),
-    "tarotLockedCardLabel": m66,
-    "tarotOpenCardLabel": m67,
-    "tarotOpenSpreadCard": m68,
-    "tarotOpenedSpreadCard": m69,
+    "tarotLockedCardLabel": m69,
+    "tarotOpenCardLabel": m70,
+    "tarotOpenSpreadCard": m71,
+    "tarotOpenedSpreadCard": m72,
     "tarotRefreshSubscriptionRequired": MessageLookupByLibrary.simpleMessage(
       "Refreshing the Tarot card is available with a subscription. Subscribe to receive a new card every day.",
     ),
@@ -2373,6 +2501,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "yearHoroscopeIntro": MessageLookupByLibrary.simpleMessage(
       "Open your map of destiny and glimpse the future created just for you.",
     ),
-    "yearHoroscopePriceTitle": m70,
+    "yearHoroscopePriceTitle": m73,
   };
 }

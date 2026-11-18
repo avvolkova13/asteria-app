@@ -4,8 +4,10 @@ import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/ui_kit/card_radii.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
+
 import 'dart:io' show Platform;
 import 'dart:ui' as ui;
+
 import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 import 'package:asteria_app/features/monetization/presentation/contextual_purchase_page.dart';
 
@@ -319,9 +321,7 @@ class _AndroidPaywallContent extends StatelessWidget {
   Widget build(BuildContext context) {
     if (state is ArcPayProductsLoading || state is ArcPayCheckoutInitial) {
       return const _AndroidPaywallStateCard(
-        child: Center(
-          child: AsteriaActivityIndicator(),
-        ),
+        child: Center(child: AsteriaActivityIndicator()),
       );
     }
 
@@ -854,9 +854,7 @@ class _IosPaywallContent extends StatelessWidget {
         state is PaywallPurchasing ||
         state is PaywallVerifying) {
       return const _AndroidPaywallStateCard(
-        child: Center(
-          child: AsteriaActivityIndicator(),
-        ),
+        child: Center(child: AsteriaActivityIndicator()),
       );
     }
 
@@ -1019,31 +1017,27 @@ class _IosPackagePriceRow extends StatelessWidget {
       height: 1,
     );
 
-    return Row(
+    return Wrap(
+      spacing: 10,
+      runSpacing: 6,
+      crossAxisAlignment: WrapCrossAlignment.center,
       children: [
-        if (stars != null) ...[
-          Text('${stars!}', style: amountStyle),
-          const SizedBox(width: 6),
-          LotusRasterIcon(
-            'assets/icons/star_coin_icon.png',
-            width: 17,
-            height: 17,
+        if (stars != null)
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('${stars!}', style: amountStyle),
+              const SizedBox(width: 6),
+              LotusRasterIcon(
+                'assets/icons/star_coin_icon.png',
+                width: 17,
+                height: 17,
+              ),
+            ],
           ),
-          const SizedBox(width: 10),
-          LotusRasterIcon(
-            'assets/icons/right_long_arrow.png',
-            width: 18,
-            height: 10,
-          ),
-          const SizedBox(width: 10),
-        ],
-        Flexible(
-          child: Text(
-            localizedPrice,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: amountStyle.copyWith(color: ProfileFlowColors.accent),
-          ),
+        Text(
+          localizedPrice,
+          style: amountStyle.copyWith(color: ProfileFlowColors.accent),
         ),
       ],
     );

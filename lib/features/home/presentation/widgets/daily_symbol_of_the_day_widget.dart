@@ -1,9 +1,9 @@
+import 'package:asteria_app/core/ui_kit/widgets/card_turn.dart';
 import 'package:asteria_app/core/ui_kit/widgets/tarot_card_frame.dart';
 import 'package:asteria_app/core/ui_kit/widgets/artwork_unavailable.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
-import 'dart:math' as math;
 
 import 'package:asteria_app/app/data/models/rune_of_day/rune_of_day_model.dart';
 import 'package:asteria_app/app/data/models/tarot_card/tarot_card_model.dart';
@@ -75,17 +75,14 @@ class _DailySymbolOfTheDayWidgetState extends State<DailySymbolOfTheDayWidget>
 
   AnimationController _createController(bool isOpened) {
     return AnimationController(
-      duration: const Duration(milliseconds: 600),
+      duration: CardTurn.duration,
       value: isOpened ? 1 : 0,
       vsync: this,
     );
   }
 
   Animation<double> _createAnimation(AnimationController controller) {
-    return Tween<double>(
-      begin: 0,
-      end: 1,
-    ).animate(CurvedAnimation(parent: controller, curve: Curves.easeInOut));
+    return controller;
   }
 
   @override
@@ -120,6 +117,15 @@ class _DailySymbolOfTheDayWidgetState extends State<DailySymbolOfTheDayWidget>
       }
     } else {
       controller.value = 0;
+    }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (MediaQuery.disableAnimationsOf(context)) {
+      _tarotAnimationController.value = widget.isTarotOpened ? 1 : 0;
+      _runeAnimationController.value = widget.isRuneOpened ? 1 : 0;
     }
   }
 
@@ -238,15 +244,15 @@ class _TarotSymbolContent extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       key: key,
-      children: AsteriaEntrance.sections([
+      children: [
         _SectionTitleRow(
           title: context.l10n.dailyTarotTitle,
           refreshSemanticLabel: context.l10n.refreshDailyTarotLabel,
           onRefresh: onRefresh,
-        ),
+        ).withEntrance(),
         const SizedBox(height: 9),
         _buildContent(context),
-      ]),
+      ],
     );
   }
 
@@ -260,6 +266,7 @@ class _TarotSymbolContent extends StatelessWidget {
       children: [
         Center(
           child: LotusFeedback(
+            animateEntrance: false,
             onActivate: symbol == null ? null : onCardTap,
             keyboard: true,
             builder: (activate) => Semantics(
@@ -278,7 +285,7 @@ class _TarotSymbolContent extends StatelessWidget {
                       ? const DailyTarotCardFace()
                       : DailySymbolFlip(
                           animation: flipAnimation,
-                          startsFaceDown: true,
+
                           back: const DailyTarotCardFace(),
                           front: DailyTarotCardFace(card: symbol),
                         ),
@@ -346,15 +353,15 @@ class _RuneSymbolContent extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       key: key,
-      children: AsteriaEntrance.sections([
+      children: [
         _SectionTitleRow(
           title: context.l10n.dailyRuneTitle,
           refreshSemanticLabel: context.l10n.refreshDailyRuneLabel,
           onRefresh: onRefresh,
-        ),
+        ).withEntrance(),
         const SizedBox(height: 9),
         _buildContent(context),
-      ]),
+      ],
     );
   }
 
@@ -368,6 +375,7 @@ class _RuneSymbolContent extends StatelessWidget {
       children: [
         Center(
           child: LotusFeedback(
+            animateEntrance: false,
             onActivate: symbol == null ? null : onRuneTap,
             keyboard: true,
             builder: (activate) => Semantics(
@@ -375,7 +383,9 @@ class _RuneSymbolContent extends StatelessWidget {
               onTap: activate,
               label: symbol == null
                   ? context.l10n.commonUnavailable
-                  : context.l10n.dailyRuneOpenedLabel(symbol.title),
+                  : isOpened
+                  ? context.l10n.dailyRuneOpenedLabel(symbol.title)
+                  : context.l10n.dailyRuneFlipLabel,
               child: ExcludeSemantics(
                 child: GestureDetector(
                   behavior: HitTestBehavior.opaque,
@@ -384,6 +394,7 @@ class _RuneSymbolContent extends StatelessWidget {
                       ? const _RuneBack()
                       : DailySymbolFlip(
                           animation: flipAnimation,
+
                           back: const _RuneBack(),
                           front: _RuneFront(rune: symbol),
                         ),
@@ -395,7 +406,7 @@ class _RuneSymbolContent extends StatelessWidget {
         const SizedBox(height: 16),
         AnimatedSwitcher(
           duration: const Duration(milliseconds: 220),
-          child: symbol != null
+          child: isOpened && symbol != null
               ? _RuneOpenedDescription(
                   key: const ValueKey('rune_opened'),
                   rune: symbol,
@@ -403,7 +414,9 @@ class _RuneSymbolContent extends StatelessWidget {
                 )
               : _ClosedDescription(
                   key: const ValueKey('rune_closed'),
-                  text: context.l10n.commonUnavailable,
+                  text: symbol == null
+                      ? context.l10n.commonUnavailable
+                      : context.l10n.dailyRuneTap,
                   maxTextWidth: maxTextWidth,
                 ),
         ),
@@ -475,10 +488,8 @@ class DailySymbolFlip extends StatelessWidget {
     required this.animation,
     required this.back,
     required this.front,
-    this.startsFaceDown = false,
   });
 
-  final bool startsFaceDown;
   final Animation<double> animation;
   final Widget back;
   final Widget front;
@@ -488,25 +499,8 @@ class DailySymbolFlip extends StatelessWidget {
     return AnimatedBuilder(
       animation: animation,
       builder: (context, child) {
-        if (animation.isDismissed) return startsFaceDown ? back : front;
-        if (animation.isCompleted) return front;
-        final angle = startsFaceDown
-            ? (animation.value - 1) * math.pi
-            : animation.value * 2 * math.pi;
-        final showBack = math.cos(angle) < 0;
-        return Transform(
-          alignment: Alignment.center,
-          transform: Matrix4.identity()
-            ..setEntry(3, 2, 0.001)
-            ..rotateY(angle),
-          child: showBack
-              ? Transform(
-                  alignment: Alignment.center,
-                  transform: Matrix4.identity()..rotateY(math.pi),
-                  child: back,
-                )
-              : front,
-        );
+        final value = animation.value.clamp(0.0, 1.0);
+        return CardTurn(progress: value, back: back, front: front);
       },
     );
   }

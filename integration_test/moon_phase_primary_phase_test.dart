@@ -1,3 +1,7 @@
+import 'package:asteria_app/app/data/models/lunar_calendar/lunar_month_model.dart';
+import 'package:asteria_app/app/data/models/lunar_calendar/lunar_recommendation_models.dart';
+import 'package:asteria_app/app/data/repositories/lunar_calendar/personalized_lunar_calendar_repository.dart';
+
 import 'dart:io';
 
 import 'package:asteria_app/app/data/models/moon_phase/moon_phase_model.dart';
@@ -58,6 +62,7 @@ void main() {
       contentRepository: _MoonPhaseContentRepository(moonPhase),
       userProvider: userProvider,
       compatibilityRepository: _UnusedCompatibilityRepository(),
+      personalizedLunarCalendarRepository: const _PersonalizedRepository(),
     );
     final homeCubit = HomeCubit(
       userRepository: _UnusedUserRepository(),
@@ -111,6 +116,10 @@ void main() {
       'moon-primary-phase-${Platform.operatingSystem}',
     );
     expect(screenshot, isNotEmpty);
+    final dir = Directory('${Directory.systemTemp.path}/moon-primary-phase')
+      ..createSync(recursive: true);
+    await File('${dir.path}/primary.png').writeAsBytes(screenshot);
+    debugPrint('MOON_SCREENSHOTS=${dir.path}');
   });
 }
 
@@ -151,4 +160,50 @@ class _UnusedUserRepository implements UserRepository {
 class _UnusedCompatibilityRepository implements CompatibilityRepository {
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+class _PersonalizedRepository implements PersonalizedLunarCalendarRepository {
+  const _PersonalizedRepository();
+  @override
+  Future<LunarMonthModel> loadMonth({
+    required DateTime month,
+    required CurrentLocationModel location,
+  }) async {
+    if (location.latitude != 52.3676 || location.longitude != 4.9041) {
+      throw StateError('The fixture must use the selected Amsterdam location');
+    }
+    final today = DateTime.now();
+    return LunarMonthModel(
+      year: month.year,
+      month: month.month,
+      timezone: 'Europe/Amsterdam',
+      anchorLocalTime: '12:00',
+      days: [
+        for (
+          var day = 1;
+          day <= DateTime(month.year, month.month + 1, 0).day;
+          day++
+        )
+          LunarDayModel(
+            date: DateTime(month.year, month.month, day),
+            lunarContext: LunarDayContextModel(
+              lunarDayNumber: day == today.day ? 15 : day,
+              moonAgeDays: 14,
+              moonAgeDayIndex: 14,
+              moonPhaseCode: day == today.day ? 'full_moon' : 'waxing_gibbous',
+              moonPhaseName: 'Фаза',
+              moonSignCode: 'aries',
+              moonSignName: 'Овен',
+              phaseEvent: null,
+            ),
+            dailyBackground: const DailyBackgroundModel(
+              tone: PhaseTone.recovery,
+              title: 'Восстановление',
+              summary: 'Уделите время отдыху и привычным делам.',
+            ),
+            spheres: const {},
+          ),
+      ],
+    );
+  }
 }

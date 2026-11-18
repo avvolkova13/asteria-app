@@ -72,7 +72,8 @@ void main() {
                                   slivers: [
                                     SliverPersistentHeader(
                                       pinned: true,
-                                      delegate: TopNavBarDelegate(
+                                      delegate: TopNavBarDelegate.adaptive(
+                                        context,
                                         userName: 'Заголовок',
                                         canPop: true,
                                         type: TopNavBarType.values.byName(kind),

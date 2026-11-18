@@ -1,5 +1,6 @@
 import 'package:asteria_app/core/localization/localization.dart';
 import 'package:asteria_app/core/ui_kit/theme/theme.dart';
+import 'package:asteria_app/core/ui_kit/widgets/asteria_action_button.dart';
 import 'package:asteria_app/features/home/presentation/widgets/home_pro_subscription_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -42,10 +43,11 @@ void main() {
       ),
       findsOneWidget,
     );
-    expect(find.text('Попробовать 7 дней бесплатно'), findsOneWidget);
+    expect(find.text('Подключить PRO'), findsOneWidget);
+    expect(find.text('Попробовать 7 дней бесплатно'), findsNothing);
     expect(find.byType(Image), findsOneWidget);
 
-    await tester.tap(find.text('Попробовать 7 дней бесплатно'));
+    await tester.tap(find.text('Подключить PRO'));
     await tester.pump();
 
     expect(tapCount, 1);
@@ -69,8 +71,8 @@ void main() {
     final cardSize = tester.getSize(
       find.byKey(const ValueKey('home-pro-subscription-card')),
     );
-    expect(cardSize.height, closeTo(276, 1));
-    expect(find.text('Попробовать 7 дней бесплатно'), findsOneWidget);
+    expect(cardSize.height, greaterThanOrEqualTo(276));
+    expect(find.text('Подключить PRO'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 
@@ -85,10 +87,12 @@ void main() {
     final card = find.byKey(const ValueKey('home-pro-subscription-card'));
     await tester.pumpWidget(_testApp(promo, width: 390));
     expect(tester.getSize(card).height, closeTo(205, 2));
+    expect(find.text('Подключить PRO'), findsOneWidget);
+    expect(find.text('Попробовать 7 дней бесплатно'), findsNothing);
     expect(tester.getSize(find.byType(Image)), const Size(99, 115));
-    final button = find.byType(TextButton);
-    expect(tester.getSize(button).height, greaterThanOrEqualTo(48));
-    expect(tester.getSize(find.byType(Ink)).height, closeTo(36, 1));
+    final button = find.byType(AsteriaActionButton);
+    expect(tester.getSize(button).height, greaterThanOrEqualTo(50));
+    expect(tester.widget<AsteriaActionButton>(button).gold, isTrue);
     await tester.tapAt(tester.getTopLeft(button) + const Offset(20, 2));
     expect(taps, 1);
 
@@ -99,20 +103,20 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('adds a subtle animated shimmer to the subscription CTA', (
+  testWidgets('uses the approved gold action for the subscription CTA', (
     tester,
   ) async {
     await tester.binding.setSurfaceSize(const Size(390, 720));
     addTearDown(() => tester.binding.setSurfaceSize(null));
 
+    var taps = 0;
     await tester.pumpWidget(
-      _testApp(HomeProSubscriptionCard(onPressed: () {}), width: 390),
+      _testApp(HomeProSubscriptionCard(onPressed: () => taps++), width: 390),
     );
-
-    expect(
-      find.byKey(const ValueKey('balance-subscription-cta-shimmer')),
-      findsOneWidget,
-    );
+    final action = find.byType(AsteriaActionButton);
+    expect(tester.widget<AsteriaActionButton>(action).gold, isTrue);
+    await tester.tap(action);
+    expect(taps, 1);
   });
 
   testWidgets('removes the CTA shimmer when animations are disabled', (

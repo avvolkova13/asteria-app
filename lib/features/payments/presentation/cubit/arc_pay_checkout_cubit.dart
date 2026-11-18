@@ -41,15 +41,22 @@ class ArcPayCheckoutCubit extends Cubit<ArcPayCheckoutState> {
            }),
        super(const ArcPayCheckoutInitial());
 
+  // Requests may finish after the screen closes. Keep durable recovery work,
+  // but never publish a late UI state or restart screen-owned polling.
+  void _emitIfOpen(ArcPayCheckoutState nextState) {
+    if (!isClosed) emit(nextState);
+  }
+
   Future<void> loadProducts() async {
-    emit(const ArcPayProductsLoading());
+    if (isClosed) return;
+    _emitIfOpen(const ArcPayProductsLoading());
     try {
       final products = await _api.getProducts();
       if (isClosed) return;
-      emit(ArcPayProductsLoaded(products));
+      _emitIfOpen(ArcPayProductsLoaded(products));
     } catch (_) {
       if (isClosed) return;
-      emit(
+      _emitIfOpen(
         const ArcPayCheckoutFailure(
           ArcPayCheckoutErrorCode.productsUnavailable,
         ),
@@ -62,10 +69,10 @@ class ArcPayCheckoutCubit extends Cubit<ArcPayCheckoutState> {
     int? amountMinor,
     String? currency,
   }) async {
-    if (_creating) return;
+    if (isClosed || _creating) return;
     final userId = _currentUserId();
     if (userId == null || userId.isEmpty) {
-      emit(
+      _emitIfOpen(
         const ArcPayCheckoutFailure(
           ArcPayCheckoutErrorCode.authenticationRequired,
         ),
@@ -93,7 +100,7 @@ class ArcPayCheckoutCubit extends Cubit<ArcPayCheckoutState> {
         userId: saved.userId,
         checkoutUrl: saved.checkoutUrl,
       );
-      emit(ArcPayCheckoutReady(checkout, restored: true));
+      _emitIfOpen(ArcPayCheckoutReady(checkout, restored: true));
       _startPolling(checkout);
       await checkNow();
       return;
@@ -102,7 +109,7 @@ class ArcPayCheckoutCubit extends Cubit<ArcPayCheckoutState> {
       await _store.clear();
     }
     if (!hasCompletePaymentIdentity) {
-      emit(
+      _emitIfOpen(
         const ArcPayCheckoutFailure(ArcPayCheckoutErrorCode.noPendingPayment),
       );
       return;
@@ -110,14 +117,30 @@ class ArcPayCheckoutCubit extends Cubit<ArcPayCheckoutState> {
 
     _attemptGeneration++;
     _creating = true;
-    emit(ArcPayCheckoutCreating(productId));
+    _emitIfOpen(ArcPayCheckoutCreating(productId));
     try {
+      final requestKey = ArcPayCheckoutRequest.keyFor(
+        userId: userId,
+        productId: productId,
+        amountMinor: amountMinor,
+        currency: currency,
+        platform: platform,
+      );
+      final savedRequest = _store.readCheckoutRequest(requestKey);
+      final request = await _store.saveCheckoutRequestIfAbsent(
+        savedRequest ??
+            ArcPayCheckoutRequest(
+              key: requestKey,
+              requestId: const Uuid().v4(),
+              analyticsContext: await analyticsContext?.call(productId, userId),
+            ),
+      );
       final response = await _api.createCheckout(
         userId: userId,
         productId: productId,
-        requestId: const Uuid().v4(),
+        requestId: request.requestId,
         platform: platform,
-        analyticsContext: await analyticsContext?.call(productId, userId),
+        analyticsContext: request.analyticsContext,
       );
       final checkout = ArcPayPendingCheckout(
         orderId: response.orderId,
@@ -133,23 +156,29 @@ class ArcPayCheckoutCubit extends Cubit<ArcPayCheckoutState> {
           currency: currency,
           userId: checkout.userId,
           checkoutUrl: checkout.checkoutUrl,
+          requestKey: request.key,
+          requestId: request.requestId,
         ),
       );
-      emit(ArcPayCheckoutReady(checkout));
+      _emitIfOpen(ArcPayCheckoutReady(checkout));
       _startPolling(checkout);
     } catch (_) {
-      emit(const ArcPayCheckoutFailure(ArcPayCheckoutErrorCode.createPayment));
+      _emitIfOpen(
+        const ArcPayCheckoutFailure(ArcPayCheckoutErrorCode.createPayment),
+      );
     } finally {
       _creating = false;
     }
   }
 
   void _startPolling(ArcPayPendingCheckout checkout) {
+    if (isClosed) return;
     _pollingTimer?.cancel();
     _pollingTimer = Timer.periodic(pollingInterval, (_) => checkNow());
   }
 
   Future<void> checkNow() async {
+    if (isClosed) return;
     if (_checking) return;
     final saved = _store.read();
     if (saved == null) return;
@@ -165,11 +194,11 @@ class ArcPayCheckoutCubit extends Cubit<ArcPayCheckoutState> {
         _pollingTimer?.cancel();
         await _refreshUser();
         await _store.clear();
-        emit(ArcPayCheckoutFulfilled(order));
+        _emitIfOpen(ArcPayCheckoutFulfilled(order));
       } else if (order.status == 'confirming' ||
           order.providerStatus == 'captured' ||
           order.providerStatus == 'settled') {
-        emit(ArcPayCheckoutConfirming(order));
+        _emitIfOpen(ArcPayCheckoutConfirming(order));
       } else if ({
         'failed',
         'reversed',
@@ -177,13 +206,13 @@ class ArcPayCheckoutCubit extends Cubit<ArcPayCheckoutState> {
       }.contains(order.status)) {
         _pollingTimer?.cancel();
         await _store.clear();
-        emit(ArcPayCheckoutTerminalFailure(order));
+        _emitIfOpen(ArcPayCheckoutTerminalFailure(order));
       } else if (order.clientState == 'abandoned') {
         _pollingTimer?.cancel();
         await _store.clear();
-        emit(const ArcPayCheckoutAbandoned(serverConfirmed: true));
+        _emitIfOpen(const ArcPayCheckoutAbandoned(serverConfirmed: true));
       } else {
-        emit(ArcPayCheckoutPending(order));
+        _emitIfOpen(ArcPayCheckoutPending(order));
       }
     } catch (_) {
       // A transient polling failure is not a payment failure. Keep polling.
@@ -193,6 +222,7 @@ class ArcPayCheckoutCubit extends Cubit<ArcPayCheckoutState> {
   }
 
   Future<void> handlePaymentReturn(Uri uri) async {
+    if (isClosed) return;
     if (uri.scheme != 'asteria' || uri.host != 'payment-return') return;
     final saved = _store.read();
     if (saved == null || uri.queryParameters['order_id'] != saved.orderId) {
@@ -206,6 +236,7 @@ class ArcPayCheckoutCubit extends Cubit<ArcPayCheckoutState> {
   }
 
   Future<void> abandon() async {
+    if (isClosed) return;
     final saved = _store.read();
     if (saved == null) return;
     _attemptGeneration++;
@@ -220,12 +251,12 @@ class ArcPayCheckoutCubit extends Cubit<ArcPayCheckoutState> {
       if (order.status == 'fulfilled') {
         await _refreshUser();
         await _store.clear();
-        emit(ArcPayCheckoutFulfilled(order));
+        _emitIfOpen(ArcPayCheckoutFulfilled(order));
         return;
       }
       if ({'failed', 'reversed', 'manual_review'}.contains(order.status)) {
         await _store.clear();
-        emit(ArcPayCheckoutTerminalFailure(order));
+        _emitIfOpen(ArcPayCheckoutTerminalFailure(order));
         return;
       }
     } catch (_) {
@@ -234,7 +265,7 @@ class ArcPayCheckoutCubit extends Cubit<ArcPayCheckoutState> {
       // reconciliation processing.
     }
     await _store.clear();
-    emit(ArcPayCheckoutAbandoned(serverConfirmed: serverConfirmed));
+    _emitIfOpen(ArcPayCheckoutAbandoned(serverConfirmed: serverConfirmed));
   }
 
   @override

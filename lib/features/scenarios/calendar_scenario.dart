@@ -14,6 +14,7 @@ import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/features/auth/presentation/widgets/auth_flow_widgets.dart';
 import 'package:asteria_app/features/home/presentation/cubit/moon_screen_state.dart';
 import 'package:asteria_app/features/home/presentation/widgets/moon_design_tokens.dart';
+import 'package:asteria_app/features/home/presentation/widgets/lunar_card_image.dart';
 import 'package:asteria_app/features/home/presentation/models/day_status.dart';
 import 'package:asteria_app/features/home/presentation/widgets/calendar_statuses_widget.dart';
 import 'package:asteria_app/features/home/presentation/widgets/day_status_icon.dart';
@@ -26,6 +27,7 @@ import 'package:uuid/uuid.dart';
 
 import 'package:asteria_app/features/home/presentation/models/lunar_almanac.dart';
 import 'calendar_plan.dart';
+import 'calendar_plans_view.dart';
 import 'calendar_plan_reminder_control.dart';
 import 'scenario_ui.dart';
 
@@ -161,7 +163,8 @@ class _DaySelection extends StatefulWidget {
 
 class _DaySelectionState extends State<_DaySelection> {
   final _months = <DateTime, LunarMonthModel>{};
-  final _revision = ValueNotifier(0);
+  final _detailsKey = GlobalKey();
+  final _calendarKey = GlobalKey();
   int _locationVersion = 0;
   final _selected = <DateTime>{};
   late DateTime _focused;
@@ -203,7 +206,6 @@ class _DaySelectionState extends State<_DaySelection> {
       );
       if (!mounted || locationVersion != _locationVersion) return;
       _months[month] = model;
-      _revision.value++;
       if (request != _request) return;
       if (resolveToday) {
         String? localDate;
@@ -243,10 +245,20 @@ class _DaySelectionState extends State<_DaySelection> {
     }
   }
 
-  @override
-  void dispose() {
-    _revision.dispose();
-    super.dispose();
+  void _reveal(GlobalKey key) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final target = key.currentContext;
+      if (target == null) return;
+      Scrollable.ensureVisible(
+        target,
+        alignment: .08,
+        duration: MediaQuery.disableAnimationsOf(context)
+            ? Duration.zero
+            : const Duration(milliseconds: 280),
+        curve: Curves.easeOutCubic,
+      );
+    });
   }
 
   void _toggle(DateTime day) {
@@ -255,6 +267,7 @@ class _DaySelectionState extends State<_DaySelection> {
       setState(() => _selected.remove(normalized));
     } else if (_selected.length < 2 && !normalized.isBefore(_today)) {
       setState(() => _selected.add(normalized));
+      _reveal(_detailsKey);
     } else if (_selected.length == 2) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(context.l10n.scenarioCalendarRemoveDate)),
@@ -292,6 +305,7 @@ class _DaySelectionState extends State<_DaySelection> {
           CalendarPlansBuilder(
             compact: true,
             builder: (context, plans) => MoonCalendarWidget.planning(
+              key: _calendarKey,
               savedPlans: plans,
               planningState: MoonScreenState(
                 focusedDay: _focused,
@@ -329,33 +343,18 @@ class _DaySelectionState extends State<_DaySelection> {
           else
             Text(context.l10n.scenarioCalendarUnratedDates),
           const SizedBox(height: 16),
-          for (final day in _selected)
-            AsteriaEntrance(
-              key: ValueKey(day),
-              child: Text(_dateLabel(context, day)),
+          if (_selected.isNotEmpty)
+            _Comparison(
+              key: _detailsKey,
+              activity: widget.activity,
+              days: {for (final day in _selected) day: _dayData(day)},
+              loading: _loading,
+              replaceDay: (date) {
+                setState(() => _selected.remove(date));
+                _showMonth(date, refresh: true);
+                _reveal(_calendarKey);
+              },
             ),
-          if (_selected.isNotEmpty) ...[
-            const SizedBox(height: 12),
-            AuthGradientButton(
-              text: _selected.length == 2
-                  ? context.l10n.scenarioCalendarCompareAction
-                  : context.l10n.scenarioCalendarSingleDate,
-              onPressed: () => _open(
-                context,
-                ListenableBuilder(
-                  listenable: _revision,
-                  builder: (_, _) => _Comparison(
-                    activity: widget.activity,
-                    days: {for (final day in _selected) day: _dayData(day)},
-                    replaceDay: (date) {
-                      setState(() => _selected.remove(date));
-                      _showMonth(date, refresh: true);
-                    },
-                  ),
-                ),
-              ),
-            ),
-          ],
         ]),
       ),
     );
@@ -364,12 +363,15 @@ class _DaySelectionState extends State<_DaySelection> {
 
 class _Comparison extends StatelessWidget {
   const _Comparison({
+    super.key,
+    required this.loading,
     required this.activity,
     required this.days,
     required this.replaceDay,
   });
   final CalendarActivity activity;
   final Map<DateTime, LunarDayModel?> days;
+  final bool loading;
   final ValueChanged<DateTime> replaceDay;
   @override
   Widget build(BuildContext c) {
@@ -383,68 +385,75 @@ class _Comparison extends StatelessWidget {
           (rating) =>
               rating != null && rating.status == ratings.values.first?.status,
         );
-    return ScenarioPage(
-      title: days.length == 2
-          ? c.l10n.scenarioCalendarComparisonTitle
-          : _activityLabel(c, activity),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: AsteriaEntrance.sections([
-          if (tied)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-              child: Text(c.l10n.scenarioCalendarEqualRating),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: AsteriaEntrance.sections([
+        if (days.length == 2) ...[
+          Text(
+            c.l10n.scenarioCalendarComparisonTitle,
+            style: c.textTheme.playfairSemiBold20.copyWith(
+              color: AppColors.textInverse,
             ),
-          for (final entry in days.entries)
-            AppCard(
-              backgroundColor: MoonDesignTokens.calendarSurface,
-              margin: const EdgeInsets.only(bottom: 12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    _dateLabel(c, entry.key),
-                    style: c.textTheme.playfairSemiBold20.copyWith(
-                      color: AppColors.textInverse,
-                    ),
+          ),
+          const SizedBox(height: 12),
+        ],
+        if (tied)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: Text(c.l10n.scenarioCalendarEqualRating),
+          ),
+        for (final entry in days.entries)
+          AppCard(
+            backgroundColor: MoonDesignTokens.calendarSurface,
+            margin: const EdgeInsets.only(bottom: 12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  _dateLabel(c, entry.key),
+                  style: c.textTheme.playfairSemiBold20.copyWith(
+                    color: AppColors.textInverse,
                   ),
+                ),
+                const SizedBox(height: 8),
+                if ((entry.value?.lunarContext.moonPhaseName ??
+                        LunarAlmanacDay.on(entry.key)?.phase.label(c))
+                    case final phaseName?) ...[
+                  Text(phaseName, style: AppTypography.text1SemiBold),
                   const SizedBox(height: 8),
-                  if ((entry.value?.lunarContext.moonPhaseName ??
-                          LunarAlmanacDay.on(entry.key)?.phase.label(c))
-                      case final phaseName?) ...[
-                    Text(phaseName, style: AppTypography.text1SemiBold),
-                    const SizedBox(height: 8),
-                  ],
-                  if (ratings[entry.key] case final recommendation?)
-                    _Recommendation(recommendation)
-                  else
-                    Text(c.l10n.scenarioCalendarRecommendationMissing),
-                  const SizedBox(height: 12),
-                  AuthGradientButton(
-                    text: c.l10n.scenarioCalendarSelectDay,
-                    onPressed: () => _open(
-                      c,
-                      _SavePlan(
-                        activity: activity,
-                        date: entry.key,
-                        recommendation: ratings[entry.key],
-                      ),
-                    ),
-                  ),
-                  if (ratings[entry.key] == null)
-                    CustomButton(
-                      type: CustomButtonType.text,
-                      text: c.l10n.scenarioCalendarChangeDate,
-                      onPressed: () {
-                        Navigator.pop(c);
-                        replaceDay(entry.key);
-                      },
-                    ),
                 ],
-              ),
+                if (ratings[entry.key] case final recommendation?)
+                  _Recommendation(recommendation)
+                else if (loading)
+                  const AsteriaLoadingLine()
+                else
+                  Text(c.l10n.scenarioCalendarRecommendationMissing),
+                const SizedBox(height: 12),
+                AuthGradientButton(
+                  text: c.l10n.scenarioCalendarSelectDay,
+                  onPressed: loading && entry.value == null
+                      ? null
+                      : () => _open(
+                          c,
+                          _SavePlan(
+                            activity: activity,
+                            date: entry.key,
+                            dayData: entry.value,
+                          ),
+                        ),
+                ),
+                if (!loading && ratings[entry.key] == null)
+                  CustomButton(
+                    type: CustomButtonType.text,
+                    text: c.l10n.scenarioCalendarChangeDate,
+                    onPressed: () {
+                      replaceDay(entry.key);
+                    },
+                  ),
+              ],
             ),
-        ]),
-      ),
+          ),
+      ]),
     );
   }
 }
@@ -477,11 +486,11 @@ class _SavePlan extends StatefulWidget {
   const _SavePlan({
     required this.activity,
     required this.date,
-    required this.recommendation,
+    required this.dayData,
   });
   final CalendarActivity activity;
   final DateTime date;
-  final TaskRecommendationModel? recommendation;
+  final LunarDayModel? dayData;
   @override
   State<_SavePlan> createState() => _SavePlanState();
 }
@@ -490,6 +499,9 @@ class _SavePlanState extends State<_SavePlan> {
   final _name = TextEditingController();
   final _id = const Uuid().v4();
   final _owner = di.get<UserProvider>().currentUser?.id;
+  late CalendarActivity _activity = widget.activity;
+  TaskRecommendationModel? get _recommendation =>
+      _activity.recommendation(widget.dayData);
   bool _startedEditing = false;
   bool _saving = false;
   bool _error = false;
@@ -497,7 +509,7 @@ class _SavePlanState extends State<_SavePlan> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (!_startedEditing) {
-      _name.text = _activityLabel(context, widget.activity);
+      _name.text = _activityLabel(context, _activity);
       _startedEditing = true;
     }
   }
@@ -508,8 +520,21 @@ class _SavePlanState extends State<_SavePlan> {
     super.dispose();
   }
 
-  Future<void> _save() async {
+  void _chooseActivity(CalendarActivity activity) {
     if (_saving) return;
+    FocusManager.instance.primaryFocus?.unfocus();
+    final previousLabel = _activityLabel(context, _activity);
+    setState(() {
+      _activity = activity;
+      if (_name.text.trim().isEmpty || _name.text.trim() == previousLabel) {
+        _name.text = _activityLabel(context, activity);
+      }
+      _error = false;
+    });
+  }
+
+  Future<void> _save() async {
+    if (_saving || _name.text.trim().isEmpty) return;
     final owner = _owner;
     if (owner == null || owner != di.get<UserProvider>().currentUser?.id) {
       setState(() => _error = true);
@@ -523,9 +548,9 @@ class _SavePlanState extends State<_SavePlan> {
       id: _id,
       owner: owner,
       day: widget.date,
-      activity: widget.activity,
+      activity: _activity,
       title: _name.text.trim(),
-      recommendation: widget.recommendation,
+      recommendation: _recommendation,
     );
     try {
       await CalendarPlans.save(plan);
@@ -550,12 +575,76 @@ class _SavePlanState extends State<_SavePlan> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: AsteriaEntrance.sections([
         Text(_dateLabel(c, widget.date)),
-        Text(_activityLabel(c, widget.activity)),
-        const SizedBox(height: 16),
+        const SizedBox(height: 20),
+        Text(
+          c.l10n.scenarioCalendarChooseActivity,
+          style: c.textTheme.playfairSemiBold20.copyWith(
+            color: AppColors.textInverse,
+          ),
+        ),
+        const SizedBox(height: 10),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            for (final activity in CalendarActivity.values)
+              ChoiceChip(
+                key: ValueKey('plan-activity-${activity.name}'),
+                selected: _activity == activity,
+                onSelected: _saving ? null : (_) => _chooseActivity(activity),
+                label: Text(_activityLabel(c, activity)),
+                avatar: switch (LunarCardAsset.forTaskKey(
+                  activity.keys.first,
+                )) {
+                  final assetName? => Image.asset(
+                    LunarCardAsset.path(assetName),
+                    width: 26,
+                    height: 26,
+                    excludeFromSemantics: true,
+                  ),
+                  null => null,
+                },
+                showCheckmark: false,
+                color: WidgetStateProperty.resolveWith(
+                  (states) => states.contains(WidgetState.selected)
+                      ? AppColorsDark.linkGold
+                      : AppColorsDark.modal,
+                ),
+                surfaceTintColor: Colors.transparent,
+                elevation: 0,
+                pressElevation: 0,
+                labelStyle: AppTypography.text2.copyWith(
+                  color: _activity == activity
+                      ? AppColorsDark.homeCanvas
+                      : AppColors.textInverse,
+                ),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                side: BorderSide(
+                  color: AppColorsDark.linkGold.withValues(
+                    alpha: _activity == activity ? 1 : .2,
+                  ),
+                ),
+              ),
+          ],
+        ),
+        const SizedBox(height: 20),
         TextInputFieldWidget(
           controller: _name,
           label: c.l10n.scenarioCalendarActivityName,
+          hintText: _activityLabel(c, _activity),
+          onClear: () => setState(() {}),
           onChanged: (_) => setState(() {}),
+        ),
+        const SizedBox(height: 16),
+        AppCard(
+          backgroundColor: MoonDesignTokens.calendarSurface,
+          child: switch (_recommendation) {
+            final recommendation? => _Recommendation(recommendation),
+            null => Text(c.l10n.scenarioCalendarRecommendationMissing),
+          },
         ),
         const SizedBox(height: 16),
         if (_error) Text(c.l10n.scenarioCalendarSaveError),
@@ -646,27 +735,10 @@ class _PlansScreen extends StatelessWidget {
   Widget build(BuildContext c) => ScenarioPage(
     title: c.l10n.scenarioCalendarMyPlans,
     child: CalendarPlansBuilder(
-      builder: (c, plans) => Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: AsteriaEntrance.sections([
-          if (plans.isEmpty) ...[
-            Text(c.l10n.scenarioCalendarEmptyPlans),
-            const SizedBox(height: 12),
-            AuthGradientButton(
-              text: c.l10n.scenarioCalendarChooseDate,
-              onPressed: () => _open(c, const CalendarScenarioScreen()),
-            ),
-          ],
-          for (final plan in plans)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: ScenarioTile(
-                title: plan.title,
-                subtitle: _dateLabel(c, plan.day),
-                onTap: () => _open(c, _PlanDetails(plan: plan)),
-              ),
-            ),
-        ]),
+      builder: (c, plans) => CalendarPlansView(
+        plans: plans,
+        onOpenPlan: (plan) => _open(c, _PlanDetails(plan: plan)),
+        onChooseDate: () => _open(c, const CalendarScenarioScreen()),
       ),
     ),
   );

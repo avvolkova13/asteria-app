@@ -12,18 +12,18 @@ class AppColors {
   static const Color modal = Color(0xFFF1ECFE);
 
   static const Color textPrimary = Color(0xFF140C15);
-  static const Color textSecondary = Color(0xFF9E95A2);
-  static const Color textTertiary = Color(0xFFA89CAA);
+  static const Color textSecondary = Color(0xFF786185);
+  static const Color textTertiary = Color(0xFF826B91);
   static const Color textInputActive = Color(0xFF140C15);
-  static const Color textInputDefault = Color(0xFF9E95A2);
+  static const Color textInputDefault = Color(0xFF786185);
   static const Color textInverse = Color(0xFFFFFFFF);
 
   static const Color uiPrimary = Color(0xFF140C15);
-  static const Color uiSecondary = Color(0xFFE9E9EA);
+  static const Color uiSecondary = Color(0xFFE4E0F3);
   static const Color uiInverse = Color(0xFFFFFFFF);
   static const Color uiDisabled = Color(0xFFD7CADF);
   static const Color uiPressed = Color(0xFF775A9D);
-  static const Color uiDisabledText = Color(0xFFA89CAA);
+  static const Color uiDisabledText = Color(0xFF826B91);
 
   static const Color white = Color(0xFFFFFFFF);
 
@@ -53,18 +53,18 @@ class AppColors {
 class AppColorsDark {
   static const Color linkGold = Color(0xFFFFD88A);
   static const Color homeCanvas = Color(0xFF0F0A1A);
-  static const Color modal = Color(0xFF35253E);
+  static const Color modal = Color(0xFF352044);
   static const Color primary = Color(0xFF6C63FF);
-  static const Color secondary = Color(0xFF2C2C2C);
+  static const Color secondary = Color(0xFF50316F);
   static const Color accent = Color(0xFF00D4FF);
 
-  static const Color background = Color(0xFF1A1A1A);
-  static const Color surface = Color(0xFF2A2A2A);
-  static const Color cardBackground = Color(0xFF2A2A2A);
+  static const Color background = Color(0xFF0F0A1A);
+  static const Color surface = Color(0xFF352044);
+  static const Color cardBackground = Color(0xFF352044);
 
   static const Color textPrimary = Color(0xFFFFFFFF);
-  static const Color textSecondary = Color(0xFFB0B0B0);
-  static const Color textTertiary = Color(0xFF808080);
+  static const Color textSecondary = Color(0xFFD8C9E5);
+  static const Color textTertiary = Color(0xFFBBA5CD);
 
   static const LinearGradient primaryGradient = LinearGradient(
     begin: Alignment.topLeft,
@@ -75,7 +75,7 @@ class AppColorsDark {
   static const LinearGradient backgroundGradient = LinearGradient(
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
-    colors: [Color(0xFF1A1A1A), Color(0xFF2A2A2A)],
+    colors: [Color(0xFF0F0A1A), Color(0xFF352044)],
   );
 
   static const Color overlay = Color(0x80000000);

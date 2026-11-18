@@ -43,76 +43,86 @@ class AchievementCard extends StatelessWidget {
           tint: AchievementsStyle.card,
           child: Padding(
             padding: const EdgeInsets.all(8),
-            child: IntrinsicHeight(
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Align(
-                    alignment: Alignment.topCenter,
-                    child: _Artwork(
-                      imageAsset: imageAsset,
-                      imageSize: imageSize,
-                      isLocked: isLocked,
-                    ),
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final stackContent =
+                    constraints.maxWidth <
+                    MediaQuery.textScalerOf(context).scale(20) * 15;
+                final artwork = Align(
+                  alignment: Alignment.topCenter,
+                  child: _Artwork(
+                    imageAsset: imageAsset,
+                    imageSize: imageSize,
+                    isLocked: isLocked,
                   ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(title, style: AchievementsStyle.title),
-                        const SizedBox(height: 16),
-                        AsteriaEntrance(
-                          replayKey: completed,
-                          animateInitially: false,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                );
+                final content = Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(title, style: AchievementsStyle.title),
+                    const SizedBox(height: 16),
+                    AsteriaEntrance(
+                      replayKey: completed,
+                      animateInitially: false,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            key: ValueKey('achievement-progress-$id'),
                             children: [
-                              Row(
-                                key: ValueKey('achievement-progress-$id'),
-                                children: [
-                                  for (var i = 0; i < totalCount; i++) ...[
-                                    Expanded(
-                                      child: DecoratedBox(
-                                        decoration: BoxDecoration(
-                                          gradient: i < completed
-                                              ? AchievementsStyle.accent
-                                              : null,
-                                          color: i < completed
-                                              ? null
-                                              : AchievementsStyle
-                                                    .imageBackground,
-                                          borderRadius: BorderRadius.circular(
-                                            2,
-                                          ),
-                                        ),
-                                        child: const SizedBox(height: 4),
-                                      ),
+                              for (var i = 0; i < totalCount; i++) ...[
+                                Expanded(
+                                  child: DecoratedBox(
+                                    decoration: BoxDecoration(
+                                      gradient: i < completed
+                                          ? AchievementsStyle.accent
+                                          : null,
+                                      color: i < completed
+                                          ? null
+                                          : AchievementsStyle.imageBackground,
+                                      borderRadius: BorderRadius.circular(2),
                                     ),
-                                    if (i < totalCount - 1)
-                                      const SizedBox(width: 2),
-                                  ],
-                                ],
-                              ),
-                              const SizedBox(height: 8),
-                              ShaderMask(
-                                blendMode: BlendMode.srcIn,
-                                shaderCallback:
-                                    AchievementsStyle.accent.createShader,
-                                child: Text(
-                                  remaining,
-                                  style: AchievementsStyle.progress,
+                                    child: const SizedBox(height: 4),
+                                  ),
                                 ),
-                              ),
+                                if (i < totalCount - 1)
+                                  const SizedBox(width: 2),
+                              ],
                             ],
                           ),
-                        ),
-                      ],
+                          const SizedBox(height: 8),
+                          ShaderMask(
+                            blendMode: BlendMode.srcIn,
+                            shaderCallback:
+                                AchievementsStyle.accent.createShader,
+                            child: Text(
+                              remaining,
+                              style: AchievementsStyle.progress,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
+                  ],
+                );
+                if (stackContent) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [artwork, const SizedBox(height: 12), content],
+                  );
+                }
+                return IntrinsicHeight(
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      artwork,
+                      const SizedBox(width: 8),
+                      Expanded(child: content),
+                    ],
                   ),
-                ],
-              ),
+                );
+              },
             ),
           ),
         ),

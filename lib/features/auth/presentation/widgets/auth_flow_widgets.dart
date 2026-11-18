@@ -1,6 +1,5 @@
-import 'package:asteria_app/core/ui_kit/widgets/asteria_activity_indicator.dart';
+import 'package:asteria_app/core/ui_kit/widgets/asteria_action_button.dart';
 import 'package:asteria_app/core/ui_kit/widgets/input_bubble_surface.dart';
-import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
@@ -12,10 +11,6 @@ import 'package:flutter/services.dart';
 const _authBackgroundAsset = 'assets/images/auth/auth_flow_background.webp';
 const _authBackdrop = Color(0xFF0F0A1A);
 const _authBackgroundHeightFactor = 780 / 844;
-const _authButtonStart = Color(0xFF6E4BFF);
-const _authButtonEnd = Color(0xFF5A3FD1);
-const _authButtonHighlight = Color(0x40FFFFFF);
-const _authDisabledButtonFill = Color(0xFF3B3278);
 const _authGoldStart = Color(0xFFE6994D);
 const _authGoldMiddle = Color(0xFFF3B76A);
 const _authGoldEnd = Color(0xFFE6994D);
@@ -178,105 +173,13 @@ class AuthGradientButton extends StatelessWidget {
     this.isLoading = false,
   });
 
-  bool get _isEnabled => onPressed != null && !isLoading;
-
   @override
-  Widget build(BuildContext context) {
-    final borderRadius = BorderRadius.circular(16);
-
-    return LotusFeedback(
-      onActivate: _isEnabled ? onPressed : null,
-      builder: (activate) => Semantics(
-        button: true,
-        container: true,
-        enabled: _isEnabled,
-        label: text,
-        onTap: activate,
-        child: ExcludeSemantics(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(
-              minHeight: 50,
-              minWidth: double.infinity,
-            ),
-            child: DecoratedBox(
-              decoration: CardLensDecoration.button(
-                enabled: _isEnabled,
-                color: _isEnabled ? null : _authDisabledButtonFill,
-                gradient: _isEnabled
-                    ? CardLensDecoration.buttonFill(_authButtonStart)
-                    : null,
-                borderRadius: borderRadius,
-                boxShadow: _isEnabled
-                    ? [
-                        BoxShadow(
-                          color: _authButtonEnd.withValues(alpha: 0.26),
-                          blurRadius: 20,
-                          offset: const Offset(0, 8),
-                        ),
-                      ]
-                    : null,
-              ),
-              child: ClipRRect(
-                borderRadius: borderRadius,
-                child: Material(
-                  color: Colors.transparent,
-                  child: InkWell(
-                    onTap: activate,
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        if (_isEnabled)
-                          const Positioned.fill(
-                            child: DecoratedBox(
-                              decoration: BoxDecoration(
-                                gradient: RadialGradient(
-                                  center: Alignment(0, -0.65),
-                                  radius: 1.8,
-                                  colors: [
-                                    _authButtonHighlight,
-                                    Colors.transparent,
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 10,
-                          ),
-                          child: isLoading
-                              ? const SizedBox(
-                                  width: 20,
-                                  height: 20,
-                                  child: AsteriaActivityIndicator(
-                                    color: AppColors.cardTinted,
-                                  ),
-                                )
-                              : Text(
-                                  text,
-                                  textAlign: TextAlign.center,
-                                  style: context
-                                      .textTheme
-                                      .inverseUrbanistSemiBold16
-                                      .copyWith(
-                                        color: _isEnabled
-                                            ? AppColors.white
-                                            : AppColors.uiDisabledText,
-                                      ),
-                                ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
+  Widget build(BuildContext context) => AsteriaActionButton(
+    text: text,
+    onPressed: onPressed,
+    isLoading: isLoading,
+    width: double.infinity,
+  );
 }
 
 class AuthTextInput extends StatefulWidget {

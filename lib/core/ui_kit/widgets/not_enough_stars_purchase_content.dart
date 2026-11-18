@@ -1,7 +1,8 @@
+import 'package:asteria_app/core/ui_kit/widgets/responsive_heading.dart';
+import 'package:asteria_app/core/ui_kit/widgets/purchase_modal_actions.dart';
+import 'package:asteria_app/core/ui_kit/widgets/asteria_action_button.dart';
 import 'package:asteria_app/core/ui_kit/widgets/modal_glass_surface.dart';
-import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
-import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
 import 'package:asteria_app/core/extensions/build_context_extensions.dart';
 import 'package:asteria_app/core/ui_kit/app_colors/app_colors.dart';
@@ -11,11 +12,6 @@ import 'package:flutter/material.dart';
 
 // Local tokens from Figma 4825:51040 (dark purchase sheet).
 const Color _notEnoughStarsError = Color(0xFFE36A6A);
-const Color _notEnoughStarsPrimary = Color(0xFF6E4BFF);
-const Color _notEnoughStarsPrimaryPressed = Color(0xFF5A3FD1);
-const LinearGradient _notEnoughStarsButtonGradient = LinearGradient(
-  colors: [_notEnoughStarsPrimary, _notEnoughStarsPrimaryPressed],
-);
 
 class NotEnoughStarsPurchaseContent extends StatelessWidget {
   final int balance;
@@ -25,6 +21,7 @@ class NotEnoughStarsPurchaseContent extends StatelessWidget {
   final String? description;
   final VoidCallback? onSubscribe;
   final bool isBusy;
+  final String? errorMessage;
 
   const NotEnoughStarsPurchaseContent({
     super.key,
@@ -35,6 +32,7 @@ class NotEnoughStarsPurchaseContent extends StatelessWidget {
     this.description,
     this.onSubscribe,
     this.isBusy = false,
+    this.errorMessage,
   });
 
   @override
@@ -85,6 +83,21 @@ class NotEnoughStarsPurchaseContent extends StatelessWidget {
                       requiredAmount: requiredAmount,
                     ),
                   ),
+                  if (errorMessage != null) ...[
+                    const SizedBox(height: 16),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Semantics(
+                        liveRegion: true,
+                        child: Text(
+                          errorMessage!,
+                          key: const ValueKey('purchase-inline-error'),
+                          textAlign: TextAlign.center,
+                          style: context.textTheme.inverseUrbanistRegular16,
+                        ),
+                      ),
+                    ),
+                  ],
                 ]),
               ),
             ),
@@ -131,7 +144,7 @@ class _TitleRow extends StatelessWidget {
         ),
         const SizedBox(width: 8),
         Flexible(
-          child: Text(
+          child: ResponsiveHeading(
             context.l10n.notEnoughStarsTitle,
             style: AppTypography.h2.copyWith(color: AppColors.textInverse),
             textAlign: TextAlign.center,
@@ -249,24 +262,12 @@ class _ButtonsRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return IntrinsicHeight(
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Expanded(
-            child: _PurchaseActionButton.outline(
-              text: context.l10n.commonCancel,
-              onPressed: onCancel,
-            ),
-          ),
-          const SizedBox(width: 8),
-          Expanded(
-            child: _PurchaseActionButton.primary(
-              text: context.l10n.balanceBuy,
-              onPressed: onBuyStars,
-            ),
-          ),
-        ],
+    return PurchaseModalActions(
+      cancelLabel: context.l10n.commonCancel,
+      onCancel: onCancel,
+      primary: _PurchaseActionButton.primary(
+        text: context.l10n.balanceBuy,
+        onPressed: onBuyStars,
       ),
     );
   }
@@ -275,66 +276,18 @@ class _ButtonsRow extends StatelessWidget {
 class _PurchaseActionButton extends StatelessWidget {
   final String text;
   final VoidCallback onPressed;
-  final bool isPrimary;
 
   const _PurchaseActionButton.primary({
     required this.text,
     required this.onPressed,
-  }) : isPrimary = true;
-
-  const _PurchaseActionButton.outline({
-    required this.text,
-    required this.onPressed,
-  }) : isPrimary = false;
+  });
 
   @override
   Widget build(BuildContext context) {
-    final borderRadius = BorderRadius.circular(16);
-    final textStyle = AppTypography.text1SemiBold.copyWith(
-      color: ModalGlassTokens.text,
-    );
-
-    return Semantics(
-      button: true,
-      label: text,
-      enabled: true,
-      onTap: LotusFeedback.action(onPressed),
-      child: ExcludeSemantics(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(minHeight: 48),
-          child: Material(
-            color: Colors.transparent,
-            borderRadius: borderRadius,
-            child: Ink(
-              decoration: CardLensDecoration.button(
-                color: isPrimary ? null : Colors.transparent,
-                gradient: isPrimary ? _notEnoughStarsButtonGradient : null,
-                borderRadius: borderRadius,
-                border: isPrimary
-                    ? null
-                    : Border.all(color: _notEnoughStarsPrimary),
-              ),
-              child: LotusInkTap(
-                onTap: onPressed,
-                borderRadius: borderRadius,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 12,
-                  ),
-                  child: Center(
-                    child: Text(
-                      text,
-                      style: textStyle,
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
+    return AsteriaActionButton(
+      text: text,
+      onPressed: onPressed,
+      width: double.infinity,
     );
   }
 }

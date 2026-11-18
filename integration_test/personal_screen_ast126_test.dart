@@ -1,4 +1,10 @@
+import 'package:go_router/go_router.dart';
+import 'package:asteria_app/core/routing/app_route.dart';
+import 'package:asteria_app/core/analytics/product_analytics_service.dart';
+import 'package:asteria_app/core/analytics/dictionaries/funnel_type.dart';
+
 import '../test/features/compatibility/support/selection_test_support.dart';
+
 import 'dart:io';
 
 import 'package:asteria_app/app/data/models/horoscope/horoscope_day_model.dart';
@@ -24,132 +30,132 @@ import 'package:provider/provider.dart';
 void main() {
   final binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  testWidgets('AST-126 renders the open daily horoscope on device', (
-    tester,
-  ) async {
-    await di.reset();
-
-    final userProvider = UserProvider(userRepository: _UnusedUserRepository());
-    userProvider.applyServerUserSnapshot(
-      UserModel.empty().copyWith(
-        name: 'Анастасия',
-        horoscopeDay: _horoscopeDay(),
-      ),
-    );
-    final contentProvider = ContentProvider(
-      contentRepository: _UnusedContentRepository(),
-      userProvider: userProvider,
-      compatibilityRepository: _UnusedCompatibilityRepository(),
-    );
-    final homeCubit = HomeCubit(
-      userRepository: _UnusedUserRepository(),
-      contentProvider: contentProvider,
-      userProvider: userProvider,
-    );
-    di.registerSingleton<UserProvider>(userProvider);
-    registerTestCompatibilityProvider(userProvider);
-    addTearDown(() async {
-      await homeCubit.close();
-      contentProvider.dispose();
-      userProvider.dispose();
+  testWidgets(
+    'Readings tools render and navigate while legacy forecasts stay hidden',
+    (tester) async {
       await di.reset();
-    });
 
-    await tester.pumpWidget(
-      MaterialApp(
-        locale: const Locale('ru'),
-        localizationsDelegates: const [
-          AppLocalizations.delegate,
-          ...GlobalMaterialLocalizations.delegates,
+      final userProvider = UserProvider(
+        userRepository: _UnusedUserRepository(),
+      );
+      userProvider.applyServerUserSnapshot(
+        UserModel.empty().copyWith(
+          name: 'Анастасия',
+          horoscopeDay: _horoscopeDay(),
+        ),
+      );
+      final contentProvider = ContentProvider(
+        contentRepository: _UnusedContentRepository(),
+        userProvider: userProvider,
+        compatibilityRepository: _UnusedCompatibilityRepository(),
+      );
+      final homeCubit = HomeCubit(
+        userRepository: _UnusedUserRepository(),
+        contentProvider: contentProvider,
+        userProvider: userProvider,
+      );
+      di.registerSingleton<UserProvider>(userProvider);
+      registerTestCompatibilityProvider(userProvider);
+      di.registerSingleton<ProductAnalyticsService>(_FixtureAnalytics());
+      addTearDown(() async {
+        await homeCubit.close();
+        contentProvider.dispose();
+        userProvider.dispose();
+        await di.reset();
+      });
+
+      final router = GoRouter(
+        initialLocation: '/readings',
+        routes: [
+          GoRoute(path: '/readings', builder: (_, _) => const PersonalScreen()),
+          GoRoute(
+            path: NatalCardRoute.routeName,
+            name: NatalCardRoute.routeName,
+            builder: (_, _) =>
+                const Scaffold(body: Text('Natal chart destination')),
+          ),
+          GoRoute(
+            path: CompatibilityRoutes.createCompatibilityInitialRouteName,
+            name: CompatibilityRoutes.createCompatibilityInitialRouteName,
+            builder: (_, _) =>
+                const Scaffold(body: Text('Compatibility destination')),
+          ),
         ],
-        supportedLocales: AppLocaleService.supportedLocales,
-        home: Builder(
-          builder: (context) => Theme(
-            data: AppThemeDark.instance.getThemeData(context),
-            child: ChangeNotifierProvider<UserProvider>.value(
-              value: userProvider,
-              child: BlocProvider<HomeCubit>.value(
-                value: homeCubit,
-                child: const PersonalScreen(),
+      );
+      addTearDown(router.dispose);
+      await tester.pumpWidget(
+        ChangeNotifierProvider<UserProvider>.value(
+          value: userProvider,
+          child: BlocProvider<HomeCubit>.value(
+            value: homeCubit,
+            child: MaterialApp.router(
+              routerConfig: router,
+              locale: const Locale('ru'),
+              localizationsDelegates: const [
+                AppLocalizations.delegate,
+                ...GlobalMaterialLocalizations.delegates,
+              ],
+              supportedLocales: AppLocaleService.supportedLocales,
+              builder: (context, child) => Theme(
+                data: AppThemeDark.instance.getThemeData(context),
+                child: child!,
               ),
             ),
           ),
         ),
-      ),
-    );
-    await tester.pumpAndSettle();
+      );
+      await tester.pumpAndSettle();
 
-    expect(find.text('Влияние на сферы'), findsOneWidget);
-    expect(find.text('Совет на день'), findsOneWidget);
-    expect(
-      find.byKey(const ValueKey('personal-impact-ring-love')),
-      findsOneWidget,
-    );
-    expect(
-      find.byKey(const ValueKey('personal-impact-ring-finances')),
-      findsOneWidget,
-    );
-    expect(
-      find.byKey(const ValueKey('personal-impact-ring-energy')),
-      findsOneWidget,
-    );
-    expect(
-      find.byKey(const ValueKey('personal-unlock-lock-heart-glyph')),
-      findsOneWidget,
-    );
-    expect(
-      find.byKey(const ValueKey('personal-unlock-lock-sphere-glyph')),
-      findsOneWidget,
-    );
-    expect(tester.takeException(), isNull);
-
-    if (Platform.isAndroid) {
-      await binding.convertFlutterSurfaceToImage();
-      await tester.pump();
-    }
-
-    final topScreenshot = await binding.takeScreenshot(
-      'ast126-${Platform.operatingSystem}-top',
-    );
-    expect(topScreenshot, isNotEmpty);
-
-    await tester.ensureVisible(find.text('Совет на день'));
-    await tester.pumpAndSettle();
-    final forecastScreenshot = await binding.takeScreenshot(
-      'ast126-${Platform.operatingSystem}-forecast',
-    );
-    expect(forecastScreenshot, isNotEmpty);
-
-    await tester.drag(find.byType(CustomScrollView), const Offset(0, -700));
-    await tester.pumpAndSettle();
-    expect(tester.takeException(), isNull);
-    final lowerContentScreenshot = await binding.takeScreenshot(
-      'ast126-${Platform.operatingSystem}-lower-content',
-    );
-    expect(lowerContentScreenshot, isNotEmpty);
-
-    userProvider.applyServerUserSnapshot(
-      UserModel.empty().copyWith(
-        name: 'Анастасия',
-        horoscopeDay: _horoscopeDay(
-          dateUntil: DateTime.now().subtract(const Duration(minutes: 1)),
+      expect(find.text('Разборы'), findsOneWidget);
+      expect(find.text('Натальная карта'), findsOneWidget);
+      expect(find.text('Открыть карту'), findsOneWidget);
+      expect(find.text('Влияние на сферы'), findsNothing);
+      expect(find.text('Совет на день'), findsNothing);
+      expect(tester.takeException(), isNull);
+      if (Platform.isAndroid) {
+        await binding.convertFlutterSurfaceToImage();
+        await tester.pump();
+      }
+      final dir = Directory('${Directory.systemTemp.path}/ast126')
+        ..createSync(recursive: true);
+      await File('${dir.path}/top.png').writeAsBytes(
+        await binding.takeScreenshot(
+          'readings-${Platform.operatingSystem}-top',
         ),
-      ),
-    );
-    await tester.pumpAndSettle();
-    await tester.drag(find.byType(CustomScrollView), const Offset(0, 2000));
-    await tester.pumpAndSettle();
-
-    expect(find.text('Открой прогноз'), findsOneWidget);
-    expect(find.text('Открыть бесплатно'), findsOneWidget);
-    expect(find.text('Влияние на сферы'), findsNothing);
-    expect(find.text('Совет на день'), findsNothing);
-    expect(tester.takeException(), isNull);
-    final lockedScreenshot = await binding.takeScreenshot(
-      'ast126-${Platform.operatingSystem}-locked',
-    );
-    expect(lockedScreenshot, isNotEmpty);
-  });
+      );
+      await tester.tap(find.text('Открыть карту'));
+      await tester.pumpAndSettle();
+      expect(find.text('Natal chart destination'), findsOneWidget);
+      router.pop();
+      await tester.pumpAndSettle();
+      final l = AppLocalizations.of(
+        tester.element(find.byType(PersonalScreen)),
+      );
+      await tester.ensureVisible(find.text(l.compatibilityCheck));
+      await tester.pumpAndSettle();
+      await File('${dir.path}/compatibility.png').writeAsBytes(
+        await binding.takeScreenshot(
+          'readings-${Platform.operatingSystem}-compatibility',
+        ),
+      );
+      await tester.tap(find.text(l.compatibilityCheck));
+      await tester.pumpAndSettle();
+      expect(find.text('Compatibility destination'), findsOneWidget);
+      router.pop();
+      await tester.pumpAndSettle();
+      await tester.ensureVisible(find.text('Расшифровать'));
+      await tester.pumpAndSettle();
+      await File('${dir.path}/lower.png').writeAsBytes(
+        await binding.takeScreenshot(
+          'readings-${Platform.operatingSystem}-lower',
+        ),
+      );
+      expect(find.text('Влияние на сферы'), findsNothing);
+      expect(find.text('Совет на день'), findsNothing);
+      expect(tester.takeException(), isNull);
+      debugPrint('AST126_SCREENSHOTS=${dir.path}');
+    },
+  );
 }
 
 HoroscopeDayModel _horoscopeDay({DateTime? dateUntil}) {
@@ -189,4 +195,14 @@ class _UnusedUserRepository implements UserRepository {
 class _UnusedCompatibilityRepository implements CompatibilityRepository {
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+class _FixtureAnalytics extends Fake implements ProductAnalyticsService {
+  @override
+  Future<void> trackHomeCardClick({
+    required FunnelType funnelType,
+    String? entryPointId,
+    int? position,
+    String? ctaName,
+  }) async {}
 }

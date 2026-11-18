@@ -1,9 +1,9 @@
+import 'package:asteria_app/core/di/retryable_initialization.dart';
 import 'package:asteria_app/core/services/calendar_plan_reminders.dart';
 import 'package:asteria_app/core/payments/apple/apple_purchase_coordinator.dart';
 import 'package:asteria_app/core/payments/apple/apple_models.dart';
 import 'package:asteria_app/core/payments/apple/apple_attempt_store.dart';
 import 'package:asteria_app/core/payments/apple/apple_transactions.dart';
-import 'package:flutter/material.dart';
 import 'package:asteria_app/features/achievements/data/achievement_event_store.dart';
 import 'package:asteria_app/features/achievements/data/achievement_recorder.dart';
 import 'package:asteria_app/features/achievements/data/achievements_api.dart';
@@ -91,10 +91,19 @@ import 'package:go_router/go_router.dart';
 final GetIt di = GetIt.instance;
 
 class DiContainer {
-  static Future<void> initialize({AppLocaleService? localeService}) async {
+  static final _initialization = TransactionalDiInitialization(
+    di,
+    scopeName: 'asteria-bootstrap',
+  );
+
+  static Future<void> initialize({AppLocaleService? localeService}) =>
+      _initialization.initialize(() => _registerServices(localeService));
+
+  static Future<void> _registerServices(AppLocaleService? localeService) async {
     if (!di.isRegistered<AppLocaleService>()) {
       di.registerSingleton<AppLocaleService>(
         localeService ?? (AppLocaleService()..startObserving()),
+        dispose: localeService == null ? (service) => service.dispose() : null,
       );
     }
     // Инициализация Environment
@@ -103,13 +112,6 @@ class DiContainer {
 
     // Инициализация Hive
     await HiveService.initialize();
-
-    // Имитация асинхронной инициализации
-
-    // TODO: remove in production
-    await Future.delayed(const Duration(seconds: 1));
-
-    debugPrint('DI initialized');
 
     // Services
     di.registerLazySingleton<AuthSessionService>(() {

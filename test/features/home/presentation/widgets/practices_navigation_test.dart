@@ -13,8 +13,8 @@ import 'package:asteria_app/core/routing/app_route.dart';
 import 'package:asteria_app/core/ui_kit/theme/theme.dart';
 import 'package:asteria_app/features/home/presentation/screens/practices_screen.dart';
 import 'package:asteria_app/features/home/presentation/screens/profile_screen.dart';
-import 'package:asteria_app/features/scenarios/first_session.dart';
-import 'package:asteria_app/features/scenarios/scenario_picker.dart';
+import 'package:asteria_app/features/affirmation/affirmation_screen.dart';
+import 'package:asteria_app/core/analytics/dictionaries/entry_surface.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
@@ -22,7 +22,7 @@ import 'package:provider/provider.dart';
 
 void main() {
   testWidgets(
-    'reopen scenarios from profile and return through each step to practices',
+    'practices returns from profile and affirmations without changing tabs',
     (tester) async {
       final content = _Content();
       final user = _User();
@@ -40,10 +40,7 @@ void main() {
       final router = GoRouter(
         initialLocation: '/home',
         routes: [
-          GoRoute(
-            path: FirstSession.path,
-            builder: (_, _) => const ScenarioPicker(),
-          ),
+          AffirmationRoute(),
           GoRoute(
             path: '/home',
             routes: [HomeProfileRoute()],
@@ -93,31 +90,25 @@ void main() {
         HomeProfileRoute.routeName,
       );
       final back = MaterialLocalizations.of(context).backButtonTooltip;
-      await tester.tap(find.text(labels.scenarioStartTitle));
-      await tester.pumpAndSettle();
-      expect(find.byType(ScenarioPicker), findsOneWidget);
-      await tester.tap(find.text(labels.scenarioPracticeTitle));
-      await tester.pumpAndSettle();
-      expect(find.text(labels.scenarioPracticeChooseMood), findsOneWidget);
-      await tester.tap(find.byTooltip(back));
-      await tester.pumpAndSettle();
-      expect(find.byType(ScenarioPicker), findsOneWidget);
-      await tester.tap(find.byTooltip(back));
-      await tester.pumpAndSettle();
-      expect(find.byType(ProfileScreen), findsOneWidget);
       await tester.tap(find.bySemanticsLabel(back));
       await tester.pumpAndSettle();
       expect(find.byType(PracticesScreen), findsOneWidget);
       expect(find.byType(ProfileScreen), findsNothing);
       expect((home.state as HomeLoaded).currentTabIndex, 2);
-      await tester.tap(avatar);
+      final affirmationEntry = find.text('Choose an affirmation');
+      await tester.ensureVisible(affirmationEntry);
+      await tester.tap(affirmationEntry);
       await tester.pumpAndSettle();
-      await tester.tap(find.text(labels.scenarioStartTitle));
+      expect(find.byType(AffirmationScreen), findsOneWidget);
+      expect(
+        router.routerDelegate.currentConfiguration.last.route.name,
+        AffirmationRoute.routeName,
+      );
+      await tester.tap(find.bySemanticsLabel(labels.commonBack));
       await tester.pumpAndSettle();
-      await tester.tap(find.text(labels.scenarioGoHome));
-      await tester.pumpAndSettle();
-      expect((home.state as HomeLoaded).currentTabIndex, 0);
-      expect(find.text('Main tab'), findsOneWidget);
+      expect(find.byType(PracticesScreen), findsOneWidget);
+      expect(find.byType(AffirmationScreen), findsNothing);
+      expect((home.state as HomeLoaded).currentTabIndex, 2);
       expect(router.canPop(), isFalse);
       await tester.pumpWidget(const SizedBox.shrink());
     },
@@ -129,6 +120,8 @@ class _Repository extends Fake implements UserRepository {}
 class _Content extends ChangeNotifier implements ContentProvider {
   @override
   List<ArticleModel> get articles => const [];
+  @override
+  List<String> get affirmationCategories => const [];
   @override
   bool isTodayTarotCardOpened() => false;
   @override
@@ -149,4 +142,8 @@ class _User extends ChangeNotifier implements UserProvider {
 class _ProfileAnalytics extends Fake implements ProductAnalyticsService {
   @override
   Future<void> trackProfileView() async {}
+  @override
+  Future<void> trackAffirmationsStart({
+    EntrySurface entrySurface = EntrySurface.unknown,
+  }) async {}
 }

@@ -142,48 +142,76 @@ void main() {
   });
 
   for (final width in [320.0, 390.0]) {
-    testWidgets('long position text remains readable at width $width', (
-      tester,
-    ) async {
-      final description = List.filled(
-        12,
-        'Полное описание позиции планеты.',
-      ).join(' ');
-      await _pumpChart(
-        tester,
-        width,
-        description,
-        textScale: width == 320 ? 1.6 : 1,
-      );
-      final text = find.textContaining(description);
-      expect(text, findsOneWidget);
-      final paragraph = tester.renderObject<RenderParagraph>(text);
-      expect(paragraph.didExceedMaxLines, isFalse);
-      Finder cardFor(Finder text) => find
-          .ancestor(
-            of: text,
-            matching: find.byWidgetPredicate(
-              (widget) =>
-                  widget is Container && widget.clipBehavior == Clip.antiAlias,
-            ),
-          )
-          .first;
-      final tallest = tester.getRect(cardFor(text));
-      final venus = tester.getRect(
-        cardFor(find.textContaining('Описание Венеры.')),
-      );
-      expect(venus.height, tallest.height);
-      expect(
-        tester.getBottomLeft(text).dy,
-        lessThanOrEqualTo(tallest.bottom - 16),
-      );
-      final nextGroup = find.text('Отношения и проявление');
-      expect(
-        tester.getBottomLeft(text).dy,
-        lessThan(tester.getTopLeft(nextGroup).dy),
-      );
-      expect(tester.takeException(), isNull);
-    });
+    testWidgets(
+      'planet rows share height only within their group at width $width',
+      (tester) async {
+        final description = List.filled(
+          12,
+          'Полное описание позиции планеты.',
+        ).join(' ');
+        await _pumpChart(
+          tester,
+          width,
+          description,
+          textScale: width == 320 ? 2 : 1,
+        );
+        final text = find.textContaining(description);
+        expect(text, findsOneWidget);
+        final paragraph = tester.renderObject<RenderParagraph>(text);
+        expect(paragraph.didExceedMaxLines, isFalse);
+        Finder cardFor(Finder text) => find
+            .ancestor(
+              of: text,
+              matching: find.byWidgetPredicate(
+                (widget) =>
+                    widget is Container &&
+                    widget.clipBehavior == Clip.antiAlias,
+              ),
+            )
+            .first;
+        final tallest = tester.getRect(cardFor(text));
+        final venus = tester.getRect(
+          cardFor(find.textContaining('Описание Венеры.')),
+        );
+        final moon = tester.getRect(
+          cardFor(find.textContaining('Описание Луны.')),
+        );
+        expect(
+          moon.height,
+          tallest.height,
+          reason: 'The Sun and Moon share one horizontal carousel',
+        );
+        expect(
+          venus.height,
+          lessThan(tallest.height),
+          reason:
+              'A separate short carousel must not inherit the Sun text height',
+        );
+        final renderedTextLength = paragraph.text.toPlainText().length;
+        final lastGlyph = paragraph
+            .getBoxesForSelection(
+              TextSelection(
+                baseOffset: renderedTextLength - 1,
+                extentOffset: renderedTextLength,
+              ),
+            )
+            .last;
+        expect(
+          paragraph.localToGlobal(Offset.zero).dy + lastGlyph.bottom,
+          lessThanOrEqualTo(tallest.bottom),
+        );
+        expect(
+          tester.getBottomLeft(text).dy,
+          lessThanOrEqualTo(tallest.bottom - 16),
+        );
+        final nextGroup = find.text('Отношения и проявление');
+        expect(
+          tester.getBottomLeft(text).dy,
+          lessThan(tester.getTopLeft(nextGroup).dy),
+        );
+        expect(tester.takeException(), isNull);
+      },
+    );
   }
 
   testWidgets(
@@ -292,6 +320,14 @@ UserModel _user(String description, String language, bool exactTime) =>
             longitude: 40,
           ),
           PlanetHousePositionModel(
+            code: 'moon',
+            name: 'Луна',
+            signCode: 'libra',
+            sign: 'Весы',
+            house: 3,
+            longitude: 200,
+          ),
+          PlanetHousePositionModel(
             code: 'venus',
             name: 'Венера',
             signCode: 'gemini',
@@ -312,6 +348,7 @@ UserModel _user(String description, String language, bool exactTime) =>
           language: {
             'planet_interpretations': {
               'sun': description,
+              'moon': 'Описание Луны.',
               'venus': 'Описание Венеры.',
             },
             'house_interpretations': {

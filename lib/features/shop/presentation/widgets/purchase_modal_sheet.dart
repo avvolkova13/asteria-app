@@ -1,3 +1,5 @@
+import 'package:asteria_app/core/ui_kit/widgets/purchase_modal_actions.dart';
+import 'package:asteria_app/core/ui_kit/widgets/asteria_action_button.dart';
 import 'package:asteria_app/core/ui_kit/widgets/modal_glass_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
@@ -19,11 +21,7 @@ const double _purchaseSuccessScreenHeight = 250;
 const double _purchaseModalSheetHeight = 329;
 const Color _purchaseModalBackground = ModalGlassTokens.surface;
 const Color _purchaseModalPurple = Color(0xFF6E4BFF);
-const Color _purchaseModalPurpleDark = Color(0xFF5436D9);
 const Color _purchaseModalGold = Color(0xFFF3B76A);
-const LinearGradient _purchaseModalButtonGradient = LinearGradient(
-  colors: [_purchaseModalPurple, _purchaseModalPurpleDark],
-);
 
 class PurchaseModalSheet extends StatefulWidget {
   final ShopItemModel product;
@@ -190,84 +188,67 @@ class _PurchaseModalSheetState extends State<PurchaseModalSheet> {
                                   onPressed: () => Navigator.pop(context),
                                   text: context.l10n.commonContinue,
                                 )
-                              : Row(
-                                  children: [
-                                    Expanded(
-                                      child: _PurchaseModalActionButton.outline(
-                                        onPressed: () => Navigator.pop(context),
-                                        text: context.l10n.commonCancel,
-                                      ),
-                                    ),
-                                    const SizedBox(width: 12),
-                                    Expanded(
-                                      child: _PurchaseModalActionButton.primary(
-                                        onPressed: _isSubmitting
-                                            ? null
-                                            : () async {
-                                                setState(() {
-                                                  _isSubmitting = true;
-                                                  _purchaseIdempotencyKey ??=
-                                                      const Uuid().v4();
-                                                });
-                                                final analytics = di
-                                                    .get<
-                                                      ProductAnalyticsService
-                                                    >();
-                                                final balanceBefore =
+                              : PurchaseModalActions(
+                                  cancelLabel: context.l10n.commonCancel,
+                                  onCancel: () => Navigator.pop(context),
+                                  primary: _PurchaseModalActionButton.primary(
+                                    onPressed: _isSubmitting
+                                        ? null
+                                        : () async {
+                                            setState(() {
+                                              _isSubmitting = true;
+                                              _purchaseIdempotencyKey ??=
+                                                  const Uuid().v4();
+                                            });
+                                            final analytics = di
+                                                .get<ProductAnalyticsService>();
+                                            final balanceBefore =
+                                                monetizationProvider.balance;
+                                            analytics.trackCoinSpendStart(
+                                              originSurface: 'shop',
+                                              offerType: OfferType.shopItem,
+                                              coinAmount: _totalPrice,
+                                              balanceBefore: balanceBefore,
+                                            );
+                                            try {
+                                              await monetizationProvider
+                                                  .purchaseShopRequestPack(
+                                                    productId:
+                                                        widget.product.id,
+                                                    quantity: _quantity,
+                                                    expectedPrice: _totalPrice,
+                                                    feature: widget
+                                                        .product
+                                                        .purchase
+                                                        ?.featureKey,
+                                                    idempotencyKey:
+                                                        _purchaseIdempotencyKey,
+                                                  );
+                                              setState(() {
+                                                _isPurchaseSuccess = true;
+                                                _purchaseIdempotencyKey = null;
+                                              });
+                                              analytics.trackCoinSpendSuccess(
+                                                originSurface: 'shop',
+                                                offerType: OfferType.shopItem,
+                                                coinAmount: _totalPrice,
+                                                balanceBefore: balanceBefore,
+                                                balanceAfter:
                                                     monetizationProvider
-                                                        .balance;
-                                                analytics.trackCoinSpendStart(
-                                                  originSurface: 'shop',
-                                                  offerType: OfferType.shopItem,
-                                                  coinAmount: _totalPrice,
-                                                  balanceBefore: balanceBefore,
-                                                );
-                                                try {
-                                                  await monetizationProvider
-                                                      .purchaseShopRequestPack(
-                                                        productId:
-                                                            widget.product.id,
-                                                        quantity: _quantity,
-                                                        expectedPrice:
-                                                            _totalPrice,
-                                                        feature: widget
-                                                            .product
-                                                            .purchase
-                                                            ?.featureKey,
-                                                        idempotencyKey:
-                                                            _purchaseIdempotencyKey,
-                                                      );
-                                                  setState(() {
-                                                    _isPurchaseSuccess = true;
-                                                    _purchaseIdempotencyKey =
-                                                        null;
-                                                  });
-                                                  analytics
-                                                      .trackCoinSpendSuccess(
-                                                        originSurface: 'shop',
-                                                        offerType:
-                                                            OfferType.shopItem,
-                                                        coinAmount: _totalPrice,
-                                                        balanceBefore:
-                                                            balanceBefore,
-                                                        balanceAfter:
-                                                            monetizationProvider
-                                                                .balance,
-                                                      );
-                                                  widget.onConfirm();
-                                                } finally {
-                                                  if (mounted &&
-                                                      !_isPurchaseSuccess) {
-                                                    setState(() {
-                                                      _isSubmitting = false;
-                                                    });
-                                                  }
-                                                }
-                                              },
-                                        text: context.l10n.commonBuy,
-                                      ),
-                                    ),
-                                  ],
+                                                        .balance,
+                                              );
+                                              widget.onConfirm();
+                                            } finally {
+                                              if (mounted &&
+                                                  !_isPurchaseSuccess) {
+                                                setState(() {
+                                                  _isSubmitting = false;
+                                                });
+                                              }
+                                            }
+                                          },
+                                    text: context.l10n.commonBuy,
+                                  ),
                                 ),
                         ).withEntrance(),
                       ],
@@ -476,10 +457,9 @@ class _QuantitySelector extends StatelessWidget {
       width: 156,
       height: 46,
       child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: Colors.transparent,
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: _purchaseModalGold.withValues(alpha: 0.78)),
+        decoration: CardLensDecoration.button(
+          color: AppColorsDark.modal,
+          borderRadius: BorderRadius.circular(16),
         ),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 4),
@@ -504,8 +484,8 @@ class _QuantitySelector extends StatelessWidget {
                             'assets/icons/minus_circle_icon.svg',
                             height: 22,
                             tint: quantity > 1
-                                ? _purchaseModalPurple
-                                : _purchaseModalPurple.withValues(alpha: 0.62),
+                                ? _purchaseModalGold
+                                : _purchaseModalGold.withValues(alpha: 0.62),
                           ),
                         ),
                       ),
@@ -561,74 +541,19 @@ class _QuantitySelector extends StatelessWidget {
 class _PurchaseModalActionButton extends StatelessWidget {
   final String text;
   final VoidCallback? onPressed;
-  final bool isPrimary;
 
   const _PurchaseModalActionButton.primary({
     required this.text,
     required this.onPressed,
-  }) : isPrimary = true;
+  });
 
-  const _PurchaseModalActionButton.outline({
-    required this.text,
-    required this.onPressed,
-  }) : isPrimary = false;
 
   @override
   Widget build(BuildContext context) {
-    final borderRadius = BorderRadius.circular(16);
-    final textStyle = context.textTheme.button.copyWith(
-      color: isPrimary ? AppColors.textInverse : ModalGlassTokens.text,
-    );
-
-    return Semantics(
-      button: true,
-      label: text,
-      enabled: onPressed != null,
-      onTap: onPressed == null ? null : LotusFeedback.action(onPressed!),
-      child: ExcludeSemantics(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(
-            minHeight: 50,
-            minWidth: double.infinity,
-          ),
-          child: Material(
-            color: Colors.transparent,
-            borderRadius: borderRadius,
-            child: Ink(
-              decoration: CardLensDecoration.button(
-                enabled: onPressed != null,
-                gradient: isPrimary && onPressed != null
-                    ? _purchaseModalButtonGradient
-                    : null,
-                color: isPrimary && onPressed == null
-                    ? _purchaseModalPurple.withValues(alpha: 0.42)
-                    : null,
-                borderRadius: borderRadius,
-                border: isPrimary
-                    ? null
-                    : Border.all(color: _purchaseModalPurple),
-              ),
-              child: LotusInkTap(
-                onTap: onPressed,
-                borderRadius: borderRadius,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 8,
-                    horizontal: 8,
-                  ),
-                  child: Center(
-                    child: Text(
-                      text,
-                      style: textStyle,
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
+    return AsteriaActionButton(
+      text: text,
+      onPressed: onPressed,
+      width: double.infinity,
     );
   }
 }

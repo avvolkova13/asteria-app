@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_action_button.dart';
 import 'package:asteria_app/core/ui_kit/theme/theme.dart';
 import 'package:asteria_app/core/ui_kit/widgets/custom_button.dart';
 import 'package:asteria_app/core/ui_kit/widgets/segmented_picker.dart';
@@ -66,7 +67,7 @@ void main() {
       if (scale == 1) {
         expect(first.center.dy, tester.getCenter(find.text(labels.last)).dy);
       }
-      final button = tester.getRect(find.byType(ElevatedButton));
+      final button = tester.getRect(find.byType(AsteriaActionButton));
       final caption = tester.getRect(find.text(action));
       expect(button.contains(caption.topLeft), isTrue);
       expect(button.contains(caption.bottomRight), isTrue);

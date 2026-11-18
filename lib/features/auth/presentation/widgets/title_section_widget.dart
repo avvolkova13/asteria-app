@@ -19,7 +19,9 @@ class TitleSectionWidget extends StatelessWidget {
         const SizedBox(height: 18),
         Text(
           context.l10n.authMoonRhythms,
-          style: AppTypography.text1.copyWith(color: const Color(0xFFB5AAB8)),
+          style: AppTypography.text1.copyWith(
+            color: AppColorsDark.textSecondary,
+          ),
         ),
         const SizedBox(height: 15),
         Text(

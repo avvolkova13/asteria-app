@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/app_colors/app_colors.dart';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
@@ -8,7 +9,7 @@ abstract final class BalanceHistoryStyle {
   static const modal = Color(0xFF110628);
   static const selected = Color(0xFF151028);
   static const border = Color(0xFF31296D);
-  static const muted = Color(0xFFB5AAB8);
+  static const muted = AppColorsDark.textSecondary;
   static const credit = Color(0xFF72B7A0);
   static const debit = Color(0xFFE36A6A);
   static const accent = LinearGradient(

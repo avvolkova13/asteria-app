@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/responsive_heading.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_activity_indicator.dart';
 import 'package:asteria_app/core/ui_kit/widgets/top_bar_geometry.dart';
 import 'package:asteria_app/features/monetization/domain/purchase_visibility.dart';
@@ -334,9 +335,8 @@ class _HistoryRefreshRow extends StatelessWidget {
                     child: AsteriaActivityIndicator(
                       size: 24,
                       color: AppColors.cardTinted,
-                      semanticsLabel: MaterialLocalizations.of(
-                        context,
-                      ).refreshIndicatorSemanticLabel,
+                      semanticsLabel: MaterialLocalizations.of(context)
+                          .refreshIndicatorSemanticLabel,
                     ),
                   ),
                 ),
@@ -566,23 +566,41 @@ class _EmptyState extends StatelessWidget {
     light: 0.8,
     child: Padding(
       padding: const EdgeInsets.all(16),
-      child: Row(
-        children: [
-          Expanded(
-            child: Text(
-              context.l10n.balanceHistoryEmpty,
-              style: BalanceHistoryStyle.emptyTitle,
-            ),
-          ),
-          const SizedBox(width: 8),
-          Image.asset(
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final title = ResponsiveHeading(
+            context.l10n.balanceHistoryEmpty,
+            style: BalanceHistoryStyle.emptyTitle,
+          );
+          final art = Image.asset(
             'assets/images/balance/history_empty.png',
             key: const Key('history-empty-art'),
             width: 74,
             height: 85,
             excludeFromSemantics: true,
-          ),
-        ],
+          );
+          final stacked =
+              constraints.maxWidth < 260 ||
+              MediaQuery.textScalerOf(context).scale(16) > 22;
+          if (stacked) {
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                title,
+                const SizedBox(height: 12),
+                Align(alignment: Alignment.centerRight, child: art),
+              ],
+            );
+          }
+          return Row(
+            children: [
+              Expanded(child: title),
+              const SizedBox(width: 8),
+              art,
+            ],
+          );
+        },
       ),
     ),
   );

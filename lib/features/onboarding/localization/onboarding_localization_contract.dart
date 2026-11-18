@@ -10,6 +10,8 @@ abstract class OnboardingLocalizationContract {
   String onboardingPage3Description(BuildContext context);
   String onboardingPage4Title(BuildContext context);
   String onboardingPage4Description(BuildContext context);
+  String onboardingPage5Title(BuildContext context);
+  String onboardingPage5Description(BuildContext context);
 
   String nextButton(BuildContext context);
   String finishButton(BuildContext context);
@@ -50,6 +52,14 @@ class OnboardingLocalization implements OnboardingLocalizationContract {
 
   @override
   String nextButton(BuildContext context) => AppLocalizations.of(context).next;
+
+  @override
+  String onboardingPage5Title(BuildContext context) =>
+      AppLocalizations.of(context).onboardingPage5Title;
+
+  @override
+  String onboardingPage5Description(BuildContext context) =>
+      AppLocalizations.of(context).onboardingPage5Description;
 
   @override
   String finishButton(BuildContext context) =>

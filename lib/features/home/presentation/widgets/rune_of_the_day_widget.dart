@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/card_turn.dart';
 import 'package:asteria_app/core/ui_kit/widgets/artwork_unavailable.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
@@ -42,12 +43,10 @@ class _RuneOfTheDayWidgetState extends State<RuneOfTheDayWidget>
   void initState() {
     super.initState();
     _animationController = AnimationController(
-      duration: const Duration(milliseconds: 600),
+      duration: CardTurn.duration,
       vsync: this,
     );
-    _flipAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
-    );
+    _flipAnimation = _animationController;
 
     if (widget.isOpened) {
       _animationController.value = 1.0; // Показываем руну
@@ -60,11 +59,22 @@ class _RuneOfTheDayWidgetState extends State<RuneOfTheDayWidget>
   void didUpdateWidget(RuneOfTheDayWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.isOpened != oldWidget.isOpened) {
-      if (widget.isOpened) {
+      if (MediaQuery.disableAnimationsOf(context)) {
+        _animationController.value = widget.isOpened ? 1 : 0;
+      } else if (widget.isOpened) {
         _animationController.forward();
       } else {
-        _animationController.reverse();
+        // A refreshed symbol is already a different face; keep it hidden.
+        _animationController.value = 0;
       }
+    }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (MediaQuery.disableAnimationsOf(context)) {
+      _animationController.value = widget.isOpened ? 1 : 0;
     }
   }
 
@@ -139,8 +149,15 @@ class _RuneOfTheDayWidgetState extends State<RuneOfTheDayWidget>
     return Column(
       children: AsteriaEntrance.sections([
         // Показываем закрытую карту
-        Center(
-          child: LotusTap(onTap: widget.onRuneTap, child: _buildRuneBack()),
+        AsteriaEntrance(
+          animateInitially: false,
+          child: Center(
+            child: LotusTap(
+              animateEntrance: false,
+              onTap: widget.onRuneTap,
+              child: _buildRuneBack(),
+            ),
+          ),
         ),
         const SizedBox(height: 16),
         // Описание для закрытой карты
@@ -173,28 +190,24 @@ class _RuneOfTheDayWidgetState extends State<RuneOfTheDayWidget>
     return Column(
       children: AsteriaEntrance.sections([
         // Animated rune
-        Center(
-          child: LotusTap(
-            onTap: widget.isOpened
-                ? null
-                : widget.onRuneTap, // Блокируем нажатие если руна уже открыта
-            child: AnimatedBuilder(
-              animation: _flipAnimation,
-              builder: (context, child) {
-                return Transform(
-                  alignment: Alignment.center,
-                  transform: Matrix4.identity()
-                    ..setEntry(3, 2, 0.001)
-                    ..rotateY(_flipAnimation.value * 3.14159),
-                  child: _flipAnimation.value < 0.5
-                      ? _buildRuneBack()
-                      : Transform(
-                          alignment: Alignment.center,
-                          transform: Matrix4.identity()..rotateY(3.14159),
-                          child: _buildRuneFront(rune),
-                        ),
-                );
-              },
+        AsteriaEntrance(
+          animateInitially: false,
+          child: Center(
+            child: LotusTap(
+              animateEntrance: false,
+              onTap: widget.isOpened
+                  ? null
+                  : widget.onRuneTap, // Блокируем нажатие если руна уже открыта
+              child: AnimatedBuilder(
+                animation: _flipAnimation,
+                builder: (context, child) {
+                  return CardTurn(
+                    progress: _flipAnimation.value,
+                    back: _buildRuneBack(),
+                    front: _buildRuneFront(rune),
+                  );
+                },
+              ),
             ),
           ),
         ),

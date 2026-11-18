@@ -16,20 +16,26 @@ class OnboardingData {
       OnboardingPageModel(
         title: localization.onboardingPage2Title(context),
         description: localization.onboardingPage2Description(context),
-        visualKind: OnboardingVisualKind.daily,
+        visualKind: OnboardingVisualKind.natal,
         pageIndex: 1,
       ),
       OnboardingPageModel(
         title: localization.onboardingPage3Title(context),
         description: localization.onboardingPage3Description(context),
-        visualKind: OnboardingVisualKind.tarot,
+        visualKind: OnboardingVisualKind.personal,
         pageIndex: 2,
       ),
       OnboardingPageModel(
         title: localization.onboardingPage4Title(context),
         description: localization.onboardingPage4Description(context),
-        visualKind: OnboardingVisualKind.personal,
+        visualKind: OnboardingVisualKind.tarot,
         pageIndex: 3,
+      ),
+      OnboardingPageModel(
+        title: localization.onboardingPage5Title(context),
+        description: localization.onboardingPage5Description(context),
+        visualKind: OnboardingVisualKind.daily,
+        pageIndex: 4,
       ),
     ];
 

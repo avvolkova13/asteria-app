@@ -34,7 +34,14 @@ class ArcPaySubscriptionCubit extends Cubit<ArcPaySubscriptionState> {
            }),
        super(const ArcPaySubscriptionInitial());
 
+  // Requests may finish after the screen closes. Keep durable recovery work,
+  // but never publish a late UI state or restart screen-owned polling.
+  void _emitIfOpen(ArcPaySubscriptionState nextState) {
+    if (!isClosed) emit(nextState);
+  }
+
   Future<void> initialize() async {
+    if (isClosed) return;
     final saved = _store.read();
     if (saved == null) {
       await loadProducts();
@@ -47,7 +54,7 @@ class ArcPaySubscriptionCubit extends Cubit<ArcPaySubscriptionState> {
       await loadProducts();
       return;
     }
-    emit(
+    _emitIfOpen(
       ArcPaySubscriptionCheckoutReady(
         ArcPaySubscription(
           subscriptionId: saved.subscriptionId,
@@ -67,11 +74,12 @@ class ArcPaySubscriptionCubit extends Cubit<ArcPaySubscriptionState> {
   }
 
   Future<void> loadProducts() async {
-    emit(const ArcPaySubscriptionProductsLoading());
+    if (isClosed) return;
+    _emitIfOpen(const ArcPaySubscriptionProductsLoading());
     try {
-      emit(ArcPaySubscriptionProductsLoaded(await _api.getProducts()));
+      _emitIfOpen(ArcPaySubscriptionProductsLoaded(await _api.getProducts()));
     } catch (_) {
-      emit(
+      _emitIfOpen(
         const ArcPaySubscriptionFailure(
           ArcPaySubscriptionErrorCode.productsUnavailable,
         ),
@@ -80,9 +88,9 @@ class ArcPaySubscriptionCubit extends Cubit<ArcPaySubscriptionState> {
   }
 
   Future<void> start(String productId) async {
-    if (_creating) return;
+    if (isClosed || _creating) return;
     _creating = true;
-    emit(const ArcPaySubscriptionCreating());
+    _emitIfOpen(const ArcPaySubscriptionCreating());
     try {
       final subscription = await _api.createCheckout(
         productId: productId,
@@ -100,10 +108,10 @@ class ArcPaySubscriptionCubit extends Cubit<ArcPaySubscriptionState> {
           checkoutUrl: url,
         ),
       );
-      emit(ArcPaySubscriptionCheckoutReady(subscription));
+      _emitIfOpen(ArcPaySubscriptionCheckoutReady(subscription));
       _startPolling();
     } catch (_) {
-      emit(
+      _emitIfOpen(
         const ArcPaySubscriptionFailure(
           ArcPaySubscriptionErrorCode.createSubscription,
         ),
@@ -114,11 +122,13 @@ class ArcPaySubscriptionCubit extends Cubit<ArcPaySubscriptionState> {
   }
 
   void _startPolling() {
+    if (isClosed) return;
     _timer?.cancel();
     _timer = Timer.periodic(pollingInterval, (_) => checkNow());
   }
 
   Future<void> checkNow() async {
+    if (isClosed) return;
     if (_checking) return;
     final saved = _store.read();
     if (saved == null) return;
@@ -130,7 +140,7 @@ class ArcPaySubscriptionCubit extends Cubit<ArcPaySubscriptionState> {
         _timer?.cancel();
         await _store.clear();
         await _refreshUser();
-        emit(ArcPaySubscriptionActive(subscription));
+        _emitIfOpen(ArcPaySubscriptionActive(subscription));
       } else if ({
         'failed',
         'expired',
@@ -139,9 +149,9 @@ class ArcPaySubscriptionCubit extends Cubit<ArcPaySubscriptionState> {
       }.contains(subscription.status)) {
         _timer?.cancel();
         await _store.clear();
-        emit(ArcPaySubscriptionTerminal(subscription));
+        _emitIfOpen(ArcPaySubscriptionTerminal(subscription));
       } else {
-        emit(ArcPaySubscriptionPending(subscription));
+        _emitIfOpen(ArcPaySubscriptionPending(subscription));
       }
     } catch (_) {
       // A local timeout is not a payment failure. Polling continues.
@@ -151,12 +161,13 @@ class ArcPaySubscriptionCubit extends Cubit<ArcPaySubscriptionState> {
   }
 
   Future<void> cancel(String subscriptionId) async {
+    if (isClosed) return;
     try {
       final subscription = await _api.cancel(subscriptionId);
       await _refreshUser();
-      emit(ArcPaySubscriptionCancelled(subscription));
+      _emitIfOpen(ArcPaySubscriptionCancelled(subscription));
     } catch (_) {
-      emit(
+      _emitIfOpen(
         const ArcPaySubscriptionFailure(
           ArcPaySubscriptionErrorCode.cancelSubscription,
         ),
@@ -165,10 +176,11 @@ class ArcPaySubscriptionCubit extends Cubit<ArcPaySubscriptionState> {
   }
 
   Future<void> cancelCurrent() async {
+    if (isClosed) return;
     try {
       final current = await _api.getCurrent();
       if (current == null) {
-        emit(
+        _emitIfOpen(
           const ArcPaySubscriptionFailure(
             ArcPaySubscriptionErrorCode.subscriptionNotFound,
           ),
@@ -177,7 +189,7 @@ class ArcPaySubscriptionCubit extends Cubit<ArcPaySubscriptionState> {
       }
       await cancel(current.subscriptionId);
     } catch (_) {
-      emit(
+      _emitIfOpen(
         const ArcPaySubscriptionFailure(
           ArcPaySubscriptionErrorCode.cancelSubscription,
         ),
@@ -186,12 +198,13 @@ class ArcPaySubscriptionCubit extends Cubit<ArcPaySubscriptionState> {
   }
 
   Future<void> retry(String subscriptionId) async {
+    if (isClosed) return;
     try {
       final subscription = await _api.retry(subscriptionId);
-      emit(ArcPaySubscriptionPending(subscription));
+      _emitIfOpen(ArcPaySubscriptionPending(subscription));
       _startPolling();
     } catch (_) {
-      emit(
+      _emitIfOpen(
         const ArcPaySubscriptionFailure(
           ArcPaySubscriptionErrorCode.retryPayment,
         ),

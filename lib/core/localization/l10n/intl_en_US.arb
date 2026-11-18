@@ -1,15 +1,45 @@
 {
   "@@locale": "en_US",
   "googleSubscriptionPerWeek": "{price} per week",
-  "@googleSubscriptionPerWeek": {"placeholders": {"price": {"type": "String"}}},
+  "@googleSubscriptionPerWeek": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
   "googleSubscriptionPerMonth": "{price} per month",
-  "@googleSubscriptionPerMonth": {"placeholders": {"price": {"type": "String"}}},
+  "@googleSubscriptionPerMonth": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
   "googleSubscriptionPerYear": "{price} per year",
-  "@googleSubscriptionPerYear": {"placeholders": {"price": {"type": "String"}}},
+  "@googleSubscriptionPerYear": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
   "googleSubscriptionTrialTerms": "7 days free, then {price}. Renews automatically. Cancel anytime.",
-  "@googleSubscriptionTrialTerms": {"placeholders": {"price": {"type": "String"}}},
+  "@googleSubscriptionTrialTerms": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
   "googleSubscriptionRecurringTerms": "{price}. Renews automatically. Cancel anytime.",
-  "@googleSubscriptionRecurringTerms": {"placeholders": {"price": {"type": "String"}}},
+  "@googleSubscriptionRecurringTerms": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
   "avatarScreenTitle": "Avatar",
   "avatarChooseTitle": "Choose your avatar",
   "avatarChange": "Change avatar",
@@ -62,17 +92,15 @@
   "introProgress": "Page {current} of {total}",
   "introCalendarExample": "Example: choosing a day",
   "introPairExample": "Example couple’s reading",
-  "introDateOne": "November 12",
-  "introDateTwo": "December 11",
   "introNeutral": "Neutral day",
   "introFavorable": "Favorable day",
   "introNeutralTip": "Refresh your style or trim the ends.",
   "introFavorableTip": "A day to consider trying a new style.",
-  "introPairTip": "One person wants to talk right away; the other needs time.",
-  "introPairQuestion": "A question for both of you",
-  "introPairPrompt": "“I’d like to return to our conversation. Would now or a little later work better for you?”",
+  "introPairTip": "A different pace doesn’t mean they don’t care.",
+  "introPairQuestion": "Try starting with this",
+  "introPairPrompt": "“This conversation matters to me. Is now a good time, or would later be better?”",
   "introReplay": "Replay the card reveal",
-  "introAnakraMessage": "Which part already interests you? Start there and give yourself ten minutes.",
+  "introAnakraMessage": "Give one small step ten minutes. Just try it.",
   "introAudioError": "Unable to play the recording.",
   "introPause": "Pause",
   "introPlay": "Listen to “I have time”",
@@ -85,5 +113,90 @@
         "type": "int"
       }
     }
-  }
+  },
+  "onboardingPage1Title": "Your day",
+  "onboardingPage1Description": "From a suitable day to a plan with a reminder.",
+  "onboardingPage2Title": "Your character",
+  "onboardingPage2Description": "Strengths, familiar reactions and new questions to ask yourself.",
+  "onboardingPage3Title": "Your relationship",
+  "onboardingPage3Description": "Understand different reactions and find a way to talk.",
+  "onboardingPage4Title": "Your question",
+  "onboardingPage4Description": "From a Tarot reading to reflection and a conversation with Anakra.",
+  "introStoryExample": "Example story",
+  "introStoryReplay": "Replay",
+  "introStoryResume": "Resume story",
+  "introCalendarRequest": "I want a new haircut.\nWhen should I book it?",
+  "introCalendarFrom": "Upcoming days · from {date}",
+  "introCalendarCompare": "Compare the next few days",
+  "introCalendarResult": "Chosen day: {date}",
+  "introCalendarInsight": "A favorable time for a new haircut.",
+  "introMoodRequest": "I’m always rushing.\nI need a moment to breathe.",
+  "introMoodRush": "Always rushing",
+  "introMoodTired": "Low on energy",
+  "introMoodCalm": "Looking for calm",
+  "introMoodMatched": "Your own pace",
+  "introMoodAffirmation": "You can take this moment at your own pace.",
+  "introPairRequest": "I go quiet after an argument. My partner wants to talk.",
+  "introPairFirst": "Taurus",
+  "introPairSecond": "Gemini",
+  "introPairNeedTime": "“I need time to understand how I feel.”",
+  "introPairNeedTalk": "“Talking about what happened helps me.”",
+  "introTarotRequest": "I want to start something new,\nbut I keep putting it off.",
+  "introTarotHint": "One question. Three new perspectives.",
+  "introTarotReflection": "What if you followed your curiosity?",
+  "introTarotInsight": "Anakra’s advice",
+  "@introCalendarFrom": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "@introCalendarResult": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "introStoryPause": "Pause story",
+  "scenarioPlansMonth": "Month",
+  "scenarioPlansWeek": "Week",
+  "scenarioPlansDay": "Day",
+  "scenarioPlansToday": "Today",
+  "scenarioPlansPrevious": "Previous period",
+  "scenarioPlansNext": "Next period",
+  "scenarioPlansEmptyDay": "No plans for this day yet.",
+  "scenarioPlansEmptyWeek": "No plans for this week yet.",
+  "scenarioPlansAllDay": "No time set",
+  "scenarioPlansCount": "Plans: {count}",
+  "@scenarioPlansCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "onboardingPage5Title": "Time for yourself",
+  "onboardingPage5Description": "Affirmations and short practices for a pause in your day.",
+  "introDemoLabel": "Example reading",
+  "introNatalDate": "Example data · 13 May 1995",
+  "introNatalStrengthTitle": "A strength",
+  "introNatalStrength": "Following through and finishing what you start.",
+  "introNatalPatternTitle": "A familiar reaction",
+  "introNatalPattern": "Change may bring a need for more clarity and time.",
+  "introNatalQuestion": "What helps you feel grounded before a new step?",
+  "introTarotMeaningTitle": "A way to read these cards",
+  "introTarotMeaning": "Start with the part that interests you.",
+  "introTarotFollowup": "What if it does not work out?",
+  "introMoodPracticeTitle": "A short practice",
+  "introMoodPractice": "Relax your shoulders. Breathe out slowly.",
+  "introNatalQuestionTitle": "A question to reflect on",
+  "introCalendarSavedTitle": "Haircut",
+  "introCalendarSavedText": "Added to my plans",
+  "introCalendarReminderTitle": "Remind me about this plan",
+  "introCalendarReminderChoice": "One day before",
+  "introCalendarReminderEnabled": "Reminder is on",
+  "introCalendarCompleted": "Everything is planned",
+  "introCalendarCompletedBody": "Your haircut is in the calendar. A reminder is set for the day before."
 }

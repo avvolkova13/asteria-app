@@ -1,3 +1,4 @@
+import 'package:asteria_app/features/affirmation/player/affirmation_player_screen.dart';
 import 'package:asteria_app/app/data/models/user/user_model.dart';
 import 'package:asteria_app/app/providers/content_provider.dart';
 import 'package:asteria_app/app/providers/user_provider.dart';
@@ -114,80 +115,76 @@ void main() {
       },
     );
 
-    testWidgets('a swipe changes the card and a tap opens the shared player', (
-      tester,
-    ) async {
-      final cards = [
-        _affirmation(id: 'first', text: 'Первая'),
-        _affirmation(id: 'second', text: 'Вторая'),
-      ];
-      final router = GoRouter(
-        routes: [
-          GoRoute(
-            path: '/',
-            builder: (context, _) => Scaffold(
-              body: Column(
-                children: [
-                  AffirmationCategoryWidget(
-                    category: 'love',
-                    affirmations: cards,
-                  ),
-                  AffirmationCategoryWidget(
-                    category: 'calm',
-                    affirmations: cards,
-                    showAffirmations: false,
-                  ),
-                ],
+    testWidgets(
+      'a swipe changes selected content passed to the real destination',
+      (tester) async {
+        final cards = [
+          _affirmation(id: 'first', text: 'Первая'),
+          _affirmation(id: 'second', text: 'Вторая'),
+        ];
+        final router = GoRouter(
+          routes: [
+            GoRoute(
+              path: '/',
+              builder: (context, _) => Scaffold(
+                body: Column(
+                  children: [
+                    AffirmationCategoryWidget(
+                      category: 'love',
+                      affirmations: cards,
+                    ),
+                    AffirmationCategoryWidget(
+                      category: 'calm',
+                      affirmations: cards,
+                      showAffirmations: false,
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-          GoRoute(
-            path: AffirmationPlayerRoute.routeName,
-            name: AffirmationPlayerRoute.routeName,
-            builder: (context, _) => Scaffold(
-              body: TextButton(
-                onPressed: () => context.pop(),
-                child: const Text('Закрыть плеер'),
-              ),
-            ),
-          ),
-        ],
-      );
-      addTearDown(router.dispose);
-      await tester.pumpWidget(
-        MaterialApp.router(
-          routerConfig: router,
-          builder: (context, child) => Theme(
-            data: AppThemeDark.instance.getThemeData(context),
-            child: child!,
-          ),
-          locale: const Locale('ru'),
-          localizationsDelegates: const [
-            AppLocalizations.delegate,
-            ...GlobalMaterialLocalizations.delegates,
+            AffirmationPlayerRoute(),
           ],
-          supportedLocales: AppLocaleService.supportedLocales,
-        ),
-      );
-      await tester.pumpAndSettle();
+        );
+        addTearDown(router.dispose);
+        await tester.pumpWidget(
+          MaterialApp.router(
+            routerConfig: router,
+            builder: (context, child) => Theme(
+              data: AppThemeDark.instance.getThemeData(context),
+              child: child!,
+            ),
+            locale: const Locale('ru'),
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              ...GlobalMaterialLocalizations.delegates,
+            ],
+            supportedLocales: AppLocaleService.supportedLocales,
+          ),
+        );
+        await tester.pumpAndSettle();
 
-      final stack = find.byType(AffirmationCardStack);
-      expect(stack, findsOneWidget);
-      await tester.tap(stack);
-      await tester.pumpAndSettle();
-      expect(find.text('Закрыть плеер'), findsOneWidget);
-      await tester.tap(find.text('Закрыть плеер'));
-      await tester.pumpAndSettle();
-      await tester.drag(stack, const Offset(0, -145));
-      await tester.pumpAndSettle();
-      expect(_frontImageAssetPath(tester), endsWith('category_love_2.webp'));
-      await tester.tap(stack);
-      await tester.pumpAndSettle();
-      expect(find.text('Закрыть плеер'), findsOneWidget);
-      await tester.tap(find.text('Закрыть плеер'));
-      await tester.pumpAndSettle();
-      expect(_frontImageAssetPath(tester), endsWith('category_love_2.webp'));
-    });
+        final stack = find.byType(AffirmationCardStack);
+        expect(stack, findsOneWidget);
+        await tester.tap(stack);
+        await tester.pumpAndSettle();
+        expect(find.byType(AffirmationPlayerScreen), findsNothing);
+        expect(find.text('Первая'), findsOneWidget);
+        expect(find.text('Любовь'), findsOneWidget);
+        await tester.tap(find.byTooltip(AppLocalizations.current.commonBack));
+        await tester.pumpAndSettle();
+        await tester.drag(stack, const Offset(0, -145));
+        await tester.pumpAndSettle();
+        expect(_frontImageAssetPath(tester), endsWith('category_love_2.webp'));
+        await tester.tap(stack);
+        await tester.pumpAndSettle();
+        expect(find.byType(AffirmationPlayerScreen), findsNothing);
+        expect(find.text('Вторая'), findsOneWidget);
+        expect(find.text('Первая'), findsNothing);
+        await tester.tap(find.byTooltip(AppLocalizations.current.commonBack));
+        await tester.pumpAndSettle();
+        expect(_frontImageAssetPath(tester), endsWith('category_love_2.webp'));
+      },
+    );
 
     testWidgets(
       'a replaced deck discards the old swipe; Reduce Motion advances immediately',

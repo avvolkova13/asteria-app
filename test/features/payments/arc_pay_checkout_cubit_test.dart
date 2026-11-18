@@ -7,6 +7,7 @@ import 'package:asteria_app/features/payments/presentation/cubit/arc_pay_checkou
 import 'package:asteria_app/features/payments/presentation/cubit/arc_pay_checkout_state.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:fake_async/fake_async.dart';
 
 void main() {
   const product = ArcPayProduct(
@@ -36,6 +37,241 @@ void main() {
       },
     );
   }
+
+  for (final fails in [false, true]) {
+    test('checkout completes safely after leaving (error: $fails)', () async {
+      final request = Completer<ArcPayCheckout>();
+      final store = _FakeStore();
+      final cubit = _cubit(
+        api: _FakeApi()..checkoutCompleter = request,
+        store: store,
+      );
+      final checkout = cubit.start(
+        productId: product.productId,
+        amountMinor: product.amountMinor,
+        currency: product.currency,
+      );
+      final completion = expectLater(checkout, completes);
+      await Future<void>.delayed(Duration.zero);
+      await cubit.close();
+      if (fails) {
+        request.completeError(StateError('offline'));
+      } else {
+        request.complete(
+          ArcPayCheckout(
+            orderId: 'order-1',
+            checkoutUrl: Uri.parse('https://checkout.example/order-1'),
+            status: 'pending',
+          ),
+        );
+      }
+      await completion;
+      expect(store.value?.orderId, fails ? null : 'order-1');
+    });
+  }
+
+  test('late checkout saves recovery without restarting polling', () {
+    fakeAsync((clock) {
+      final request = Completer<ArcPayCheckout>();
+      final store = _FakeStore();
+      final cubit = _cubit(
+        api: _FakeApi()..checkoutCompleter = request,
+        store: store,
+      );
+      unawaited(
+        cubit.start(
+          productId: product.productId,
+          amountMinor: product.amountMinor,
+          currency: product.currency,
+        ),
+      );
+      clock.flushMicrotasks();
+      unawaited(cubit.close());
+      clock.flushMicrotasks();
+      request.complete(
+        ArcPayCheckout(
+          orderId: 'order-1',
+          checkoutUrl: Uri.parse('https://checkout.example/order-1'),
+          status: 'pending',
+        ),
+      );
+      clock.flushMicrotasks();
+      expect(store.value?.orderId, 'order-1');
+      expect(clock.periodicTimerCount, 0);
+    });
+  });
+
+  for (final fails in [false, true]) {
+    test('late abandon completes safely (error: $fails)', () async {
+      final request = Completer<ArcPayOrder>();
+      final store = _FakeStore()
+        ..value = ArcPayPendingOrder(
+          orderId: 'order-1',
+          productId: product.productId,
+          amountMinor: product.amountMinor,
+          currency: product.currency,
+          userId: 'user-1',
+          checkoutUrl: Uri.parse('https://checkout.example/order-1'),
+        );
+      final cubit = _cubit(
+        api: _FakeApi()..abandonRequest = request,
+        store: store,
+      );
+      final abandon = cubit.abandon();
+      final completion = expectLater(abandon, completes);
+      await cubit.close();
+      if (fails) {
+        request.completeError(StateError('offline'));
+      } else {
+        request.complete(_order(status: 'pending', providerStatus: 'created'));
+      }
+      await completion;
+      expect(store.value, isNull);
+    });
+  }
+
+  test(
+    'lost checkout response reuses request identity after screen restart',
+    () async {
+      final request = Completer<ArcPayCheckout>();
+      final api = _FakeApi()..checkoutCompleter = request;
+      final store = _FakeStore();
+      var contextCalls = 0;
+      Future<Map<String, Object?>?> context(String product, String uid) async {
+        contextCalls++;
+        return {'attempt_id': 'analytics-$contextCalls'};
+      }
+
+      final firstCubit = _cubit(
+        api: api,
+        store: store,
+        analyticsContext: context,
+      );
+      final first = firstCubit.start(
+        productId: product.productId,
+        amountMinor: product.amountMinor,
+        currency: product.currency,
+      );
+      await Future<void>.delayed(Duration.zero);
+      request.completeError(
+        DioException(
+          requestOptions: RequestOptions(),
+          type: DioExceptionType.receiveTimeout,
+        ),
+      );
+      await first;
+      await firstCubit.close();
+      api.checkoutCompleter = null;
+      final retryCubit = _cubit(
+        api: api,
+        store: store,
+        analyticsContext: context,
+      );
+      await retryCubit.start(
+        productId: product.productId,
+        amountMinor: product.amountMinor,
+        currency: product.currency,
+      );
+      expect(api.createdRequestIds, hasLength(2));
+      expect(api.createdRequestIds.last, api.createdRequestIds.first);
+      expect(contextCalls, 1);
+      expect(api.createdContexts, [
+        {'attempt_id': 'analytics-1'},
+        {'attempt_id': 'analytics-1'},
+      ]);
+      await retryCubit.close();
+    },
+  );
+
+  for (final mismatch in ['account', 'product', 'amount']) {
+    test('uncertain request is isolated from changed $mismatch', () async {
+      final request = Completer<ArcPayCheckout>();
+      final api = _FakeApi()..checkoutCompleter = request;
+      final store = _FakeStore();
+      final firstCubit = _cubit(api: api, store: store);
+      final first = firstCubit.start(
+        productId: product.productId,
+        amountMinor: product.amountMinor,
+        currency: product.currency,
+      );
+      await Future<void>.delayed(Duration.zero);
+      request.completeError(StateError('response lost'));
+      await first;
+      expect(store.requests, hasLength(1));
+      await firstCubit.close();
+      api.checkoutCompleter = null;
+      final retryCubit = _cubit(
+        api: api,
+        store: store,
+        currentUserId: () => mismatch == 'account' ? 'user-2' : 'user-1',
+      );
+      await retryCubit.start(
+        productId: mismatch == 'product'
+            ? 'asteria_pro_month'
+            : product.productId,
+        amountMinor: mismatch == 'amount' ? 9900 : product.amountMinor,
+        currency: product.currency,
+      );
+      expect(api.createdRequestIds, hasLength(2));
+      expect(api.createdRequestIds.last, isNot(api.createdRequestIds.first));
+      expect(store.requests, hasLength(1));
+      await retryCubit.close();
+    });
+  }
+
+  test('pending checkout retry does not create a second order', () async {
+    final api = _FakeApi();
+    final cubit = _cubit(api: api);
+    await cubit.start(
+      productId: product.productId,
+      amountMinor: product.amountMinor,
+      currency: product.currency,
+    );
+    await cubit.start(
+      productId: product.productId,
+      amountMinor: product.amountMinor,
+      currency: product.currency,
+    );
+    expect(api.createCalls, 1);
+    expect(cubit.state, isA<ArcPayCheckoutPending>());
+    await cubit.close();
+  });
+
+  test(
+    'fulfilled checkout allows a new intentional purchase with a new ID',
+    () async {
+      final api = _FakeApi();
+      final cubit = _cubit(api: api);
+      await cubit.start(
+        productId: product.productId,
+        amountMinor: product.amountMinor,
+        currency: product.currency,
+      );
+      api.nextOrder = _order(status: 'fulfilled', providerStatus: 'captured');
+      await cubit.checkNow();
+      await cubit.start(
+        productId: product.productId,
+        amountMinor: product.amountMinor,
+        currency: product.currency,
+      );
+      expect(api.createdRequestIds, hasLength(2));
+      expect(api.createdRequestIds.last, isNot(api.createdRequestIds.first));
+      await cubit.close();
+    },
+  );
+
+  test('cannot POST when durable request persistence fails', () async {
+    final api = _FakeApi();
+    final cubit = _cubit(api: api, store: _FakeStore()..failRequestSave = true);
+    await cubit.start(
+      productId: product.productId,
+      amountMinor: product.amountMinor,
+      currency: product.currency,
+    );
+    expect(api.createCalls, 0);
+    expect(cubit.state, isA<ArcPayCheckoutFailure>());
+    await cubit.close();
+  });
 
   test('loads server catalog', () async {
     final api = _FakeApi()..products = const [product];
@@ -332,11 +568,15 @@ ArcPayCheckoutCubit _cubit({
   required _FakeApi api,
   _FakeStore? store,
   Future<void> Function()? refreshUser,
+  String? Function()? currentUserId,
+  Future<Map<String, Object?>?> Function(String product, String uid)?
+  analyticsContext,
 }) => ArcPayCheckoutCubit(
   api: api,
   store: store ?? _FakeStore(),
-  currentUserId: () => 'user-1',
+  currentUserId: currentUserId ?? () => 'user-1',
   refreshUser: refreshUser ?? () async {},
+  analyticsContext: analyticsContext,
   pollingInterval: const Duration(days: 1),
 );
 
@@ -368,10 +608,13 @@ class _FakeApi extends ArcPayPaymentsApi {
   Completer<List<ArcPayProduct>>? catalogRequest;
   int createCalls = 0;
   final List<String> createdProductIds = [];
+  final List<String> createdRequestIds = [];
+  final createdContexts = <Map<String, Object?>?>[];
   Completer<ArcPayCheckout>? checkoutCompleter;
   ArcPayOrder nextOrder = _order(status: 'pending', providerStatus: 'pending');
   int abandonCalls = 0;
   bool abandonError = false;
+  Completer<ArcPayOrder>? abandonRequest;
 
   @override
   Future<List<ArcPayProduct>> getProducts() async =>
@@ -387,6 +630,8 @@ class _FakeApi extends ArcPayPaymentsApi {
   }) async {
     createCalls++;
     createdProductIds.add(productId);
+    createdRequestIds.add(requestId);
+    createdContexts.add(analyticsContext);
     return checkoutCompleter?.future ??
         ArcPayCheckout(
           orderId: 'order-1',
@@ -407,6 +652,7 @@ class _FakeApi extends ArcPayPaymentsApi {
     required String userId,
   }) async {
     abandonCalls++;
+    if (abandonRequest != null) return abandonRequest!.future;
     if (abandonError) throw DioException(requestOptions: RequestOptions());
     return ArcPayOrder(
       orderId: orderId,
@@ -461,6 +707,20 @@ class _FakeSession implements AuthSessionService {
 }
 
 class _FakeStore extends ArcPayPendingOrderStore {
+  bool failRequestSave = false;
+  final requests = <String, ArcPayCheckoutRequest>{};
+
+  @override
+  ArcPayCheckoutRequest? readCheckoutRequest(String key) => requests[key];
+
+  @override
+  Future<ArcPayCheckoutRequest> saveCheckoutRequestIfAbsent(
+    ArcPayCheckoutRequest request,
+  ) async {
+    if (failRequestSave) throw StateError('storage unavailable');
+    return requests.putIfAbsent(request.key, () => request);
+  }
+
   ArcPayPendingOrder? value;
 
   @override
@@ -469,10 +729,18 @@ class _FakeStore extends ArcPayPendingOrderStore {
   @override
   Future<void> save(ArcPayPendingOrder order) async {
     value = order;
+    if (requests[order.requestKey]?.requestId == order.requestId) {
+      requests.remove(order.requestKey);
+    }
   }
 
   @override
   Future<void> clear() async {
+    final order = value;
+    if (order != null &&
+        requests[order.requestKey]?.requestId == order.requestId) {
+      requests.remove(order.requestKey);
+    }
     value = null;
   }
 }

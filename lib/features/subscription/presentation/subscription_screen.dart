@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/responsive_heading.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_activity_indicator.dart';
 import 'package:asteria_app/core/config/app_feature_visibility.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
@@ -461,9 +462,7 @@ class _IosSubscriptionPlans extends StatelessWidget {
           if (state is PaywallInitial || state is PaywallLoading) {
             return const Padding(
               padding: EdgeInsets.symmetric(vertical: 24),
-              child: Center(
-                child: AsteriaActivityIndicator(),
-              ),
+              child: Center(child: AsteriaActivityIndicator()),
             );
           }
           if (state is PaywallProductsLoaded) {
@@ -472,9 +471,7 @@ class _IosSubscriptionPlans extends StatelessWidget {
           if (state is PaywallPurchasing || state is PaywallVerifying) {
             return const Padding(
               padding: EdgeInsets.symmetric(vertical: 24),
-              child: Center(
-                child: AsteriaActivityIndicator(),
-              ),
+              child: Center(child: AsteriaActivityIndicator()),
             );
           }
           return _ReloadProducts(
@@ -511,9 +508,7 @@ class _ArcPayOneTimeProPlans extends StatelessWidget {
             return const Padding(
               padding: EdgeInsets.symmetric(vertical: 24),
               child: Center(
-                child: AsteriaEntrance(
-                  child: AsteriaActivityIndicator(),
-                ),
+                child: AsteriaEntrance(child: AsteriaActivityIndicator()),
               ),
             );
           }
@@ -635,9 +630,8 @@ class _ArcPaySubscriptionPlansState extends State<_ArcPaySubscriptionPlans> {
       launched = false;
     }
     if (!launched && mounted) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(context.l10n.paymentOpenError)));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(context.l10n.paymentOpenError)));
     }
     if (mounted) setState(() => _opening = false);
   }
@@ -669,9 +663,7 @@ class _ArcPaySubscriptionPlansState extends State<_ArcPaySubscriptionPlans> {
               state is ArcPaySubscriptionCreating) {
             return const Padding(
               padding: EdgeInsets.symmetric(vertical: 24),
-              child: Center(
-                child: AsteriaActivityIndicator(),
-              ),
+              child: Center(child: AsteriaActivityIndicator()),
             );
           }
           if (state is ArcPaySubscriptionProductsLoaded) {
@@ -930,7 +922,10 @@ class _SubscriptionInfoCard extends StatelessWidget {
 
     return ProfileGlassCard(
       borderRadius: AsteriaCardRadii.card,
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.symmetric(
+        horizontal: MediaQuery.textScalerOf(context).scale(17) > 25 ? 8 : 16,
+        vertical: 16,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -942,6 +937,52 @@ class _SubscriptionInfoCard extends StatelessWidget {
               final artSize = compact
                   ? 56.0
                   : (constraints.maxWidth * .36).clamp(80.0, 128.0);
+              if (compact && MediaQuery.textScalerOf(context).scale(16) > 22) {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ResponsiveHeading(
+                      title,
+                      style: context.textTheme.inversePlayfairSemiBold24,
+                    ),
+                    if (isActive &&
+                        nextPaymentDateText?.isNotEmpty == true) ...[
+                      const SizedBox(height: 8),
+                      Text.rich(
+                        TextSpan(
+                          children: [
+                            TextSpan(
+                              text: cancelAtPeriodEnd
+                                  ? context.l10n.subscriptionAccessUntil
+                                  : context.l10n.subscriptionNextPaymentInline,
+                            ),
+                            TextSpan(
+                              text: nextPaymentDateText,
+                              style: const TextStyle(
+                                color: ProfileFlowColors.accent,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ],
+                        ),
+                        style: context.textTheme.inverseUrbanistRegular17
+                            .copyWith(height: 1.05),
+                      ),
+                    ],
+                    const SizedBox(height: 12),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: Image.asset(
+                        'assets/images/sonnik/pro_crystal.webp',
+                        width: artSize,
+                        height: artSize,
+                        fit: BoxFit.contain,
+                        excludeFromSemantics: true,
+                      ),
+                    ),
+                  ],
+                );
+              }
               return Row(
                 children: [
                   Expanded(
@@ -1049,6 +1090,17 @@ class _BenefitsItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (MediaQuery.textScalerOf(context).scale(17) > 25) {
+      return SizedBox(
+        width: double.infinity,
+        child: Text(
+          title,
+          style: context.textTheme.inverseUrbanistRegular17.copyWith(
+            height: 1.08,
+          ),
+        ),
+      );
+    }
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -1098,15 +1150,13 @@ class _RestorePurchasesButton extends StatelessWidget {
                     ),
                   );
                 },
-          child: Row(
-            children: [
-              Expanded(
-                child: Text(
-                  context.l10n.subscriptionRestorePurchases,
-                  style: context.textTheme.inverseUrbanistRegular17,
-                ),
-              ),
-              SizedBox(
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final label = Text(
+                context.l10n.subscriptionRestorePurchases,
+                style: context.textTheme.inverseUrbanistRegular17,
+              );
+              final icon = SizedBox(
                 width: LotusArrowBubble.diameter,
                 height: LotusArrowBubble.diameter,
                 child: isBusy
@@ -1115,8 +1165,26 @@ class _RestorePurchasesButton extends StatelessWidget {
                         child: AsteriaActivityIndicator(),
                       )
                     : const LotusArrowBubble(),
-              ),
-            ],
+              );
+              if (MediaQuery.textScalerOf(context).scale(17) > 25) {
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    label,
+                    const SizedBox(height: 8),
+                    Align(alignment: Alignment.centerRight, child: icon),
+                  ],
+                );
+              }
+              return Row(
+                children: [
+                  Expanded(child: label),
+                  const SizedBox(width: 8),
+                  icon,
+                ],
+              );
+            },
           ),
         );
       },
@@ -1286,9 +1354,9 @@ String _planTitle(
           : null);
   final known =
       unit ??
-      RegExp(
-        r'(?:^|[._-])(week|month|year)(?:ly)?(?:$|[._-])',
-      ).firstMatch(id.toLowerCase())?.group(1);
+      RegExp(r'(?:^|[._-])(week|month|year)(?:ly)?(?:$|[._-])')
+          .firstMatch(id.toLowerCase())
+          ?.group(1);
   return switch (known) {
     'week' => context.l10n.subscriptionPlanWeek,
     'month' => context.l10n.subscriptionPlanMonth,

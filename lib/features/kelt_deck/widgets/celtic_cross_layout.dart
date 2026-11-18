@@ -1,6 +1,6 @@
+import 'package:asteria_app/core/ui_kit/widgets/card_turn.dart';
 import 'package:asteria_app/core/ui_kit/widgets/tarot_card_frame.dart';
 import 'package:asteria_app/core/ui_kit/widgets/artwork_unavailable.dart';
-import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/app/data/models/tarot_card/tarot_card_model.dart';
 import 'package:asteria_app/app/providers/content_provider.dart';
@@ -31,12 +31,17 @@ class _CelticCrossLayoutState extends State<CelticCrossLayout>
   final Map<int, AnimationController> _animationControllers = {};
   final Map<int, bool> _isAnimating = {};
   bool _isAnyCardAnimating = false;
+  late final AnimationController _firstRetreat = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 280),
+  );
 
   @override
   void dispose() {
     for (final controller in _animationControllers.values) {
       controller.dispose();
     }
+    _firstRetreat.dispose();
     super.dispose();
   }
 
@@ -44,7 +49,7 @@ class _CelticCrossLayoutState extends State<CelticCrossLayout>
     if (!_animationControllers.containsKey(cardNumber)) {
       final controller = AnimationController(
         vsync: this,
-        duration: const Duration(milliseconds: 600),
+        duration: CardTurn.duration,
       );
       _animationControllers[cardNumber] = controller;
     }
@@ -89,7 +94,7 @@ class _CelticCrossLayoutState extends State<CelticCrossLayout>
     UserProvider userProvider,
     ContentProvider contentProvider,
   ) async {
-    if (cardId.isEmpty) return;
+    if (cardId.isEmpty || _getCardById(cardId, contentProvider) == null) return;
 
     if (!mounted) return;
 
@@ -112,10 +117,29 @@ class _CelticCrossLayoutState extends State<CelticCrossLayout>
     });
 
     final controller = _getAnimationController(cardNumber);
-    await controller.forward();
-
+    final reducedMotion = MediaQuery.disableAnimationsOf(context);
+    if (cardNumber == 1) _firstRetreat.value = 0;
     try {
+      if (reducedMotion) {
+        controller.value = 1;
+      } else {
+        await controller.forward(from: 0).orCancel;
+      }
+      if (!mounted) return;
       await userProvider.openKeltDeckCard(cardId);
+      if (!mounted) return;
+      if (cardNumber == 1 &&
+          userProvider.isDeckCardOpened(DeckType.kelt, cardId)) {
+        if (reducedMotion) {
+          _firstRetreat.value = 1;
+        } else {
+          await Future<void>.delayed(const Duration(milliseconds: 550));
+          if (!mounted) return;
+          await _firstRetreat.forward().orCancel;
+        }
+      }
+    } on TickerCanceled {
+      return;
     } catch (e) {
       debugPrint('[ERROR] Ошибка открытия карты: $e');
       // Если произошла ошибка, сбрасываем анимацию
@@ -162,7 +186,11 @@ class _CelticCrossLayoutState extends State<CelticCrossLayout>
           width: _layoutWidth,
           height: _layoutHeight,
           child: ListenableBuilder(
-            listenable: Listenable.merge([userProvider, contentProvider]),
+            listenable: Listenable.merge([
+              userProvider,
+              contentProvider,
+              _firstRetreat,
+            ]),
             builder: (context, _) {
               final cardIds = _getCardIdsInOrder(userProvider);
               final slots = [
@@ -229,6 +257,16 @@ class _CelticCrossLayoutState extends State<CelticCrossLayout>
                 ),
               ];
 
+              final firstOpened =
+                  cardIds[0].isNotEmpty &&
+                  userProvider.isDeckCardOpened(DeckType.kelt, cardIds[0]);
+              final firstBehind =
+                  firstOpened &&
+                  (!(_isAnimating[1] ?? false) || _firstRetreat.value >= .5);
+              if (firstBehind) {
+                final first = slots.removeLast();
+                slots.insert(0, first);
+              }
               return Stack(
                 clipBehavior: Clip.none,
                 children: [
@@ -260,23 +298,40 @@ class _CelticCrossLayoutState extends State<CelticCrossLayout>
     required ContentProvider contentProvider,
     bool isHorizontal = false,
   }) {
-    final isEnabled = cardId.isNotEmpty;
+    final isEnabled = _getCardById(cardId, contentProvider) != null;
 
     return Positioned(
       key: ValueKey('celtic_slot_$cardNumber'),
       left: left,
       top: top,
-      child: _buildCard(
-        _horizontalCardWidth,
-        _horizontalCardHeight,
-        cardNumber,
-        cardId,
-        userProvider,
-        contentProvider,
-        isEnabled: isEnabled,
-        isHorizontal: isHorizontal,
+      child: Transform.translate(
+        offset: Offset(
+          0,
+          cardNumber == 1 ? -4 * _retreatProgress(userProvider, cardId) : 0,
+        ),
+        child: Transform.scale(
+          scale: cardNumber == 1
+              ? 1 - .04 * _retreatProgress(userProvider, cardId)
+              : 1,
+          child: _buildCard(
+            _horizontalCardWidth,
+            _horizontalCardHeight,
+            cardNumber,
+            cardId,
+            userProvider,
+            contentProvider,
+            isEnabled: isEnabled,
+            isHorizontal: isHorizontal,
+          ),
+        ),
       ),
     );
+  }
+
+  double _retreatProgress(UserProvider userProvider, String cardId) {
+    if (!userProvider.isDeckCardOpened(DeckType.kelt, cardId)) return 0;
+    if (!(_isAnimating[1] ?? false)) return 1;
+    return Curves.easeInOutCubic.transform(_firstRetreat.value);
   }
 
   Widget _buildCard(
@@ -302,163 +357,48 @@ class _CelticCrossLayoutState extends State<CelticCrossLayout>
       child: IgnorePointer(
         ignoring: !isEnabled,
         child: LotusTap(
+          animateEntrance: false,
           behavior: HitTestBehavior.opaque,
           onTap: () =>
               _onCardTap(cardNumber, cardId, userProvider, contentProvider),
-          child: isHorizontal
-              ? SizedBox(
-                  width: height,
-                  height: width,
-                  child: OverflowBox(
-                    maxWidth: double.infinity,
-                    maxHeight: double.infinity,
-                    child: AnimatedBuilder(
-                      animation: _getAnimationController(cardNumber),
-                      builder: (context, child) {
-                        final animationValue = _getAnimationController(
-                          cardNumber,
-                        ).value;
-                        final isOpened =
-                            cardId.isNotEmpty &&
-                            userProvider.isDeckCardOpened(
-                              DeckType.kelt,
-                              cardId,
-                            );
-
-                        // Проверяем анимацию - если контроллер имеет значение > 0 и < 1, или если isAnimating = true
-                        final isFlipping =
-                            (isAnimating || animationValue > 0.0) &&
-                            animationValue < 1.0;
-
-                        if (isFlipping && card != null) {
-                          // Для горизонтальных карт делаем анимацию вокруг горизонтальной оси (rotateX)
-                          final rotationAngle = animationValue * 3.14159;
-
-                          // Задняя сторона - обычные размеры, передняя - вертикальные размеры для картинки карты
-                          final backCardWidth = height;
-                          final backCardHeight = width;
-                          final frontCardWidth = width;
-                          final frontCardHeight = height;
-
-                          // Карта в assets уже горизонтальная, поэтому не поворачиваем на 90 градусов
-                          Widget cardWidget = animationValue < 0.5
-                              ? _buildCardBack(
-                                  cardNumber,
-                                  backCardWidth,
-                                  backCardHeight,
-                                )
-                              : Transform(
-                                  alignment: Alignment.center,
-                                  transform: Matrix4.identity()
-                                    ..rotateX(3.14159),
-                                  child: Transform.rotate(
-                                    angle:
-                                        -1.5708, // Поворачиваем на 90 градусов влево сразу во время анимации
-                                    child: _buildCardFront(
-                                      card,
-                                      frontCardWidth,
-                                      frontCardHeight,
-                                      isHorizontal: true,
-                                    ),
-                                  ),
-                                );
-
-                          // Поворачиваем вокруг горизонтальной оси (X) для горизонтальной карты
-                          return Transform(
-                            alignment: Alignment.center,
-                            transform: Matrix4.identity()
-                              ..setEntry(3, 2, 0.001)
-                              ..rotateX(rotationAngle),
-                            child: cardWidget,
-                          );
-                        } else if (isOpened && card != null) {
-                          // Вертикальные размеры для картинки карты, после поворота станет горизонтальной
-                          final cardWidth = width;
-                          final cardHeight = height;
-                          // Поворачиваем открытую горизонтальную карту на 90 градусов влево
-                          return Transform.rotate(
-                            angle: -1.5708, // -90 градусов в радианах
-                            child: _buildCardFront(
-                              card,
-                              cardWidth,
-                              cardHeight,
-                              isHorizontal: true,
-                            ),
-                          );
-                        } else {
-                          // Для закрытой горизонтальной карты используем стандартные размеры
-                          final backCardWidth = height;
-                          final backCardHeight = width;
-                          return _buildCardBack(
-                            cardNumber,
-                            backCardWidth,
-                            backCardHeight,
-                          );
-                        }
-                      },
-                    ),
+          child: SizedBox(
+            width: isHorizontal ? height : width,
+            height: isHorizontal ? width : height,
+            child: AnimatedBuilder(
+              animation: _getAnimationController(cardNumber),
+              builder: (context, child) {
+                final controller = _getAnimationController(cardNumber);
+                final isOpened =
+                    cardId.isNotEmpty &&
+                    userProvider.isDeckCardOpened(DeckType.kelt, cardId);
+                final progress = isAnimating
+                    ? controller.value
+                    : (isOpened ? 1.0 : 0.0);
+                return CardTurn(
+                  progress: card == null ? 0 : progress,
+                  horizontal: isHorizontal,
+                  back: _buildCardBack(
+                    cardNumber,
+                    isHorizontal ? height : width,
+                    isHorizontal ? width : height,
                   ),
-                )
-              : SizedBox(
-                  width: width,
-                  height: height,
-                  child: AnimatedBuilder(
-                    animation: _getAnimationController(cardNumber),
-                    builder: (context, child) {
-                      final animationValue = _getAnimationController(
-                        cardNumber,
-                      ).value;
-                      final isOpened =
-                          cardId.isNotEmpty &&
-                          userProvider.isDeckCardOpened(DeckType.kelt, cardId);
-
-                      // Проверяем анимацию - если контроллер имеет значение > 0 и < 1, или если isAnimating = true
-                      final isFlipping =
-                          (isAnimating || animationValue > 0.0) &&
-                          animationValue < 1.0;
-
-                      if (isFlipping && card != null) {
-                        // Для вертикальных карт оставляем как есть
-                        final rotationAngle =
-                            animationValue * 3.14159; // Поворот на 180 градусов
-
-                        Widget cardWidget = animationValue < 0.5
-                            ? _buildCardBack(cardNumber, width, height)
-                            : Transform(
-                                alignment: Alignment.center,
-                                transform: Matrix4.identity()
-                                  ..rotateY(
-                                    3.14159,
-                                  ), // Компенсируем отзеркаливание
-                                child: _buildCardFront(
-                                  card,
-                                  width,
-                                  height,
-                                  isHorizontal: false,
-                                ),
-                              );
-
-                        // Применяем анимацию поворота
-                        return Transform(
-                          alignment: Alignment.center,
-                          transform: Matrix4.identity()
-                            ..setEntry(3, 2, 0.001)
-                            ..rotateY(rotationAngle),
-                          child: cardWidget,
-                        );
-                      } else if (isOpened && card != null) {
-                        return _buildCardFront(
-                          card,
-                          width,
-                          height,
-                          isHorizontal: false,
-                        );
-                      } else {
-                        return _buildCardBack(cardNumber, width, height);
-                      }
-                    },
-                  ),
-                ),
+                  front: card == null
+                      ? _buildCardBack(cardNumber, width, height)
+                      : isHorizontal
+                      ? RotatedBox(
+                          quarterTurns: -1,
+                          child: _buildCardFront(
+                            card,
+                            width,
+                            height,
+                            isHorizontal: true,
+                          ),
+                        )
+                      : _buildCardFront(card, width, height),
+                );
+              },
+            ),
+          ),
         ),
       ),
     );
@@ -513,7 +453,6 @@ class _CelticCrossLayoutState extends State<CelticCrossLayout>
               imageName: card.imageName,
               languageCode: Localizations.localeOf(context).languageCode,
             ),
-            frameBuilder: AsteriaEntrance.imageFrame,
             width: width,
             height: height,
             fit: BoxFit.contain,

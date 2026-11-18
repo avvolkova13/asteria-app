@@ -1,12 +1,149 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
+import 'package:asteria_app/app/data/models/user/user_model.dart';
+import 'package:asteria_app/app/data/repositories/user/user_profile_api.dart';
+import 'package:asteria_app/app/data/repositories/user/user_repository.dart';
+import 'package:asteria_app/app/providers/user_provider.dart';
+import 'package:asteria_app/core/routing/router.dart';
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:asteria_app/core/services/auth/auth_session_service.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets(
+    'refresh rejection clears established account and redirects protected screen',
+    (tester) async {
+      final adapter = _RejectedRefreshAdapter(delayed: false);
+      final service = BackendAuthSessionService(
+        store: _MemoryAuthSessionStore(),
+        backendUrl: 'https://api.example.com',
+        apiKey: 'test-key',
+        dio: Dio(BaseOptions(validateStatus: (_) => true))
+          ..httpClientAdapter = adapter,
+      );
+      await service.saveSession(
+        uid: 'alice',
+        email: null,
+        accessToken: 'a',
+        refreshToken: 'r',
+        expiresIn: 0,
+      );
+      final repository = UserRepositoryImpl(
+        profileApi: UserProfileApi.forDio(Dio(), service),
+        authSessionService: service,
+      );
+      addTearDown(repository.dispose);
+      final user = UserModel.empty().copyWith(id: 'alice');
+      await repository.setCurrentUser(user);
+      final provider = UserProvider(
+        userRepository: repository,
+        authSessionService: service,
+      )..applyServerUserSnapshot(user);
+      addTearDown(provider.dispose);
+      final router = GoRouter(
+        initialLocation: '/home',
+        refreshListenable: service,
+        redirect: (_, state) => authSessionRedirect(service, state.uri.path),
+        routes: [
+          GoRoute(
+            path: '/home',
+            builder: (_, __) => const Text('Private account'),
+          ),
+          GoRoute(
+            path: '/auth/login',
+            builder: (_, __) => const Text('Sign in'),
+          ),
+        ],
+      );
+      addTearDown(router.dispose);
+      await tester.pumpWidget(MaterialApp.router(routerConfig: router));
+      await tester.pumpAndSettle();
+      expect(find.text('Private account'), findsOneWidget);
+      await tester.runAsync(() async {
+        await service.getAccessToken();
+      });
+      await tester.pumpAndSettle();
+      expect(provider.currentUser, isNull);
+      expect(provider.isAuthenticated, isFalse);
+      expect(await repository.getCurrentUser(), isNull);
+      expect(router.routeInformationProvider.value.uri.path, '/auth/login');
+      expect(find.text('Sign in'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  test('old refresh rejection cannot clear a replacement account', () async {
+    final adapter = _RejectedRefreshAdapter();
+    final service = BackendAuthSessionService(
+      store: _MemoryAuthSessionStore(),
+      backendUrl: 'https://api.example.com',
+      apiKey: 'test-key',
+      dio: Dio(BaseOptions(validateStatus: (_) => true))
+        ..httpClientAdapter = adapter,
+    );
+    await service.saveSession(
+      uid: 'alice',
+      email: null,
+      accessToken: 'a',
+      refreshToken: 'r',
+      expiresIn: 0,
+    );
+    final repository = UserRepositoryImpl(
+      profileApi: UserProfileApi.forDio(Dio(), service),
+      authSessionService: service,
+    );
+    addTearDown(repository.dispose);
+    final provider = UserProvider(
+      userRepository: repository,
+      authSessionService: service,
+    );
+    addTearDown(provider.dispose);
+    provider.applyServerUserSnapshot(UserModel.empty().copyWith(id: 'alice'));
+    final oldRefresh = service.getAccessToken();
+    await adapter.started.future;
+    await service.saveSession(
+      uid: 'bob',
+      email: null,
+      accessToken: 'b',
+      refreshToken: 's',
+      expiresIn: 900,
+    );
+    provider.applyServerUserSnapshot(UserModel.empty().copyWith(id: 'bob'));
+    adapter.reject();
+    await oldRefresh;
+    expect(service.currentUid, 'bob');
+    expect(provider.currentUser?.id, 'bob');
+    expect(authSessionRedirect(service, '/home'), isNull);
+    provider.applyServerUserSnapshot(UserModel.empty().copyWith(id: 'alice'));
+    expect(provider.currentUser?.id, 'bob');
+  });
+
+  test('session guard preserves signup and reauthentication routes', () async {
+    final service = BackendAuthSessionService(store: _MemoryAuthSessionStore());
+    for (final path in [
+      '/auth/login',
+      '/auth/email',
+      '/auth/email/code',
+      '/onboarding',
+    ]) {
+      expect(authSessionRedirect(service, path), isNull);
+    }
+    expect(authSessionRedirect(service, '/auth/personal-info'), '/auth/login');
+    await service.saveSession(
+      uid: 'signup',
+      email: null,
+      accessToken: 'a',
+      refreshToken: 'r',
+      expiresIn: 900,
+    );
+    expect(authSessionRedirect(service, '/auth/personal-info'), isNull);
+    expect(authSessionRedirect(service, '/auth/email/code'), isNull);
+  });
+
   test(
     'session revision fences same UID relogin from start through persistence',
     () async {
@@ -549,6 +686,45 @@ class _RefreshThenLogoutAdapter implements HttpClientAdapter {
       return _logoutCompleter.future;
     }
     throw StateError('unexpected request ${options.path}');
+  }
+
+  @override
+  void close({bool force = false}) {}
+}
+
+class _RejectedRefreshAdapter implements HttpClientAdapter {
+  _RejectedRefreshAdapter({this.delayed = true});
+  final bool delayed;
+  final started = Completer<void>();
+  final response = Completer<ResponseBody>();
+  void reject() => response.complete(
+    ResponseBody.fromString(
+      '{}',
+      401,
+      headers: {
+        Headers.contentTypeHeader: [Headers.jsonContentType],
+      },
+    ),
+  );
+  @override
+  Future<ResponseBody> fetch(
+    RequestOptions options,
+    Stream<Uint8List>? requestStream,
+    Future<void>? cancelFuture,
+  ) {
+    if (!started.isCompleted) started.complete();
+    if (!delayed) {
+      return Future.value(
+        ResponseBody.fromString(
+          '{}',
+          401,
+          headers: {
+            Headers.contentTypeHeader: [Headers.jsonContentType],
+          },
+        ),
+      );
+    }
+    return response.future;
   }
 
   @override

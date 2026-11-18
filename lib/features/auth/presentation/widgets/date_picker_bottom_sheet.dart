@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_action_button.dart';
 import 'package:asteria_app/core/ui_kit/widgets/modal_glass_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
@@ -158,22 +159,15 @@ class _DateTimePickerBottomSheetState extends State<DateTimePickerBottomSheet> {
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
       shape: shape,
     );
-    final cancel = LotusButtons.outlined(
+    final cancel = LotusButtons.text(
       onPressed: () => Navigator.pop(context),
-      style: style.copyWith(
-        side: WidgetStatePropertyAll(
-          BorderSide(color: AppColors.uiDisabled.withValues(alpha: .4)),
-        ),
-      ),
+      style: style,
       child: Text(context.l10n.commonCancel),
     );
-    final select = LotusButtons.elevated(
+    final select = AsteriaActionButton(
+      text: context.l10n.commonSelect,
+      width: double.infinity,
       onPressed: _handleConfirm,
-      style: style.copyWith(
-        backgroundColor: const WidgetStatePropertyAll(AppColors.uiPressed),
-        elevation: const WidgetStatePropertyAll(0),
-      ),
-      child: Text(context.l10n.commonSelect),
     );
     if (constraints.maxWidth < scaler.scale(190)) {
       return Column(

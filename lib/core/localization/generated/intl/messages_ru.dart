@@ -73,110 +73,116 @@ class MessageLookup extends MessageLookupByLibrary {
   static String m23(price) =>
       "7 дней бесплатно, затем ${price}. Автопродление, отмена в любой момент.";
 
-  static String m24(current, total) => "Экран ${current} из ${total}";
+  static String m24(date) => "Ближайшие дни · с ${date}";
 
-  static String m25(number, position) => "Карта №${number} — ${position}";
+  static String m25(date) => "Выбран день: ${date}";
 
-  static String m26(count) =>
+  static String m26(current, total) => "Экран ${current} из ${total}";
+
+  static String m27(number, position) => "Карта №${number} — ${position}";
+
+  static String m28(count) =>
       "Лимит обновится через ${Intl.plural(count, one: '${count} день', few: '${count} дня', many: '${count} дней', other: '${count} дня')}.";
 
-  static String m27(title) => "Фон дня: ${title}";
+  static String m29(title) => "Фон дня: ${title}";
 
-  static String m28(number) => "Лунный день ${number}";
+  static String m30(number) => "Лунный день ${number}";
 
-  static String m29(phase, date) => "Следующая фаза — ${phase}, ${date}.";
+  static String m31(phase, date) => "Следующая фаза — ${phase}, ${date}.";
 
-  static String m30(time) => "Наступает в ${time} по вашему времени";
+  static String m32(time) => "Наступает в ${time} по вашему времени";
 
-  static String m31(sphere, status) => "Сфера «${sphere}»: ${status}";
+  static String m33(sphere, status) => "Сфера «${sphere}»: ${status}";
 
-  static String m32(number) => "Акцент на ${number} доме";
+  static String m34(number) => "Акцент на ${number} доме";
 
-  static String m33(price) => "Твоя натальная карта\nза ${price} звёздочётов";
+  static String m35(price) => "Твоя натальная карта\nза ${price} звёздочётов";
 
-  static String m34(number) => "Сильный ${number} дом";
+  static String m36(number) => "Сильный ${number} дом";
 
-  static String m35(number) => "Слабый ${number} дом";
+  static String m37(number) => "Слабый ${number} дом";
 
-  static String m36(title) => "Открыть статью: ${title}";
+  static String m38(title) => "Открыть статью: ${title}";
 
-  static String m37(count) =>
+  static String m39(count) =>
       "${Intl.plural(count, zero: 'Купленных запросов нет', one: '${count} купленный запрос', few: '${count} купленных запроса', many: '${count} купленных запросов', other: '${count} купленного запроса')}";
 
-  static String m38(coins, balance) =>
+  static String m40(coins, balance) =>
       "Начислено монет: ${coins}. Баланс: ${balance}";
 
-  static String m39(coins) => "Начислено монет: ${coins}. Баланс обновлён.";
+  static String m41(coins) => "Начислено монет: ${coins}. Баланс обновлён.";
 
-  static String m40(countryCode, provider) =>
+  static String m42(countryCode, provider) =>
       "Диагностика оплаты\nРегион магазина: ${countryCode}\nВыбранный провайдер: ${provider}";
 
-  static String m41(price) => "Открой прогноз\nза ${price} звёздочётов";
+  static String m43(price) => "Открой прогноз\nза ${price} звёздочётов";
 
-  static String m42(name) => "Привет, ${name}!";
+  static String m44(name) => "Привет, ${name}!";
 
-  static String m43(price) => "Слабые места за ${price}";
+  static String m45(price) => "Слабые места за ${price}";
 
-  static String m44(time) => "Напоминание на ${time}";
+  static String m46(time) => "Напоминание на ${time}";
 
-  static String m45(title, price) => "Купить ${title} за ${price} звёзд";
+  static String m47(title, price) => "Купить ${title} за ${price} звёзд";
 
-  static String m46(title, price) => "Купить ${title} за ${price}";
-
-  static String m47(count) =>
-      "Покупка ${Intl.plural(count, one: '${count} запроса', few: '${count} запросов', many: '${count} запросов', other: '${count} запроса')}";
-
-  static String m48(price) => "1 вопрос = ${price}";
+  static String m48(title, price) => "Купить ${title} за ${price}";
 
   static String m49(count) =>
+      "Покупка ${Intl.plural(count, one: '${count} запроса', few: '${count} запросов', many: '${count} запросов', other: '${count} запроса')}";
+
+  static String m50(price) => "1 вопрос = ${price}";
+
+  static String m51(count) =>
       "Через ${Intl.plural(count, one: '${count} день', few: '${count} дня', many: '${count} дней', other: '${count} дня')} лимит обновится.";
 
-  static String m50(count) =>
+  static String m52(count) =>
       "${Intl.plural(count, one: '${count} запрос', few: '${count} запроса', many: '${count} запросов', other: '${count} запроса')}";
 
-  static String m51(count, price) =>
+  static String m53(count, price) =>
       "${Intl.plural(count, one: '${count} запрос за ${price} звёзд', few: '${count} запроса за ${price} звёзд', many: '${count} запросов за ${price} звёзд', other: '${count} запроса за ${price} звёзд')}";
 
-  static String m52(count) =>
+  static String m54(count) =>
       "${Intl.plural(count, zero: 'Запросов не осталось', one: 'Остался ${count} запрос', few: 'Осталось ${count} запроса', many: 'Осталось ${count} запросов', other: 'Осталось ${count} запроса')}";
 
-  static String m53(count, total) => "${count}/${total} запросов осталось";
+  static String m55(count, total) => "${count}/${total} запросов осталось";
 
-  static String m54(count) =>
+  static String m56(count) =>
       "${Intl.plural(count, zero: 'Бесплатных запросов на эту неделю не осталось', one: 'Остался ${count} бесплатный запрос на эту неделю', few: 'Осталось ${count} бесплатных запроса на эту неделю', many: 'Осталось ${count} бесплатных запросов на эту неделю', other: 'Осталось ${count} бесплатного запроса на эту неделю')}";
 
-  static String m55(count, total) => "Осталось запросов: ${count} из ${total}";
+  static String m57(count, total) => "Осталось запросов: ${count} из ${total}";
 
-  static String m56(link) =>
+  static String m58(link) =>
       "Открой для себя Asteria, Таро и лунный календарь: ${link}";
 
-  static String m57(title) => "Руна ${title} закрыта";
+  static String m59(title) => "Руна ${title} закрыта";
 
-  static String m58(title) => "Открыть значение руны будущего ${title}";
+  static String m60(title) => "Открыть значение руны будущего ${title}";
 
-  static String m59(title) => "Открыть руну ${title}";
+  static String m61(title) => "Открыть руну ${title}";
 
-  static String m60(title) => "Открыть значение руны прошлого ${title}";
+  static String m62(title) => "Открыть значение руны прошлого ${title}";
 
-  static String m61(title) => "Открыть значение руны настоящего ${title}";
+  static String m63(title) => "Открыть значение руны настоящего ${title}";
 
-  static String m62(count) => "${count} шт.";
+  static String m64(count) => "Планов: ${count}";
 
-  static String m63(price) => "цена за 1 = ${price}";
+  static String m65(count) => "${count} шт.";
 
-  static String m64(date) => "Следующее списание\nбудет произведено\n${date}";
+  static String m66(price) => "цена за 1 = ${price}";
 
-  static String m65(count) => "Восстановлено покупок: ${count}";
+  static String m67(date) => "Следующее списание\nбудет произведено\n${date}";
 
-  static String m66(title) => "Карта ${title} закрыта";
+  static String m68(count) => "Восстановлено покупок: ${count}";
 
-  static String m67(title) => "Открыть карту ${title}";
+  static String m69(title) => "Карта ${title} закрыта";
 
-  static String m68(position) => "Открыть карту ${position} из 3";
+  static String m70(title) => "Открыть карту ${title}";
 
-  static String m69(position, card) => "Карта ${position} из 3: ${card}";
+  static String m71(position) => "Открыть карту ${position} из 3";
 
-  static String m70(price) =>
+  static String m72(position, card) => "Карта ${position} из 3: ${card}";
+
+  static String m73(price) =>
       "Твой персональный гороскоп\nна год за ${price} звёздочётов";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
@@ -890,21 +896,87 @@ class MessageLookup extends MessageLookupByLibrary {
       "Собираем подсказку для вас…",
     ),
     "introAnakraMessage": MessageLookupByLibrary.simpleMessage(
-      "Какая часть дела вам уже интересна? Начните с неё и дайте себе десять минут.",
+      "Дайте одному шагу десять минут. Просто попробуйте.",
     ),
     "introAudioError": MessageLookupByLibrary.simpleMessage(
       "Не удалось воспроизвести запись.",
     ),
+    "introCalendarCompare": MessageLookupByLibrary.simpleMessage(
+      "Сравниваем ближайшие дни",
+    ),
+    "introCalendarCompleted": MessageLookupByLibrary.simpleMessage(
+      "Всё запланировано",
+    ),
+    "introCalendarCompletedBody": MessageLookupByLibrary.simpleMessage(
+      "Стрижка в календаре. Напоминание придёт за день до события.",
+    ),
     "introCalendarExample": MessageLookupByLibrary.simpleMessage(
       "Пример выбора дня",
     ),
-    "introDateOne": MessageLookupByLibrary.simpleMessage("12 ноября"),
-    "introDateTwo": MessageLookupByLibrary.simpleMessage("11 декабря"),
+    "introCalendarFrom": m24,
+    "introCalendarInsight": MessageLookupByLibrary.simpleMessage(
+      "Благоприятное время для новой стрижки.",
+    ),
+    "introCalendarReminderChoice": MessageLookupByLibrary.simpleMessage(
+      "За день до события",
+    ),
+    "introCalendarReminderEnabled": MessageLookupByLibrary.simpleMessage(
+      "Напоминание включено",
+    ),
+    "introCalendarReminderTitle": MessageLookupByLibrary.simpleMessage(
+      "Напомнить о плане",
+    ),
+    "introCalendarRequest": MessageLookupByLibrary.simpleMessage(
+      "Хочу новую стрижку.\nКогда записаться?",
+    ),
+    "introCalendarResult": m25,
+    "introCalendarSavedText": MessageLookupByLibrary.simpleMessage(
+      "Добавлено в мои планы",
+    ),
+    "introCalendarSavedTitle": MessageLookupByLibrary.simpleMessage("Стрижка"),
+    "introDemoLabel": MessageLookupByLibrary.simpleMessage("Пример разбора"),
     "introFavorable": MessageLookupByLibrary.simpleMessage(
       "Благоприятный день",
     ),
     "introFavorableTip": MessageLookupByLibrary.simpleMessage(
       "Подходящий день, чтобы попробовать новую форму.",
+    ),
+    "introMoodAffirmation": MessageLookupByLibrary.simpleMessage(
+      "Сейчас можно никуда не спешить.",
+    ),
+    "introMoodCalm": MessageLookupByLibrary.simpleMessage("Хочу спокойствия"),
+    "introMoodMatched": MessageLookupByLibrary.simpleMessage("Свой темп"),
+    "introMoodPractice": MessageLookupByLibrary.simpleMessage(
+      "Опустите плечи. Медленно выдохните.",
+    ),
+    "introMoodPracticeTitle": MessageLookupByLibrary.simpleMessage(
+      "Небольшая практика",
+    ),
+    "introMoodRequest": MessageLookupByLibrary.simpleMessage(
+      "Всё время спешу.\nХочется выдохнуть.",
+    ),
+    "introMoodRush": MessageLookupByLibrary.simpleMessage("Всё время спешу"),
+    "introMoodTired": MessageLookupByLibrary.simpleMessage("Нет сил"),
+    "introNatalDate": MessageLookupByLibrary.simpleMessage(
+      "Данные примера · 13 мая 1995",
+    ),
+    "introNatalPattern": MessageLookupByLibrary.simpleMessage(
+      "В переменах может хотеться больше ясности и времени.",
+    ),
+    "introNatalPatternTitle": MessageLookupByLibrary.simpleMessage(
+      "Привычная реакция",
+    ),
+    "introNatalQuestion": MessageLookupByLibrary.simpleMessage(
+      "Что даёт вам опору перед новым шагом?",
+    ),
+    "introNatalQuestionTitle": MessageLookupByLibrary.simpleMessage(
+      "Вопрос для размышления",
+    ),
+    "introNatalStrength": MessageLookupByLibrary.simpleMessage(
+      "Умение доводить начатое до результата.",
+    ),
+    "introNatalStrengthTitle": MessageLookupByLibrary.simpleMessage(
+      "Сильная сторона",
     ),
     "introNeutral": MessageLookupByLibrary.simpleMessage("Нейтральный день"),
     "introNeutralTip": MessageLookupByLibrary.simpleMessage(
@@ -913,26 +985,64 @@ class MessageLookup extends MessageLookupByLibrary {
     "introPairExample": MessageLookupByLibrary.simpleMessage(
       "Пример разбора пары",
     ),
+    "introPairFirst": MessageLookupByLibrary.simpleMessage("Телец"),
+    "introPairNeedTalk": MessageLookupByLibrary.simpleMessage(
+      "«Мне легче, когда мы говорим о том, что произошло».",
+    ),
+    "introPairNeedTime": MessageLookupByLibrary.simpleMessage(
+      "«Мне нужно время, чтобы разобраться в чувствах».",
+    ),
     "introPairPrompt": MessageLookupByLibrary.simpleMessage(
-      "«Я хочу вернуться к нашему разговору. Тебе удобнее сейчас или чуть позже?»",
+      "«Мне важен наш разговор. Тебе удобнее сейчас или чуть позже?»",
     ),
     "introPairQuestion": MessageLookupByLibrary.simpleMessage(
-      "Вопрос для двоих",
+      "Попробуйте начать так",
     ),
+    "introPairRequest": MessageLookupByLibrary.simpleMessage(
+      "Я молчу после спора, а партнёр ждёт разговора.",
+    ),
+    "introPairSecond": MessageLookupByLibrary.simpleMessage("Близнецы"),
     "introPairTip": MessageLookupByLibrary.simpleMessage(
-      "Одному хочется обсудить всё сразу, другому нужно время.",
+      "Разный темп — ещё не равнодушие.",
     ),
     "introPause": MessageLookupByLibrary.simpleMessage("Пауза"),
     "introPlay": MessageLookupByLibrary.simpleMessage(
       "Слушать «У меня есть время»",
     ),
-    "introProgress": m24,
+    "introProgress": m26,
     "introReplay": MessageLookupByLibrary.simpleMessage(
       "Посмотреть расклад ещё раз",
     ),
     "introSkip": MessageLookupByLibrary.simpleMessage("Пропустить"),
     "introStart": MessageLookupByLibrary.simpleMessage("Начать"),
-    "keltCardPositionTitle": m25,
+    "introStoryExample": MessageLookupByLibrary.simpleMessage(
+      "Пример сценария",
+    ),
+    "introStoryPause": MessageLookupByLibrary.simpleMessage("Пауза показа"),
+    "introStoryReplay": MessageLookupByLibrary.simpleMessage("Повторить"),
+    "introStoryResume": MessageLookupByLibrary.simpleMessage(
+      "Продолжить показ",
+    ),
+    "introTarotFollowup": MessageLookupByLibrary.simpleMessage(
+      "А если не получится?",
+    ),
+    "introTarotHint": MessageLookupByLibrary.simpleMessage(
+      "Один вопрос. Три новых взгляда.",
+    ),
+    "introTarotInsight": MessageLookupByLibrary.simpleMessage("Совет Анакры"),
+    "introTarotMeaning": MessageLookupByLibrary.simpleMessage(
+      "Начните с того, что вам интересно.",
+    ),
+    "introTarotMeaningTitle": MessageLookupByLibrary.simpleMessage(
+      "О чём этот расклад",
+    ),
+    "introTarotReflection": MessageLookupByLibrary.simpleMessage(
+      "А если начать с любопытства?",
+    ),
+    "introTarotRequest": MessageLookupByLibrary.simpleMessage(
+      "Хочу начать новое дело,\nно всё время откладываю.",
+    ),
+    "keltCardPositionTitle": m27,
     "keltDeckCompletedDescription": MessageLookupByLibrary.simpleMessage(
       "Ты открыл(а) все 10 карт Кельтского креста. Этот расклад дал тебе целостное видение текущей ситуации: от корней в прошлом — до будущих тенденций, от внутренних мотиваций — до внешних влияний.\n✨ Подумай над вопросом, с которым ты пришёл(а) — что сейчас откликается сильнее всего?\nЕсли хочешь глубже осмыслить расклад:\n• Вернись к ключевым картам — позициям 1, 4 и 6\n• Обрати внимание на то, что повторяется\n• Почувствуй, какой совет даёт позиция 10",
     ),
@@ -1034,7 +1144,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "licensesTitle": MessageLookupByLibrary.simpleMessage(
       "Использованные материалы и лицензии",
     ),
-    "limitResetsIn": m26,
+    "limitResetsIn": m28,
     "loading": MessageLookupByLibrary.simpleMessage("Загрузка…"),
     "loadingDataError": MessageLookupByLibrary.simpleMessage(
       "Ошибка загрузки данных",
@@ -1166,7 +1276,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "lunarWork": MessageLookupByLibrary.simpleMessage("Работа"),
     "maleGender": MessageLookupByLibrary.simpleMessage("Мужчина"),
     "manage": MessageLookupByLibrary.simpleMessage("Управлять"),
-    "moonBackgroundTitle": m27,
+    "moonBackgroundTitle": m29,
     "moonCalendarLoadingDayDescription": MessageLookupByLibrary.simpleMessage(
       "Уточняем текущую дату, фазу Луны и рекомендации.",
     ),
@@ -1176,7 +1286,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "moonDayDetailsUnavailable": MessageLookupByLibrary.simpleMessage(
       "Лунная подсказка для этой даты пока недоступна. Вы можете посмотреть другие дни или запланировать занятие.",
     ),
-    "moonDayNumber": m28,
+    "moonDayNumber": m30,
     "moonDescriptionDefault": MessageLookupByLibrary.simpleMessage(
       "Луна подсказывает сбавить темп, свериться с собой и выбирать то, что поддерживает твою энергию.",
     ),
@@ -1216,9 +1326,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "moonLocationSetupTitle": MessageLookupByLibrary.simpleMessage(
       "Укажи текущую геолокацию",
     ),
-    "moonNextPhaseDate": m29,
+    "moonNextPhaseDate": m31,
     "moonPhaseChange": MessageLookupByLibrary.simpleMessage("смена фазы Луны"),
-    "moonPhaseEventTime": m30,
+    "moonPhaseEventTime": m32,
     "moonPhaseFirstQuarter": MessageLookupByLibrary.simpleMessage(
       "Первая четверть",
     ),
@@ -1247,7 +1357,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "moonPhaseWaxingGibbous": MessageLookupByLibrary.simpleMessage(
       "Растущая Луна",
     ),
-    "moonSphereStatusTitle": m31,
+    "moonSphereStatusTitle": m33,
     "moonStatusFavorableShort": MessageLookupByLibrary.simpleMessage(
       "благоприятно",
     ),
@@ -1258,12 +1368,12 @@ class MessageLookup extends MessageLookupByLibrary {
       "неблагоприятно",
     ),
     "nameLabel": MessageLookupByLibrary.simpleMessage("Имя"),
-    "natalAccentHouse": m32,
+    "natalAccentHouse": m34,
     "natalAccessUnavailable": MessageLookupByLibrary.simpleMessage(
       "Не удалось проверить подписку. Попробуй ещё раз.",
     ),
     "natalBuy": MessageLookupByLibrary.simpleMessage("Открыть натальную карту"),
-    "natalCardPriceTitle": m33,
+    "natalCardPriceTitle": m35,
     "natalChartTitle": MessageLookupByLibrary.simpleMessage("Натальная карта"),
     "natalCreateCard": MessageLookupByLibrary.simpleMessage(
       "Создать натальную карту",
@@ -1345,12 +1455,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "natalRelationshipsExpression": MessageLookupByLibrary.simpleMessage(
       "Отношения и проявление",
     ),
-    "natalStrongHouse": m34,
+    "natalStrongHouse": m36,
     "natalSummaryDescription": MessageLookupByLibrary.simpleMessage(
       "— главные темы твоего разбора.",
     ),
     "natalTimeUnknown": MessageLookupByLibrary.simpleMessage("Не указано"),
-    "natalWeakHouse": m35,
+    "natalWeakHouse": m37,
     "natalWheelApproximate": MessageLookupByLibrary.simpleMessage(
       "Без точного времени рождения положения планет на круге приблизительны.",
     ),
@@ -1420,28 +1530,30 @@ class MessageLookup extends MessageLookupByLibrary {
       "Эта страница онбординга недоступна.",
     ),
     "onboardingPage1Description": MessageLookupByLibrary.simpleMessage(
-      "Сравните даты в лунном календаре и сохраните план — например, стрижку.",
+      "От подходящего дня — к плану с напоминанием.",
     ),
-    "onboardingPage1Title": MessageLookupByLibrary.simpleMessage(
-      "На какой день записаться?",
-    ),
+    "onboardingPage1Title": MessageLookupByLibrary.simpleMessage("Твой день"),
     "onboardingPage2Description": MessageLookupByLibrary.simpleMessage(
-      "Включите аудиопрактику «У меня есть время» и прислушайтесь к себе.",
+      "Сильные стороны, привычные реакции и новые вопросы к себе.",
     ),
     "onboardingPage2Title": MessageLookupByLibrary.simpleMessage(
-      "Минута, чтобы выдохнуть",
+      "Твой характер",
     ),
     "onboardingPage3Description": MessageLookupByLibrary.simpleMessage(
-      "Посмотрите разбор пары и возьмите вопрос для спокойного разговора.",
+      "Увидеть разные реакции — и найти слова для разговора.",
     ),
     "onboardingPage3Title": MessageLookupByLibrary.simpleMessage(
-      "Как поговорить после спора?",
+      "Ваши отношения",
     ),
     "onboardingPage4Description": MessageLookupByLibrary.simpleMessage(
-      "Таро поможет посмотреть на вопрос иначе. А с Анакрой можно обсудить первый шаг.",
+      "От расклада Таро — к размышлению и диалогу с Анакрой.",
     ),
-    "onboardingPage4Title": MessageLookupByLibrary.simpleMessage(
-      "С чего начать новое дело?",
+    "onboardingPage4Title": MessageLookupByLibrary.simpleMessage("Твой вопрос"),
+    "onboardingPage5Description": MessageLookupByLibrary.simpleMessage(
+      "Аффирмации и небольшие практики для паузы среди дел.",
+    ),
+    "onboardingPage5Title": MessageLookupByLibrary.simpleMessage(
+      "Время для себя",
     ),
     "onboardingPreviewAffirmation": MessageLookupByLibrary.simpleMessage(
       "Моя внутренняя сила растёт с каждым вдохом, наполняя меня уверенностью и спокойствием в любые моменты жизни.",
@@ -1458,7 +1570,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "onboardingPreviewRiskPhrase": MessageLookupByLibrary.simpleMessage(
       "Снижение внимания и фокуса",
     ),
-    "openArticleLabel": m36,
+    "openArticleLabel": m38,
     "openCompatibilityLabel": MessageLookupByLibrary.simpleMessage(
       "Открыть совместимость",
     ),
@@ -1468,7 +1580,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "openSubscription": MessageLookupByLibrary.simpleMessage(
       "Перейти к подписке",
     ),
-    "paidRequestsLeft": m37,
+    "paidRequestsLeft": m39,
     "paymentAbandonedLocal": MessageLookupByLibrary.simpleMessage(
       "Локально попытка закрыта. Сервер продолжит безопасно обрабатывать возможное подтверждение банка.",
     ),
@@ -1481,8 +1593,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "paymentAuthenticationRequired": MessageLookupByLibrary.simpleMessage(
       "Войдите в аккаунт, чтобы продолжить оплату.",
     ),
-    "paymentCoinsCredited": m38,
-    "paymentCoinsCreditedBalanceUpdated": m39,
+    "paymentCoinsCredited": m40,
+    "paymentCoinsCreditedBalanceUpdated": m41,
     "paymentConfirming": MessageLookupByLibrary.simpleMessage(
       "Подтверждаем платёж",
     ),
@@ -1505,7 +1617,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "paymentDeclined": MessageLookupByLibrary.simpleMessage(
       "Банк отклонил платёж.",
     ),
-    "paymentDiagnostics": m40,
+    "paymentDiagnostics": m42,
     "paymentExpired": MessageLookupByLibrary.simpleMessage(
       "Срок платежа истёк.",
     ),
@@ -1570,8 +1682,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "personalFinancialStability": MessageLookupByLibrary.simpleMessage(
       "Финансовая стабильность",
     ),
-    "personalForecastPrice": m41,
-    "personalGreeting": m42,
+    "personalForecastPrice": m43,
+    "personalGreeting": m44,
     "personalGreetingGeneral": MessageLookupByLibrary.simpleMessage("Привет!"),
     "personalHarmony": MessageLookupByLibrary.simpleMessage(
       "Баланс внутренней гармонии",
@@ -1618,7 +1730,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "personalUnlockWeaknesses": MessageLookupByLibrary.simpleMessage(
       "Открыть слабые места",
     ),
-    "personalWeaknessesPrice": m43,
+    "personalWeaknessesPrice": m45,
     "personalWeekPurchaseDescription": MessageLookupByLibrary.simpleMessage(
       "Подробный персональный гороскоп на неделю доступен за единоразовую покупку.",
     ),
@@ -1633,7 +1745,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "planReminderAdd": MessageLookupByLibrary.simpleMessage(
       "Напомнить в день плана",
     ),
-    "planReminderAt": m44,
+    "planReminderAt": m46,
     "planReminderDenied": MessageLookupByLibrary.simpleMessage(
       "Чтобы получать напоминания, разрешите уведомления для Asteria в настройках iPhone.",
     ),
@@ -1752,8 +1864,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "purchaseErrorTryAgain": MessageLookupByLibrary.simpleMessage(
       "Произошла ошибка. Попробуйте позже.",
     ),
-    "purchaseForCoinsLabel": m45,
-    "purchaseForPrice": m46,
+    "purchaseForCoinsLabel": m47,
+    "purchaseForPrice": m48,
     "purchaseGoToChat": MessageLookupByLibrary.simpleMessage("Перейти в чат"),
     "purchaseMonthHoroscope": MessageLookupByLibrary.simpleMessage(
       "Открыть гороскоп на месяц",
@@ -1767,7 +1879,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "purchaseNotEnoughRequests": MessageLookupByLibrary.simpleMessage(
       "Недостаточно для покупки запросов",
     ),
-    "purchaseRequestsTitle": m47,
+    "purchaseRequestsTitle": m49,
     "purchaseRequired": MessageLookupByLibrary.simpleMessage(
       "Для покупки требуется",
     ),
@@ -1785,7 +1897,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "purchasedAttemptsCombine": MessageLookupByLibrary.simpleMessage(
       "Купленные попытки суммируются с бесплатными",
     ),
-    "questionCoinPrice": m48,
+    "questionCoinPrice": m50,
     "readingComplete": MessageLookupByLibrary.simpleMessage(
       "Твой расклад завершён",
     ),
@@ -1808,16 +1920,16 @@ class MessageLookup extends MessageLookupByLibrary {
     "refreshTarotSpreadLabel": MessageLookupByLibrary.simpleMessage(
       "Обновить расклад Таро",
     ),
-    "requestLimitResetIn": m49,
-    "requestPackageCount": m50,
-    "requestPackageForCoins": m51,
+    "requestLimitResetIn": m51,
+    "requestPackageCount": m52,
+    "requestPackageForCoins": m53,
     "requestsExhausted": MessageLookupByLibrary.simpleMessage(
       "Ты использовал все запросы.\nХочешь продолжить?",
     ),
-    "requestsLeftCount": m52,
-    "requestsLeftOfTotal": m53,
-    "requestsLeftThisWeek": m54,
-    "requestsRemaining": m55,
+    "requestsLeftCount": m54,
+    "requestsLeftOfTotal": m55,
+    "requestsLeftThisWeek": m56,
+    "requestsRemaining": m57,
     "resendCodeButtonText": MessageLookupByLibrary.simpleMessage(
       "Отправить новый код",
     ),
@@ -1855,7 +1967,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "rewardShareSubject": MessageLookupByLibrary.simpleMessage(
       "Asteria — персональный астрологический помощник",
     ),
-    "rewardShareText": m56,
+    "rewardShareText": m58,
     "rewardStartError": MessageLookupByLibrary.simpleMessage(
       "Не удалось запустить задания.",
     ),
@@ -1863,20 +1975,20 @@ class MessageLookup extends MessageLookupByLibrary {
       "Раскинуть Таро",
     ),
     "rewardsHowEarn": MessageLookupByLibrary.simpleMessage("Как заработать?"),
-    "runeLockedLabel": m57,
+    "runeLockedLabel": m59,
     "runeOpenFuture": MessageLookupByLibrary.simpleMessage(
       "Открыть руну будущего",
     ),
-    "runeOpenFutureMeaning": m58,
-    "runeOpenLabel": m59,
+    "runeOpenFutureMeaning": m60,
+    "runeOpenLabel": m61,
     "runeOpenPast": MessageLookupByLibrary.simpleMessage(
       "Открыть руну прошлого",
     ),
-    "runeOpenPastMeaning": m60,
+    "runeOpenPastMeaning": m62,
     "runeOpenPresent": MessageLookupByLibrary.simpleMessage(
       "Открыть руну настоящего",
     ),
-    "runeOpenPresentMeaning": m61,
+    "runeOpenPresentMeaning": m63,
     "runeRefreshSubscriptionRequired": MessageLookupByLibrary.simpleMessage(
       "Обновление руны дня доступно только по подписке. Оформите подписку, чтобы получать новую руну каждый день.",
     ),
@@ -2012,6 +2124,26 @@ class MessageLookup extends MessageLookupByLibrary {
       "Лунных подсказок для выбранного занятия пока нет. Вы можете сравнить фазы Луны и сохранить удобную дату.",
     ),
     "scenarioGoHome": MessageLookupByLibrary.simpleMessage("На главную"),
+    "scenarioPlansAllDay": MessageLookupByLibrary.simpleMessage(
+      "Без указания времени",
+    ),
+    "scenarioPlansCount": m64,
+    "scenarioPlansDay": MessageLookupByLibrary.simpleMessage("День"),
+    "scenarioPlansEmptyDay": MessageLookupByLibrary.simpleMessage(
+      "На этот день планов пока нет.",
+    ),
+    "scenarioPlansEmptyWeek": MessageLookupByLibrary.simpleMessage(
+      "На этой неделе планов пока нет.",
+    ),
+    "scenarioPlansMonth": MessageLookupByLibrary.simpleMessage("Месяц"),
+    "scenarioPlansNext": MessageLookupByLibrary.simpleMessage(
+      "Следующий период",
+    ),
+    "scenarioPlansPrevious": MessageLookupByLibrary.simpleMessage(
+      "Предыдущий период",
+    ),
+    "scenarioPlansToday": MessageLookupByLibrary.simpleMessage("Сегодня"),
+    "scenarioPlansWeek": MessageLookupByLibrary.simpleMessage("Неделя"),
     "scenarioPracticeChooseMood": MessageLookupByLibrary.simpleMessage(
       "Что вам сейчас нужно?",
     ),
@@ -2170,7 +2302,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "shopIncreaseQuantity": MessageLookupByLibrary.simpleMessage(
       "Увеличить количество",
     ),
-    "shopItemCount": m62,
+    "shopItemCount": m65,
     "shopItemSuffix": MessageLookupByLibrary.simpleMessage("шт"),
     "shopItemsLeft": MessageLookupByLibrary.simpleMessage("Осталось"),
     "shopLoadError": MessageLookupByLibrary.simpleMessage(
@@ -2193,7 +2325,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "shopTitle": MessageLookupByLibrary.simpleMessage("Магазин"),
     "shopUnitPrice": MessageLookupByLibrary.simpleMessage("цена за 1"),
-    "shopUnitPriceValue": m63,
+    "shopUnitPriceValue": m66,
     "sonnikLoadingDetails": MessageLookupByLibrary.simpleMessage(
       "Детали складываются в узор…",
     ),
@@ -2329,7 +2461,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "subscriptionNextPaymentInline": MessageLookupByLibrary.simpleMessage(
       "Следующее списание будет\nпроизведено ",
     ),
-    "subscriptionNextPaymentOn": m64,
+    "subscriptionNextPaymentOn": m67,
     "subscriptionNoPurchasesToRestore": MessageLookupByLibrary.simpleMessage(
       "Покупки для восстановления не найдены",
     ),
@@ -2345,7 +2477,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "subscriptionPlansUnavailable": MessageLookupByLibrary.simpleMessage(
       "Подписки пока недоступны. Попробуйте позже.",
     ),
-    "subscriptionPurchasesRestored": m65,
+    "subscriptionPurchasesRestored": m68,
     "subscriptionRestoreInProgress": MessageLookupByLibrary.simpleMessage(
       "Восстанавливаем покупки…",
     ),
@@ -2373,10 +2505,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "tarotLoadError": MessageLookupByLibrary.simpleMessage(
       "Не удалось загрузить карты Таро.",
     ),
-    "tarotLockedCardLabel": m66,
-    "tarotOpenCardLabel": m67,
-    "tarotOpenSpreadCard": m68,
-    "tarotOpenedSpreadCard": m69,
+    "tarotLockedCardLabel": m69,
+    "tarotOpenCardLabel": m70,
+    "tarotOpenSpreadCard": m71,
+    "tarotOpenedSpreadCard": m72,
     "tarotRefreshSubscriptionRequired": MessageLookupByLibrary.simpleMessage(
       "Обновление карты Таро доступно только по подписке. Оформите подписку, чтобы получать новую карту каждый день.",
     ),
@@ -2423,6 +2555,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "yearHoroscopeIntro": MessageLookupByLibrary.simpleMessage(
       "Открой карту своей судьбы и загляни в будущее, которое ждёт именно тебя.",
     ),
-    "yearHoroscopePriceTitle": m70,
+    "yearHoroscopePriceTitle": m73,
   };
 }

@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_action_button.dart';
 import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'dart:async';
@@ -159,73 +160,70 @@ class _LotusFeedbackState extends State<LotusFeedback>
   Widget build(BuildContext context) {
     final enabled = widget.onActivate != null;
     final control = widget.builder(enabled ? _activate : null);
-    return AsteriaEntrance(
-      animateInitially: widget.animateEntrance,
-      child: Listener(
-        onPointerDown: enabled ? _down : null,
-        onPointerMove: _move,
-        onPointerUp: _end,
-        onPointerCancel: _end,
-        child: AnimatedBuilder(
-          animation: _motion,
-          builder: (context, surface) {
-            final pressScale =
-                1 - (1 - LotusMotionScope.pressedScale) * _contact.value;
-            // A quick tap or keyboard activation may finish before the first press frame.
-            final phase = (_pulse.value / .45).clamp(0.0, 1.0);
-            final activationScale = 1 - .018 * math.sin(math.pi * phase);
-            return Transform.scale(
-              scale: _reduceMotion ? 1 : math.min(pressScale, activationScale),
-              transformHitTests: false,
-              child: Opacity(
-                opacity: _reduceMotion && _contact.value > 0 ? .76 : 1,
-                child: surface,
-              ),
-            );
-          },
-          child: LotusMotionScope(
-            contact: _contact,
-            pulse: _pulse,
-            child: widget.keyboard
-                ? FocusableActionDetector(
-                    enabled: enabled,
-                    includeFocusSemantics: false,
-                    onShowFocusHighlight: (show) =>
-                        setState(() => _showFocus = show),
-                    actions: {
-                      ActivateIntent: CallbackAction<ActivateIntent>(
-                        onInvoke: (_) {
-                          _activate();
-                          return null;
-                        },
-                      ),
-                      ButtonActivateIntent:
-                          CallbackAction<ButtonActivateIntent>(
-                            onInvoke: (_) {
-                              _activate();
-                              return null;
-                            },
-                          ),
-                    },
-                    child: DecoratedBox(
-                      position: DecorationPosition.foreground,
-                      decoration: BoxDecoration(
-                        border: enabled && _showFocus
-                            ? Border.all(
-                                color: Theme.of(context).colorScheme.onSurface,
-                                width: 1.5,
-                              )
-                            : null,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: control,
+    final feedback = Listener(
+      onPointerDown: enabled ? _down : null,
+      onPointerMove: _move,
+      onPointerUp: _end,
+      onPointerCancel: _end,
+      child: AnimatedBuilder(
+        animation: _motion,
+        builder: (context, surface) {
+          final pressScale =
+              1 - (1 - LotusMotionScope.pressedScale) * _contact.value;
+          // A quick tap or keyboard activation may finish before the first press frame.
+          final phase = (_pulse.value / .45).clamp(0.0, 1.0);
+          final activationScale = 1 - .018 * math.sin(math.pi * phase);
+          return Transform.scale(
+            scale: _reduceMotion ? 1 : math.min(pressScale, activationScale),
+            transformHitTests: false,
+            child: Opacity(
+              opacity: _reduceMotion && _contact.value > 0 ? .76 : 1,
+              child: surface,
+            ),
+          );
+        },
+        child: LotusMotionScope(
+          contact: _contact,
+          pulse: _pulse,
+          child: widget.keyboard
+              ? FocusableActionDetector(
+                  enabled: enabled,
+                  includeFocusSemantics: false,
+                  onShowFocusHighlight: (show) =>
+                      setState(() => _showFocus = show),
+                  actions: {
+                    ActivateIntent: CallbackAction<ActivateIntent>(
+                      onInvoke: (_) {
+                        _activate();
+                        return null;
+                      },
                     ),
-                  )
-                : control,
-          ),
+                    ButtonActivateIntent: CallbackAction<ButtonActivateIntent>(
+                      onInvoke: (_) {
+                        _activate();
+                        return null;
+                      },
+                    ),
+                  },
+                  child: DecoratedBox(
+                    position: DecorationPosition.foreground,
+                    decoration: BoxDecoration(
+                      border: enabled && _showFocus
+                          ? Border.all(
+                              color: Theme.of(context).colorScheme.onSurface,
+                              width: 1.5,
+                            )
+                          : null,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: control,
+                  ),
+                )
+              : control,
         ),
       ),
     );
+    return widget.animateEntrance ? AsteriaEntrance(child: feedback) : feedback;
   }
 }
 
@@ -238,16 +236,19 @@ class LotusTap extends StatelessWidget {
     this.behavior,
     this.onHorizontalDragUpdate,
     this.onHorizontalDragEnd,
+    this.animateEntrance = true,
   });
   final VoidCallback? onTap;
   final Widget child;
   final HitTestBehavior? behavior;
+  final bool animateEntrance;
   final GestureDragUpdateCallback? onHorizontalDragUpdate;
   final GestureDragEndCallback? onHorizontalDragEnd;
 
   @override
   Widget build(BuildContext context) => LotusFeedback(
     onActivate: onTap,
+    animateEntrance: animateEntrance,
     keyboard: true,
     builder: (activate) => GestureDetector(
       onTap: activate,
@@ -357,27 +358,13 @@ abstract final class LotusButtons {
     required VoidCallback? onPressed,
     required Widget child,
     ButtonStyle? style,
-  }) => LotusFeedback(
-    onActivate: onPressed,
-    builder: (activate) => ElevatedButton(
-      onPressed: activate,
-      style: _surface(style, filled: true),
-      child: child,
-    ),
-  );
+  }) => AsteriaActionButton(onPressed: onPressed, child: child);
 
   static Widget outlined({
     required VoidCallback? onPressed,
     required Widget child,
     ButtonStyle? style,
-  }) => LotusFeedback(
-    onActivate: onPressed,
-    builder: (activate) => OutlinedButton(
-      onPressed: activate,
-      style: _surface(style, filled: true),
-      child: child,
-    ),
-  );
+  }) => AsteriaActionButton(onPressed: onPressed, child: child);
 
   static Widget icon({
     required VoidCallback? onPressed,

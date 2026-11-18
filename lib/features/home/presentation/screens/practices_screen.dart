@@ -43,8 +43,8 @@ class PracticesScreen extends StatelessWidget {
                   HubEntryCard(
                     title: ru ? 'Время для себя' : 'Time for yourself',
                     description: ru
-                        ? 'Выберите аффирмацию по настроению. Любимые записи можно сохранить.'
-                        : 'Choose an affirmation for your mood and save your favourites.',
+                        ? 'Выберите аффирмацию по настроению.'
+                        : 'Choose an affirmation for your mood.',
                     action: ru ? 'Выбрать аффирмацию' : 'Choose an affirmation',
                     art: 'assets/images/scenarios/lotus.webp',
                     onTap: () => AffirmationRoute.push(context),

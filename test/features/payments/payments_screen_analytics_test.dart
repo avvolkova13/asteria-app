@@ -252,6 +252,16 @@ class _FakeSession implements AuthSessionService {
 }
 
 class _MemoryPendingOrderStore extends ArcPayPendingOrderStore {
+  final requests = <String, ArcPayCheckoutRequest>{};
+
+  @override
+  ArcPayCheckoutRequest? readCheckoutRequest(String key) => requests[key];
+
+  @override
+  Future<ArcPayCheckoutRequest> saveCheckoutRequestIfAbsent(
+    ArcPayCheckoutRequest request,
+  ) async => requests.putIfAbsent(request.key, () => request);
+
   ArcPayPendingOrder? value;
 
   @override
@@ -260,10 +270,18 @@ class _MemoryPendingOrderStore extends ArcPayPendingOrderStore {
   @override
   Future<void> save(ArcPayPendingOrder order) async {
     value = order;
+    if (requests[order.requestKey]?.requestId == order.requestId) {
+      requests.remove(order.requestKey);
+    }
   }
 
   @override
   Future<void> clear() async {
+    final order = value;
+    if (order != null &&
+        requests[order.requestKey]?.requestId == order.requestId) {
+      requests.remove(order.requestKey);
+    }
     value = null;
   }
 }

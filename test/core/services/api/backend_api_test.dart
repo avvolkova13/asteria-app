@@ -7,6 +7,48 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  for (final fails in [false, true]) {
+    test(
+      'backend logging excludes request response and error PII (failure: $fails)',
+      () async {
+        const sentinel = 'private-sentinel-person@example.test';
+        final logs = <String>[];
+        final previousDebugPrint = debugPrint;
+        debugPrint = (String? message, {int? wrapWidth}) {
+          if (message != null) logs.add(message);
+        };
+        addTearDown(() => debugPrint = previousDebugPrint);
+        final adapter = _RecordingAdapter()
+          ..statusCode = fails ? 500 : 200
+          ..responseData = '{"detail":"$sentinel"}'
+          ..privateHeader = sentinel;
+        final api = BackendApi.forTesting(
+          dio: Dio()..httpClientAdapter = adapter,
+          asteriaBackendUrl: 'https://backend.example.com',
+          asteriaApiKey: sentinel,
+        );
+        final result = api.openaiPost(
+          path: 'v1/$sentinel',
+          data: {'input': sentinel},
+          queryParameters: {'name': sentinel},
+        );
+        if (fails) {
+          await expectLater(result, throwsA(isA<DioException>()));
+        } else {
+          expect((await result).data, {'detail': sentinel});
+        }
+        final sent = adapter.requests.single;
+        expect(sent.data, {'input': sentinel});
+        expect(sent.queryParameters, {'name': sentinel});
+        expect(sent.headers['Authorization'], 'Bearer $sentinel');
+        expect(logs, isNotEmpty);
+        final output = logs.join('\n');
+        expect(output, isNot(contains(sentinel)));
+        expect(output, isNot(contains('backend.example.com')));
+      },
+    );
+  }
+
   BackendApi buildApi(_RecordingAdapter adapter) {
     final dio = Dio()..httpClientAdapter = adapter;
     return BackendApi.forTesting(
@@ -152,6 +194,9 @@ void main() {
 
 class _RecordingAdapter implements HttpClientAdapter {
   final List<RequestOptions> requests = [];
+  int statusCode = 200;
+  String? responseData;
+  String? privateHeader;
 
   @override
   Future<ResponseBody> fetch(
@@ -160,12 +205,14 @@ class _RecordingAdapter implements HttpClientAdapter {
     Future<void>? cancelFuture,
   ) async {
     requests.add(options);
-    const headers = {
+    final headers = {
       Headers.contentTypeHeader: [Headers.jsonContentType],
+      if (privateHeader != null) 'x-private-test': [privateHeader!],
     };
     return ResponseBody.fromString(
-      '{"success":true,"data":"Солнце - Козерог - 3","elements":{"fire":"1","earth":"1","air":"1","water":"1"},"positions":[],"calculation":{},"prompt_context":""}',
-      200,
+      responseData ??
+          '{"success":true,"data":"Солнце - Козерог - 3","elements":{"fire":"1","earth":"1","air":"1","water":"1"},"positions":[],"calculation":{},"prompt_context":""}',
+      statusCode,
       headers: headers,
     );
   }

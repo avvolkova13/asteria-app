@@ -55,13 +55,19 @@ class BackendApi {
 
   void _setupInterceptors() {
     _dio.interceptors.add(
-      LogInterceptor(
-        requestBody: false,
-        responseBody: true,
-        requestHeader: false,
-        responseHeader: true,
-        error: true,
-        logPrint: (object) => debugPrint('[BackendAPI] $object'),
+      InterceptorsWrapper(
+        onRequest: (options, handler) {
+          debugPrint('backend_api_request_started');
+          handler.next(options);
+        },
+        onResponse: (response, handler) {
+          debugPrint('backend_api_response_received');
+          handler.next(response);
+        },
+        onError: (error, handler) {
+          debugPrint('backend_api_request_failed');
+          handler.next(error);
+        },
       ),
     );
   }
@@ -98,9 +104,7 @@ class BackendApi {
         'lat': lat,
         'lon': lon,
       };
-      debugPrint(
-        '[BackendAPI] Calling moon_phase/calculate with params: $params',
-      );
+      debugPrint('backend_api_moon_calculation_started');
 
       final response = await _dio.post(
         url,
@@ -109,9 +113,8 @@ class BackendApi {
       );
 
       return response;
-    } catch (e, stackTrace) {
-      debugPrint('[BackendAPI] calculate-moon-data error: $e');
-      debugPrint('[BackendAPI] Stack trace: $stackTrace');
+    } catch (_) {
+      debugPrint('backend_api_moon_calculation_failed');
       rethrow;
     }
   }
@@ -193,9 +196,7 @@ class BackendApi {
         'latitude': latitude,
         'longitude': longitude,
       };
-      debugPrint(
-        '[BackendAPI] Calling get-planets-houses-position-http with params: $params',
-      );
+      debugPrint('backend_api_planets_calculation_started');
 
       final response = await _dio.post(
         url,
@@ -203,11 +204,10 @@ class BackendApi {
         options: Options(headers: _localizedHeaders),
       );
 
-      debugPrint('[BackendAPI] get-planets-houses-position-http success');
+      debugPrint('backend_api_planets_calculation_completed');
       return response;
-    } catch (e, stackTrace) {
-      debugPrint('[BackendAPI] get-planets-houses-position-http error: $e');
-      debugPrint('[BackendAPI] Stack trace: $stackTrace');
+    } catch (_) {
+      debugPrint('backend_api_planets_calculation_failed');
       rethrow;
     }
   }
@@ -235,9 +235,7 @@ class BackendApi {
         'latitude': latitude,
         'longitude': longitude,
       };
-      debugPrint(
-        '[BackendAPI] Calling get_solar_data_http with params: $params',
-      );
+      debugPrint('backend_api_solar_calculation_started');
 
       final response = await _dio.post(
         url,
@@ -245,11 +243,10 @@ class BackendApi {
         options: Options(headers: _localizedHeaders),
       );
 
-      debugPrint('[BackendAPI] get_solar_data_http success');
+      debugPrint('backend_api_solar_calculation_completed');
       return response;
-    } catch (e, stackTrace) {
-      debugPrint('[BackendAPI] get_solar_data_http error: $e');
-      debugPrint('[BackendAPI] Stack trace: $stackTrace');
+    } catch (_) {
+      debugPrint('backend_api_solar_calculation_failed');
       rethrow;
     }
   }
@@ -262,9 +259,7 @@ class BackendApi {
   }) async {
     try {
       final url = '${_asteriaBackendUrl}api/v1/openai_generate_response';
-      debugPrint(
-        '[BackendAPI] Calling openai-generate-response with data: $data',
-      );
+      debugPrint('backend_api_generation_started');
 
       final response = await _dio.post(
         url,
@@ -272,11 +267,10 @@ class BackendApi {
         options: Options(headers: _localizedHeaders),
       );
 
-      debugPrint('[BackendAPI] openai-generate-response success');
+      debugPrint('backend_api_generation_completed');
       return response;
-    } catch (e, stackTrace) {
-      debugPrint('[BackendAPI] openai-generate-response error: $e');
-      debugPrint('[BackendAPI] Stack trace: $stackTrace');
+    } catch (_) {
+      debugPrint('backend_api_generation_failed');
       rethrow;
     }
   }
@@ -294,9 +288,7 @@ class BackendApi {
     try {
       final normalizedPath = path.replaceFirst(RegExp(r'^/+'), '');
       final url = '${_asteriaBackendUrl}api/v1/openai_post/$normalizedPath';
-      debugPrint(
-        '[BackendAPI] Calling openai-post with url: $url, data: $data',
-      );
+      debugPrint('backend_api_proxy_request_started');
 
       final response = await _dio.post(
         url,
@@ -305,11 +297,10 @@ class BackendApi {
         options: Options(headers: _localizedHeaders),
       );
 
-      debugPrint('[BackendAPI] openai-post success');
+      debugPrint('backend_api_proxy_request_completed');
       return response;
-    } catch (e, stackTrace) {
-      debugPrint('[BackendAPI] openai-post error: $e');
-      debugPrint('[BackendAPI] Stack trace: $stackTrace');
+    } catch (_) {
+      debugPrint('backend_api_proxy_request_failed');
       rethrow;
     }
   }

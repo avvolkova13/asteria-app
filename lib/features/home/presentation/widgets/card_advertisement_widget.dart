@@ -1,7 +1,8 @@
+import 'package:asteria_app/core/ui_kit/widgets/responsive_heading.dart';
+import 'package:asteria_app/core/ui_kit/widgets/asteria_action_button.dart';
 import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/ui_kit/card_radii.dart';
-import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
-import 'dart:async';
+
 import 'dart:math' as math;
 import 'dart:ui' as ui;
 
@@ -16,7 +17,7 @@ enum CardAdvertisementVariant {
 
 class CardAdvertisementWidget extends StatelessWidget {
   static const _natalCardBannerBackground = Color(0xFF2A2038);
-  static const _balanceSubscriptionBackground = Color(0xFF332D3B);
+  static const _balanceSubscriptionBackground = AppColorsDark.modal;
 
   final Widget? natalChartPreview;
   final String title;
@@ -183,39 +184,61 @@ class CardAdvertisementWidget extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                title,
-                                style: context
-                                    .textTheme
-                                    .inversePlayfairSemiBold24
-                                    .copyWith(height: 1),
-                              ),
-                              if (!roomyCopy) ...[
-                                const SizedBox(height: 6),
-                                body,
+                    if (roomyCopy)
+                      ResponsiveHeading(
+                        title,
+                        style: context.textTheme.inversePlayfairSemiBold24
+                            .copyWith(height: 1),
+                      )
+                    else
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  title,
+                                  style: context
+                                      .textTheme
+                                      .inversePlayfairSemiBold24
+                                      .copyWith(height: 1),
+                                ),
+                                if (!roomyCopy) ...[
+                                  const SizedBox(height: 6),
+                                  body,
+                                ],
                               ],
-                            ],
+                            ),
                           ),
-                        ),
-                        const SizedBox(width: 12),
-                        Image.asset(
+                          const SizedBox(width: 12),
+                          Image.asset(
+                            'assets/images/home/balance_subscription_art.webp',
+                            width: artWidth,
+                            height: roomyCopy ? artWidth * .92 : artWidth * 1.1,
+                            fit: BoxFit.contain,
+                            cacheWidth: 500,
+                            excludeFromSemantics: true,
+                          ),
+                        ],
+                      ),
+                    if (roomyCopy) ...[
+                      const SizedBox(height: 6),
+                      body,
+                      const SizedBox(height: 10),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: Image.asset(
                           'assets/images/home/balance_subscription_art.webp',
                           width: artWidth,
-                          height: roomyCopy ? artWidth * .92 : artWidth * 1.1,
+                          height: artWidth * .92,
                           fit: BoxFit.contain,
                           cacheWidth: 500,
                           excludeFromSemantics: true,
                         ),
-                      ],
-                    ),
-                    if (roomyCopy) ...[const SizedBox(height: 6), body],
+                      ),
+                    ],
                     SizedBox(height: roomyCopy ? 10 : 12),
                     SizedBox(
                       width: double.infinity,
@@ -252,41 +275,12 @@ class _NatalCardButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final button = ConstrainedBox(
-      constraints: const BoxConstraints(
-        minWidth: double.infinity,
-        minHeight: 44,
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: LotusInkTap(
-          onTap: onPressed,
-          borderRadius: BorderRadius.circular(16),
-          child: Ink(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            decoration: CardLensDecoration.button(
-              borderRadius: BorderRadius.circular(16),
-              color: AppColorsDark.linkGold,
-            ),
-            child: Center(
-              child: Text(
-                text,
-                textAlign: TextAlign.center,
-                style: AppTypography.text1SemiBold.copyWith(
-                  color: AppColorsDark.homeCanvas,
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-
-    return Semantics(
-      button: true,
-      label: text,
-      excludeSemantics: true,
-      child: button,
+    return AsteriaActionButton(
+      text: text,
+      onPressed: onPressed,
+      gold: true,
+      width: double.infinity,
+      height: 44,
     );
   }
 }
@@ -433,182 +427,18 @@ class _BalanceSubscriptionBorderPainter extends CustomPainter {
   }
 }
 
-class _BalanceSubscriptionButton extends StatefulWidget {
-  final String text;
-  final VoidCallback onPressed;
-
+class _BalanceSubscriptionButton extends StatelessWidget {
   const _BalanceSubscriptionButton({
     required this.text,
     required this.onPressed,
   });
-
+  final String text;
+  final VoidCallback onPressed;
   @override
-  State<_BalanceSubscriptionButton> createState() =>
-      _BalanceSubscriptionButtonState();
-}
-
-class _BalanceSubscriptionButtonState extends State<_BalanceSubscriptionButton>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _shimmerController;
-  late final Animation<double> _shimmerPosition;
-  Timer? _shimmerTimer;
-
-  @override
-  void initState() {
-    super.initState();
-    _shimmerController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 1100),
-    );
-    _shimmerPosition = CurvedAnimation(
-      parent: _shimmerController,
-      curve: Curves.easeInOutCubic,
-    );
-    _scheduleNextShimmer();
-  }
-
-  void _scheduleNextShimmer() {
-    _shimmerTimer?.cancel();
-    _shimmerTimer = Timer(const Duration(milliseconds: 4600), () async {
-      if (!mounted) {
-        return;
-      }
-      if (!MediaQuery.disableAnimationsOf(context)) {
-        try {
-          await _shimmerController.forward(from: 0).orCancel;
-        } on TickerCanceled {
-          return;
-        }
-      }
-      if (mounted) {
-        _scheduleNextShimmer();
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    _shimmerTimer?.cancel();
-    _shimmerController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final disableAnimations = MediaQuery.disableAnimationsOf(context);
-    final button = ConstrainedBox(
-      constraints: const BoxConstraints(minHeight: 44),
-      child: Material(
-        color: Colors.transparent,
-        child: LotusInkTap(
-          onTap: widget.onPressed,
-          borderRadius: BorderRadius.circular(21),
-          child: Ink(
-            decoration: CardLensDecoration.button(
-              gradient: const LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  Color(0xFFF7BC6A),
-                  Color(0xFFF5AC51),
-                  Color(0xFFEFA04A),
-                ],
-                stops: [0, 0.56, 1],
-              ),
-              borderRadius: BorderRadius.circular(21),
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(21),
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  if (!disableAnimations)
-                    Positioned.fill(
-                      key: const ValueKey('balance-subscription-cta-shimmer'),
-                      child: AnimatedBuilder(
-                        animation: _shimmerPosition,
-                        builder: (context, child) {
-                          final value = _shimmerPosition.value;
-                          return FractionalTranslation(
-                            translation: Offset(-1.2 + (value * 2.4), 0),
-                            child: child,
-                          );
-                        },
-                        child: const _BalanceSubscriptionButtonShimmer(),
-                      ),
-                    ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 9,
-                    ),
-                    child: Text(
-                      widget.text,
-                      textAlign: TextAlign.center,
-                      style: context.textTheme.urbanistRegular16.copyWith(
-                        color: const Color(0xFF2A1533),
-                        height: 1,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-
-    return Semantics(
-      button: true,
-      label: widget.text,
-      excludeSemantics: true,
-      child: button,
-    );
-  }
-}
-
-class _BalanceSubscriptionButtonShimmer extends StatelessWidget {
-  const _BalanceSubscriptionButtonShimmer();
-
-  @override
-  Widget build(BuildContext context) {
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.centerLeft,
-          end: Alignment.centerRight,
-          colors: [
-            Colors.white.withValues(alpha: 0),
-            Colors.white.withValues(alpha: 0.13),
-            Colors.white.withValues(alpha: 0),
-          ],
-          stops: const [0.36, 0.5, 0.64],
-          transform: const GradientRotation(-0.25),
-        ),
-      ),
-      child: Align(
-        alignment: Alignment.center,
-        child: FractionallySizedBox(
-          widthFactor: 0.36,
-          heightFactor: 1,
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.centerLeft,
-                end: Alignment.centerRight,
-                colors: [
-                  Colors.white.withValues(alpha: 0),
-                  Colors.white.withValues(alpha: 0.09),
-                  Colors.white.withValues(alpha: 0),
-                ],
-                stops: const [0, 0.5, 1],
-                transform: const GradientRotation(-0.25),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
+  Widget build(BuildContext context) => AsteriaActionButton(
+    text: text,
+    onPressed: onPressed,
+    gold: true,
+    width: double.infinity,
+  );
 }

@@ -17,9 +17,7 @@ import 'package:google_places_flutter/model/place_type.dart';
 import 'package:google_places_flutter/model/prediction.dart';
 
 const _authPanelFill = Color(0xFF151028);
-const _authMutedText = Color(0xFFB5AAB8);
-const _authPurpleStart = Color(0xFF6E4BFF);
-const _authPurpleEnd = Color(0xFF5A3FD1);
+const _authMutedText = AppColorsDark.textSecondary;
 
 class InputsSectionWidget extends StatefulWidget {
   final UserModel? currentUser;
@@ -125,40 +123,49 @@ class _InputsSectionWidgetState extends State<InputsSectionWidget> {
         const SizedBox(height: 16),
         _buildPlaceInput(context),
         const SizedBox(height: 16),
-        Row(
-          children: [
-            Expanded(
-              child: _AuthDateTimeField(
-                text: widget.selectedDate != null
-                    ? formatDate(
-                        context,
-                        widget.selectedDate,
-                        widget.birthDateLabel,
-                      )
-                    : null,
-                hintText: widget.birthDateLabel,
-                onTap: widget.onShowDatePicker,
-              ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: _AuthDateTimeField(
-                text: widget.selectedTime != null
-                    ? formatTime(
-                        context,
-                        TimeOfDay(
-                          hour: widget.selectedTime!.hour,
-                          minute: widget.selectedTime!.minute,
-                        ),
-                        widget.birthTimeLabel,
-                      )
-                    : null,
-                hintText: widget.birthTimeLabel,
-                onTap: widget.onShowTimePicker,
-                isEnabled: !widget.isTimeUnknown,
-              ),
-            ),
-          ],
+        LayoutBuilder(
+          builder: (context, constraints) {
+            final date = _AuthDateTimeField(
+              text: widget.selectedDate != null
+                  ? formatDate(
+                      context,
+                      widget.selectedDate,
+                      widget.birthDateLabel,
+                    )
+                  : null,
+              hintText: widget.birthDateLabel,
+              onTap: widget.onShowDatePicker,
+            );
+            final time = _AuthDateTimeField(
+              text: widget.selectedTime != null
+                  ? formatTime(
+                      context,
+                      TimeOfDay(
+                        hour: widget.selectedTime!.hour,
+                        minute: widget.selectedTime!.minute,
+                      ),
+                      widget.birthTimeLabel,
+                    )
+                  : null,
+              hintText: widget.birthTimeLabel,
+              onTap: widget.onShowTimePicker,
+              isEnabled: !widget.isTimeUnknown,
+            );
+            if (constraints.maxWidth <
+                MediaQuery.textScalerOf(context).scale(260)) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [date, const SizedBox(height: 16), time],
+              );
+            }
+            return Row(
+              children: [
+                Expanded(child: date),
+                const SizedBox(width: 16),
+                Expanded(child: time),
+              ],
+            );
+          },
         ),
         const SizedBox(height: 16),
         _AuthCheckbox(
@@ -410,8 +417,6 @@ class _AuthDateTimeField extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Text(
               text ?? hintText,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
               style: _inputTextStyle(context).copyWith(
                 color: hasValue
                     ? AppColors.white.withValues(alpha: isEnabled ? 1 : 0.55)
@@ -456,35 +461,9 @@ class _AuthCheckbox extends StatelessWidget {
               constraints: const BoxConstraints(minHeight: 44),
               child: Row(
                 children: [
-                  Container(
-                    width: 23,
-                    height: 23,
-                    padding: const EdgeInsets.all(1),
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [_authPurpleStart, _authPurpleEnd],
-                      ),
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF0F0A1A),
-                        borderRadius: BorderRadius.circular(1),
-                      ),
-                      child: value
-                          ? ShaderMask(
-                              blendMode: BlendMode.srcIn,
-                              shaderCallback: (bounds) => const LinearGradient(
-                                colors: [_authPurpleStart, _authPurpleEnd],
-                              ).createShader(bounds),
-                              child: const ClayIcon(
-                                Icons.check,
-                                color: AppColors.white,
-                                size: 18,
-                              ),
-                            )
-                          : null,
-                    ),
+                  CheckboxMark(
+                    value: value,
+                    surfaceBrightness: Brightness.dark,
                   ),
                   const SizedBox(width: 10),
                   Expanded(

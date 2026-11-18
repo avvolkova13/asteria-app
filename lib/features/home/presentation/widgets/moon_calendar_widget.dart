@@ -21,7 +21,13 @@ class MoonCalendarWidget extends StatelessWidget {
       planningSelection = const {},
       firstSelectableDay = null,
       onPlanDay = null,
-      onPlanMonth = null;
+      onPlanMonth = null,
+      plansOnly = false,
+      week = false,
+      periodTitle = null,
+      currentDay = null,
+      onPrevious = null,
+      onNext = null;
 
   const MoonCalendarWidget.planning({
     super.key,
@@ -31,7 +37,36 @@ class MoonCalendarWidget extends StatelessWidget {
     required this.firstSelectableDay,
     required this.onPlanDay,
     required this.onPlanMonth,
-  });
+  }) : plansOnly = false,
+       week = false,
+       periodTitle = null,
+       currentDay = null,
+       onPrevious = null,
+       onNext = null;
+
+  MoonCalendarWidget.plans({
+    super.key,
+    required this.savedPlans,
+    required DateTime selectedDay,
+    required this.currentDay,
+    required this.onPlanDay,
+    required this.onPlanMonth,
+    required this.onPrevious,
+    required this.onNext,
+    this.week = false,
+    this.periodTitle,
+  }) : planningState = MoonScreenState(
+         focusedDay: selectedDay,
+         selectedDate: selectedDay,
+       ),
+       planningSelection = {calendarDay(selectedDay)},
+       firstSelectableDay = null,
+       plansOnly = true;
+
+  final bool plansOnly, week;
+  final String? periodTitle;
+  final DateTime? currentDay;
+  final VoidCallback? onPrevious, onNext;
 
   final List<CalendarPlan> savedPlans;
   final MoonScreenState? planningState;
@@ -44,9 +79,11 @@ class MoonCalendarWidget extends StatelessWidget {
       ? isSameDay(state.selectedDate, day)
       : planningSelection.contains(DateTime.utc(day.year, day.month, day.day));
 
-  bool _isEnabled(DateTime day) =>
-      firstSelectableDay == null ||
-      !DateTime.utc(day.year, day.month, day.day).isBefore(firstSelectableDay!);
+  bool _isEnabled(DateTime day) {
+    final date = calendarDay(day);
+    return !date.isBefore(firstSelectableDay ?? DateTime.utc(2000)) &&
+        !date.isAfter(DateTime.utc(2050, 12, 31));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -58,27 +95,29 @@ class MoonCalendarWidget extends StatelessWidget {
   Widget _calendar(BuildContext context, MoonScreenState state) {
     final localeTag = Localizations.localeOf(context).toLanguageTag();
     final textScaler = MediaQuery.textScalerOf(context);
+    final reducedMotion = MediaQuery.disableAnimationsOf(context);
     final weekdayHeight = textScaler.scale(13) * 18 / 13 + 8;
     final monthLabel = DateFormat('LLLL y', localeTag).format(state.focusedDay);
-    final title = monthLabel[0].toUpperCase() + monthLabel.substring(1);
+    final title =
+        periodTitle ?? (monthLabel[0].toUpperCase() + monthLabel.substring(1));
+    final weekStart = plansOnly
+        ? StartingDayOfWeek.values[(MaterialLocalizations.of(
+                    context,
+                  ).firstDayOfWeekIndex +
+                  6) %
+              7]
+        : StartingDayOfWeek.monday;
     final plansByDay = <DateTime, List<CalendarPlan>>{};
     for (final plan in savedPlans) {
-      if (_isSameMonth(state.focusedDay, plan.day)) {
+      if (plansOnly || _isSameMonth(state.focusedDay, plan.day)) {
         (plansByDay[calendarDay(plan.day)] ??= []).add(plan);
       }
     }
-    final showMarkers =
-        state.selectedSphere != null ||
-        state.dayStatuses.isNotEmpty ||
-        plansByDay.isNotEmpty;
-    // Plain dates need less space; category stars and plans keep their own row.
-    // The full cell remains a touch target of at least 44 points in both modes.
-    final hasRatings =
-        state.selectedSphere != null || state.dayStatuses.isNotEmpty;
-    final minimumHeight = hasRatings ? 54.0 : (showMarkers ? 48.0 : 44.0);
-    final extraSpace = hasRatings ? 29 : (showMarkers ? 23 : 19);
-    final dayHeight = (textScaler.scale(20) * 1.25 + extraSpace).clamp(
-      minimumHeight,
+    const showMarkers = true;
+    // Reserve rating and plan space before data arrives so loading and
+    // category changes never resize the month grid.
+    final dayHeight = (textScaler.scale(20) * 1.25 + 29).clamp(
+      54.0,
       double.infinity,
     );
     final rowHeight = dayHeight + 2;
@@ -88,17 +127,29 @@ class MoonCalendarWidget extends StatelessWidget {
       bool selected = false,
       bool outside = false,
     }) {
-      final status = outside ? null : _getDayStatus(day, state.dayStatuses);
+      final status = outside || plansOnly
+          ? null
+          : _getDayStatus(day, state.dayStatuses);
       final plans = plansByDay[calendarDay(day)] ?? const <CalendarPlan>[];
       final marker =
           plans.any((plan) => plan.activity == CalendarActivity.haircut)
           ? CalendarActivity.haircut
           : plans.firstOrNull?.activity;
+      final activities = plansOnly
+          ? [
+              if (plans.any((p) => p.activity.sphere == 'beauty'))
+                CalendarActivity.haircut,
+              if (plans.any((p) => p.activity.sphere == 'gardening'))
+                CalendarActivity.transplant,
+            ]
+          : [if (marker != null) marker];
       final primaryPhase =
+          !plansOnly &&
           !outside &&
           state.selectedSphere == null &&
           _hasPrimaryPhase(day, state.primaryPhaseDates);
       return Center(
+        key: plansOnly ? ValueKey('plans-date-${calendarDateKey(day)}') : null,
         child: Opacity(
           opacity: outside || !_isEnabled(day) ? 0.4 : 1,
           child: selected
@@ -108,7 +159,7 @@ class MoonCalendarWidget extends StatelessWidget {
                   status,
                   primaryPhase,
                   showMarkers,
-                  marker,
+                  activities,
                   dayHeight,
                 )
               : _buildDayCell(
@@ -117,7 +168,7 @@ class MoonCalendarWidget extends StatelessWidget {
                   status,
                   primaryPhase,
                   showMarkers,
-                  marker,
+                  activities,
                   dayHeight,
                 ),
         ),
@@ -148,12 +199,14 @@ class MoonCalendarWidget extends StatelessWidget {
               children: [
                 _MonthArrow(
                   previous: true,
-                  onTap:
-                      state.focusedDay.year * 12 + state.focusedDay.month >
-                          (firstSelectableDay?.year ?? 2000) * 12 +
-                              (firstSelectableDay?.month ?? 1)
-                      ? () => _changeMonth(context, state.focusedDay, -1)
-                      : null,
+                  label: plansOnly ? context.l10n.scenarioPlansPrevious : null,
+                  onTap: plansOnly
+                      ? onPrevious
+                      : (state.focusedDay.year * 12 + state.focusedDay.month >
+                                (firstSelectableDay?.year ?? 2000) * 12 +
+                                    (firstSelectableDay?.month ?? 1)
+                            ? () => _changeMonth(context, state.focusedDay, -1)
+                            : null),
                 ),
                 const SizedBox(width: 15),
                 Flexible(
@@ -171,11 +224,13 @@ class MoonCalendarWidget extends StatelessWidget {
                 const SizedBox(width: 15),
                 _MonthArrow(
                   previous: false,
-                  onTap:
-                      (state.focusedDay.year < 2050 ||
-                          state.focusedDay.month < 12)
-                      ? () => _changeMonth(context, state.focusedDay, 1)
-                      : null,
+                  label: plansOnly ? context.l10n.scenarioPlansNext : null,
+                  onTap: plansOnly
+                      ? onNext
+                      : ((state.focusedDay.year < 2050 ||
+                                state.focusedDay.month < 12)
+                            ? () => _changeMonth(context, state.focusedDay, 1)
+                            : null),
                 ),
               ],
             ),
@@ -188,7 +243,9 @@ class MoonCalendarWidget extends StatelessWidget {
                   16.0,
                 );
                 return Padding(
-                  padding: EdgeInsets.symmetric(horizontal: inset),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: plansOnly ? inset.ceilToDouble() : inset,
+                  ),
                   child: Stack(
                     children: [
                       ExcludeSemantics(
@@ -196,9 +253,23 @@ class MoonCalendarWidget extends StatelessWidget {
                           firstDay:
                               firstSelectableDay ?? DateTime.utc(2000, 1, 1),
                           lastDay: DateTime.utc(2050, 12, 31),
-                          startingDayOfWeek: StartingDayOfWeek.monday,
+                          currentDay: currentDay,
+                          pageAnimationEnabled: !reducedMotion,
+                          pageAnimationDuration: reducedMotion
+                              ? Duration.zero
+                              : const Duration(milliseconds: 300),
+                          pageAnimationCurve: Curves.easeOut,
+                          formatAnimationDuration: reducedMotion
+                              ? const Duration(microseconds: 1)
+                              : const Duration(milliseconds: 200),
+                          formatAnimationCurve: Curves.linear,
+                          calendarFormat: week
+                              ? CalendarFormat.week
+                              : CalendarFormat.month,
+                          startingDayOfWeek: weekStart,
                           availableGestures: AvailableGestures.horizontalSwipe,
                           headerVisible: false,
+                          sixWeekMonthsEnforced: !week,
                           locale: localeTag,
                           focusedDay: state.focusedDay,
                           selectedDayPredicate: (day) =>
@@ -211,7 +282,8 @@ class MoonCalendarWidget extends StatelessWidget {
                                 focusedDay,
                               ),
                           onPageChanged: (focusedDay) {
-                            if (!_isSameMonth(focusedDay, state.focusedDay)) {
+                            if (week ||
+                                !_isSameMonth(focusedDay, state.focusedDay)) {
                               _loadMonth(context, focusedDay);
                             }
                           },
@@ -225,7 +297,7 @@ class MoonCalendarWidget extends StatelessWidget {
                                 child: Text(
                                   label[0].toUpperCase() + label.substring(1),
                                   style: AppTypography.text2SemiBold.copyWith(
-                                    color: const Color(0xFFA89CAA),
+                                    color: AppColorsDark.textTertiary,
                                   ),
                                 ),
                               );
@@ -233,7 +305,7 @@ class MoonCalendarWidget extends StatelessWidget {
                             defaultBuilder: (_, day, _) => dayCell(day),
                             todayBuilder: (_, day, _) => dayCell(day),
                             outsideBuilder: (_, day, _) =>
-                                dayCell(day, outside: true),
+                                dayCell(day, outside: !week),
                             disabledBuilder: (_, day, _) =>
                                 dayCell(day, outside: true),
                             selectedBuilder: (_, day, _) =>
@@ -273,18 +345,14 @@ class MoonCalendarWidget extends StatelessWidget {
       state.focusedDay.year,
       state.focusedDay.month,
     );
-    final firstDisplayedDay = focusedMonth.subtract(
-      Duration(days: focusedMonth.weekday - DateTime.monday),
+    final firstWeekday = plansOnly
+        ? MaterialLocalizations.of(context).firstDayOfWeekIndex
+        : 1;
+    final anchor = week ? calendarDay(state.focusedDay) : focusedMonth;
+    final firstDisplayedDay = anchor.subtract(
+      Duration(days: (anchor.weekday % 7 - firstWeekday + 7) % 7),
     );
-    final lastDayOfMonth = DateTime.utc(
-      focusedMonth.year,
-      focusedMonth.month + 1,
-      0,
-    );
-    final trailingDays =
-        (DateTime.sunday - lastDayOfMonth.weekday) % DateTime.daysPerWeek;
-    final displayedDayCount =
-        lastDayOfMonth.difference(firstDisplayedDay).inDays + 1 + trailingDays;
+    final displayedDayCount = (week ? 1 : 6) * DateTime.daysPerWeek;
     return LayoutBuilder(
       builder: (context, constraints) {
         final cellWidth = constraints.maxWidth / DateTime.daysPerWeek;
@@ -315,10 +383,11 @@ class MoonCalendarWidget extends StatelessWidget {
                         day.month,
                         day.day,
                       );
-                      final status = isInFocusedMonth
+                      final status = !plansOnly && isInFocusedMonth
                           ? state.dayStatuses[normalizedDay]
                           : null;
                       final phaseChange =
+                          !plansOnly &&
                           isInFocusedMonth &&
                           state.selectedSphere == null &&
                           state.primaryPhaseDates.contains(normalizedDay);
@@ -327,6 +396,12 @@ class MoonCalendarWidget extends StatelessWidget {
                         selected: _isSelected(state, day),
                         label: [
                           dayLabel,
+                          if (plansOnly)
+                            context.l10n.scenarioPlansCount(
+                              (plansByDay[day] ?? []).length,
+                            ),
+                          if (plansOnly && isSameDay(day, currentDay))
+                            context.l10n.scenarioPlansToday,
                           if (phaseChange) context.l10n.moonPhaseChange,
                           if (plansByDay[day] case final plans?)
                             '${context.l10n.scenarioCalendarMyPlans}: ${plans.map((p) => p.title).join(', ')}',
@@ -416,7 +491,7 @@ class MoonCalendarWidget extends StatelessWidget {
     DayStatus? status,
     bool hasPrimaryPhase,
     bool showStatusRow,
-    CalendarActivity? activity,
+    List<CalendarActivity> activities,
     double rowHeight,
   ) {
     return Semantics(
@@ -439,7 +514,7 @@ class MoonCalendarWidget extends StatelessWidget {
               ),
               if (showStatusRow) ...[
                 const SizedBox(height: 5),
-                _DayMarkers(status: status, activity: activity),
+                _DayMarkers(status: status, activities: activities),
               ],
             ],
           ),
@@ -455,10 +530,12 @@ class MoonCalendarWidget extends StatelessWidget {
     DayStatus? status,
     bool hasPrimaryPhase,
     bool showStatusRow,
-    CalendarActivity? activity,
+    List<CalendarActivity> activities,
     double rowHeight,
   ) {
-    final highlightWidth = activity != null && status != null ? 40.0 : 32.0;
+    final highlightWidth = activities.length + (status == null ? 0 : 1) > 1
+        ? 40.0
+        : 32.0;
 
     return Semantics(
       button: true,
@@ -484,7 +561,9 @@ class MoonCalendarWidget extends StatelessWidget {
                       'selected-day-text-${day.year}-${day.month}-${day.day}',
                     ),
                     tween: Tween(begin: 0, end: 1),
-                    duration: const Duration(milliseconds: 380),
+                    duration: MediaQuery.disableAnimationsOf(context)
+                        ? Duration.zero
+                        : const Duration(milliseconds: 380),
                     curve: Curves.easeOutCubic,
                     builder: (context, value, child) {
                       return _CalendarDayNumber(
@@ -503,7 +582,7 @@ class MoonCalendarWidget extends StatelessWidget {
                     const SizedBox(height: 5),
                     _DayMarkers(
                       status: status,
-                      activity: activity,
+                      activities: activities,
                       selected: true,
                     ),
                   ],
@@ -531,19 +610,19 @@ class MoonCalendarWidget extends StatelessWidget {
 class _DayMarkers extends StatelessWidget {
   const _DayMarkers({
     required this.status,
-    required this.activity,
+    required this.activities,
     this.selected = false,
   });
   final bool selected;
   final DayStatus? status;
-  final CalendarActivity? activity;
+  final List<CalendarActivity> activities;
 
   @override
   Widget build(BuildContext context) {
-    final task = activity;
-    final asset = task == null
-        ? null
-        : LunarCardAsset.forTaskKey(task.keys.first);
+    final assets = activities
+        .map((task) => LunarCardAsset.forTaskKey(task.keys.first))
+        .whereType<String>()
+        .toList();
     return SizedBox(
       height: 16,
       child: Row(
@@ -555,7 +634,7 @@ class _DayMarkers extends StatelessWidget {
               size: 14,
               excludeFromSemantics: true,
             ),
-          if (asset != null) ...[
+          for (final asset in assets) ...[
             if (status != null) const SizedBox(width: 2),
             DecoratedBox(
               decoration: BoxDecoration(
@@ -600,7 +679,9 @@ class _SelectedDayHighlight extends StatelessWidget {
         'selected-day-highlight-${date.year}-${date.month}-${date.day}',
       ),
       tween: Tween(begin: 0, end: 1),
-      duration: const Duration(milliseconds: 380),
+      duration: MediaQuery.disableAnimationsOf(context)
+          ? Duration.zero
+          : const Duration(milliseconds: 380),
       curve: Curves.easeOutCubic,
       builder: (context, value, child) {
         return ClipRRect(
@@ -699,20 +780,23 @@ class _CalendarDayNumber extends StatelessWidget {
 }
 
 class _MonthArrow extends StatelessWidget {
-  const _MonthArrow({required this.previous, required this.onTap});
+  const _MonthArrow({required this.previous, required this.onTap, this.label});
 
   final bool previous;
+  final String? label;
   final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
-    final label = previous
-        ? context.l10n.calendarPreviousMonth
-        : context.l10n.calendarNextMonth;
+    final tooltip =
+        label ??
+        (previous
+            ? context.l10n.calendarPreviousMonth
+            : context.l10n.calendarNextMonth);
     return SizedBox.square(
       dimension: 44,
       child: LotusButtons.icon(
-        tooltip: label,
+        tooltip: tooltip,
         onPressed: onTap,
         padding: EdgeInsets.zero,
         icon: Opacity(

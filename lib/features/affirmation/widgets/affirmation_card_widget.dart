@@ -12,6 +12,7 @@ class AffirmationCardWidget extends StatelessWidget {
   final double borderOpacity;
   final bool isFront;
   final bool showSwipeHint;
+  final bool showOpenIndicator;
   final GestureDragUpdateCallback? onSwipe;
   final GestureDragEndCallback? onSwipeEnd;
   final VoidCallback? onSwipeCancel;
@@ -24,6 +25,7 @@ class AffirmationCardWidget extends StatelessWidget {
     this.borderOpacity = 0.1,
     this.isFront = true,
     this.showSwipeHint = false,
+    this.showOpenIndicator = true,
     this.onSwipe,
     this.onSwipeEnd,
     this.onSwipeCancel,
@@ -85,11 +87,11 @@ class AffirmationCardWidget extends StatelessWidget {
                   fit: StackFit.expand,
                   children: [
                     _CardArtwork(asset: imageAssetPath),
-                    if (isFront)
+                    if (isFront && showOpenIndicator)
                       const Positioned(
                         top: 12,
                         right: 14,
-                        child: _CardIconButton(icon: Icons.play_arrow),
+                        child: _CardIconButton(icon: Icons.chevron_right),
                       ),
                     if (isFront && showSwipeHint)
                       const Center(

@@ -30,7 +30,17 @@ class UserRepositoryImpl implements UserRepository {
     required UserProfileApi profileApi,
     required AuthSessionService authSessionService,
   }) : _profileApi = profileApi,
-       _authSessionService = authSessionService;
+       _authSessionService = authSessionService {
+    if (authSessionService is Listenable) {
+      (authSessionService as Listenable).addListener(_onSessionChanged);
+    }
+  }
+
+  void _onSessionChanged() {
+    if (_currentUser?.id != _authSessionService.currentUid) {
+      _currentUser = null;
+    }
+  }
 
   // Кеш текущего пользователя
   UserModel? _currentUser;
@@ -41,27 +51,39 @@ class UserRepositoryImpl implements UserRepository {
 
   @override
   Stream<UserModel?> getMe() {
-    debugPrint('getMe called, current user: ${_currentUser?.id}');
+    debugPrint('user_profile_stream_requested');
 
     // Создаем Stream который сразу эмитит текущее значение
     return Stream<UserModel?>.multi((controller) {
-      debugPrint('Stream listener attached');
+      debugPrint('user_profile_stream_attached');
+      final initialUid = _authSessionService.currentUid;
+      final session = _authSessionService;
+      final initialVersion = session is SessionIdentityVersion
+          ? (session as SessionIdentityVersion).identityVersion
+          : null;
+      bool isInitialSessionCurrent() =>
+          initialUid == _authSessionService.currentUid &&
+          (initialVersion == null ||
+              initialVersion ==
+                  (session as SessionIdentityVersion).identityVersion);
 
       // Если пользователь уже есть в кеше, сразу добавляем
       if (_currentUser != null) {
-        debugPrint('Adding cached user to stream: ${_currentUser?.id}');
+        debugPrint('user_profile_cache_emitted');
         controller.add(_currentUser);
       } else {
         // Если пользователь еще не загружен, запрашиваем его
-        debugPrint('Loading current user...');
+        debugPrint('user_profile_load_started');
         _loadCurrentUser()
             .then((user) {
-              debugPrint('User loaded, adding to stream: ${user?.id}');
+              if (!isInitialSessionCurrent()) return;
+              debugPrint('user_profile_loaded');
               controller.add(user);
             })
             .catchError((e) {
-              debugPrint('Error in _loadCurrentUser: $e');
-              controller.add(null);
+              if (!isInitialSessionCurrent()) return;
+              debugPrint('user_profile_initial_load_failed');
+              controller.addError(e);
             });
       }
 
@@ -69,18 +91,18 @@ class UserRepositoryImpl implements UserRepository {
       late StreamSubscription subscription;
       subscription = _userStreamController.stream.listen(
         (user) {
-          debugPrint('Stream emitting user update: ${user?.id}');
+          debugPrint('user_profile_update_emitted');
           controller.add(user);
         },
         onError: (error) {
-          debugPrint('Stream error: $error');
+          debugPrint('user_profile_stream_failed');
           controller.addError(error);
         },
       );
 
       // Очистка при отписке
       controller.onCancel = () {
-        debugPrint('Stream cancelled');
+        debugPrint('user_profile_stream_cancelled');
         subscription.cancel();
       };
     }).distinct();
@@ -91,9 +113,9 @@ class UserRepositoryImpl implements UserRepository {
     if (_currentUser != null) {
       if (_currentUser!.id != _authSessionService.currentUid) {
         _currentUser = null;
-        return null;
+      } else {
+        return _currentUser;
       }
-      return _currentUser;
     }
     return await _loadCurrentUser();
   }
@@ -101,12 +123,12 @@ class UserRepositoryImpl implements UserRepository {
   @override
   Future<void> updateCurrentUser(UserModel user) async {
     try {
-      debugPrint('Updating current user through backend: ${user.id}');
+      debugPrint('user_profile_update_started');
       final targetUserId = user.id;
       final updatedUser = await _profileApi.updateCurrentUser(user);
       if (_authSessionService.currentUid != targetUserId ||
           updatedUser.id != targetUserId) {
-        debugPrint('Ignoring stale user update for: $targetUserId');
+        debugPrint('user_profile_stale_update_ignored');
         return;
       }
 
@@ -115,9 +137,9 @@ class UserRepositoryImpl implements UserRepository {
 
       // Уведомляем подписчиков
       _userStreamController.add(_currentUser);
-      debugPrint('User updated successfully');
+      debugPrint('user_profile_update_completed');
     } catch (e) {
-      debugPrint('Error updating user: $e');
+      debugPrint('user_profile_update_failed');
       throw Exception('Ошибка обновления пользователя: $e');
     }
   }
@@ -162,7 +184,7 @@ class UserRepositoryImpl implements UserRepository {
       if (_authSessionService.currentUid == userId) {
         final user = await _profileApi.getCurrentUser();
         if (_authSessionService.currentUid != userId || user?.id != userId) {
-          debugPrint('Ignoring stale user read for: $userId');
+          debugPrint('user_profile_stale_read_ignored');
           return null;
         }
         if (user != null) {
@@ -186,21 +208,21 @@ class UserRepositoryImpl implements UserRepository {
         await clearCurrentUser();
       }
     } catch (e) {
-      debugPrint('Error deleting user: $e');
+      debugPrint('user_profile_delete_failed');
       throw Exception('Ошибка удаления аккаунта: $e');
     }
   }
 
   // Загрузка текущего пользователя из backend/Mongo.
   Future<UserModel?> _loadCurrentUser() async {
-    debugPrint('_loadCurrentUser started');
+    debugPrint('user_profile_load_started');
+    final sessionUid = _authSessionService.currentUid;
     try {
-      final sessionUid = _authSessionService.currentUid;
       if (sessionUid != null) {
         final backendUser = await _profileApi.getCurrentUser();
         if (_authSessionService.currentUid != sessionUid ||
-            backendUser?.id != sessionUid) {
-          debugPrint('Ignoring stale current user load for: $sessionUid');
+            (backendUser != null && backendUser.id != sessionUid)) {
+          debugPrint('user_profile_stale_load_ignored');
           return null;
         }
         if (backendUser != null) {
@@ -215,31 +237,30 @@ class UserRepositoryImpl implements UserRepository {
 
       // Получаем ID текущего пользователя из локального хранилища
       final userId = await _getCurrentUserId();
-      debugPrint('Got user ID from storage: $userId');
+      debugPrint('user_profile_saved_identity_read');
 
       if (userId != null) {
-        debugPrint('Loading user by ID: $userId');
+        debugPrint('user_profile_saved_identity_load_started');
         final user = await getUserById(userId);
         if (user != null) {
-          debugPrint('User loaded successfully: ${user.name}');
+          debugPrint('user_profile_load_completed');
           _currentUser = user;
           _userStreamController.add(_currentUser);
           return user;
         } else {
-          debugPrint('User not found in backend for ID: $userId');
+          debugPrint('user_profile_not_found');
         }
       }
 
-      debugPrint('No user found - adding null to stream');
+      debugPrint('user_profile_empty_emitted');
 
       // Важно! Добавляем null в стрим, если пользователь не найден
       _userStreamController.add(null);
       return null;
     } catch (e) {
-      debugPrint('Error loading user: $e');
-      // При ошибке также добавляем null в стрим
-      _userStreamController.add(null);
-      return null; // Возвращаем null вместо throw
+      debugPrint('user_profile_load_failed');
+      if (_authSessionService.currentUid != sessionUid) return null;
+      rethrow;
     }
   }
 
@@ -259,7 +280,7 @@ class UserRepositoryImpl implements UserRepository {
     try {
       final box = HiveService.appSettingsBox;
       await box.put('current_user_id', {'id': userId});
-      debugPrint('Saved user id: $userId');
+      debugPrint('user_profile_identity_saved');
     } catch (e) {
       // handle errors
     }
@@ -280,36 +301,38 @@ class UserRepositoryImpl implements UserRepository {
     SavedCompatibilityModel compatibility,
   ) async {
     try {
-      debugPrint('🔄 Starting addCompatibilityToHistory');
+      debugPrint('compatibility_history_update_started');
       final user = await getCurrentUser();
       if (user == null) {
         throw Exception('Пользователь не найден');
       }
 
-      debugPrint('👤 Current user: ${user.id}');
-      debugPrint(
-        '📚 Current history length: ${user.compatibilityHistory.length}',
-      );
-      debugPrint('➕ Adding new compatibility with id: ${compatibility.id}');
+      debugPrint('compatibility_history_profile_loaded');
+      debugPrint('compatibility_history_loaded');
+      debugPrint('compatibility_history_item_added');
 
       // Добавляем новую совместимость в начало истории
       final updatedHistory = [compatibility, ...user.compatibilityHistory];
 
-      debugPrint('📚 Updated history length: ${updatedHistory.length}');
+      debugPrint('compatibility_history_prepared');
 
       // Обновляем пользователя с новой историей
       final updatedUser = user.copyWith(compatibilityHistory: updatedHistory);
 
       await updateCurrentUser(updatedUser);
-      debugPrint('✅ Compatibility added to history successfully');
+      debugPrint('compatibility_history_update_completed');
     } catch (e) {
-      debugPrint('❌ Error adding compatibility to history: $e');
+      debugPrint('compatibility_history_update_failed');
       throw Exception('Ошибка добавления совместимости в историю: $e');
     }
   }
 
   // Закрытие ресурсов
   void dispose() {
+    final session = _authSessionService;
+    if (session is Listenable) {
+      (session as Listenable).removeListener(_onSessionChanged);
+    }
     _userStreamController.close();
   }
 }

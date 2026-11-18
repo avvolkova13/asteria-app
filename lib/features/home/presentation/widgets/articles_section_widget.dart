@@ -73,6 +73,7 @@ class _ArticlesSectionWidgetState extends State<ArticlesSectionWidget> {
           .toList();
     }
     if (articles.isEmpty) return const SizedBox.shrink();
+    final locale = Localizations.localeOf(context);
     final scale = MediaQuery.textScalerOf(context).scale(20) / 20;
     final width = MediaQuery.sizeOf(context).width;
     final cardWidth = (_baseCardWidth * scale)
@@ -126,16 +127,13 @@ class _ArticlesSectionWidgetState extends State<ArticlesSectionWidget> {
                     Semantics(
                       button: true,
                       label: context.l10n.openArticleLabel(
-                        articles[index].title,
+                        articleCardTitle(articles[index], locale),
                       ),
                       child: LotusTap(
                         onTap: () => _onArticleTap(context, articles[index].id),
                         child: _ArticleCard(
                           width: cardWidth,
-                          title: articleCardTitle(
-                            articles[index],
-                            Localizations.localeOf(context),
-                          ),
+                          title: articleCardTitle(articles[index], locale),
                           category: articles[index].category,
                           timeToRead: articles[index].timeToRead,
                           imageName: articles[index].id,

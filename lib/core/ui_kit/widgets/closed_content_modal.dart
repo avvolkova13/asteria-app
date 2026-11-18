@@ -1,7 +1,7 @@
+import 'package:asteria_app/core/ui_kit/widgets/responsive_heading.dart';
+import 'package:asteria_app/core/ui_kit/widgets/asteria_action_button.dart';
 import 'package:asteria_app/core/ui_kit/widgets/modal_glass_surface.dart';
-import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
-import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/features/monetization/presentation/contextual_purchase_page.dart';
 import 'package:asteria_app/features/monetization/presentation/monetization_provider.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
@@ -66,15 +66,19 @@ class ClosedContentModal extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  Text(
+                  ResponsiveHeading(
                     title ?? context.l10n.subscriptionOnlyTitle,
-                    style: AppTypography.h2.copyWith(color: AppColors.textInverse),
+                    style: AppTypography.h2.copyWith(
+                      color: AppColors.textInverse,
+                    ),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 16),
                   Text(
                     description,
-                    style: AppTypography.text1.copyWith(color: AppColors.textInverse),
+                    style: AppTypography.text1.copyWith(
+                      color: AppColors.textInverse,
+                    ),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 16),
@@ -136,48 +140,10 @@ class _SubscriptionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ConstrainedBox(
-      constraints: const BoxConstraints(minHeight: 48),
-      child: SizedBox(
-        width: double.infinity,
-        child: DecoratedBox(
-          decoration: CardLensDecoration.button(
-            enabled: onPressed != null,
-            borderRadius: BorderRadius.circular(16),
-            gradient: const LinearGradient(
-              colors: [Color(0xFF6E4BFF), Color(0xFF5A3FD1)],
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: const Color(0xFF6E4BFF).withValues(alpha: 0.05),
-                blurRadius: 30,
-              ),
-            ],
-          ),
-          child: Material(
-            color: Colors.transparent,
-            child: Semantics(
-              button: true,
-              enabled: onPressed != null,
-              child: LotusInkTap(
-                borderRadius: BorderRadius.circular(16),
-                onTap: onPressed,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 12,
-                  ),
-                  child: Text(
-                    label ?? context.l10n.openSubscription,
-                    style: AppTypography.text1SemiBold.copyWith(color: AppColors.textInverse),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
+    return AsteriaActionButton(
+      text: label ?? context.l10n.openSubscription,
+      onPressed: onPressed,
+      width: double.infinity,
     );
   }
 }

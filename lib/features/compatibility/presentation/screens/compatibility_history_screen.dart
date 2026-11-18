@@ -84,69 +84,75 @@ class _CompatibilityHistoryItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final locale = Localizations.localeOf(context);
-    return LotusTap(
-      onTap: onTap,
-      child: CompatibilityGlassCard(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    compatibility.createdAt.toLocalizedShortDate(locale),
-                    style: context.textTheme.inverseUrbanistRegular16,
-                  ),
-                  const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      Flexible(
-                        child: Text(
-                          compatibility.firstBirthdate.getZodiacSignName(
-                            languageCode: locale.languageCode,
+    return Semantics(
+      button: true,
+      enabled: true,
+      label:
+          '${compatibility.createdAt.toLocalizedShortDate(locale)}. ${compatibility.firstBirthdate.getZodiacSignName(languageCode: locale.languageCode)}, ${compatibility.secondBirthdate.getZodiacSignName(languageCode: locale.languageCode)}. ${compatibility.generalPercentage}',
+      onTap: LotusFeedback.action(onTap),
+      excludeSemantics: true,
+      child: LotusTap(
+        onTap: onTap,
+        child: CompatibilityGlassCard(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      compatibility.createdAt.toLocalizedShortDate(locale),
+                      style: context.textTheme.inverseUrbanistRegular16,
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        Flexible(
+                          child: Text(
+                            compatibility.firstBirthdate.getZodiacSignName(
+                              languageCode: locale.languageCode,
+                            ),
+                            style: context.textTheme.urbanistSemiBold14
+                                .copyWith(color: AppColors.textInverse),
+                            overflow: TextOverflow.ellipsis,
                           ),
-                          style: context.textTheme.urbanistSemiBold14.copyWith(
-                            color: AppColors.textInverse,
-                          ),
-                          overflow: TextOverflow.ellipsis,
                         ),
-                      ),
-                      const SizedBox(width: 6),
-                      ClayAssetIcon(
-                        'assets/icons/plus_icon.svg',
-                        width: 12,
-                        tint: AppColors.white,
-                      ),
-                      const SizedBox(width: 6),
-                      Flexible(
-                        child: Text(
-                          compatibility.secondBirthdate.getZodiacSignName(
-                            languageCode: locale.languageCode,
-                          ),
-                          style: context.textTheme.urbanistSemiBold14.copyWith(
-                            color: AppColors.textInverse,
-                          ),
-                          overflow: TextOverflow.ellipsis,
+                        const SizedBox(width: 6),
+                        ClayAssetIcon(
+                          'assets/icons/plus_icon.svg',
+                          width: 12,
+                          tint: AppColors.white,
                         ),
-                      ),
-                    ],
-                  ),
-                ],
+                        const SizedBox(width: 6),
+                        Flexible(
+                          child: Text(
+                            compatibility.secondBirthdate.getZodiacSignName(
+                              languageCode: locale.languageCode,
+                            ),
+                            style: context.textTheme.urbanistSemiBold14
+                                .copyWith(color: AppColors.textInverse),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ),
-            const SizedBox(width: 8),
-            Text(
-              compatibility.generalPercentage,
-              style: context.textTheme.playfairSemiBold20.copyWith(
-                color: const Color(0xFFFFB45E),
+              const SizedBox(width: 8),
+              Text(
+                compatibility.generalPercentage,
+                style: context.textTheme.playfairSemiBold20.copyWith(
+                  color: const Color(0xFFFFB45E),
+                ),
               ),
-            ),
-            const SizedBox(width: 18),
-            const LotusArrowBubble(),
-          ],
+              const SizedBox(width: 18),
+              const LotusArrowBubble(),
+            ],
+          ),
         ),
       ),
     );

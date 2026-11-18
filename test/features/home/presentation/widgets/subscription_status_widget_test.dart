@@ -56,40 +56,44 @@ void main() {
     },
   );
   for (final active in [true, false]) {
-    testWidgets('crystal and action clear scaled PRO copy (active=$active)', (
-      tester,
-    ) async {
-      await tester.binding.setSurfaceSize(const Size(320, 1000));
-      addTearDown(() => tester.binding.setSurfaceSize(null));
-      await tester.pumpWidget(
-        _testApp(
-          active
-              ? SubscriptionActiveStatusWidget(
-                  onTap: () {},
-                  nextPaymentDateText: '11.11.2027',
-                )
-              : SubscriptionInactiveStatusWidget(onTap: () {}),
-          width: 288,
-          scale: 2,
-        ),
-      );
-      final art = tester.getRect(
-        find.byKey(const ValueKey('profile-subscription-status-art')),
-      );
-      final card = find.byKey(
-        const ValueKey('profile-subscription-status-card'),
-      );
-      final labels = find
-          .descendant(of: card, matching: find.byType(Text))
-          .evaluate()
-          .map((e) => tester.getRect(find.byWidget(e.widget)))
-          .toList();
-      expect(labels, hasLength(3));
-      expect(labels.any((rect) => rect.overlaps(art)), isFalse);
-      expect(labels[1].bottom, lessThan(labels[2].top));
-      expect(labels[2].bottom, lessThanOrEqualTo(tester.getRect(card).bottom));
-      expect(tester.takeException(), isNull);
-    });
+    testWidgets(
+      'scaled PRO copy uses full width and clears its action (active=$active)',
+      (tester) async {
+        await tester.binding.setSurfaceSize(const Size(320, 1000));
+        addTearDown(() => tester.binding.setSurfaceSize(null));
+        await tester.pumpWidget(
+          _testApp(
+            active
+                ? SubscriptionActiveStatusWidget(
+                    onTap: () {},
+                    nextPaymentDateText: '11.11.2027',
+                  )
+                : SubscriptionInactiveStatusWidget(onTap: () {}),
+            width: 288,
+            scale: 2,
+          ),
+        );
+        expect(
+          find.byKey(const ValueKey('profile-subscription-status-art')),
+          findsNothing,
+        );
+        final card = find.byKey(
+          const ValueKey('profile-subscription-status-card'),
+        );
+        final labels = find
+            .descendant(of: card, matching: find.byType(Text))
+            .evaluate()
+            .map((e) => tester.getRect(find.byWidget(e.widget)))
+            .toList();
+        expect(labels, hasLength(3));
+        expect(labels[1].bottom, lessThan(labels[2].top));
+        expect(
+          labels[2].bottom,
+          lessThanOrEqualTo(tester.getRect(card).bottom),
+        );
+        expect(tester.takeException(), isNull);
+      },
+    );
   }
 }
 

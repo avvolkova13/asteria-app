@@ -1,7 +1,6 @@
 import 'package:asteria_app/core/ui_kit/widgets/tarot_card_frame.dart';
 import 'package:asteria_app/core/ui_kit/widgets/artwork_unavailable.dart';
 import 'package:asteria_app/core/ui_kit/widgets/modal_glass_surface.dart';
-import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/app/data/models/tarot_card/tarot_card_model.dart';
 import 'package:asteria_app/app/providers/content_provider.dart';
 import 'package:asteria_app/app/providers/user_provider.dart';
@@ -106,16 +105,6 @@ class _TarotLayoutState extends State<TarotLayout> {
       listenable: Listenable.merge([userProvider, contentProvider]),
       builder: (context, _) {
         final cardIds = _getCardIdsInOrder(userProvider);
-        final allClosed =
-            cardIds.every((id) => id.isNotEmpty) &&
-            cardIds.asMap().entries.every(
-              (e) => !_isCardOpened(contentProvider, e.key),
-            );
-        if (_isAnyCardAnimating && allClosed) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (mounted) setState(() => _isAnyCardAnimating = false);
-          });
-        }
 
         return LayoutBuilder(
           builder: (context, constraints) {
@@ -203,46 +192,44 @@ class _TarotLayoutState extends State<TarotLayout> {
 
     return Semantics(
       button: cardId.isNotEmpty,
-      enabled: !_isAnyCardAnimating && cardId.isNotEmpty,
+      enabled: !_isAnyCardAnimating && card != null,
       label: !isOpened
           ? context.l10n.tarotOpenSpreadCard(positionIndex + 1)
           : context.l10n.tarotOpenedSpreadCard(positionIndex + 1, card.title),
-      child: ExcludeSemantics(
-        child: FlipCardWidget(
-          key: ValueKey('tarot_layout_card_$positionIndex'),
-          front: card != null
-              ? _buildCardFront(card, cardWidth, cardHeight, positionIndex)
-              : _buildCardBack(cardWidth, cardHeight, positionIndex),
-          back: _buildCardBack(cardWidth, cardHeight, positionIndex),
-          isOpened: isOpened,
-          width: cardWidth,
-          height: cardHeight,
-          flipOnTap: true,
-          enabled: !_isAnyCardAnimating && cardId.isNotEmpty,
-          onFlipStart: () {
-            setState(() => _isAnyCardAnimating = true);
-          },
-          onFlipComplete: () async {
-            if (cardId.isNotEmpty) {
-              try {
-                await contentProvider.openTarotCardInDeck(
-                  hiveKey,
-                  cardId: cardId,
-                );
-              } catch (e) {
-                debugPrint('[ERROR] Ошибка открытия карты таро: $e');
-              }
+      child: FlipCardWidget(
+        key: ValueKey('tarot_layout_card_$positionIndex'),
+        front: card != null
+            ? _buildCardFront(card, cardWidth, cardHeight, positionIndex)
+            : _buildCardBack(cardWidth, cardHeight, positionIndex),
+        back: _buildCardBack(cardWidth, cardHeight, positionIndex),
+        isOpened: isOpened,
+        width: cardWidth,
+        height: cardHeight,
+        flipOnTap: true,
+        enabled: !_isAnyCardAnimating && card != null,
+        onFlipStart: () {
+          setState(() => _isAnyCardAnimating = true);
+        },
+        onFlipComplete: () async {
+          if (cardId.isNotEmpty) {
+            try {
+              await contentProvider.openTarotCardInDeck(
+                hiveKey,
+                cardId: cardId,
+              );
+            } catch (e) {
+              debugPrint('[ERROR] Ошибка открытия карты таро: $e');
             }
-            if (mounted) {
-              setState(() => _isAnyCardAnimating = false);
-            }
-          },
-          onTap: () {
-            if (card != null) {
-              _showCardModal(context, card, positionIndex);
-            }
-          },
-        ),
+          }
+          if (mounted) {
+            setState(() => _isAnyCardAnimating = false);
+          }
+        },
+        onTap: () {
+          if (card != null) {
+            _showCardModal(context, card, positionIndex);
+          }
+        },
       ),
     );
   }
@@ -300,7 +287,6 @@ class _TarotLayoutState extends State<TarotLayout> {
               imageName: card.imageName,
               languageCode: Localizations.localeOf(context).languageCode,
             ),
-            frameBuilder: AsteriaEntrance.imageFrame,
             width: width,
             height: height,
             fit: BoxFit.contain,

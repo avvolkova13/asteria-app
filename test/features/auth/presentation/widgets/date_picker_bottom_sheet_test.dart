@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_action_button.dart';
 import 'package:asteria_app/core/localization/localization.dart';
 import 'package:asteria_app/core/ui_kit/theme/theme.dart';
 import 'package:asteria_app/features/auth/presentation/widgets/date_picker_bottom_sheet.dart';
@@ -99,7 +100,10 @@ void main() {
       await tester.pumpAndSettle();
       await tester.ensureVisible(find.text('Выбрать'));
       await tester.pumpAndSettle();
-      final select = find.byType(ElevatedButton);
+      final select = find.ancestor(
+        of: find.text('Выбрать'),
+        matching: find.byType(AsteriaActionButton),
+      );
       expect(tester.getSize(select).height, greaterThanOrEqualTo(44));
       expect(tester.getRect(select).bottom, lessThanOrEqualTo(568 - 180));
       await tester.tap(select);

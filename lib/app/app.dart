@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/di/retryable_initialization.dart';
 import 'package:asteria_app/core/ui_kit/widgets/content_scroll_behavior.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'dart:async';
@@ -38,6 +39,7 @@ import 'package:asteria_app/features/home/home.dart';
 import 'package:asteria_app/features/onboarding/presentation/bloc/onboarding_bloc.dart';
 import 'package:asteria_app/features/shop/presentation/bloc/shop_bloc.dart';
 import 'package:asteria_app/features/splash/presentation/screens/splash_screen.dart';
+import 'package:asteria_app/features/splash/presentation/widgets/splash_handoff.dart';
 import 'package:asteria_app/features/splash/presentation/bloc/splash_bloc.dart';
 import 'package:device_preview/device_preview.dart';
 
@@ -59,12 +61,19 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   late Future<String> _initFuture;
-  final _splashFinished = Completer<void>();
+  final _startup = RetryableStartupSteps();
+  bool _splashFinished = false;
+  Timer? _splashFallback;
 
   void _finishSplash() {
-    if (!_splashFinished.isCompleted) _splashFinished.complete();
+    if (!mounted || _splashFinished) return;
+    _splashFallback?.cancel();
+    setState(() => _splashFinished = true);
   }
-  final _practiceLinks = PracticeLinkIntake(playerRouteName: AffirmationPlayerRoute.routeName);
+
+  final _practiceLinks = PracticeLinkIntake(
+    playerRouteName: AffirmationPlayerRoute.routeName,
+  );
   ApplePurchaseCoordinator? _appleCoordinator;
   GooglePurchaseRecovery? _googlePurchaseRecovery;
 
@@ -77,6 +86,7 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void dispose() {
+    _splashFallback?.cancel();
     widget.localeService.removeListener(_handleLocaleChanged);
     _practiceLinks.dispose();
     _appleCoordinator?.dispose();
@@ -91,28 +101,41 @@ class _MyAppState extends State<MyApp> {
     setState(() {});
   }
 
-  Future<String> _initializeApp() async {
+  Future<String> _initializeApp() =>
+      _startup.run<String>('startup', _initializeAppAttempt);
+
+  Future<String> _initializeAppAttempt() async {
     // Инициализируем DI
     await DiContainer.initialize(localeService: widget.localeService);
-    final analytics = di.get<DurableAnalytics>();
-    try {
-      await analytics.initialize();
-    } catch (_) {
-      await analytics.reportStorageFailure();
-    }
-    di.get<AnalyticsLifecycle>().start();
+    await _startup.run<void>('analytics-storage', () async {
+      final analytics = di.get<DurableAnalytics>();
+      try {
+        await analytics.initialize();
+      } catch (_) {
+        await analytics.reportStorageFailure();
+      }
+    });
+    await _startup.run<void>(
+      'analytics-lifecycle',
+      () => di.get<AnalyticsLifecycle>().start(),
+    );
     // Start listening before routing so a cold-start payment return is buffered.
-    di.get<PaymentReturnLinkService>();
-    final appLinks = AppLinks();
-    _practiceLinks.start(appLinks.uriLinkStream, appLinks.getInitialLink);
+    await _startup.run<void>('links', () {
+      di.get<PaymentReturnLinkService>();
+      final appLinks = AppLinks();
+      _practiceLinks.start(appLinks.uriLinkStream, appLinks.getInitialLink);
+    });
 
     // 1. Конфигурируем AppsFlyer SDK (initSdk), но ещё не запускаем.
     final appsFlyerService = di.get<AppsFlyerService>();
-    await appsFlyerService.initialize();
+    await _startup.run<void>('appsflyer-init', appsFlyerService.initialize);
 
     // 2. Подписываем AttributionService на AppsFlyer-коллбеки до запуска SDK,
     //    чтобы не потерять первый install conversion payload на холодном старте.
-    await di.get<AttributionService>().initialize();
+    await _startup.run<void>(
+      'attribution',
+      di.get<AttributionService>().initialize,
+    );
 
     // 3. Дать пользователю принять решение об ATT. На iOS показывает
     //    нативный промт если статус notDetermined; кэш — если статус
@@ -121,37 +144,55 @@ class _MyAppState extends State<MyApp> {
     //    Ответ нужен ДО startSDK, иначе AppsFlyer на iOS блокировался бы
     //    своим внутренним ATT-таймером (см. timeToWaitForATTUserAuthorization)
     //    до 50 секунд, теряя все события холодного старта.
-    await di.get<AttPermissionService>().ensureRequested();
+    await _startup.run<void>(
+      'att',
+      di.get<AttPermissionService>().ensureRequested,
+    );
 
     // 4. Стартуем SDK после регистрации attribution callbacks.
     //    События, прилетевшие до onSuccess, буферизуются и будут флашнуты.
-    appsFlyerService.startSDK();
+    await _startup.run<void>('appsflyer-start', appsFlyerService.startSDK);
 
     // Инициализируем UserProvider — нужно до trackAppOpen, чтобы
     // авторизованным пользователям user_id попал в app_open.
     final userProvider = di.get<UserProvider>();
-    await userProvider.initialize();
-    await di.get<MonetizationProvider>().start();
-    await di.get<RewardsProvider>().start();
+    await _startup.run<void>('user-listener', userProvider.initialize);
+    await _startup.run<void>(
+      'monetization',
+      di.get<MonetizationProvider>().start,
+    );
+    await _startup.run<void>('rewards', di.get<RewardsProvider>().start);
 
     // 4. Базовое app_open / app_first_open событие через фасад
     //    (с уже подгруженным attribution snapshot из Hive и user_id).
-    await di.get<AnalyticsFacade>().trackAppOpen();
+    await _startup.run<void>(
+      'legacy-app-open',
+      di.get<AnalyticsFacade>().trackAppOpen,
+    );
 
     // 4.1. Канонический ast_app_open рядом с legacy событием.
     // is_new_user: true когда локально нет авторизованного пользователя
     // (первый запуск или pre-activation).
     final isNewUser = !userProvider.isAuthenticated;
-    await di.get<ProductAnalyticsService>().trackAppOpen(isNewUser: isNewUser);
+    await _startup.run<void>(
+      'product-app-open',
+      () =>
+          di.get<ProductAnalyticsService>().trackAppOpen(isNewUser: isNewUser),
+    );
 
     // Warm content in the background; cold-start routing must not wait for
     // large remote payloads such as the lunar calendar.
     final contentProvider = di.get<ContentProvider>();
-    startLazyContentWarmup(loadContent: contentProvider.initialize);
+    await _startup.run<void>('content-warmup', () {
+      startLazyContentWarmup(loadContent: contentProvider.initialize);
+    });
 
     final usesNativeStore = Platform.isIOS || Platform.isAndroid;
     if (usesNativeStore) {
-      await _initializeStorePayments(userProvider: userProvider);
+      await _startup.run<void>(
+        'store-payments',
+        () => _initializeStorePayments(userProvider: userProvider),
+      );
     }
 
     // Определяем стартовый маршрут
@@ -166,11 +207,10 @@ class _MyAppState extends State<MyApp> {
           currentUserId: userProvider.currentUser?.id,
         );
         DiContainer.registerRouter(initialRoute);
-        // Initialization runs during playback. A stalled decoder must never block entry.
-        await _splashFinished.future.timeout(
-          const Duration(seconds: 6),
-          onTimeout: () {},
-        );
+        // Mount the destination under the moving silk before the fade begins.
+        if (mounted && !_splashFinished) {
+          _splashFallback = Timer(const Duration(seconds: 8), _finishSplash);
+        }
         return initialRoute;
       } else if (state is SplashError) {
         throw Exception(state.message);
@@ -235,32 +275,39 @@ class _MyAppState extends State<MyApp> {
     return FutureBuilder<String>(
       future: _initFuture,
       builder: (_, snapshot) {
-        switch (snapshot.connectionState) {
-          case ConnectionState.none:
-          case ConnectionState.waiting:
-          case ConnectionState.active:
-            return _BootstrapApp(
+        Widget? destination;
+        if (snapshot.connectionState == ConnectionState.done) {
+          if (snapshot.hasError) {
+            destination = _BootstrapApp(
               localeService: widget.localeService,
-              child: SplashScreen(onFinished: _finishSplash),
+              child: _ErrorScreen(
+                error: snapshot.error,
+                stackTrace: snapshot.stackTrace,
+                onRetry: _retryInit,
+              ),
             );
-          case ConnectionState.done:
-            if (snapshot.hasError) {
-              return _BootstrapApp(
-                localeService: widget.localeService,
-                child: _ErrorScreen(
-                  error: snapshot.error,
-                  stackTrace: snapshot.stackTrace,
-                  onRetry: _retryInit,
-                ),
-              );
-            }
-
+          } else {
             _practiceLinks.attachRouter(di.get<GoRouter>());
-            return _App(
+            destination = _App(
               initialRoute: snapshot.data!,
               localeService: widget.localeService,
             );
+          }
         }
+        return MediaQuery.fromView(
+          view: View.of(context),
+          child: SplashHandoff(
+            splash: _BootstrapApp(
+              localeService: widget.localeService,
+              child: SplashScreen(
+                onFinished: _finishSplash,
+                destinationReady: destination != null,
+              ),
+            ),
+            destination: destination,
+            canReveal: _splashFinished || snapshot.hasError,
+          ),
+        );
       },
     );
   }

@@ -1,4 +1,4 @@
-enum OnboardingVisualKind { hero, daily, tarot, personal }
+enum OnboardingVisualKind { hero, daily, tarot, personal, natal }
 
 class OnboardingPageModel {
   final String title;

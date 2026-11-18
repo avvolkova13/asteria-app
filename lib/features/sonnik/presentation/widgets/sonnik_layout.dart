@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_action_button.dart';
 import 'package:asteria_app/core/ui_kit/widgets/top_bar_geometry.dart';
 import 'package:asteria_app/core/ui_kit/widgets/input_bubble_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
@@ -131,8 +132,66 @@ class SonnikTopNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AsteriaTopBarFrame(
-      child: Row(
+    final balance = MonetizationProvider.maybeOf(context)?.balance ?? 0;
+    final titleStyle = AppTypography.navTitle.copyWith(
+      color: SonnikPalette.white,
+    );
+    return AsteriaAdaptiveTopBar(
+      title: title,
+      titleStyle: titleStyle,
+      leadingWidth: 48,
+      leading: SizedBox(
+        width: 44,
+        height: 44,
+        child: canPop
+            ? LotusButtons.icon(
+                onPressed: () => Navigator.of(context).pop(),
+                tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+                icon: const LotusArrowBubble(back: true),
+                padding: EdgeInsets.zero,
+              )
+            : null,
+      ),
+      actions: [
+        Consumer<UserProvider>(
+          builder: (context, userProvider, child) {
+            final balance = MonetizationProvider.maybeOf(context)?.balance ?? 0;
+            return Semantics(
+              button: true,
+              label: '${context.l10n.balanceTitle}: $balance',
+              onTap: () => BalanceRoute.push(context),
+              excludeSemantics: true,
+              child: LotusTap(
+                onTap: () => BalanceRoute.push(context),
+                behavior: HitTestBehavior.opaque,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      '$balance',
+                      style: AppTypography.navTitle.copyWith(
+                        color: SonnikPalette.white,
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    LotusRasterIcon(
+                      'assets/icons/star_coin_icon.png',
+                      height: 16,
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        ),
+        const SubscriptionWidget(),
+      ],
+      actionWidths: [
+        AsteriaTopBarLayout.textSize(context, '$balance', titleStyle).width +
+            20,
+        76,
+      ],
+      inline: Row(
         children: [
           SizedBox(
             width: 44,
@@ -167,6 +226,7 @@ class SonnikTopNavBar extends StatelessWidget {
               return Semantics(
                 button: true,
                 label: '${context.l10n.balanceTitle}: $balance',
+                onTap: () => BalanceRoute.push(context),
                 excludeSemantics: true,
                 child: LotusTap(
                   onTap: () => BalanceRoute.push(context),
@@ -298,44 +358,11 @@ class SonnikGradientButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isEnabled = onPressed != null;
-
-    return LotusTap(
-      onTap: onPressed,
-      behavior: HitTestBehavior.opaque,
-      child: Opacity(
-        opacity: isEnabled ? 1 : 0.72,
-        child: Container(
-          width: double.infinity,
-          constraints: const BoxConstraints(minHeight: 54),
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-          alignment: Alignment.center,
-          decoration: CardLensDecoration.button(
-            enabled: isEnabled,
-            gradient: isEnabled ? SonnikPalette.ctaGradient : null,
-            color: isEnabled ? null : SonnikPalette.disabled,
-            borderRadius: BorderRadius.circular(18),
-            boxShadow: isEnabled
-                ? [
-                    BoxShadow(
-                      color: SonnikPalette.pink.withValues(alpha: 0.3),
-                      blurRadius: 24,
-                      offset: const Offset(0, 10),
-                    ),
-                  ]
-                : null,
-          ),
-          child: Text(
-            text,
-            textAlign: TextAlign.center,
-            style: context.textTheme.inverseUrbanistSemiBold17.copyWith(
-              color: SonnikPalette.white.withValues(
-                alpha: isEnabled ? 1 : 0.55,
-              ),
-            ),
-          ),
-        ),
-      ),
+    return AsteriaActionButton(
+      text: text,
+      onPressed: onPressed,
+      height: 54,
+      width: double.infinity,
     );
   }
 }

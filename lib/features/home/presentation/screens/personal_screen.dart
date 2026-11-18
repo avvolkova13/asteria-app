@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_action_button.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_activity_indicator.dart';
 import 'package:asteria_app/features/home/home_tabs.dart';
 import 'package:asteria_app/features/home/presentation/widgets/home_section_heading.dart';
@@ -47,9 +48,6 @@ const _accentPurple = Color(0xFF6E4BFF);
 const _accentPurpleDark = Color(0xFF5A3FD1);
 const _goldGradient = LinearGradient(
   colors: [Color(0xFFE6994D), Color(0xFFF3B76A), Color(0xFFE6994D)],
-);
-const _buttonGradient = LinearGradient(
-  colors: [_accentPurple, Color(0xFF8A6BFF), _accentPurpleDark],
 );
 const _forecastButtonGradient = LinearGradient(
   colors: [_accentPurple, _accentPurpleDark],
@@ -1216,42 +1214,10 @@ class _PersonalGradientButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LotusFeedback(
-      onActivate: onPressed,
-      builder: (activate) => Semantics(
-        button: true,
-        label: text,
-        onTap: activate,
-        child: SizedBox(
-          width: double.infinity,
-          height: 50,
-          child: DecoratedBox(
-            decoration: CardLensDecoration.button(
-              gradient: _buttonGradient,
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Material(
-              color: Colors.transparent,
-              child: InkWell(
-                onTap: activate,
-                borderRadius: BorderRadius.circular(16),
-                child: Center(
-                  child: Text(
-                    text,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    textAlign: TextAlign.center,
-                    style: context.textTheme.inverseUrbanistRegular16.copyWith(
-                      height: 1.2,
-                      letterSpacing: -0.408,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
+    return AsteriaActionButton(
+      text: text,
+      onPressed: onPressed,
+      width: double.infinity,
     );
   }
 }
@@ -1746,44 +1712,10 @@ class _ForecastUnlockButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
+    return AsteriaActionButton(
+      text: context.l10n.personalOpenChart,
+      onPressed: onPressed,
       width: double.infinity,
-      height: 44,
-      child: Material(
-        color: Colors.transparent,
-        child: LotusInkTap(
-          onTap: onPressed,
-          borderRadius: BorderRadius.circular(16),
-          child: Ink(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            decoration: CardLensDecoration.button(
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: _accentPurple),
-            ),
-            child: Center(
-              child: ShaderMask(
-                blendMode: BlendMode.srcIn,
-                shaderCallback: (bounds) {
-                  return _forecastButtonGradient.createShader(
-                    Offset.zero & bounds.size,
-                  );
-                },
-                child: Text(
-                  context.l10n.personalOpenChart,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  textAlign: TextAlign.center,
-                  style: context.textTheme.inverseUrbanistRegular17.copyWith(
-                    color: AppColors.textInverse,
-                    height: 1.2,
-                    letterSpacing: -0.408,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
     );
   }
 }

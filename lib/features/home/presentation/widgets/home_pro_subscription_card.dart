@@ -1,4 +1,4 @@
-import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
+import 'package:asteria_app/core/ui_kit/widgets/asteria_action_button.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/features/home/presentation/widgets/card_advertisement_widget.dart';
 import 'package:asteria_app/features/home/presentation/widgets/home_glass_surface.dart';
@@ -30,7 +30,7 @@ class HomeProSubscriptionCard extends StatelessWidget {
       variant: CardAdvertisementVariant.balanceSubscriptionBanner,
       title: context.l10n.homeProSubscriptionTitle,
       description: context.l10n.homeProSubscriptionDescription,
-      buttonText: context.l10n.homeProSubscriptionCta,
+      buttonText: context.l10n.subscriptionConnect,
       onPressed: onPressed,
       horizontalMargin: horizontalMargin,
     );
@@ -104,45 +104,11 @@ class _CompactHomePromo extends StatelessWidget {
                   ),
                   Padding(
                     padding: const EdgeInsets.only(right: 8),
-                    child: LotusButtons.text(
+                    child: AsteriaActionButton(
+                      gold: true,
+                      text: context.l10n.subscriptionConnect,
                       onPressed: onPressed,
-                      style: TextButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 6),
-                        minimumSize: const Size(0, 48),
-                        visualDensity: VisualDensity.standard,
-                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                      ),
-                      child: Ink(
-                        width: double.infinity,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 8,
-                        ),
-                        decoration: BoxDecoration(
-                          boxShadow: const [
-                            BoxShadow(color: Color(0x0D6E4BFF), blurRadius: 15),
-                          ],
-                          gradient: const LinearGradient(
-                            colors: [
-                              Color(0xFFE6994D),
-                              Color(0xFFF3B76A),
-                              Color(0xFFE6994D),
-                            ],
-                          ),
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child: Text(
-                          context.l10n.homeProSubscriptionCta,
-                          textAlign: TextAlign.center,
-                          style: context.textTheme.urbanistRegular17.copyWith(
-                            fontFamily: 'Onest',
-                            color: AppColors.textPrimary,
-                          ),
-                        ),
-                      ),
+                      width: double.infinity,
                     ),
                   ),
                 ],

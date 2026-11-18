@@ -32,6 +32,7 @@ class EmailAuthCubit extends Cubit<EmailAuthState> {
   int _remainingSeconds = 0;
   int _challengeVersion = 0;
   bool _requestInFlight = false;
+  bool _verificationInFlight = false;
 
   EmailAuthCubit({
     required EmailAuthRepository repository,
@@ -67,7 +68,11 @@ class EmailAuthCubit extends Cubit<EmailAuthState> {
   }
 
   Future<void> requestCode(String email, {String? expectedEmail}) async {
-    if (_requestInFlight) return;
+    if (_requestInFlight ||
+        _verificationInFlight ||
+        state is EmailAuthVerified) {
+      return;
+    }
     final normalized = normalizeEmail(email);
     final normalizedExpected = expectedEmail == null
         ? null
@@ -113,10 +118,16 @@ class EmailAuthCubit extends Cubit<EmailAuthState> {
   }
 
   Future<void> verifyCode(String code, {String? expectedUid}) async {
+    if (_verificationInFlight ||
+        _requestInFlight ||
+        state is EmailAuthVerified) {
+      return;
+    }
     final challengeId = _challengeId;
     final email = _email;
     if (challengeId == null || email == null || code.length != 6) return;
 
+    _verificationInFlight = true;
     emit(EmailAuthVerifying(email, _remainingSeconds));
     try {
       final verification = await _repository.verifyCode(
@@ -216,10 +227,17 @@ class EmailAuthCubit extends Cubit<EmailAuthState> {
           remainingSeconds: _remainingSeconds,
         ),
       );
+    } finally {
+      _verificationInFlight = false;
     }
   }
 
   void clearError() {
+    if (_verificationInFlight ||
+        _requestInFlight ||
+        state is EmailAuthVerified) {
+      return;
+    }
     final email = _email;
     if (email != null) {
       emit(EmailAuthCodeSent(email, _remainingSeconds));
@@ -238,7 +256,20 @@ class EmailAuthCubit extends Cubit<EmailAuthState> {
       if (_remainingSeconds > 0) {
         _remainingSeconds--;
       }
-      emit(EmailAuthCodeSent(email, _remainingSeconds));
+      final current = state;
+      if (current is EmailAuthCodeSent) {
+        emit(EmailAuthCodeSent(email, _remainingSeconds));
+      } else if (current is EmailAuthVerifying) {
+        emit(EmailAuthVerifying(email, _remainingSeconds));
+      } else if (current is EmailAuthFailure) {
+        emit(
+          EmailAuthFailure(
+            current.code,
+            invalidCode: current.invalidCode,
+            remainingSeconds: _remainingSeconds,
+          ),
+        );
+      }
       if (_remainingSeconds == 0) {
         timer.cancel();
       }

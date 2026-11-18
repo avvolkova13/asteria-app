@@ -1,13 +1,13 @@
 {
   "@@locale": "ru",
-  "onboardingPage1Title": "На какой день записаться?",
-  "onboardingPage1Description": "Сравните даты в лунном календаре и сохраните план — например, стрижку.",
-  "onboardingPage2Title": "Минута, чтобы выдохнуть",
-  "onboardingPage2Description": "Включите аудиопрактику «У меня есть время» и прислушайтесь к себе.",
-  "onboardingPage3Title": "Как поговорить после спора?",
-  "onboardingPage3Description": "Посмотрите разбор пары и возьмите вопрос для спокойного разговора.",
-  "onboardingPage4Title": "С чего начать новое дело?",
-  "onboardingPage4Description": "Таро поможет посмотреть на вопрос иначе. А с Анакрой можно обсудить первый шаг.",
+  "onboardingPage1Title": "Твой день",
+  "onboardingPage1Description": "От подходящего дня — к плану с напоминанием.",
+  "onboardingPage2Title": "Твой характер",
+  "onboardingPage2Description": "Сильные стороны, привычные реакции и новые вопросы к себе.",
+  "onboardingPage3Title": "Ваши отношения",
+  "onboardingPage3Description": "Увидеть разные реакции — и найти слова для разговора.",
+  "onboardingPage4Title": "Твой вопрос",
+  "onboardingPage4Description": "От расклада Таро — к размышлению и диалогу с Анакрой.",
   "step1Title": "Откройте для себя новые возможности",
   "step1Description": "Изучите все функции приложения и начните использовать их уже сегодня",
   "step2Title": "Быстро и удобно",
@@ -29,7 +29,7 @@
   "saveButtonLoadingText": "Сохранение...",
   "personalInfoTitle": "Познай свою космическую суть",
   "personalInfoSubtitle": "По данным рождения Asteria рассчитает положение планет в твоей карте.",
-  "personalInfoDescription": "Укажи дату, время и место рождения — и\u00A0Вселенная заговорит с\u00A0тобой.",
+  "personalInfoDescription": "Укажи дату, время и место рождения — и Вселенная заговорит с тобой.",
   "maleGender": "Мужчина",
   "femaleGender": "Женщина",
   "birthPlaceLabel": "Место рождения",
@@ -89,7 +89,13 @@
   "genericSomethingWrong": "Что-то пошло не так",
   "genericCheckConnection": "Проверьте подключение к интернету и попробуйте снова.",
   "errorWithDetails": "Ошибка: {details}",
-  "@errorWithDetails": {"placeholders": {"details": {"type": "String"}}},
+  "@errorWithDetails": {
+    "placeholders": {
+      "details": {
+        "type": "String"
+      }
+    }
+  },
   "authUserNotInitialized": "Профиль ещё не готов. Вернитесь на предыдущий шаг и попробуйте снова.",
   "authSaveUserError": "Не удалось сохранить профиль. Проверьте подключение и попробуйте снова.",
   "anakraWelcomeMessage": "Приветствую тебя. Я Анакра — хранительница звёздных знаков и твоего небесного пути. Задай свой вопрос — или выбери, с чего начать.",
@@ -226,9 +232,27 @@
   "purchaseTitle": "Покупка",
   "purchaseConfirmTitle": "Подтвердите покупку",
   "purchaseForPrice": "Купить {title} за {price}",
-  "@purchaseForPrice": {"placeholders": {"title": {"type": "String"}, "price": {"type": "int"}}},
+  "@purchaseForPrice": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "price": {
+        "type": "int"
+      }
+    }
+  },
   "purchaseForCoinsLabel": "Купить {title} за {price} звёзд",
-  "@purchaseForCoinsLabel": {"placeholders": {"title": {"type": "String"}, "price": {"type": "int"}}},
+  "@purchaseForCoinsLabel": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "price": {
+        "type": "int"
+      }
+    }
+  },
   "purchaseNotEnoughGeneric": "Недостаточно для покупки",
   "purchaseNotEnoughRequests": "Недостаточно для покупки запросов",
   "purchaseNotEnoughReading": "Недостаточно для покупки расклада",
@@ -307,9 +331,24 @@
   "achievementHoroscope": "Открыть гороскоп",
   "achievementRunes": "Открыть руны",
   "achievementRemaining": "Осталось {count} из {total}",
-  "@achievementRemaining": {"placeholders": {"count": {"type": "int"}, "total": {"type": "int"}}},
+  "@achievementRemaining": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "achievementLocked": "{title}. Закрыто",
-  "@achievementLocked": {"placeholders": {"title": {"type": "String"}}},
+  "@achievementLocked": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
   "natalIncludedInPro": "Включено в PRO",
   "natalCreateCard": "Создать натальную карту",
   "natalProAccessDescription": "Со звёздного баланса ничего не спишется.",
@@ -349,19 +388,64 @@
   "shopRequired": "Требуется",
   "shopAfterPurchase": "После покупки:",
   "openArticleLabel": "Открыть статью: {title}",
-  "@openArticleLabel": {"placeholders": {"title": {"type": "String"}}},
+  "@openArticleLabel": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
   "buyForPrice": "Купить за {price}",
-  "@buyForPrice": {"placeholders": {"price": {"type": "String"}}},
+  "@buyForPrice": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
   "buySpecialReadingLabel": "Купить {title} за {price} звёзд",
-  "@buySpecialReadingLabel": {"placeholders": {"title": {"type": "String"}, "price": {"type": "String"}}},
+  "@buySpecialReadingLabel": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "price": {
+        "type": "String"
+      }
+    }
+  },
   "requestsLeftThisWeek": "{count, plural, =0{Бесплатных запросов на эту неделю не осталось} one{Остался {count} бесплатный запрос на эту неделю} few{Осталось {count} бесплатных запроса на эту неделю} many{Осталось {count} бесплатных запросов на эту неделю} other{Осталось {count} бесплатного запроса на эту неделю}}",
-  "@requestsLeftThisWeek": {"placeholders": {"count": {"type": "int"}}},
+  "@requestsLeftThisWeek": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "paidRequestsLeft": "{count, plural, =0{Купленных запросов нет} one{{count} купленный запрос} few{{count} купленных запроса} many{{count} купленных запросов} other{{count} купленного запроса}}",
-  "@paidRequestsLeft": {"placeholders": {"count": {"type": "int"}}},
+  "@paidRequestsLeft": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "limitResetsIn": "Лимит обновится через {count, plural, one{{count} день} few{{count} дня} many{{count} дней} other{{count} дня}}.",
-  "@limitResetsIn": {"placeholders": {"count": {"type": "int"}}},
+  "@limitResetsIn": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "freeLimitResetsIn": "Бесплатные запросы обновятся через {count, plural, one{{count} день} few{{count} дня} many{{count} дней} other{{count} дня}}.",
-  "@freeLimitResetsIn": {"placeholders": {"count": {"type": "int"}}},
+  "@freeLimitResetsIn": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "requestsExhausted": "Ты использовал все запросы.\nХочешь продолжить?",
   "offerProTitle": "Оформить PRO подписку",
   "offerIncludesTitle": "Вам будут доступны:",
@@ -373,19 +457,52 @@
   "homeLoadError": "Не удалось загрузить данные",
   "balanceLabel": "Баланс",
   "balanceStarsLabel": "Баланс: {balance} звезд",
-  "@balanceStarsLabel": {"placeholders": {"balance": {"type": "int"}}},
+  "@balanceStarsLabel": {
+    "placeholders": {
+      "balance": {
+        "type": "int"
+      }
+    }
+  },
   "purchasedAttemptsAdd": "Купленные попытки суммируются с бесплатными",
   "requestsRemaining": "Осталось запросов: {count} из {total}",
-  "@requestsRemaining": {"placeholders": {"count": {"type": "int"}, "total": {"type": "int"}}},
+  "@requestsRemaining": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "buyAttemptsLabel": "Купить попытки",
   "noSubscriptionQuestion": "Нет подписки?",
   "buyAttempts": "Купить попытки",
   "questionCoinPrice": "1 вопрос = {price}",
-  "@questionCoinPrice": {"placeholders": {"price": {"type": "int"}}},
+  "@questionCoinPrice": {
+    "placeholders": {
+      "price": {
+        "type": "int"
+      }
+    }
+  },
   "shopItemCount": "{count} шт.",
-  "@shopItemCount": {"placeholders": {"count": {"type": "int"}}},
+  "@shopItemCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "shopUnitPriceValue": "цена за 1 = {price}",
-  "@shopUnitPriceValue": {"placeholders": {"price": {"type": "int"}}},
+  "@shopUnitPriceValue": {
+    "placeholders": {
+      "price": {
+        "type": "int"
+      }
+    }
+  },
   "articlesTitle": "Статьи",
   "articlesReadMore": "Читайте ещё",
   "compatibilityTitle": "Совместимость",
@@ -402,7 +519,13 @@
   "refreshReadingLabel": "Обновить расклад",
   "readingComplete": "Твой расклад завершён",
   "yearHoroscopePriceTitle": "Твой персональный гороскоп\nна год за {price} звёздочётов",
-  "@yearHoroscopePriceTitle": {"placeholders": {"price": {"type": "int"}}},
+  "@yearHoroscopePriceTitle": {
+    "placeholders": {
+      "price": {
+        "type": "int"
+      }
+    }
+  },
   "yearHoroscopeIntro": "Открой карту своей судьбы и загляни в будущее, которое ждёт именно тебя.",
   "yearHoroscopeChapters": "Каждая глава включает:",
   "horoscopeEssenceDescription": "— сильные стороны и скрытые таланты.",
@@ -410,12 +533,30 @@
   "horoscopeEvolutionDescription": "— путь роста и ключевые перемены.",
   "horoscopeLifetimeDescription": "Доступ навсегда — читай в любое время, возвращайся и находи новые смыслы в каждом слове.",
   "buyYearHoroscopeLabel": "Купить персональный гороскоп на год за {price} звёздочётов",
-  "@buyYearHoroscopeLabel": {"placeholders": {"price": {"type": "int"}}},
+  "@buyYearHoroscopeLabel": {
+    "placeholders": {
+      "price": {
+        "type": "int"
+      }
+    }
+  },
   "natalCardPriceTitle": "Твоя натальная карта\nза {price} звёздочётов",
-  "@natalCardPriceTitle": {"placeholders": {"price": {"type": "int"}}},
+  "@natalCardPriceTitle": {
+    "placeholders": {
+      "price": {
+        "type": "int"
+      }
+    }
+  },
   "natalForeverDescription": "Карта сохранится в профиле. Её можно открыть снова.",
   "buyNatalCardLabel": "Купить натальную карту за {price} звёздочётов",
-  "@buyNatalCardLabel": {"placeholders": {"price": {"type": "int"}}},
+  "@buyNatalCardLabel": {
+    "placeholders": {
+      "price": {
+        "type": "int"
+      }
+    }
+  },
   "natalLoadError": "Не удалось загрузить натальную карту. Попробуйте снова.",
   "natalTimeUnknown": "Не указано",
   "natalWheelSelectPlanet": "Коснись планеты, чтобы увидеть её связи",
@@ -429,11 +570,29 @@
   "natalGrowthLife": "Развитие и жизнь",
   "natalDestinyDepth": "Судьба и глубина",
   "natalStrongHouse": "Сильный {number} дом",
-  "@natalStrongHouse": {"placeholders": {"number": {"type": "int"}}},
+  "@natalStrongHouse": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
   "natalWeakHouse": "Слабый {number} дом",
-  "@natalWeakHouse": {"placeholders": {"number": {"type": "int"}}},
+  "@natalWeakHouse": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
   "natalAccentHouse": "Акцент на {number} доме",
-  "@natalAccentHouse": {"placeholders": {"number": {"type": "int"}}},
+  "@natalAccentHouse": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
   "natalGetInterpretation": "Получить расшифровку",
   "planetSun": "Солнце",
   "planetMoon": "Луна",
@@ -453,7 +612,13 @@
   "planetParsFortunae": "Колесо Фортуны",
   "planetVertex": "Вертекс",
   "personalGreeting": "Привет, {name}!",
-  "@personalGreeting": {"placeholders": {"name": {"type": "String"}}},
+  "@personalGreeting": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "personalGreetingGeneral": "Привет!",
   "personalDefaultDescription": "Посмотри, в каких знаках были планеты в день твоего рождения и как они связаны между собой.",
   "personalYourHoroscope": "Твой гороскоп",
@@ -465,9 +630,21 @@
   "personalUnlockKeyTheme": "Открыть ключевую тему",
   "personalUnlockWeaknesses": "Открыть слабые места",
   "personalWeaknessesPrice": "Слабые места за {price}",
-  "@personalWeaknessesPrice": {"placeholders": {"price": {"type": "int"}}},
+  "@personalWeaknessesPrice": {
+    "placeholders": {
+      "price": {
+        "type": "int"
+      }
+    }
+  },
   "personalForecastPrice": "Открой прогноз\nза {price} звёздочётов",
-  "@personalForecastPrice": {"placeholders": {"price": {"type": "int"}}},
+  "@personalForecastPrice": {
+    "placeholders": {
+      "price": {
+        "type": "int"
+      }
+    }
+  },
   "personalWeekPurchaseDescription": "Подробный персональный гороскоп на неделю доступен за единоразовую покупку.",
   "personalMonthPurchaseDescription": "Подробный персональный гороскоп на месяц доступен за единоразовую покупку.",
   "personalTodayTab": "На сегодня",
@@ -559,7 +736,13 @@
   "locationNotConfigured": "Текущая геолокация не задана",
   "subscriptionNextPayment": "Следующее списание\nбудет произведено",
   "subscriptionNextPaymentOn": "Следующее списание\nбудет произведено\n{date}",
-  "@subscriptionNextPaymentOn": {"placeholders": {"date": {"type": "String"}}},
+  "@subscriptionNextPaymentOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "manage": "Управлять",
   "subscriptionInactiveDescription": "Расширенные функции\nс PRO — подключайте\nи отключайте в любой\nмомент.",
   "tarotRefreshSubscriptionRequired": "Обновление карты Таро доступно только по подписке. Оформите подписку, чтобы получать новую карту каждый день.",
@@ -568,7 +751,13 @@
   "subscriptionActivationPending": "Оплата принята. Подписка активируется в течение пары минут.",
   "subscriptionNoPurchasesToRestore": "Покупки для восстановления не найдены",
   "subscriptionPurchasesRestored": "Восстановлено покупок: {count}",
-  "@subscriptionPurchasesRestored": {"placeholders": {"count": {"type": "int"}}},
+  "@subscriptionPurchasesRestored": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "arcPaySubscriptionUnavailable": "Подписка через Arc Pay пока недоступна",
   "arcPaySubscriptionUnavailableDescription": "Покупка звёзд через СБП работает. Подписку мы включим после завершения тестирования сохранённых карт.",
   "subscriptionConfirmingCard": "Подтверждаем привязку карты и первый платёж…",
@@ -585,9 +774,21 @@
   "cancel": "Отмена",
   "clearMessage": "Очистить сообщение",
   "freeRequestsResetIn": "Бесплатные запросы обновятся через {count, plural, one{{count} день} few{{count} дня} many{{count} дней} other{{count} дня}}.",
-  "@freeRequestsResetIn": {"placeholders": {"count": {"type": "int"}}},
+  "@freeRequestsResetIn": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "requestLimitResetIn": "Через {count, plural, one{{count} день} few{{count} дня} many{{count} дней} other{{count} дня}} лимит обновится.",
-  "@requestLimitResetIn": {"placeholders": {"count": {"type": "int"}}},
+  "@requestLimitResetIn": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "unlimited": "Безлимит",
   "purchasedAttemptsCombine": "Купленные попытки суммируются с бесплатными",
   "paymentTitle": "Оплата",
@@ -595,9 +796,24 @@
   "paymentWaitingMessage": "Завершите оплату во внешнем браузере. Статус обновляется автоматически.",
   "paymentSuccess": "Оплата прошла успешно!",
   "paymentCoinsCredited": "Начислено монет: {coins}. Баланс: {balance}",
-  "@paymentCoinsCredited": {"placeholders": {"coins": {"type": "int"}, "balance": {"type": "int"}}},
+  "@paymentCoinsCredited": {
+    "placeholders": {
+      "coins": {
+        "type": "int"
+      },
+      "balance": {
+        "type": "int"
+      }
+    }
+  },
   "paymentCoinsCreditedBalanceUpdated": "Начислено монет: {coins}. Баланс обновлён.",
-  "@paymentCoinsCreditedBalanceUpdated": {"placeholders": {"coins": {"type": "int"}}},
+  "@paymentCoinsCreditedBalanceUpdated": {
+    "placeholders": {
+      "coins": {
+        "type": "int"
+      }
+    }
+  },
   "paymentLeaveDescription": "Вы сможете создать новый платёж. Если банк уже подтвердил эту оплату, звёзды всё равно будут начислены после проверки сервера.",
   "paymentAbandonedServerConfirmed": "Можно создать новый платёж. Позднее банковское подтверждение предыдущей оплаты не потеряется.",
   "paymentAbandonedLocal": "Локально попытка закрыта. Сервер продолжит безопасно обрабатывать возможное подтверждение банка.",
@@ -606,13 +822,28 @@
   "paymentManualReview": "Платёж передан на ручную проверку.",
   "paymentNotCompleted": "Платёж не был завершён.",
   "paymentDiagnostics": "Диагностика оплаты\nРегион магазина: {countryCode}\nВыбранный провайдер: {provider}",
-  "@paymentDiagnostics": {"placeholders": {"countryCode": {"type": "String"}, "provider": {"type": "String"}}},
+  "@paymentDiagnostics": {
+    "placeholders": {
+      "countryCode": {
+        "type": "String"
+      },
+      "provider": {
+        "type": "String"
+      }
+    }
+  },
   "subscriptionUnlimitedAccess": "Оформите подписку — доступ ко всему без ограничений.",
   "coinPackagesUnavailable": "Пакеты пока недоступны",
   "coinPackagesUnavailableRetry": "Пакеты пока недоступны. Попробуйте позже.",
   "coinPackagesLoad": "Загрузить пакеты",
   "coinPackageFallback": "Пакет {coins} звёздочётов",
-  "@coinPackageFallback": {"placeholders": {"coins": {"type": "int"}}},
+  "@coinPackageFallback": {
+    "placeholders": {
+      "coins": {
+        "type": "int"
+      }
+    }
+  },
   "savings": "Выгода",
   "coinPurchasePending": "Оплата принята. Звёздочёты появятся в течение пары минут.",
   "storeProductsLoadError": "Не удалось загрузить товары магазина. Попробуйте ещё раз.",
@@ -640,12 +871,24 @@
   "affirmationCategoryLunar": "Лунные",
   "affirmationCategoryCalm": "Спокойствие",
   "affirmationCategoryLocked": "{category}. Только по подписке",
-  "@affirmationCategoryLocked": {"placeholders": {"category": {"type": "String"}}},
+  "@affirmationCategoryLocked": {
+    "placeholders": {
+      "category": {
+        "type": "String"
+      }
+    }
+  },
   "affirmationSubscriptionRequired": "Эта аффирмация доступна в рамках подписки. Получите доступ ко всем аффирмациям, включая закрытые категории, а также другим эксклюзивным функциям.",
   "affirmationOpenPlayer": "Открыть аудиоплеер",
   "affirmationSwipeHint": "Смахните иллюстрацию вверх или вниз, чтобы сменить аффирмацию",
   "affirmationSemantics": "Аффирмация: {text}",
-  "@affirmationSemantics": {"placeholders": {"text": {"type": "String"}}},
+  "@affirmationSemantics": {
+    "placeholders": {
+      "text": {
+        "type": "String"
+      }
+    }
+  },
   "tarotTabDay": "Карта дня",
   "tarotTabSpread": "Расклад",
   "tarotTabAllCards": "Все карты",
@@ -659,9 +902,24 @@
   "tarotSpreadDescription": "Расклад Таро отвечает на конкретный вопрос.\nКарты важно открывать по порядку — вместе они складываются в единый ответ.\nСначала сформулируй вопрос, затем поочерёдно открывай карты и выбери сферу, к которой он относится.",
   "tarotTapToFlip": "Нажми на карту, чтобы перевернуть",
   "tarotOpenSpreadCard": "Открыть карту {position} из 3",
-  "@tarotOpenSpreadCard": {"placeholders": {"position": {"type": "int"}}},
+  "@tarotOpenSpreadCard": {
+    "placeholders": {
+      "position": {
+        "type": "int"
+      }
+    }
+  },
   "tarotOpenedSpreadCard": "Карта {position} из 3: {card}",
-  "@tarotOpenedSpreadCard": {"placeholders": {"position": {"type": "int"}, "card": {"type": "String"}}},
+  "@tarotOpenedSpreadCard": {
+    "placeholders": {
+      "position": {
+        "type": "int"
+      },
+      "card": {
+        "type": "String"
+      }
+    }
+  },
   "tarotChooseSphere": "Выбери сферу,\nчтобы получить инсайт",
   "tarotSphereLove": "Любовь и отношения",
   "tarotSphereSelfRealization": "Самореализация",
@@ -673,9 +931,21 @@
   "tarotHowToReminder": "Не забывай: трактовка — это не приговор, а подсказка. Ты всегда сама управляешь своей жизнью.",
   "tarotCardsEmpty": "Карты не найдены",
   "tarotOpenCardLabel": "Открыть карту {title}",
-  "@tarotOpenCardLabel": {"placeholders": {"title": {"type": "String"}}},
+  "@tarotOpenCardLabel": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
   "tarotLockedCardLabel": "Карта {title} закрыта",
-  "@tarotLockedCardLabel": {"placeholders": {"title": {"type": "String"}}},
+  "@tarotLockedCardLabel": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
   "runesTabDay": "Руна дня",
   "runesTabSpread": "Расклад",
   "runesTabAll": "Все руны",
@@ -694,18 +964,48 @@
   "runesHowToReminder": "Руны — это не пригов и не предсказание судьбы. Это зеркало, в котором ты можешь увидеть себя яснее. Пользуйся ими с уважением, и они будут мудрыми спутниками на твоём пути.",
   "runesEmpty": "Руны не найдены",
   "runeLockedLabel": "Руна {title} закрыта",
-  "@runeLockedLabel": {"placeholders": {"title": {"type": "String"}}},
+  "@runeLockedLabel": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
   "runeOpenLabel": "Открыть руну {title}",
-  "@runeOpenLabel": {"placeholders": {"title": {"type": "String"}}},
+  "@runeOpenLabel": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
   "runeOpenPast": "Открыть руну прошлого",
   "runeOpenPresent": "Открыть руну настоящего",
   "runeOpenFuture": "Открыть руну будущего",
   "runeOpenPastMeaning": "Открыть значение руны прошлого {title}",
-  "@runeOpenPastMeaning": {"placeholders": {"title": {"type": "String"}}},
+  "@runeOpenPastMeaning": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
   "runeOpenPresentMeaning": "Открыть значение руны настоящего {title}",
-  "@runeOpenPresentMeaning": {"placeholders": {"title": {"type": "String"}}},
+  "@runeOpenPresentMeaning": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
   "runeOpenFutureMeaning": "Открыть значение руны будущего {title}",
-  "@runeOpenFutureMeaning": {"placeholders": {"title": {"type": "String"}}},
+  "@runeOpenFutureMeaning": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
   "loveDeckTagline": "Загляни в чувства партнёра и узнай, к чему ведут ваши отношения",
   "loveDeckDescription": "6 карт, которые раскроют прошлое, настоящее и возможное будущее вашей пары.\nОткрывай карты по очереди, чтобы узнать, что между вами происходит.",
   "loveDeckHowToIntroduction": "Любовный расклад — это способ лучше понять себя, партнёра и вашу связь. Он состоит из 6 карт, каждая из которых отвечает за важный аспект отношений:",
@@ -717,9 +1017,24 @@
   "loveDeckPositionSupport": "Что помогает — ресурсы и поддержка в отношениях",
   "loveDeckPositionFuture": "Будущее отношений — вероятное развитие ситуации",
   "deckCardLabel": "Карта {number}",
-  "@deckCardLabel": {"placeholders": {"number": {"type": "int"}}},
+  "@deckCardLabel": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
   "deckOpenedCardLabel": "Карта {number}: {title}",
-  "@deckOpenedCardLabel": {"placeholders": {"number": {"type": "int"}, "title": {"type": "String"}}},
+  "@deckOpenedCardLabel": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
+  },
   "keltDeckDescription": "Расклад Таро отвечает на конкретный вопрос. Карты важно открывать по порядку — вместе они складываются в единый ответ. Сначала сформулируй вопрос, затем поочерёдно открывай карты и выбери сферу, к которой он относится.",
   "keltDeckCompletedDescription": "Ты открыл(а) все 10 карт Кельтского креста. Этот расклад дал тебе целостное видение текущей ситуации: от корней в прошлом — до будущих тенденций, от внутренних мотиваций — до внешних влияний.\n✨ Подумай над вопросом, с которым ты пришёл(а) — что сейчас откликается сильнее всего?\nЕсли хочешь глубже осмыслить расклад:\n• Вернись к ключевым картам — позициям 1, 4 и 6\n• Обрати внимание на то, что повторяется\n• Почувствуй, какой совет даёт позиция 10",
   "keltDeckHowToIntroduction": "«Кельтский крест» — это один из самых точных раскладов Таро. Он поможет глубоко разобраться в ситуации, увидеть скрытые причины, внешние влияния и вероятный исход. В раскладе 10 карт, каждая из них отвечает за определённый аспект.",
@@ -755,26 +1070,89 @@
   "keltPosition9Description": "Позиция даёт совет или предостережение, которое важно учесть.",
   "keltPosition10Description": "Позиция показывает итог и направление, куда ведёт ситуация.",
   "keltCardPositionTitle": "Карта №{number} — {position}",
-  "@keltCardPositionTitle": {"placeholders": {"number": {"type": "int"}, "position": {"type": "String"}}},
+  "@keltCardPositionTitle": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      },
+      "position": {
+        "type": "String"
+      }
+    }
+  },
   "requestsLeftCount": "{count, plural, =0{Запросов не осталось} one{Остался {count} запрос} few{Осталось {count} запроса} many{Осталось {count} запросов} other{Осталось {count} запроса}}",
-  "@requestsLeftCount": {"placeholders": {"count": {"type": "int"}}},
+  "@requestsLeftCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "attemptsLeftCount": "{count, plural, one{Осталась {count} попытка} few{Осталось {count} попытки} many{Осталось {count} попыток} other{Осталось {count} попытки}}",
-  "@attemptsLeftCount": {"placeholders": {"count": {"type": "int"}}},
+  "@attemptsLeftCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "requestsLeftOfTotal": "{count}/{total} запросов осталось",
-  "@requestsLeftOfTotal": {"placeholders": {"count": {"type": "int"}, "total": {"type": "int"}}},
+  "@requestsLeftOfTotal": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "requestPackageCount": "{count, plural, one{{count} запрос} few{{count} запроса} many{{count} запросов} other{{count} запроса}}",
-  "@requestPackageCount": {"placeholders": {"count": {"type": "int"}}},
+  "@requestPackageCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "requestPackageForCoins": "{count, plural, one{{count} запрос за {price} звёзд} few{{count} запроса за {price} звёзд} many{{count} запросов за {price} звёзд} other{{count} запроса за {price} звёзд}}",
-  "@requestPackageForCoins": {"placeholders": {"count": {"type": "int"}, "price": {"type": "int"}}},
+  "@requestPackageForCoins": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "price": {
+        "type": "int"
+      }
+    }
+  },
   "purchaseRequestsTitle": "Покупка {count, plural, one{{count} запроса} few{{count} запросов} many{{count} запросов} other{{count} запроса}}",
-  "@purchaseRequestsTitle": {"placeholders": {"count": {"type": "int"}}},
+  "@purchaseRequestsTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "anakraName": "Анакра",
   "anakraGreetingTitle": "Приветствую.\nЯ Анакра —\nхранительница\nзвёзд и твоего\nпути.",
   "anakraReady": "Звёзды готовы ответить.",
   "anakraGreetingMessage": "Приветствую тебя. Я Анакра — хранительница звёздных знаков и твоего небесного пути. Задай свой вопрос — или выбери, с чего начать.",
   "anakraTyping": "Анакра печатает…",
   "anakraFreeAndPurchased": "{free}/{total} + {paid} куплено",
-  "@anakraFreeAndPurchased": {"placeholders": {"free": {"type": "int"}, "total": {"type": "int"}, "paid": {"type": "int"}}},
+  "@anakraFreeAndPurchased": {
+    "placeholders": {
+      "free": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "paid": {
+        "type": "int"
+      }
+    }
+  },
   "compatibilityPartnerDetailsTitle": "Заполните данные\nвашего партнера",
   "compatibilityPartnerBirthDate": "Дата рождения партнера",
   "compatibilityYou": "Вы",
@@ -811,7 +1189,13 @@
   "rewardLoadError": "Не удалось загрузить задания.",
   "rewardShareError": "Не удалось поделиться Asteria.",
   "rewardShareText": "Открой для себя Asteria, Таро и лунный календарь: {link}",
-  "@rewardShareText": {"placeholders": {"link": {"type": "String"}}},
+  "@rewardShareText": {
+    "placeholders": {
+      "link": {
+        "type": "String"
+      }
+    }
+  },
   "rewardShareSubject": "Asteria — персональный астрологический помощник",
   "paymentSettingsDescription": "Способ оплаты выбирается на защищённой странице Arc Pay во время покупки монет.",
   "emailSendCodeError": "Не удалось отправить код. Попробуйте ещё раз.",
@@ -871,16 +1255,45 @@
   "onboardPreviewMagicDescription": "Ты пришла в этот мир, чтобы научиться заботиться о себе и других, не теряя границ. В тебе — сила Земли и чувствительность Воды. Луна ведёт тебя через внутренние миры — не забывай слушать её шёпот.",
   "onboardPreviewPersonalState": "Учишься отпускать ожидания и больше доверять потоку.",
   "googleSubscriptionPerWeek": "{price} в неделю",
-  "@googleSubscriptionPerWeek": {"placeholders": {"price": {"type": "String"}}},
+  "@googleSubscriptionPerWeek": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
   "googleSubscriptionPerMonth": "{price} в месяц",
-  "@googleSubscriptionPerMonth": {"placeholders": {"price": {"type": "String"}}},
+  "@googleSubscriptionPerMonth": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
   "googleSubscriptionPerYear": "{price} в год",
-  "@googleSubscriptionPerYear": {"placeholders": {"price": {"type": "String"}}},
+  "@googleSubscriptionPerYear": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
   "googleSubscriptionTrialTerms": "7 дней бесплатно, затем {price}. Автопродление, отмена в любой момент.",
-  "@googleSubscriptionTrialTerms": {"placeholders": {"price": {"type": "String"}}},
+  "@googleSubscriptionTrialTerms": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
   "googleSubscriptionRecurringTerms": "{price}. Автопродление, отмена в любой момент.",
-  "@googleSubscriptionRecurringTerms": {"placeholders": {"price": {"type": "String"}}},
-
+  "@googleSubscriptionRecurringTerms": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
   "applePurchaseWaiting": "Apple ещё не подтвердил покупку. Проверьте её статус перед повторной оплатой.",
   "applePurchaseApproval": "Ожидаем одобрения покупки. Позже можно проверить статус здесь.",
   "applePurchaseAccount": "Эта покупка Apple связана с другим аккаунтом Asteria. Войдите в него, чтобы пользоваться покупкой.",
@@ -1033,17 +1446,15 @@
   "introProgress": "Экран {current} из {total}",
   "introCalendarExample": "Пример выбора дня",
   "introPairExample": "Пример разбора пары",
-  "introDateOne": "12 ноября",
-  "introDateTwo": "11 декабря",
   "introNeutral": "Нейтральный день",
   "introFavorable": "Благоприятный день",
   "introNeutralTip": "Можно освежить форму и подровнять кончики.",
   "introFavorableTip": "Подходящий день, чтобы попробовать новую форму.",
-  "introPairTip": "Одному хочется обсудить всё сразу, другому нужно время.",
-  "introPairQuestion": "Вопрос для двоих",
-  "introPairPrompt": "«Я хочу вернуться к нашему разговору. Тебе удобнее сейчас или чуть позже?»",
+  "introPairTip": "Разный темп — ещё не равнодушие.",
+  "introPairQuestion": "Попробуйте начать так",
+  "introPairPrompt": "«Мне важен наш разговор. Тебе удобнее сейчас или чуть позже?»",
   "introReplay": "Посмотреть расклад ещё раз",
-  "introAnakraMessage": "Какая часть дела вам уже интересна? Начните с неё и дайте себе десять минут.",
+  "introAnakraMessage": "Дайте одному шагу десять минут. Просто попробуйте.",
   "introAudioError": "Не удалось воспроизвести запись.",
   "introPause": "Пауза",
   "introPlay": "Слушать «У меня есть время»",
@@ -1056,5 +1467,82 @@
         "type": "int"
       }
     }
-  }
+  },
+  "introStoryExample": "Пример сценария",
+  "introStoryReplay": "Повторить",
+  "introStoryResume": "Продолжить показ",
+  "introCalendarRequest": "Хочу новую стрижку.\nКогда записаться?",
+  "introCalendarFrom": "Ближайшие дни · с {date}",
+  "introCalendarCompare": "Сравниваем ближайшие дни",
+  "introCalendarResult": "Выбран день: {date}",
+  "introCalendarInsight": "Благоприятное время для новой стрижки.",
+  "introMoodRequest": "Всё время спешу.\nХочется выдохнуть.",
+  "introMoodRush": "Всё время спешу",
+  "introMoodTired": "Нет сил",
+  "introMoodCalm": "Хочу спокойствия",
+  "introMoodMatched": "Свой темп",
+  "introMoodAffirmation": "Сейчас можно никуда не спешить.",
+  "introPairRequest": "Я молчу после спора, а партнёр ждёт разговора.",
+  "introPairFirst": "Телец",
+  "introPairSecond": "Близнецы",
+  "introPairNeedTime": "«Мне нужно время, чтобы разобраться в чувствах».",
+  "introPairNeedTalk": "«Мне легче, когда мы говорим о том, что произошло».",
+  "introTarotRequest": "Хочу начать новое дело,\nно всё время откладываю.",
+  "introTarotHint": "Один вопрос. Три новых взгляда.",
+  "introTarotReflection": "А если начать с любопытства?",
+  "introTarotInsight": "Совет Анакры",
+  "@introCalendarFrom": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "@introCalendarResult": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "introStoryPause": "Пауза показа",
+  "scenarioPlansMonth": "Месяц",
+  "scenarioPlansWeek": "Неделя",
+  "scenarioPlansDay": "День",
+  "scenarioPlansToday": "Сегодня",
+  "scenarioPlansPrevious": "Предыдущий период",
+  "scenarioPlansNext": "Следующий период",
+  "scenarioPlansEmptyDay": "На этот день планов пока нет.",
+  "scenarioPlansEmptyWeek": "На этой неделе планов пока нет.",
+  "scenarioPlansAllDay": "Без указания времени",
+  "scenarioPlansCount": "Планов: {count}",
+  "@scenarioPlansCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "onboardingPage5Title": "Время для себя",
+  "onboardingPage5Description": "Аффирмации и небольшие практики для паузы среди дел.",
+  "introDemoLabel": "Пример разбора",
+  "introNatalDate": "Данные примера · 13 мая 1995",
+  "introNatalStrengthTitle": "Сильная сторона",
+  "introNatalStrength": "Умение доводить начатое до результата.",
+  "introNatalPatternTitle": "Привычная реакция",
+  "introNatalPattern": "В переменах может хотеться больше ясности и времени.",
+  "introNatalQuestion": "Что даёт вам опору перед новым шагом?",
+  "introTarotMeaningTitle": "О чём этот расклад",
+  "introTarotMeaning": "Начните с того, что вам интересно.",
+  "introTarotFollowup": "А если не получится?",
+  "introMoodPracticeTitle": "Небольшая практика",
+  "introMoodPractice": "Опустите плечи. Медленно выдохните.",
+  "introNatalQuestionTitle": "Вопрос для размышления",
+  "introCalendarSavedTitle": "Стрижка",
+  "introCalendarSavedText": "Добавлено в мои планы",
+  "introCalendarReminderTitle": "Напомнить о плане",
+  "introCalendarReminderChoice": "За день до события",
+  "introCalendarReminderEnabled": "Напоминание включено",
+  "introCalendarCompleted": "Всё запланировано",
+  "introCalendarCompletedBody": "Стрижка в календаре. Напоминание придёт за день до события."
 }

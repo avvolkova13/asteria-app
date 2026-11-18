@@ -715,18 +715,20 @@ class _MoonPhaseWidgetState extends State<MoonPhaseWidget> {
             final duration = reduced
                 ? Duration.zero
                 : const Duration(milliseconds: 360);
-            Widget surface(Widget child) => AnimatedSize(
-              alignment: Alignment.topCenter,
-              duration: duration,
-              curve: Curves.easeInOutCubic,
-              child: AnimatedSwitcher(
-                duration: duration,
-                switchInCurve: Curves.easeInOut,
-                switchOutCurve: Curves.easeInOut,
-                layoutBuilder: _overlayPrevious,
-                child: child,
-              ),
-            );
+            Widget surface(Widget child) => reduced
+                ? child
+                : AnimatedSize(
+                    alignment: Alignment.topCenter,
+                    duration: duration,
+                    curve: Curves.easeInOutCubic,
+                    child: AnimatedSwitcher(
+                      duration: duration,
+                      switchInCurve: Curves.easeInOut,
+                      switchOutCurve: Curves.easeInOut,
+                      layoutBuilder: _overlayPrevious,
+                      child: child,
+                    ),
+                  );
 
             if (locationResolution.status ==
                 CurrentLocationResolutionStatus.needsSetup) {
@@ -775,10 +777,54 @@ Widget _overlayPrevious(Widget? current, List<Widget> previous) => Stack(
   ],
 );
 
+/// Read-only presentation of the same day tile used by the home day strip.
+class MoonDayPreview extends StatelessWidget {
+  const MoonDayPreview({
+    super.key,
+    required this.date,
+    this.phaseImagePath,
+    required this.status,
+    required this.isSelected,
+  });
+
+  final DateTime date;
+  final String? phaseImagePath;
+  final DayStatus status;
+  final bool isSelected;
+
+  @override
+  Widget build(BuildContext context) => Semantics(
+    selected: isSelected,
+    label:
+        '${DateFormat.yMMMMEEEEd(Localizations.localeOf(context).toLanguageTag()).format(date)}, ${status.title(context).replaceAll('\n', ' ')}',
+    child: ExcludeSemantics(
+      child: IgnorePointer(
+        child: MediaQuery(
+          data: MediaQuery.of(context).copyWith(
+            // Status and full date remain available in the outer semantics.
+            textScaler: TextScaler.noScaling,
+            disableAnimations:
+                MediaQuery.disableAnimationsOf(context) ||
+                MediaQuery.accessibleNavigationOf(context),
+          ),
+          child: _MoonDayTile(
+            date: date,
+            phaseImagePath: phaseImagePath,
+            hasPrimaryPhase: false,
+            status: status,
+            isSelected: isSelected,
+            onTap: null,
+          ),
+        ),
+      ),
+    ),
+  );
+}
+
 class _MoonDayTile extends StatelessWidget {
   const _MoonDayTile({
     required this.date,
-    required this.phaseImagePath,
+    this.phaseImagePath,
     required this.hasPrimaryPhase,
     required this.status,
     required this.isSelected,
@@ -786,7 +832,7 @@ class _MoonDayTile extends StatelessWidget {
   });
 
   final DateTime date;
-  final String phaseImagePath;
+  final String? phaseImagePath;
   final bool hasPrimaryPhase;
   final DayStatus? status;
   final bool isSelected;
@@ -799,6 +845,17 @@ class _MoonDayTile extends StatelessWidget {
         : AppColors.textInverse;
     final weekdayOpacity = isSelected ? 0.8 : 0.5;
     final locale = Localizations.localeOf(context);
+    final weekday = Text(
+      _formatWeekday(date, locale),
+      style: context.textTheme.urbanistRegular12.copyWith(
+        color: textColor.withValues(alpha: weekdayOpacity),
+        fontFamily: 'Onest',
+        height: 1,
+        letterSpacing: -0.41,
+      ),
+      textAlign: TextAlign.center,
+    );
+    final fitWeekday = MediaQuery.textScalerOf(context).scale(12) > 15;
 
     return LotusFeedback(
       animateEntrance: false,
@@ -824,10 +881,17 @@ class _MoonDayTile extends StatelessWidget {
                   : const Duration(milliseconds: 310),
               curve: Curves.easeInOut,
               width: _MoonPhaseWidgetState._dayTileWidth,
-              height: _MoonPhaseWidgetState._dayTileHeight,
-              padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 6),
+              height: phaseImagePath == null
+                  ? 102
+                  : _MoonPhaseWidgetState._dayTileHeight,
+              padding: EdgeInsets.symmetric(
+                horizontal: 7,
+                vertical: phaseImagePath == null ? 10 : 6,
+              ),
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(29),
+                borderRadius: BorderRadius.circular(
+                  phaseImagePath == null ? 14 : 29,
+                ),
                 gradient: LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
@@ -881,47 +945,67 @@ class _MoonDayTile extends StatelessWidget {
                   SizedBox(
                     height: 14,
                     child: Center(
-                      child: Text(
-                        _formatWeekday(date, locale),
-                        style: context.textTheme.urbanistRegular12.copyWith(
-                          color: textColor.withValues(alpha: weekdayOpacity),
-                          fontFamily: 'Onest',
-                          height: 1,
-                          letterSpacing: -0.41,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
+                      child: fitWeekday
+                          ? FittedBox(fit: BoxFit.scaleDown, child: weekday)
+                          : weekday,
                     ),
                   ),
-                  SizedBox(
-                    height: 14,
-                    child: Center(
-                      child: FittedBox(
-                        fit: BoxFit.scaleDown,
-                        child: Text(
-                          _formatDayMonth(date, locale),
-                          maxLines: 1,
-                          style:
-                              (isSelected
-                                      ? context.textTheme.urbanistSemiBold12
-                                      : context.textTheme.urbanistRegular12)
-                                  .copyWith(
-                                    color: textColor,
-                                    fontFamily: 'Onest',
-                                    height: 1,
-                                    letterSpacing: -0.41,
-                                  ),
-                          textAlign: TextAlign.center,
+                  if (phaseImagePath == null)
+                    Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          '${date.day}',
+                          style: AppTypography.text2SemiBold.copyWith(
+                            color: textColor,
+                            fontSize: 20,
+                            height: 1.1,
+                          ),
+                        ),
+                        const SizedBox(height: 3),
+                        Text(
+                          DateFormat.MMM(
+                            locale.toLanguageTag(),
+                          ).format(date).replaceAll('.', ''),
+                          style: AppTypography.text2.copyWith(
+                            color: textColor.withValues(alpha: .8),
+                            fontSize: 10,
+                            height: 1.1,
+                          ),
+                        ),
+                      ],
+                    )
+                  else
+                    SizedBox(
+                      height: 14,
+                      child: Center(
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text(
+                            _formatDayMonth(date, locale),
+                            maxLines: 1,
+                            style:
+                                (isSelected
+                                        ? context.textTheme.urbanistSemiBold12
+                                        : context.textTheme.urbanistRegular12)
+                                    .copyWith(
+                                      color: textColor,
+                                      fontFamily: 'Onest',
+                                      height: 1,
+                                      letterSpacing: -0.41,
+                                    ),
+                            textAlign: TextAlign.center,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  _TintedMoonImage(
-                    imagePath: phaseImagePath,
-                    size: 37,
-                    shadowBlur: 4,
-                    shadowColor: const Color(0x40000000),
-                  ),
+                  if (phaseImagePath != null)
+                    _TintedMoonImage(
+                      imagePath: phaseImagePath!,
+                      size: 37,
+                      shadowBlur: 4,
+                      shadowColor: const Color(0x40000000),
+                    ),
                 ],
               ),
             ),
@@ -982,6 +1066,7 @@ class _MoonPhaseCard extends StatelessWidget {
               const SizedBox(height: 8),
               _GradientText(
                 text: _phaseTitle(context, phase),
+                maxLines: null,
                 gradient: _MoonPhaseWidgetState._orangeGradient,
                 style: context.textTheme.playfairMedium20.copyWith(
                   fontFamily: 'Lora',
@@ -1115,6 +1200,7 @@ class _DayCardPagerState extends State<_DayCardPager>
 
   @override
   Widget build(BuildContext context) {
+    if (_reduceMotion) return ClipRect(child: widget.child);
     return ClipRect(
       child: AnimatedSize(
         duration: _reduceMotion ? Duration.zero : _controller.duration!,
@@ -1258,11 +1344,13 @@ class _GradientText extends StatelessWidget {
     required this.text,
     required this.gradient,
     required this.style,
+    this.maxLines = 1,
   });
 
   final String text;
   final Gradient gradient;
   final TextStyle style;
+  final int? maxLines;
 
   @override
   Widget build(BuildContext context) {
@@ -1271,8 +1359,8 @@ class _GradientText extends StatelessWidget {
       shaderCallback: (bounds) => gradient.createShader(bounds),
       child: Text(
         text,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
+        maxLines: maxLines,
+        overflow: maxLines == null ? TextOverflow.clip : TextOverflow.ellipsis,
         style: style.copyWith(color: Colors.white),
       ),
     );

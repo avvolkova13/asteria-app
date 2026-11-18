@@ -138,7 +138,9 @@ class _TextInputFieldWidgetState extends State<TextInputFieldWidget> {
                       decoration: BoxDecoration(
                         color: widget.toggleValue
                             ? const Color(0xFF8A6CAF)
-                            : const Color(0xFFE0E0E0),
+                            : Theme.of(
+                                context,
+                              ).colorScheme.surfaceContainerHighest,
                         borderRadius: BorderRadius.circular(15.5),
                       ),
                       child: AnimatedAlign(
@@ -172,17 +174,21 @@ class _TextInputFieldWidgetState extends State<TextInputFieldWidget> {
                   ),
                 ] else if (widget.showClearButton &&
                     _controller.text.isNotEmpty) ...[
-                  LotusTap(
-                    onTap: () {
-                      _controller.clear();
-                      widget.onClear?.call();
-                      widget.onChanged?.call('');
-                    },
-                    child: Container(
-                      width: 24,
-                      height: 24,
-                      margin: const EdgeInsets.only(right: 16),
-                      child: ClayAssetIcon(
+                  Padding(
+                    padding: const EdgeInsets.only(right: 6),
+                    child: LotusButtons.icon(
+                      tooltip: context.l10n.commonClear,
+                      onPressed: () {
+                        _controller.clear();
+                        widget.onClear?.call();
+                        widget.onChanged?.call('');
+                      },
+                      constraints: const BoxConstraints(
+                        minWidth: 44,
+                        minHeight: 44,
+                      ),
+                      padding: EdgeInsets.zero,
+                      icon: ClayAssetIcon(
                         'assets/icons/close_icon.svg',
                         width: 24,
                         height: 24,

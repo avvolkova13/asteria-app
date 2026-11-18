@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_action_button.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
@@ -209,41 +210,10 @@ class _GradientBuyButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final enabled = onPressed != null;
-
-    return Semantics(
-      button: true,
-      enabled: enabled,
-      label: text,
-      child: LotusTap(
-        onTap: enabled ? onPressed : null,
-        child: AnimatedOpacity(
-          duration: const Duration(milliseconds: 150),
-          opacity: enabled ? 1 : 0.64,
-          child: Container(
-            constraints: const BoxConstraints(minHeight: 50),
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            alignment: Alignment.center,
-            decoration: CardLensDecoration.button(
-              enabled: enabled,
-              borderRadius: BorderRadius.circular(16),
-              gradient: enabled
-                  ? const LinearGradient(
-                      colors: [Color(0xFF6E4BFF), Color(0xFF5436D9)],
-                    )
-                  : null,
-              color: enabled ? null : const Color(0xFF5436D9),
-            ),
-            child: Text(
-              text,
-              style: AppTypography.text1SemiBold.copyWith(
-                color: AppColors.textInverse,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ),
-        ),
-      ),
+    return AsteriaActionButton(
+      text: text,
+      onPressed: onPressed,
+      width: double.infinity,
     );
   }
 }

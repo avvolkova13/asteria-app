@@ -351,7 +351,8 @@ class _NatalCardScreenState extends State<NatalCardScreen> {
               SliverPersistentHeader(
                 pinned: true,
                 floating: false,
-                delegate: TopNavBarDelegate(
+                delegate: TopNavBarDelegate.adaptive(
+                  context,
                   topInset: MediaQuery.paddingOf(context).top,
                   toolbarHeight: AsteriaTopBarMetrics.heightOf(context),
                   canPop: true,
@@ -838,7 +839,7 @@ class _GeneralInfoItem extends StatelessWidget {
             style: context.textTheme.tertiaryPlayfairMedium20.copyWith(
               fontFamily: 'Lora',
               letterSpacing: 0,
-              color: const Color(0xFFB5AAB8),
+              color: AppColorsDark.textSecondary,
               fontSize: 20,
               height: 1.1,
             ),
@@ -903,11 +904,6 @@ class _PositionsTab extends StatelessWidget {
       ),
     ].where((group) => group.planets.isNotEmpty).toList();
 
-    final cardHeight = _PlanetPositionCard.tallestHeight(
-      context,
-      groups.expand((group) => group.planets),
-    );
-
     return Column(
       key: key,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -932,7 +928,7 @@ class _PositionsTab extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           SizedBox(
-            height: cardHeight,
+            height: _PlanetPositionCard.tallestHeight(context, group.planets),
             child: _PlanetCardsRow(planets: group.planets),
           ),
           const SizedBox(height: 16),

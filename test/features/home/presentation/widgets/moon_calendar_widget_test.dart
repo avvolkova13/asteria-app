@@ -41,7 +41,8 @@ void main() {
           final cubit = _TestMoonScreenCubit();
           addTearDown(cubit.close);
 
-          // Four, six, then five weeks, exercising height changes in both directions.
+          // Four, six, then five weeks must occupy the same maximum height.
+          double? calendarHeight;
           for (final month in [
             DateTime(2027, 2),
             DateTime(2026, 8),
@@ -50,6 +51,23 @@ void main() {
             cubit.replaceState(MoonScreenState(focusedDay: month));
             await tester.pumpWidget(_calendarApp(cubit, textScale: textScale));
             await tester.pumpAndSettle();
+
+            final height = tester
+                .getSize(find.byType(MoonCalendarWidget))
+                .height;
+            calendarHeight ??= height;
+            expect(height, calendarHeight);
+            cubit.replaceState(
+              MoonScreenState(
+                focusedDay: month,
+                dayStatuses: {month: DayStatus.favorable},
+              ),
+            );
+            await tester.pumpAndSettle();
+            expect(
+              tester.getSize(find.byType(MoonCalendarWidget)).height,
+              calendarHeight,
+            );
 
             final visibleCells = find.byWidgetPredicate(
               (widget) =>
@@ -70,7 +88,7 @@ void main() {
               final overlayCell = find.byWidgetPredicate(
                 (widget) =>
                     widget is Semantics &&
-                    widget.properties.label == label &&
+                    (widget.properties.label ?? '').startsWith(label!) &&
                     widget.child is SizedBox,
               );
               expect(overlayCell, findsOneWidget);

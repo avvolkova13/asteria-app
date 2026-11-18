@@ -1,8 +1,9 @@
+import 'package:asteria_app/core/ui_kit/widgets/card_turn.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:flutter/material.dart';
 
 /// Shared виджет анимации разворота карты (рубашка ↔ лицевая сторона).
-/// Использует логику из love_layout для плавной анимации без бликов.
+/// Uses the same turn as the onboarding cards.
 class FlipCardWidget extends StatefulWidget {
   final Widget front;
   final Widget back;
@@ -27,7 +28,7 @@ class FlipCardWidget extends StatefulWidget {
     this.onFlipComplete,
     required this.width,
     required this.height,
-    this.duration = const Duration(milliseconds: 600),
+    this.duration = CardTurn.duration,
     this.enabled = true,
   }) : super(key: key);
 
@@ -35,7 +36,8 @@ class FlipCardWidget extends StatefulWidget {
   State<FlipCardWidget> createState() => _FlipCardWidgetState();
 }
 
-class _FlipCardWidgetState extends State<FlipCardWidget> with SingleTickerProviderStateMixin {
+class _FlipCardWidgetState extends State<FlipCardWidget>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
 
   @override
@@ -50,15 +52,17 @@ class _FlipCardWidgetState extends State<FlipCardWidget> with SingleTickerProvid
   @override
   void didUpdateWidget(FlipCardWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
+    _controller.duration = widget.duration;
     if (widget.isOpened != oldWidget.isOpened) {
       if (widget.isOpened) {
-        _controller.value = 1.0;
+        if (MediaQuery.disableAnimationsOf(context)) {
+          _controller.value = 1;
+        } else {
+          _controller.forward();
+        }
       } else {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (mounted && !widget.isOpened) {
-            _controller.value = 0.0;
-          }
-        });
+        // Reset before painting a replacement face, not one frame later.
+        _controller.value = 0.0;
       }
     }
   }
@@ -69,17 +73,27 @@ class _FlipCardWidgetState extends State<FlipCardWidget> with SingleTickerProvid
     super.dispose();
   }
 
+  bool _turning = false;
+
   Future<void> _onClosedCardTap() async {
-    if (widget.flipOnTap) {
-      widget.onFlipStart?.call();
-      WidgetsBinding.instance.addPostFrameCallback((_) async {
-        if (!mounted) return;
-        await _controller.forward();
-        if (!mounted) return;
-        widget.onFlipComplete?.call();
-      });
-    } else {
+    if (_turning) return;
+    if (!widget.flipOnTap) {
       widget.onTap?.call();
+      return;
+    }
+    _turning = true;
+    widget.onFlipStart?.call();
+    try {
+      if (MediaQuery.disableAnimationsOf(context)) {
+        _controller.value = 1;
+      } else {
+        await _controller.forward().orCancel;
+      }
+      if (mounted) widget.onFlipComplete?.call();
+    } on TickerCanceled {
+      // Leaving the screen cancels the turn without persisting an unopened card.
+    } finally {
+      _turning = false;
     }
   }
 
@@ -90,18 +104,21 @@ class _FlipCardWidgetState extends State<FlipCardWidget> with SingleTickerProvid
   @override
   Widget build(BuildContext context) {
     return LotusTap(
+      animateEntrance: false,
       behavior: HitTestBehavior.opaque,
       onTap: widget.enabled
           ? () {
-        final value = _controller.value;
-        final isFlipping = value > 0.0 && value < 1.0;
-        final isShowingFront = value >= 0.5 || (widget.isOpened && !isFlipping);
-        if (isShowingFront) {
-          _onOpenedCardTap();
-        } else {
-          _onClosedCardTap();
-        }
-      }
+              if (_turning || _controller.isAnimating) return;
+              final value = _controller.value;
+              final isFlipping = value > 0.0 && value < 1.0;
+              final isShowingFront =
+                  value >= 0.5 || (widget.isOpened && !isFlipping);
+              if (isShowingFront) {
+                _onOpenedCardTap();
+              } else {
+                _onClosedCardTap();
+              }
+            }
           : null,
       child: SizedBox(
         width: widget.width,
@@ -109,28 +126,10 @@ class _FlipCardWidgetState extends State<FlipCardWidget> with SingleTickerProvid
         child: AnimatedBuilder(
           animation: _controller,
           builder: (context, child) {
-            final value = _controller.value;
-            final isFlipping = value > 0.0 && value < 1.0;
-
-            if (!isFlipping) {
-              return value >= 0.5 ? widget.front : widget.back;
-            }
-
-            final rotationAngle = value * 3.14159;
-            final cardWidget = value < 0.5
-                ? widget.back
-                : Transform(
-                    alignment: Alignment.center,
-                    transform: Matrix4.identity()..rotateY(3.14159),
-                    child: widget.front,
-                  );
-
-            return Transform(
-              alignment: Alignment.center,
-              transform: Matrix4.identity()
-                ..setEntry(3, 2, 0.001)
-                ..rotateY(rotationAngle),
-              child: cardWidget,
+            return CardTurn(
+              progress: _controller.value,
+              front: widget.front,
+              back: widget.back,
             );
           },
         ),

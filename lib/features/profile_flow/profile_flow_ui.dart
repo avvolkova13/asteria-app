@@ -1,4 +1,4 @@
-import 'package:asteria_app/core/ui_kit/widgets/asteria_activity_indicator.dart';
+import 'package:asteria_app/core/ui_kit/widgets/asteria_action_button.dart';
 import 'package:asteria_app/core/ui_kit/widgets/top_bar_geometry.dart';
 import 'package:asteria_app/core/ui_kit/widgets/pro_badge_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
@@ -21,7 +21,7 @@ class ProfileFlowColors {
   static const accent = Color(0xFFFFAA47);
   static const purple = Color(0xFF7548FF);
   static const purpleDark = Color(0xFF251B4F);
-  static const textMuted = Color(0xCCFFFFFF);
+  static const textMuted = AppColorsDark.textSecondary;
 }
 
 class ProfileFlowBackground extends StatelessWidget {
@@ -264,56 +264,11 @@ class ProfilePrimaryButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ConstrainedBox(
-      constraints: const BoxConstraints(
-        minWidth: double.infinity,
-        minHeight: 50,
-      ),
-      child: DecoratedBox(
-        decoration: CardLensDecoration.button(
-          enabled: onPressed != null && !isLoading,
-          borderRadius: BorderRadius.circular(16),
-          color: onPressed != null && !isLoading
-              ? null
-              : context.colors.customButtonDisabledBackground,
-          gradient: onPressed != null && !isLoading
-              ? CardLensDecoration.buttonFill(const Color(0xFF6B39E9))
-              : null,
-          boxShadow: onPressed != null && !isLoading
-              ? [
-                  BoxShadow(
-                    color: const Color(0xFF6B39E9).withValues(alpha: 0.42),
-                    blurRadius: 28,
-                    offset: const Offset(0, 8),
-                  ),
-                ]
-              : null,
-        ),
-        child: LotusButtons.elevated(
-          onPressed: isLoading ? null : onPressed,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.transparent,
-            shadowColor: Colors.transparent,
-            disabledBackgroundColor: Colors.transparent,
-            foregroundColor: AppColors.white,
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-          ),
-          child: isLoading
-              ? const SizedBox(
-                  width: 20,
-                  height: 20,
-                  child: AsteriaActivityIndicator(color: AppColors.cardTinted),
-                )
-              : Text(
-                  text,
-                  textAlign: TextAlign.center,
-                  style: context.textTheme.inverseUrbanistRegular17,
-                ),
-        ),
-      ),
+    return AsteriaActionButton(
+      text: text,
+      onPressed: onPressed,
+      isLoading: isLoading,
+      width: double.infinity,
     );
   }
 }
@@ -330,26 +285,10 @@ class ProfileOutlineButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ProfileGlassCard(
-      padding: EdgeInsets.zero,
-      color: Colors.transparent,
-      onTap: onPressed,
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(minHeight: 49),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          child: Center(
-            heightFactor: 1,
-            child: Text(
-              text,
-              textAlign: TextAlign.center,
-              style: context.textTheme.inverseUrbanistRegular17.copyWith(
-                color: ProfileFlowColors.accent,
-              ),
-            ),
-          ),
-        ),
-      ),
+    return AsteriaActionButton(
+      text: text,
+      onPressed: onPressed,
+      width: double.infinity,
     );
   }
 }

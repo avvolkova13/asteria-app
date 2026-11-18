@@ -70,7 +70,8 @@ class TaroCardsScreen extends StatelessWidget {
           SliverPersistentHeader(
             pinned: true,
             floating: false,
-            delegate: TopNavBarDelegate(
+            delegate: TopNavBarDelegate.adaptive(
+              context,
               topInset: MediaQuery.paddingOf(context).top,
               toolbarHeight: AsteriaTopBarMetrics.heightOf(context),
               canPop: true,
@@ -562,7 +563,10 @@ class _TaroCardsContentState extends State<_TaroCardsContent> {
                           ),
                           const SizedBox(height: 16),
                         ],
-                        const AsteriaEntrance(child: TarotLayout()),
+                        const AsteriaEntrance(
+                          animateInitially: false,
+                          child: TarotLayout(),
+                        ),
                         if (!hasOpenedInsight) ...[
                           const SizedBox(height: 16),
                           SizedBox(
@@ -605,7 +609,6 @@ class _TaroCardsContentState extends State<_TaroCardsContent> {
           // Все карты
           const AllCardsTab(),
         ),
-        const SizedBox(height: 64),
       ],
     );
   }
@@ -644,8 +647,6 @@ class _GradientUnderlineButton extends StatelessWidget {
                   _TaroCardsColors.goldGradient.createShader(bounds),
               child: Text(
                 text,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
                 style: style.copyWith(color: AppColors.white),
                 textAlign: TextAlign.center,
               ),

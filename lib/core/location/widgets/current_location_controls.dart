@@ -1,6 +1,5 @@
-import 'package:asteria_app/core/ui_kit/widgets/asteria_activity_indicator.dart';
+import 'package:asteria_app/core/ui_kit/widgets/asteria_action_button.dart';
 import 'package:asteria_app/core/ui_kit/widgets/modal_glass_surface.dart';
-import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/app/data/models/user/user_model.dart';
@@ -12,7 +11,6 @@ import 'package:asteria_app/core/location/device_location_service.dart';
 import 'package:asteria_app/core/location/widgets/city_selection_screen.dart';
 import 'package:asteria_app/core/location/suggested_cities.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
-import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -246,7 +244,7 @@ class _CurrentLocationControlsState extends State<CurrentLocationControls> {
           Text(
             sourceLabel,
             style: context.textTheme.inverseUrbanistRegular14.copyWith(
-              color: AppColors.textInverse.withValues(alpha: 0.62),
+              color: AppColorsDark.textSecondary,
             ),
           ),
           const SizedBox(height: 14),
@@ -301,9 +299,7 @@ class _CityConfirmationSheet extends StatelessWidget {
                     text: location.location.split(',').first.trim(),
                     style: const TextStyle(fontWeight: FontWeight.w600),
                   ),
-                  TextSpan(
-                    text: ',\n${context.l10n.cityConfirmationQuestion}',
-                  ),
+                  TextSpan(text: ',\n${context.l10n.cityConfirmationQuestion}'),
                 ],
               ),
             ),
@@ -339,20 +335,26 @@ class _CityConfirmationButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LotusButtons.text(
-      onPressed: onPressed,
-      style: TextButton.styleFrom(
-        visualDensity: VisualDensity.standard,
-        minimumSize: const Size.fromHeight(48),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-        backgroundColor: filled ? const Color(0xFF6E4BFF) : Colors.transparent,
-        foregroundColor: AppColors.textInverse,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        side: filled ? null : const BorderSide(color: Color(0xFFE9E9EA)),
-        textStyle: AppTypography.text1SemiBold,
-      ),
-      child: Text(text),
+    final style = TextButton.styleFrom(
+      visualDensity: VisualDensity.standard,
+      minimumSize: const Size.fromHeight(48),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      backgroundColor: filled ? AppColors.deepPurple : AppColorsDark.modal,
+      foregroundColor: AppColors.textInverse,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      textStyle: AppTypography.text1SemiBold,
     );
+    return filled
+        ? LotusButtons.elevated(
+            onPressed: onPressed,
+            style: style,
+            child: Text(text),
+          )
+        : LotusButtons.outlined(
+            onPressed: onPressed,
+            style: style,
+            child: Text(text),
+          );
   }
 }
 
@@ -371,36 +373,26 @@ class _LocationSecondaryButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ConstrainedBox(
-      constraints: const BoxConstraints(minHeight: 52),
-      child: DecoratedBox(
-        decoration: CardLensDecoration.button(
-          enabled: !isLoading,
-          color: const Color(0xFF171122),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: const Color(0xFFE6994D).withValues(alpha: 0.78),
+    return AsteriaActionButton(
+      text: title,
+      onPressed: onPressed,
+      isLoading: isLoading,
+      width: double.infinity,
+      height: 52,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(icon, color: Colors.white),
+          const SizedBox(width: 8),
+          Flexible(
+            child: Text(
+              title,
+              textAlign: TextAlign.center,
+              style: const TextStyle(color: Colors.white),
+            ),
           ),
-        ),
-        child: LotusButtons.textIcon(
-          onPressed: isLoading ? null : onPressed,
-          style: TextButton.styleFrom(
-            minimumSize: const Size.fromHeight(52),
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-          ),
-          icon: isLoading
-              ? const SizedBox(
-                  width: 18,
-                  height: 18,
-                  child: AsteriaActivityIndicator(),
-                )
-              : ClayIcon(icon, color: const Color(0xFFE6994D)),
-          label: Text(
-            title,
-            textAlign: TextAlign.center,
-            style: AppTypography.text1SemiBold.copyWith(color: const Color(0xFFE6994D)),
-          ),
-        ),
+        ],
       ),
     );
   }
@@ -421,35 +413,26 @@ class _LocationPrimaryButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ConstrainedBox(
-      constraints: const BoxConstraints(minHeight: 52),
-      child: DecoratedBox(
-        decoration: CardLensDecoration.button(
-          enabled: !isLoading,
-          gradient: const LinearGradient(
-            colors: [Color(0xFF6E4BFF), Color(0xFF5A3FD1)],
+    return AsteriaActionButton(
+      text: title,
+      onPressed: onPressed,
+      isLoading: isLoading,
+      width: double.infinity,
+      height: 52,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(icon, color: Colors.white),
+          const SizedBox(width: 8),
+          Flexible(
+            child: Text(
+              title,
+              textAlign: TextAlign.center,
+              style: const TextStyle(color: Colors.white),
+            ),
           ),
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: LotusButtons.textIcon(
-          onPressed: isLoading ? null : onPressed,
-          style: TextButton.styleFrom(
-            minimumSize: const Size.fromHeight(52),
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-          ),
-          icon: isLoading
-              ? const SizedBox(
-                  width: 18,
-                  height: 18,
-                  child: AsteriaActivityIndicator(),
-                )
-              : ClayIcon(icon, color: AppColors.white),
-          label: Text(
-            title,
-            textAlign: TextAlign.center,
-            style: AppTypography.text1SemiBold.copyWith(color: AppColors.white),
-          ),
-        ),
+        ],
       ),
     );
   }

@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/responsive_heading.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:flutter/material.dart';
 
@@ -10,7 +11,7 @@ class HomeSectionHeading extends StatelessWidget {
   Widget build(BuildContext context) {
     return Semantics(
       header: true,
-      child: Text(
+      child: ResponsiveHeading(
         title,
         style: AppTypography.h1.copyWith(color: AppColors.textInverse),
       ),

@@ -1,27 +1,17 @@
-import 'package:asteria_app/features/home/presentation/widgets/bottom_tab_bar_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:asteria_app/core/ui_kit/widgets/top_bar_geometry.dart';
-
-import '../../../data/models/onboarding_page_model.dart';
-
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
-
-import 'native_intro_pair.dart';
-
+import 'package:asteria_app/core/ui_kit/widgets/top_bar_geometry.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
-import 'package:asteria_app/features/anakra_chat/presentation/widgets/anakra_glass_surface.dart';
 import 'package:asteria_app/features/auth/presentation/widgets/auth_flow_widgets.dart';
-import 'package:asteria_app/features/compatibility/presentation/widgets/compatibility_layout.dart';
-import 'package:asteria_app/features/home/presentation/models/day_status.dart';
-import 'package:asteria_app/features/home/presentation/widgets/day_status_icon.dart';
-import 'package:asteria_app/features/home/presentation/widgets/home_glass_surface.dart';
 import 'package:asteria_app/features/home/presentation/widgets/home_section_heading.dart';
 import 'package:asteria_app/features/onboarding/presentation/widgets/onboarding_pagination_widget.dart';
 import 'package:asteria_app/features/scenarios/scenario_sky.dart';
-
-import 'native_intro_audio.dart';
-import 'native_tarot_deal.dart';
+import '../../../data/models/onboarding_page_model.dart';
+import 'intro_stories.dart';
+import 'intro_natal_story.dart';
+import 'intro_story.dart';
+import 'intro_next_button.dart';
 
 class OnboardingTour extends StatefulWidget {
   const OnboardingTour({
@@ -29,28 +19,93 @@ class OnboardingTour extends StatefulWidget {
     required this.pages,
     required this.onComplete,
     required this.onPageChanged,
+    this.now = DateTime.now,
   });
   final List<OnboardingPageModel> pages;
+  final DateTime Function() now;
   final VoidCallback onComplete;
   final ValueChanged<int> onPageChanged;
   @override
   State<OnboardingTour> createState() => _TourState();
 }
 
-class _TourState extends State<OnboardingTour> {
+class _TourState extends State<OnboardingTour> with WidgetsBindingObserver {
   int _index = 0;
   late final _pages = PageController(initialPage: _index);
   bool _choosing = false;
+  bool _foreground = true;
+  bool _moving = false;
+  bool _advanceQueued = false;
+  int? _finishedIndex;
+  late final _playback = List.generate(
+    widget.pages.length,
+    (index) =>
+        IntroPlaybackController()..addListener(() => _onPlaybackChanged(index)),
+  );
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  void _onPlaybackChanged(int index) {
+    if (index != _index) return;
+    _finishedIndex = _playback[index].mode == IntroPlaybackMode.replay
+        ? index
+        : null;
+    _scheduleAdvance();
+  }
+
+  void _scheduleAdvance() {
+    if (_advanceQueued ||
+        _finishedIndex != _index ||
+        _index == widget.pages.length - 1) {
+      return;
+    }
+    _advanceQueued = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _advanceQueued = false;
+      if (!mounted ||
+          !_foreground ||
+          _choosing ||
+          _moving ||
+          _finishedIndex != _index ||
+          _index >= widget.pages.length - 1 ||
+          !_pages.hasClients) {
+        return;
+      }
+      if (_pages.position.isScrollingNotifier.value ||
+          ((_pages.page ?? _index.toDouble()) - _index).abs() > .01) {
+        return;
+      }
+      _go(_index + 1);
+    });
+    WidgetsBinding.instance.ensureVisualUpdate();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    _foreground = state == AppLifecycleState.resumed;
+    if (_foreground) _scheduleAdvance();
+  }
 
   Future<void> _go(int index) async {
-    if (MediaQuery.disableAnimationsOf(context)) {
-      _pages.jumpToPage(index);
-    } else {
-      await _pages.animateToPage(
-        index,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeOutCubic,
-      );
+    if (_choosing || !_pages.hasClients) return;
+    _moving = true;
+    try {
+      if (MediaQuery.disableAnimationsOf(context) ||
+          MediaQuery.accessibleNavigationOf(context)) {
+        _pages.jumpToPage(index);
+      } else {
+        await _pages.animateToPage(
+          index,
+          duration: const Duration(milliseconds: 560),
+          curve: Curves.easeInOutCubic,
+        );
+      }
+    } finally {
+      _moving = false;
     }
   }
 
@@ -62,7 +117,11 @@ class _TourState extends State<OnboardingTour> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _pages.dispose();
+    for (final controller in _playback) {
+      controller.dispose();
+    }
     super.dispose();
   }
 
@@ -107,73 +166,108 @@ class _TourState extends State<OnboardingTour> {
                     Padding(
                       padding: const EdgeInsets.fromLTRB(16, 6, 16, 0),
                       child: Semantics(
-                        label: context.l10n.introProgress(_index + 1, 4),
+                        label: context.l10n.introProgress(
+                          _index + 1,
+                          widget.pages.length,
+                        ),
                         child: ExcludeSemantics(
-                          child: OnboardingPaginationWidget(
-                            totalPages: 4,
-                            currentPage: _index,
+                          child: AnimatedBuilder(
+                            animation: Listenable.merge([
+                              _pages,
+                              ..._playback.map((item) => item.progress),
+                            ]),
+                            builder: (context, _) => OnboardingPaginationWidget(
+                              totalPages: widget.pages.length,
+                              currentPage: _index,
+                              page: _pages.hasClients
+                                  ? (_pages.page ?? _index.toDouble())
+                                  : _index.toDouble(),
+                              progress: _playback
+                                  .map((item) => item.progress.value)
+                                  .toList(),
+                            ),
                           ),
                         ),
                       ),
                     ),
                     Expanded(
-                      child: PageView(
-                        controller: _pages,
-                        allowImplicitScrolling: false,
-                        onPageChanged: (i) {
-                          setState(() => _index = i);
-                          widget.onPageChanged(i);
+                      child: NotificationListener<ScrollEndNotification>(
+                        onNotification: (_) {
+                          _scheduleAdvance();
+                          return false;
                         },
-                        children: [
-                          _Scene(
-                            index: 0,
-                            active: _index == 0,
-                            title: widget.pages[0].title,
-                            body: widget.pages[0].description,
-                            child: _Calendar(),
-                          ),
-                          _Scene(
-                            index: 1,
-                            active: _index == 1,
-                            title: widget.pages[1].title,
-                            body: widget.pages[1].description,
-                            child: SizedBox(
-                              height: (MediaQuery.sizeOf(context).height * .47)
-                                  .clamp(250.0, 420.0),
-                              child: TickerMode(
-                                enabled: _index == 1 && !_choosing,
-                                child: NativeIntroAudio(
-                                  active: _index == 1 && !_choosing,
+                        child: PageView(
+                          controller: _pages,
+                          allowImplicitScrolling: false,
+                          onPageChanged: (i) {
+                            setState(() {
+                              _index = i;
+                              _finishedIndex = null;
+                            });
+                            widget.onPageChanged(i);
+                          },
+                          children: [
+                            for (
+                              var index = 0;
+                              index < widget.pages.length;
+                              index++
+                            )
+                              IntroPlaybackScope(
+                                controller: _playback[index],
+                                child: _Scene(
+                                  controller: _pages,
+                                  index: index,
+                                  active: _index == index,
+                                  title: widget.pages[index].title,
+                                  body: widget.pages[index].description,
+                                  child: switch (widget
+                                      .pages[index]
+                                      .visualKind) {
+                                    OnboardingVisualKind.hero =>
+                                      IntroCalendarStory(
+                                        now: widget.now,
+                                        active: _index == index && !_choosing,
+                                      ),
+                                    OnboardingVisualKind.natal =>
+                                      IntroNatalStory(
+                                        active: _index == index && !_choosing,
+                                      ),
+                                    OnboardingVisualKind.personal =>
+                                      IntroPairStory(
+                                        active: _index == index && !_choosing,
+                                      ),
+                                    OnboardingVisualKind.tarot =>
+                                      IntroTarotStory(
+                                        active: _index == index && !_choosing,
+                                      ),
+                                    OnboardingVisualKind.daily =>
+                                      IntroMoodStory(
+                                        active: _index == index && !_choosing,
+                                      ),
+                                  },
                                 ),
                               ),
-                            ),
-                          ),
-                          _Scene(
-                            index: 2,
-                            active: _index == 2,
-                            title: widget.pages[2].title,
-                            body: widget.pages[2].description,
-                            child: _Pair(),
-                          ),
-                          _Scene(
-                            index: 3,
-                            active: _index == 3,
-                            title: widget.pages[3].title,
-                            body: widget.pages[3].description,
-                            child: _Deal(active: _index == 3 && !_choosing),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
-                      child: AuthGradientButton(
-                        text: _index == 3
-                            ? context.l10n.introStart
-                            : context.l10n.next,
-                        onPressed: _index == 3
-                            ? _finish
-                            : () => _go(_index + 1),
+                      padding: const EdgeInsets.fromLTRB(16, 4, 16, 0),
+                      child: AnimatedBuilder(
+                        animation: _pages,
+                        builder: (context, _) => IntroNextButton(
+                          page: _pages.hasClients
+                              ? (_pages.page ?? _index.toDouble())
+                              : _index.toDouble(),
+                          index: _index,
+                          totalPages: widget.pages.length,
+                          label: _index == widget.pages.length - 1
+                              ? context.l10n.introStart
+                              : context.l10n.next,
+                          onPressed: _index == widget.pages.length - 1
+                              ? _finish
+                              : () => _go(_index + 1),
+                        ),
                       ),
                     ),
                   ],
@@ -187,289 +281,186 @@ class _TourState extends State<OnboardingTour> {
   );
 }
 
-class _Scene extends StatelessWidget {
+class _Scene extends StatefulWidget {
   const _Scene({
     required this.index,
+    required this.controller,
     required this.active,
     required this.title,
     required this.body,
     required this.child,
   });
   final int index;
+  final PageController controller;
   final bool active;
   final String title, body;
   final Widget child;
 
   @override
-  Widget build(BuildContext context) => ExcludeSemantics(
-    excluding: !active,
-    child: ListView(
-      key: ValueKey('onboarding-content-$index'),
-      padding: const EdgeInsets.fromLTRB(16, 26, 16, 12),
-      children: [
-        HomeSectionHeading(title),
-        const SizedBox(height: 10),
-        Text(
-          body,
-          style: AppTypography.text1.copyWith(color: AppColors.textInverse),
-        ),
-        const SizedBox(height: 24),
-        KeyedSubtree(key: ValueKey('onboarding-visual-$index'), child: child),
-      ],
-    ),
-  );
+  State<_Scene> createState() => _SceneState();
 }
 
-class _Calendar extends StatefulWidget {
-  const _Calendar();
-  @override
-  State<_Calendar> createState() => _CalendarState();
-}
+class _SceneState extends State<_Scene> {
+  final _scroll = ScrollController();
+  IntroPlaybackController? _story;
+  GlobalKey? _lastFocus;
+  IntroPlaybackMode? _lastMode;
+  double _lastProgress = 0;
+  bool _queued = false;
+  bool _dragging = false;
+  bool _resumeAfterDrag = false;
+  int get index => widget.index;
+  PageController get controller => widget.controller;
+  bool get active => widget.active;
+  String get title => widget.title;
+  String get body => widget.body;
+  Widget get child => widget.child;
 
-class _CalendarState extends State<_Calendar> {
-  int date = 1;
-
-  @override
-  Widget build(BuildContext context) => Column(
-    crossAxisAlignment: CrossAxisAlignment.stretch,
-    children: [
-      Text(context.l10n.introCalendarExample, style: AppTypography.text1),
-      const SizedBox(height: 12),
-      ClipRRect(
-        borderRadius: BorderRadius.circular(22),
-        child: Image.asset(
-          'assets/images/onboarding/intro_scissors.webp',
-          height: (MediaQuery.sizeOf(context).height * .24).clamp(130.0, 220.0),
-          fit: BoxFit.cover,
-          alignment: const Alignment(0, -.33),
-          excludeFromSemantics: true,
-        ),
-      ),
-      const SizedBox(height: 14),
-      IntrinsicHeight(
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            for (int i = 0; i < 2; i++) ...[
-              if (i > 0) const SizedBox(width: 10),
-              Expanded(
-                child: Semantics(
-                  selected: date == i,
-                  button: true,
-                  child: LotusTap(
-                    onTap: () => setState(() => date = i),
-                    child: HomeGlassSurface(
-                      child: Padding(
-                        padding: const EdgeInsets.all(12),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                DayStatusIcon(
-                                  status: i == 0
-                                      ? DayStatus.neutral
-                                      : DayStatus.favorable,
-                                  size: 24,
-                                ),
-                                const Spacer(),
-                                if (date == i)
-                                  const Icon(
-                                    Icons.check_rounded,
-                                    color: AppColorsDark.linkGold,
-                                    size: 20,
-                                  ),
-                              ],
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              i == 0
-                                  ? context.l10n.introDateOne
-                                  : context.l10n.introDateTwo,
-                              style: AppTypography.h3,
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              i == 0
-                                  ? context.l10n.introNeutral
-                                  : context.l10n.introFavorable,
-                              style: AppTypography.text1,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ],
-        ),
-      ),
-      const SizedBox(height: 18),
-      Text(
-        date == 0
-            ? context.l10n.introNeutralTip
-            : context.l10n.introFavorableTip,
-        style: AppTypography.text1,
-      ),
-    ],
-  );
-}
-
-class _Pair extends StatelessWidget {
-  const _Pair();
-  @override
-  Widget build(BuildContext context) => Column(
-    crossAxisAlignment: CrossAxisAlignment.stretch,
-    children: [
-      CompatibilityGlassCard(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(context.l10n.introPairExample, style: AppTypography.text1),
-            const SizedBox(height: 12),
-            IntroPairHero(
-              firstDate: DateTime(1995, 5, 13),
-              secondDate: DateTime(1994, 5, 22),
-              percentage: 74,
-            ),
-            const SizedBox(height: 16),
-            Text(context.l10n.introPairTip, style: AppTypography.text1),
-          ],
-        ),
-      ),
-      const SizedBox(height: 16),
-      CompatibilityGlassCard(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(context.l10n.introPairQuestion, style: AppTypography.h3),
-            SizedBox(height: 8),
-            Text(context.l10n.introPairPrompt, style: AppTypography.text1),
-          ],
-        ),
-      ),
-    ],
-  );
-}
-
-class _Deal extends StatefulWidget {
-  const _Deal({required this.active});
-  final bool active;
-  @override
-  State<_Deal> createState() => _DealState();
-}
-
-class _DealState extends State<_Deal>
-    with SingleTickerProviderStateMixin, WidgetsBindingObserver {
-  late final _clock = AnimationController(
-    vsync: this,
-    duration: const Duration(milliseconds: 2540),
-  );
-  bool _reduced = false;
-  bool _visible = true;
-  bool _foreground = true;
-  bool _initialized = false;
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addObserver(this);
+  void _rewind() {
+    _lastFocus = null;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted && _scroll.hasClients) _scroll.jumpTo(0);
+    });
   }
 
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    _foreground = state == AppLifecycleState.resumed;
-    if (!_foreground) {
-      _clock.stop();
-    } else if (widget.active && _visible && !_reduced) {
-      _clock.forward();
-    }
+  void _onProgress() {
+    final progress = _story?.progress.value ?? 0;
+    if (progress < _lastProgress - .05) _rewind();
+    _lastProgress = progress;
+    _follow();
   }
 
-  void _sync() {
-    if (!widget.active || _reduced || !_visible || !_foreground) {
-      _clock.stop();
-      _clock.value = _reduced ? 1 : 0;
-    } else {
-      _clock.forward(from: 0);
+  void _onMode() {
+    final mode = _story?.mode;
+    if (mode == IntroPlaybackMode.pause && mode != _lastMode) _lastFocus = null;
+    _lastMode = mode;
+    _follow();
+  }
+
+  void _follow() {
+    if (_queued || !active || _dragging) return;
+    _queued = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _queued = false;
+      if (!mounted || !active || _dragging || !_scroll.hasClients) return;
+      final media = MediaQuery.of(context);
+      if (media.disableAnimations ||
+          media.accessibleNavigation ||
+          media.textScaler.scale(16) > 22 ||
+          _story?.mode != IntroPlaybackMode.pause) {
+        return;
+      }
+      // Let the scene heading settle before the camera follows its example.
+      if ((_story?.progress.value ?? 0) < .1) return;
+      final anchor = _story?.focus.value;
+      final target = anchor?.currentContext?.findRenderObject();
+      if (anchor == null ||
+          anchor == _lastFocus ||
+          target == null ||
+          !target.attached) {
+        return;
+      }
+      _lastFocus = anchor;
+      _scroll.position.ensureVisible(
+        target,
+        alignment: 1,
+        duration: const Duration(milliseconds: 650),
+        curve: Curves.easeInOutCubic,
+      );
+    });
+  }
+
+  bool _onScroll(ScrollNotification notification) {
+    if (notification.metrics.axis != Axis.vertical) return false;
+    if (notification is ScrollStartNotification &&
+        notification.dragDetails != null) {
+      _dragging = true;
+      _lastFocus = null;
+      if (_story?.mode == IntroPlaybackMode.pause) {
+        _resumeAfterDrag = true;
+        _story?.toggle?.call();
+      }
+    } else if (notification is ScrollEndNotification) {
+      _dragging = false;
+      if (_resumeAfterDrag) {
+        _resumeAfterDrag = false;
+        if (_story?.mode == IntroPlaybackMode.resume) _story?.toggle?.call();
+      }
     }
+    return false;
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final reduced = MediaQuery.disableAnimationsOf(context);
-    final visible = TickerMode.valuesOf(context).enabled;
-    if (!_initialized || reduced != _reduced || visible != _visible) {
-      _initialized = true;
-      _reduced = reduced;
-      _visible = visible;
-      _sync();
-    }
+    final story = IntroPlaybackScope.maybeOf(context);
+    if (identical(story, _story)) return;
+    _story?.progress.removeListener(_onProgress);
+    _story?.focus.removeListener(_follow);
+    _story?.removeListener(_onMode);
+    _story = story;
+    story?.progress.addListener(_onProgress);
+    story?.focus.addListener(_follow);
+    story?.addListener(_onMode);
   }
 
   @override
-  void didUpdateWidget(_Deal old) {
-    super.didUpdateWidget(old);
-    if (old.active != widget.active) _sync();
+  void didUpdateWidget(_Scene oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!oldWidget.active && active) _rewind();
   }
 
   @override
   void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
-    _clock.dispose();
+    _story?.progress.removeListener(_onProgress);
+    _story?.focus.removeListener(_follow);
+    _story?.removeListener(_onMode);
+    _scroll.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) => AnimatedBuilder(
-    animation: _clock,
-    builder: (_, bubble) => Column(
-      children: [
-        Semantics(
-          container: true,
-          button: true,
-          label: context.l10n.introReplay,
-          onTap: _sync,
-          child: LotusTap(
-            onTap: _sync,
-            child: NativeTarotDeal(seconds: _clock.value * 2.54),
-          ),
+    animation: controller,
+    builder: (context, child) {
+      final reduced =
+          MediaQuery.disableAnimationsOf(context) ||
+          MediaQuery.accessibleNavigationOf(context);
+      final page = controller.hasClients
+          ? (controller.page ?? index.toDouble())
+          : index.toDouble();
+      final distance = reduced ? 0.0 : (page - index).abs().clamp(0.0, 1.0);
+      return Transform.translate(
+        offset: Offset(0, 12 * distance),
+        child: Transform.scale(
+          scale: 1 - .035 * distance,
+          child: Opacity(opacity: 1 - .22 * distance, child: child),
         ),
-        const SizedBox(height: 16),
-        Opacity(
-          opacity: ((_clock.value * 2.54 - 2.19) / .35).clamp(0.0, 1.0),
-          child: bubble,
-        ),
-      ],
-    ),
-    child: Row(
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: [
-        ExcludeSemantics(
-          child: TickerMode(
-            enabled: widget.active,
-            child: const AnakraIdleBadge(
-              assetPath: 'assets/images/year_animals/horse.webp',
+      );
+    },
+    child: ExcludeSemantics(
+      excluding: !active,
+      child: NotificationListener<ScrollNotification>(
+        onNotification: _onScroll,
+        child: ListView(
+          controller: _scroll,
+          key: ValueKey('onboarding-content-$index'),
+          padding: const EdgeInsets.fromLTRB(16, 20, 16, 12),
+          children: [
+            HomeSectionHeading(title),
+            const SizedBox(height: 10),
+            Text(
+              body,
+              style: AppTypography.text1.copyWith(color: AppColors.textInverse),
             ),
-          ),
-        ),
-        const SizedBox(width: 8),
-        Expanded(
-          child: AnakraGlassSurface(
-            side: AnakraBubbleSide.incoming,
-            child: Padding(
-              padding: EdgeInsets.all(16),
-              child: Text(
-                context.l10n.introAnakraMessage,
-                style: AppTypography.text1,
-              ),
+            const SizedBox(height: 14),
+            KeyedSubtree(
+              key: ValueKey('onboarding-visual-$index'),
+              child: child,
             ),
-          ),
+          ],
         ),
-      ],
+      ),
     ),
   );
 }

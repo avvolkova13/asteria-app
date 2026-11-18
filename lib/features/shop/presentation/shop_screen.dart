@@ -5,7 +5,9 @@ import 'package:asteria_app/core/ui_kit/card_radii.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
+
 import 'dart:ui' as ui;
+
 import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 
@@ -129,9 +131,8 @@ class _ShopScreenState extends State<ShopScreen> {
                                 .copyWith(height: 1.2),
                           ).withEntrance(),
                           const SizedBox(height: 16),
-                          _buildSubscriptionPromoSection(
-                            context,
-                          ).withEntrance(),
+                          _buildSubscriptionPromoSection(context)
+                              .withEntrance(),
                           KeyedSubtree(
                             key: ValueKey(state.runtimeType),
                             child: _buildShopContent(context, state),
@@ -301,8 +302,10 @@ class _ShopListItem extends StatelessWidget {
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          _ShopItemImage(visual: visual, isLocked: isEmpty),
-                          const SizedBox(width: 8),
+                          if (!separatePrice) ...[
+                            _ShopItemImage(visual: visual, isLocked: isEmpty),
+                            const SizedBox(width: 8),
+                          ],
                           Expanded(
                             child: ConstrainedBox(
                               constraints: const BoxConstraints(minHeight: 74),
@@ -326,8 +329,10 @@ class _ShopListItem extends StatelessWidget {
                                   const SizedBox(height: 4),
                                   Text(
                                     product.description,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: separatePrice ? null : 1,
+                                    overflow: separatePrice
+                                        ? TextOverflow.visible
+                                        : TextOverflow.ellipsis,
                                     style: context
                                         .textTheme
                                         .inverseUrbanistRegular12
@@ -436,92 +441,105 @@ class _ShopBackground extends StatelessWidget {
 
 class _ShopHeader extends StatelessWidget {
   const _ShopHeader();
-
   @override
   Widget build(BuildContext context) {
     final balance = MonetizationProvider.maybeOf(context)?.balance ?? 0;
-
-    return AsteriaTopBarFrame(
-      child: Row(
+    final titleStyle = context.textTheme.inversePlayfairSemiBold17.copyWith(
+      height: 1.2,
+    );
+    final back = LotusFeedback(
+      onActivate: () => Navigator.of(context).pop(),
+      keyboard: true,
+      builder: (activate) => Semantics(
+        button: true,
+        label: MaterialLocalizations.of(context).backButtonTooltip,
+        onTap: activate,
+        child: ExcludeSemantics(
+          child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: activate,
+            child: SizedBox(
+              width: 44,
+              height: 44,
+              child: Align(
+                alignment: Alignment.center,
+                child: LotusArrowBubble(back: true),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    final balanceAction = LotusFeedback(
+      onActivate: () => BalanceRoute.push(context),
+      keyboard: true,
+      builder: (activate) => Semantics(
+        button: true,
+        label: context.l10n.balanceStarsLabel(balance),
+        onTap: activate,
+        child: ExcludeSemantics(
+          child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: activate,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(minWidth: 44, minHeight: 44),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Text(
+                    '$balance ',
+                    style: context.textTheme.inversePlayfairSemiBold17.copyWith(
+                      height: 1.2,
+                    ),
+                  ).withEntrance(),
+                  LotusRasterIcon(
+                    'assets/icons/star_coin_icon.png',
+                    width: 14,
+                    height: 14,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    const pro = SizedBox(width: 76, height: 28, child: SubscriptionWidget());
+    return AsteriaAdaptiveTopBar(
+      title: context.l10n.shopTitle,
+      titleStyle: titleStyle,
+      leading: back,
+      leadingWidth: 44,
+      inlineGap: 8,
+      actions: [balanceAction, pro],
+      actionWidths: [
+        (AsteriaTopBarLayout.textSize(context, '$balance ', titleStyle).width +
+                14)
+            .clamp(44.0, double.infinity)
+            .toDouble(),
+        76,
+      ],
+      inline: Row(
         children: [
           Expanded(
             child: Row(
               children: [
-                LotusFeedback(
-                  onActivate: () => Navigator.of(context).pop(),
-                  keyboard: true,
-                  builder: (activate) => Semantics(
-                    button: true,
-                    label: MaterialLocalizations.of(context).backButtonTooltip,
-                    onTap: activate,
-                    child: ExcludeSemantics(
-                      child: GestureDetector(
-                        behavior: HitTestBehavior.opaque,
-                        onTap: activate,
-                        child: SizedBox(
-                          width: 44,
-                          height: 44,
-                          child: Align(
-                            alignment: Alignment.center,
-                            child: LotusArrowBubble(back: true),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
+                back,
                 Flexible(
                   child: Text(
                     context.l10n.shopTitle,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: context.textTheme.inversePlayfairSemiBold17.copyWith(
-                      height: 1.2,
-                    ),
+                    style: titleStyle,
                   ).withEntrance(),
                 ),
               ],
             ),
           ),
-          LotusFeedback(
-            onActivate: () => BalanceRoute.push(context),
-            keyboard: true,
-            builder: (activate) => Semantics(
-              button: true,
-              label: context.l10n.balanceStarsLabel(balance),
-              onTap: activate,
-              child: ExcludeSemantics(
-                child: GestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  onTap: activate,
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(
-                      minWidth: 44,
-                      minHeight: 44,
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Text(
-                          '$balance ',
-                          style: context.textTheme.inversePlayfairSemiBold17
-                              .copyWith(height: 1.2),
-                        ).withEntrance(),
-                        LotusRasterIcon(
-                          'assets/icons/star_coin_icon.png',
-                          width: 14,
-                          height: 14,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
+          balanceAction,
           const SizedBox(width: 8),
-          const SizedBox(width: 76, height: 28, child: SubscriptionWidget()),
+          pro,
         ],
       ),
     );
@@ -652,11 +670,7 @@ class _ShopLoadingState extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Padding(
       padding: EdgeInsets.only(top: 28),
-      child: Center(
-        child: AsteriaEntrance(
-          child: AsteriaActivityIndicator(),
-        ),
-      ),
+      child: Center(child: AsteriaEntrance(child: AsteriaActivityIndicator())),
     );
   }
 }

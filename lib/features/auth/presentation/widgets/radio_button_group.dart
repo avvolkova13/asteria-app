@@ -1,3 +1,5 @@
+import 'package:asteria_app/core/ui_kit/app_colors/app_colors.dart';
+import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/app/data/models/user/user_model.dart';
 import 'package:asteria_app/core/extensions/enum_extensions.dart';
@@ -69,6 +71,7 @@ class _AuthRadioButton extends StatelessWidget {
       optionLabel,
       style: context.textTheme.inverseUrbanistRegular16.copyWith(
         fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+        color: isEnabled ? AppColors.white : AppColorsDark.textTertiary,
         height: 1.2,
         letterSpacing: -0.408,
       ),
@@ -95,9 +98,9 @@ class _AuthRadioButton extends StatelessWidget {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    _RadioMark(isSelected: isSelected),
+                    _RadioMark(isSelected: isSelected, enabled: isEnabled),
                     const SizedBox(width: 8),
-                    label,
+                    Flexible(child: label),
                   ],
                 ),
               ),
@@ -112,36 +115,37 @@ class _AuthRadioButton extends StatelessWidget {
 class _RadioMark extends StatelessWidget {
   final bool isSelected;
 
-  const _RadioMark({required this.isSelected});
+  final bool enabled;
+
+  const _RadioMark({required this.isSelected, required this.enabled});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       width: 20,
       height: 20,
-      padding: const EdgeInsets.all(1),
-      decoration: const BoxDecoration(
-        shape: BoxShape.circle,
-        gradient: authGoldGradient,
-      ),
-      child: DecoratedBox(
-        decoration: const BoxDecoration(
-          shape: BoxShape.circle,
-          color: Color(0xFF0F0A1A),
+      alignment: Alignment.center,
+      decoration: CardLensDecoration.button(
+        enabled: enabled,
+        color: AppColorsDark.secondary,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: enabled ? AppColorsDark.linkGold : AppColorsDark.textTertiary,
+          width: 1,
         ),
-        child: isSelected
-            ? Center(
-                child: Container(
-                  width: 12,
-                  height: 12,
-                  decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: authGoldGradient,
-                  ),
-                ),
-              )
-            : null,
       ),
+      child: isSelected
+          ? Container(
+              width: 12,
+              height: 12,
+              decoration: CardLensDecoration.button(
+                enabled: enabled,
+                borderRadius: BorderRadius.circular(6),
+                gradient: enabled ? authGoldGradient : null,
+                color: enabled ? null : AppColorsDark.textTertiary,
+              ),
+            )
+          : null,
     );
   }
 }

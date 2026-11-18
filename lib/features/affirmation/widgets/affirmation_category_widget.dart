@@ -1,3 +1,4 @@
+import 'package:asteria_app/features/affirmation/affirmation_detail_screen.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/routing/app_route.dart';
@@ -82,8 +83,8 @@ class AffirmationCategoryWidget extends StatelessWidget {
                       description: context.l10n.affirmationSubscriptionRequired,
                     );
                   },
-            child: SizedBox(
-              height: 24,
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minHeight: isLocked ? 44 : 24),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -95,8 +96,6 @@ class AffirmationCategoryWidget extends StatelessWidget {
                         color: AppColors.textInverse,
                         height: 1,
                       ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -352,7 +351,13 @@ class _AffirmationCardStackState extends State<AffirmationCardStack> {
     if (_playerOpen || _isAnimatingOut || widget.affirmations.isEmpty) return;
     _playerOpen = true;
     try {
-      await AffirmationPlayerRoute.push(context);
+      await AffirmationPlayerRoute.push(
+        context,
+        selection: AffirmationSelection(
+          affirmation: widget.affirmations[_frontIndex],
+          imageIndex: _frontIndex,
+        ),
+      );
     } finally {
       _playerOpen = false;
     }
@@ -376,9 +381,6 @@ class _AffirmationCardStackState extends State<AffirmationCardStack> {
               button: widget.affirmations.isNotEmpty,
               excludeSemantics: true,
               onTap: activate,
-              onTapHint: widget.affirmations.isEmpty
-                  ? null
-                  : context.l10n.affirmationOpenPlayer,
               label: _semanticLabel(context),
               hint: widget.affirmations.length > 1
                   ? context.l10n.affirmationSwipeHint

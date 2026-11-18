@@ -233,21 +233,24 @@ void main() {
   );
 
   test('ignores stale refresh response after current user changes', () async {
+    final session = _FakeSession();
     final userProvider = UserProvider(
       userRepository: _FakeUserRepository(),
-      authSessionService: _FakeSession(),
+      authSessionService: session,
     )..applyServerUserSnapshot(UserModel.empty().copyWith(id: 'user-1'));
     final completer = Completer<MonetizationStateModel>();
     final api = _CompleterMonetizationApi(completer);
     final provider = MonetizationProvider(api: api, userProvider: userProvider);
 
     final refresh = provider.refresh();
+    session.uid = 'user-2';
     userProvider.applyServerUserSnapshot(
       UserModel.empty().copyWith(id: 'user-2'),
     );
     completer.complete(_stateWithQuota(feature: 'sonnik', freeRemaining: 1));
     await refresh;
 
+    expect(userProvider.currentUser?.id, 'user-2');
     expect(provider.state, isNull);
     expect(provider.isLoading, isFalse);
   });
@@ -408,8 +411,9 @@ class _CompleterMonetizationApi extends MonetizationApi {
 }
 
 class _FakeSession implements AuthSessionService {
+  String uid = 'user-1';
   @override
-  String? get currentUid => 'user-1';
+  String? get currentUid => uid;
 
   @override
   String? get currentEmail => 'user@example.com';

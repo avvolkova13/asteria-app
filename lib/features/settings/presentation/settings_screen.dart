@@ -32,25 +32,17 @@ class SettingsScreen extends StatelessWidget {
                 const _CurrentLocationSettingsCard(),
                 const SizedBox(height: 16),
                 if (AppFeatureVisibility.horoscopes) ...[
-                  _SettingsListTile(
-                    title: context.l10n.settingsDailyHoroscope,
-                    value: true,
-                  ),
+                  _SettingsListTile(title: context.l10n.settingsDailyHoroscope),
                   const SizedBox(height: 16),
                 ],
-                _SettingsListTile(
-                  title: context.l10n.settingsLunarCalendar,
-                  value: false,
-                ),
+                _SettingsListTile(title: context.l10n.settingsLunarCalendar),
                 const SizedBox(height: 16),
                 _SettingsListTile(
                   title: context.l10n.settingsDailyAffirmations,
-                  value: true,
                 ),
                 const SizedBox(height: 16),
                 _SettingsListTile(
                   title: context.l10n.settingsPushNotifications,
-                  value: true,
                 ),
               ]),
             ),
@@ -81,13 +73,18 @@ class _CurrentLocationSettingsCard extends StatelessWidget {
                   context.l10n.settingsGeolocation,
                   style: context.textTheme.playfairSemiBold24.copyWith(
                     color: AppColors.textInverse,
+                    fontSize:
+                        MediaQuery.sizeOf(context).width < 360 &&
+                            MediaQuery.textScalerOf(context).scale(24) > 36
+                        ? 20
+                        : null,
                   ),
                 ),
                 const SizedBox(height: 8),
                 Text(
                   context.l10n.settingsCurrentLocationDescription,
                   style: context.textTheme.inverseUrbanistRegular14.copyWith(
-                    color: AppColors.textInverse.withValues(alpha: 0.72),
+                    color: AppColorsDark.textSecondary,
                     height: 1.25,
                   ),
                 ),
@@ -111,79 +108,72 @@ class _CurrentLocationSettingsCard extends StatelessWidget {
   }
 }
 
-class _SettingsListTile extends StatefulWidget {
-  const _SettingsListTile({required this.title, required this.value});
-
+/// Daily notification delivery has no service contract yet. The separate
+/// calendar-plan reminder flow owns its own per-plan settings and permission.
+class _SettingsListTile extends StatelessWidget {
+  const _SettingsListTile({required this.title});
   final String title;
-  final bool value;
-
-  @override
-  State<_SettingsListTile> createState() => _SettingsListTileState();
-}
-
-class _SettingsListTileState extends State<_SettingsListTile> {
-  late bool _isEnabled;
-
-  @override
-  void initState() {
-    super.initState();
-    _isEnabled = widget.value;
-  }
 
   @override
   Widget build(BuildContext context) {
-    return ProfileGlassCard(
-      padding: const EdgeInsets.fromLTRB(16, 9, 14, 9),
-      borderRadius: 16,
-      child: Row(
-        children: [
-          Expanded(
-            child: Text(
-              widget.title,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: context.textTheme.inverseUrbanistRegular17,
-            ),
-          ),
-          Semantics(
-            label: widget.title,
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(minHeight: 44),
-              child: ShaderMask(
-                // Tint only the painted switch so its native shadow and drag remain visible.
-                blendMode: BlendMode.srcATop,
-                shaderCallback: (bounds) => LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    AppColors.white.withValues(alpha: .22),
-                    AppColors.white.withValues(alpha: 0),
-                    AppColors.textPrimary.withValues(alpha: .18),
-                  ],
-                  stops: const [.20, .48, .80],
-                ).createShader(bounds),
-                child: CupertinoSwitch(
-                  value: _isEnabled,
-                  onChanged: (value) => setState(() => _isEnabled = value),
-                  activeTrackColor: ProfileFlowColors.accent,
-                  inactiveTrackColor: AppColorsDark.secondary,
-                  thumbColor: Color.lerp(
-                    AppColors.white,
-                    AppColorsDark.linkGold,
-                    .14,
+    final unavailable = context.l10n.commonUnavailable;
+    return Semantics(
+      label: '$title. $unavailable',
+      enabled: false,
+      toggled: false,
+      excludeSemantics: true,
+      child: ProfileGlassCard(
+        padding: const EdgeInsets.fromLTRB(16, 12, 14, 12),
+        borderRadius: 16,
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final stackControl =
+                constraints.maxWidth <
+                MediaQuery.textScalerOf(context).scale(17) * 12;
+            final label = Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, style: context.textTheme.inverseUrbanistRegular17),
+                const SizedBox(height: 4),
+                Text(
+                  unavailable,
+                  style: context.textTheme.inverseUrbanistRegular14.copyWith(
+                    color: AppColorsDark.textSecondary,
                   ),
-                  inactiveThumbColor: AppColors.uiSecondary,
-                  trackOutlineColor: WidgetStateProperty.resolveWith(
-                    (states) => states.contains(WidgetState.selected)
-                        ? AppColorsDark.linkGold
-                        : AppColorsDark.textTertiary,
-                  ),
-                  trackOutlineWidth: const WidgetStatePropertyAll(1),
                 ),
+              ],
+            );
+            final control = ConstrainedBox(
+              constraints: const BoxConstraints(minHeight: 44),
+              child: CupertinoSwitch(
+                value: false,
+                onChanged: null,
+                inactiveTrackColor: AppColorsDark.secondary,
+                inactiveThumbColor: AppColors.cardTinted,
+                trackOutlineColor: const WidgetStatePropertyAll(
+                  AppColorsDark.textTertiary,
+                ),
+                trackOutlineWidth: const WidgetStatePropertyAll(1),
               ),
-            ),
-          ),
-        ],
+            );
+            return stackControl
+                ? Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      label,
+                      const SizedBox(height: 8),
+                      Align(alignment: Alignment.centerRight, child: control),
+                    ],
+                  )
+                : Row(
+                    children: [
+                      Expanded(child: label),
+                      const SizedBox(width: 12),
+                      control,
+                    ],
+                  );
+          },
+        ),
       ),
     );
   }

@@ -128,6 +128,7 @@ class _PersonalInfoInputScreenState extends State<PersonalInfoInputScreen> {
         }
       },
       child: BlocBuilder<AuthCubit, AuthState>(
+        buildWhen: (previous, current) => current is! UserSaveError,
         builder: (context, state) {
           UserModel? currentUser;
           bool isFormValid = false;

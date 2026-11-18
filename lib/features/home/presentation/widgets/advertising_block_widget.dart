@@ -1,6 +1,6 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_action_button.dart';
 import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/ui_kit/card_radii.dart';
-import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/routing/app_route.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +10,7 @@ class AdvertisingBlockWidget extends StatelessWidget {
   static const _liveyaAsset = 'assets/images/home/advertising_card_liveya.webp';
   // Figma dark Surface/card for the dream banner (node 4379:8613).
   static const _cardBackground = Color(0xFF151028);
-  static const _descriptionColor = Color(0xFFB5AAB8);
+  static const _descriptionColor = AppColorsDark.textSecondary;
   static const _orangeGradient = LinearGradient(
     colors: [Color(0xFFE6994D), Color(0xFFF3B76A), Color(0xFFE6994D)],
     stops: [0, 0.50032, 1],
@@ -96,14 +96,18 @@ class AdvertisingBlockWidget extends StatelessWidget {
                                 const SizedBox(height: 14),
                                 SizedBox(
                                   width: contentWidth,
-                                  height: compact ? 86 : 44,
-                                  child: Align(
-                                    alignment: Alignment.centerLeft,
-                                    child: _AdvertisingCtaButton(
-                                      onTap: () =>
-                                          CreateSonnikInitialRoute.push(
-                                            context,
-                                          ),
+                                  child: ConstrainedBox(
+                                    constraints: BoxConstraints(
+                                      minHeight: compact ? 86 : 44,
+                                    ),
+                                    child: Align(
+                                      alignment: Alignment.centerLeft,
+                                      child: _AdvertisingCtaButton(
+                                        onTap: () =>
+                                            CreateSonnikInitialRoute.push(
+                                              context,
+                                            ),
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -160,55 +164,11 @@ class _AdvertisingCtaButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LotusFeedback(
-      onActivate: onTap,
-      builder: (activate) => Semantics(
-        button: true,
-        enabled: true,
-        label: context.l10n.adDecode,
-        onTap: activate,
-        child: SizedBox(
-          height: 44,
-          child: DecoratedBox(
-            decoration: CardLensDecoration.button(
-              borderRadius: BorderRadius.circular(16),
-              gradient: AdvertisingBlockWidget._orangeGradient,
-              boxShadow: const [
-                BoxShadow(color: Color(0x0D6E4BFF), blurRadius: 30),
-              ],
-            ),
-            child: Material(
-              color: Colors.transparent,
-              borderRadius: BorderRadius.circular(16),
-              child: InkWell(
-                borderRadius: BorderRadius.circular(16),
-                onTap: activate,
-                child: Center(
-                  child: ExcludeSemantics(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                      child: FittedBox(
-                        fit: BoxFit.scaleDown,
-                        child: Text(
-                          context.l10n.adDecode,
-                          maxLines: 1,
-                          style: context.textTheme.inverseUrbanistRegular17
-                              .copyWith(
-                                fontFamily: 'Onest',
-                                color: AppColors.textPrimary,
-                                height: 1.2,
-                                letterSpacing: -0.408,
-                              ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
+    return AsteriaActionButton(
+      text: context.l10n.adDecode,
+      onPressed: onTap,
+      gold: true,
+      height: 44,
     );
   }
 }

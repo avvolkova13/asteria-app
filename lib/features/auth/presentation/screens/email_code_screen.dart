@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_activity_indicator.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/features/scenarios/first_session.dart';
 import 'package:go_router/go_router.dart';
@@ -16,7 +17,7 @@ import 'package:asteria_app/features/auth/presentation/widgets/code_input_widget
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class EmailCodeScreen extends StatelessWidget {
+class EmailCodeScreen extends StatefulWidget {
   final bool deleteAfterVerification;
   final String? expectedUid;
 
@@ -25,6 +26,38 @@ class EmailCodeScreen extends StatelessWidget {
     this.deleteAfterVerification = false,
     this.expectedUid,
   });
+
+  @override
+  State<EmailCodeScreen> createState() => _EmailCodeScreenState();
+}
+
+class _EmailCodeScreenState extends State<EmailCodeScreen> {
+  bool _isDeleting = false;
+  bool _deleteFailed = false;
+  bool _profileDeleted = false;
+  String? _verifiedUid;
+
+  Future<void> _deleteAccount() async {
+    final uid = _verifiedUid;
+    if (_isDeleting || uid == null || uid != widget.expectedUid) return;
+    setState(() {
+      _isDeleting = true;
+      _deleteFailed = false;
+    });
+    try {
+      if (!_profileDeleted) {
+        await di.get<UserRepository>().deleteUser(uid);
+        _profileDeleted = true;
+      }
+      await di.get<AuthSessionService>().deleteCurrentIdentity();
+      await di.get<UserProvider>().clearUser();
+      if (mounted) AuthLoginRoute.go(context);
+    } catch (_) {
+      if (mounted) setState(() => _deleteFailed = true);
+    } finally {
+      if (mounted) setState(() => _isDeleting = false);
+    }
+  }
 
   String _formatTime(int seconds) {
     final minutes = seconds ~/ 60;
@@ -51,19 +84,20 @@ class EmailCodeScreen extends StatelessWidget {
                     child: BlocConsumer<EmailAuthCubit, EmailAuthState>(
                       listener: (context, state) async {
                         if (state is! EmailAuthVerified) return;
-                        if (deleteAfterVerification) {
-                          final uid = state.identity.userId;
-                          if (uid != expectedUid) return;
-                          await di.get<UserRepository>().deleteUser(uid);
-                          await di
-                              .get<AuthSessionService>()
-                              .deleteCurrentIdentity();
-                          await di.get<UserProvider>().clearUser();
-                          if (context.mounted) AuthLoginRoute.go(context);
+                        if (widget.deleteAfterVerification) {
+                          if (state.identity.userId != widget.expectedUid) {
+                            return;
+                          }
+                          _verifiedUid = state.identity.userId;
+                          await _deleteAccount();
                           return;
                         }
                         if (state.profileExists) {
-                          context.go(FirstSession.pending(state.identity.userId) ? FirstSession.path : HomeRoute.routeName);
+                          context.go(
+                            FirstSession.pending(state.identity.userId)
+                                ? FirstSession.path
+                                : HomeRoute.routeName,
+                          );
                         } else {
                           AuthPersonalInfoRoute.pushReplacement(
                             context,
@@ -74,7 +108,8 @@ class EmailCodeScreen extends StatelessWidget {
                       builder: (context, state) {
                         final cubit = context.read<EmailAuthCubit>();
                         final email = cubit.currentEmail ?? '';
-                        final isLoading = state is EmailAuthVerifying;
+                        final isLoading =
+                            state is EmailAuthVerifying || _isDeleting;
                         final isResending = state is EmailAuthRequesting;
                         final error = state is EmailAuthFailure
                             ? localizedEmailAuthFailure(context, state.code)
@@ -95,39 +130,90 @@ class EmailCodeScreen extends StatelessWidget {
                                   context.textTheme.inversePlayfairSemiBold24,
                             ),
                             const SizedBox(height: 4),
-                            AuthGoldenText(
-                              text: email,
-                              style:
-                                  context.textTheme.inversePlayfairSemiBold24,
+                            Text(
+                              email,
+                              softWrap: true,
+                              style: context.textTheme.inverseUrbanistRegular16
+                                  .copyWith(color: AppColorsDark.textSecondary),
                             ),
                             const SizedBox(height: 24),
-                            CodeInputWidget(
-                              codeLength: 6,
-                              isError: error != null,
-                              errorMessage: error,
-                              clearTrigger: cubit.challengeVersion,
-                              onErrorCleared: cubit.clearError,
-                              onCodeEntered: (code) {
-                                if (code.length == 6 &&
-                                    !isLoading &&
-                                    !isResending) {
-                                  cubit.verifyCode(
-                                    code,
-                                    expectedUid: expectedUid,
-                                  );
-                                }
-                              },
-                            ),
+                            if (_deleteFailed)
+                              Semantics(
+                                liveRegion: true,
+                                child: Text(
+                                  l10n.emailUnknownError,
+                                  style: context
+                                      .textTheme
+                                      .inverseUrbanistRegular16,
+                                ),
+                              ),
+                            if (_verifiedUid != null)
+                              AuthGradientButton(
+                                text: l10n.retry,
+                                isLoading: _isDeleting,
+                                onPressed: _deleteFailed
+                                    ? _deleteAccount
+                                    : null,
+                              )
+                            else
+                              ExcludeFocus(
+                                excluding: isLoading || isResending,
+                                child: IgnorePointer(
+                                  ignoring: isLoading || isResending,
+                                  child: CodeInputWidget(
+                                    codeLength: 6,
+                                    isError: error != null,
+                                    errorMessage: error,
+                                    clearTrigger: cubit.challengeVersion,
+                                    onErrorCleared: cubit.clearError,
+                                    onCodeEntered: (code) {
+                                      if (code.length == 6 &&
+                                          !isLoading &&
+                                          !isResending) {
+                                        cubit.verifyCode(
+                                          code,
+                                          expectedUid: widget.expectedUid,
+                                        );
+                                      }
+                                    },
+                                  ),
+                                ),
+                              ),
+                            if (isLoading)
+                              Padding(
+                                padding: const EdgeInsets.only(top: 16),
+                                child: Semantics(
+                                  liveRegion: true,
+                                  child: Row(
+                                    children: [
+                                      const ExcludeSemantics(
+                                        child: AsteriaActivityIndicator(
+                                          size: 20,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 10),
+                                      Expanded(
+                                        child: Text(
+                                          l10n.loading,
+                                          style: context
+                                              .textTheme
+                                              .inverseUrbanistRegular16,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
                             const SizedBox(height: 24),
-                            if (remaining == 0)
+                            if (_verifiedUid == null && remaining == 0)
                               AuthGradientButton(
                                 text: l10n.resendCodeButtonText,
                                 isLoading: isResending,
-                                onPressed: isResending
+                                onPressed: isResending || isLoading
                                     ? null
                                     : cubit.resendCode,
                               )
-                            else
+                            else if (_verifiedUid == null)
                               Text(
                                 '${l10n.resendCodeText} ${_formatTime(remaining)}',
                                 style: context
@@ -141,7 +227,9 @@ class EmailCodeScreen extends StatelessWidget {
                             const Spacer(),
                             AuthBottomLink(
                               text: l10n.emailAccessIssueText,
-                              onTap: () => Navigator.pop(context),
+                              onTap: _isDeleting
+                                  ? null
+                                  : () => Navigator.pop(context),
                             ),
                             const SizedBox(height: 18),
                           ]),

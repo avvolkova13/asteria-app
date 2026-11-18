@@ -1,3 +1,5 @@
+import 'package:asteria_app/core/localization/localization.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:asteria_app/app/data/repositories/user/user_repository.dart';
 import 'package:asteria_app/app/providers/user_provider.dart';
 import 'package:asteria_app/core/routing/app_route.dart';
@@ -22,6 +24,12 @@ void main() {
       addTearDown(user.dispose);
       await tester.pumpWidget(
         MaterialApp(
+          locale: const Locale('en'),
+          supportedLocales: AppLocaleService.supportedLocales,
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            ...GlobalMaterialLocalizations.delegates,
+          ],
           home: Builder(
             builder: (context) => Theme(
               data: AppThemeDark.instance.getThemeData(context),
@@ -80,6 +88,12 @@ void main() {
     const greeting = 'Привет, Анастасия!';
     await tester.pumpWidget(
       MaterialApp(
+        locale: const Locale('en'),
+        supportedLocales: AppLocaleService.supportedLocales,
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          ...GlobalMaterialLocalizations.delegates,
+        ],
         home: Builder(
           builder: (context) => Theme(
             data: AppThemeDark.instance.getThemeData(context),
@@ -139,6 +153,12 @@ void main() {
       addTearDown(router.dispose);
       await tester.pumpWidget(
         MaterialApp.router(
+          locale: const Locale('en'),
+          supportedLocales: AppLocaleService.supportedLocales,
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            ...GlobalMaterialLocalizations.delegates,
+          ],
           routerConfig: router,
           builder: (context, child) => Theme(
             data: AppThemeDark.instance.getThemeData(context),
@@ -190,6 +210,12 @@ void main() {
 
     await tester.pumpWidget(
       MaterialApp.router(
+        locale: const Locale('en'),
+        supportedLocales: AppLocaleService.supportedLocales,
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          ...GlobalMaterialLocalizations.delegates,
+        ],
         routerConfig: router,
         builder: (context, child) => Theme(
           data: AppThemeDark.instance.getThemeData(context),

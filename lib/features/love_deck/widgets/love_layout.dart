@@ -1,7 +1,6 @@
 import 'package:asteria_app/core/ui_kit/widgets/tarot_card_frame.dart';
 import 'package:asteria_app/core/ui_kit/widgets/artwork_unavailable.dart';
 import 'package:asteria_app/core/ui_kit/widgets/modal_glass_surface.dart';
-import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/app/data/models/tarot_card/tarot_card_model.dart';
 import 'package:asteria_app/app/providers/content_provider.dart';
 import 'package:asteria_app/app/providers/user_provider.dart';
@@ -163,7 +162,7 @@ class _LoveLayoutState extends State<LoveLayout> {
           ? context.l10n.deckOpenedCardLabel(cardNumber, card.title)
           : context.l10n.deckCardLabel(cardNumber),
       button: true,
-      enabled: !_isAnyCardAnimating && cardId.isNotEmpty,
+      enabled: !_isAnyCardAnimating && card != null,
       child: FlipCardWidget(
         key: ValueKey('love_deck_card_$cardNumber'),
         front: card != null
@@ -174,7 +173,7 @@ class _LoveLayoutState extends State<LoveLayout> {
         width: cardWidth,
         height: cardHeight,
         flipOnTap: true,
-        enabled: !_isAnyCardAnimating && cardId.isNotEmpty,
+        enabled: !_isAnyCardAnimating && card != null,
         onFlipStart: () {
           setState(() => _isAnyCardAnimating = true);
         },
@@ -248,7 +247,6 @@ class _LoveLayoutState extends State<LoveLayout> {
               imageName: card.imageName,
               languageCode: Localizations.localeOf(context).languageCode,
             ),
-            frameBuilder: AsteriaEntrance.imageFrame,
             width: width,
             height: height,
             fit: BoxFit.contain,

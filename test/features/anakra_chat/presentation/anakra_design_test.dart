@@ -1,3 +1,5 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_action_button.dart';
+import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/app/data/models/anakra_chat/anakra_chat_message_model.dart';
 import 'package:asteria_app/features/anakra_chat/presentation/widgets/anakra_chat_message.dart';
 import 'package:asteria_app/features/anakra_chat/presentation/widgets/anakra_composer.dart';
@@ -59,11 +61,11 @@ void main() {
     );
     await tester.pumpWidget(composer(false));
     await tester.pumpAndSettle();
-    final send = find.widgetWithIcon(IconButton, Icons.cancel);
+    final clear = find.byTooltip(AppLocalizations.current.clearMessage);
     expect(tester.getSize(find.byType(TextField)).height, 48);
     await tester.tap(find.byType(IconButton).last);
     expect(sends, 1);
-    await tester.tap(send);
+    await tester.tap(clear);
     expect(controller.text, isEmpty);
     await tester.pumpWidget(composer(true));
     expect(tester.widget<TextField>(find.byType(TextField)).enabled, isFalse);
@@ -84,32 +86,61 @@ void main() {
     expect(tester.getSize(find.byType(AnakraAvatar)), const Size(156, 156));
   });
 
-  testWidgets('quick action has Onest text and no filled background', (
-    tester,
-  ) async {
-    var taps = 0;
-    await tester.pumpWidget(
-      app(
-        AnakraQuickActionButton(text: 'Test action', onPressed: () => taps++),
-      ),
-    );
-    final text = tester.widget<Text>(find.text('Test action'));
-    expect(text.style?.fontFamily, 'Onest');
-    expect(text.style?.fontSize, 16);
-    expect(
-      tester
-          .widget<Material>(
-            find.descendant(
-              of: find.byType(AnakraQuickActionButton),
-              matching: find.byType(Material),
-            ),
-          )
-          .color,
-      Colors.transparent,
-    );
-    await tester.tap(find.text('Test action'));
-    expect(taps, 1);
-  });
+  testWidgets(
+    'quick action uses canonical purple CTA and resolved Onest text',
+    (tester) async {
+      var taps = 0;
+      await tester.pumpWidget(
+        app(
+          AnakraQuickActionButton(text: 'Test action', onPressed: () => taps++),
+        ),
+      );
+      final text = tester.widget<RichText>(
+        find.descendant(
+          of: find.text('Test action'),
+          matching: find.byType(RichText),
+        ),
+      );
+      expect(text.text.style?.fontFamily, 'Onest');
+      expect(text.text.style?.fontSize, 16);
+      expect(
+        find.descendant(
+          of: find.byType(AnakraQuickActionButton),
+          matching: find.byType(AsteriaActionButton),
+        ),
+        findsOneWidget,
+      );
+      final surface = tester.widget<DecoratedBox>(
+        find
+            .descendant(
+              of: find.byType(AsteriaActionButton),
+              matching: find.byWidgetPredicate(
+                (widget) =>
+                    widget is DecoratedBox &&
+                    widget.decoration is CardLensDecoration,
+              ),
+            )
+            .first,
+      );
+      expect(
+        (surface.decoration as CardLensDecoration).gradient,
+        AsteriaActionButton.purpleGradient,
+      );
+      expect(
+        tester
+            .widget<Material>(
+              find.descendant(
+                of: find.byType(AnakraQuickActionButton),
+                matching: find.byType(Material),
+              ),
+            )
+            .color,
+        Colors.transparent,
+      );
+      await tester.tap(find.text('Test action'));
+      expect(taps, 1);
+    },
+  );
 
   for (final width in [320.0, 390.0, 430.0]) {
     testWidgets('user message uses Onest and wraps at $width', (tester) async {

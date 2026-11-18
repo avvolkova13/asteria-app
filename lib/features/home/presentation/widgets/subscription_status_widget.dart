@@ -1,4 +1,4 @@
-import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
+import 'package:asteria_app/core/ui_kit/widgets/asteria_action_button.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 import 'package:asteria_app/features/profile_flow/profile_flow_ui.dart';
@@ -79,6 +79,9 @@ class _SubscriptionStatusCard extends StatelessWidget {
       onTap: onTap,
       child: LayoutBuilder(
         builder: (context, constraints) {
+          final stackContent =
+              constraints.maxWidth <
+              MediaQuery.textScalerOf(context).scale(16) * 18;
           final artWidth = (constraints.maxWidth * .32).clamp(68.0, 116.0);
           return Container(
             key: const ValueKey('profile-subscription-status-card'),
@@ -89,10 +92,12 @@ class _SubscriptionStatusCard extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
+                Flex(
+                  direction: stackContent ? Axis.vertical : Axis.horizontal,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Expanded(
+                    Flexible(
+                      flex: stackContent ? 0 : 1,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -112,40 +117,25 @@ class _SubscriptionStatusCard extends StatelessWidget {
                         ],
                       ),
                     ),
-                    const SizedBox(width: 12),
-                    Image.asset(
-                      'assets/images/home/balance_subscription_art.webp',
-                      key: const ValueKey('profile-subscription-status-art'),
-                      width: artWidth,
-                      height: artWidth * 1.05,
-                      cacheWidth: 500,
-                      fit: BoxFit.contain,
-                      excludeFromSemantics: true,
-                    ),
+                    if (!stackContent) const SizedBox(width: 12),
+                    if (!stackContent)
+                      Image.asset(
+                        'assets/images/home/balance_subscription_art.webp',
+                        key: const ValueKey('profile-subscription-status-art'),
+                        width: artWidth,
+                        height: artWidth * 1.05,
+                        cacheWidth: 500,
+                        fit: BoxFit.contain,
+                        excludeFromSemantics: true,
+                      ),
                   ],
                 ),
                 const SizedBox(height: 8),
                 if (buttonText != null)
-                  Container(
-                    constraints: const BoxConstraints(
-                      minHeight: 44,
-                      minWidth: 175,
-                    ),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 10,
-                    ),
-                    decoration: CardLensDecoration.button(
-                      color: ProfileFlowColors.accent,
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Text(
-                      buttonText!,
-                      textAlign: TextAlign.center,
-                      style: context.textTheme.urbanistRegular17.copyWith(
-                        color: AppColors.textPrimary,
-                      ),
-                    ),
+                  AsteriaActionButton(
+                    text: buttonText!,
+                    gold: true,
+                    onPressed: onTap,
                   )
                 else if (actionText != null)
                   Row(

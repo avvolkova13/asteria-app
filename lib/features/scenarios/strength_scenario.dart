@@ -1,4 +1,6 @@
+import 'package:asteria_app/core/ui_kit/widgets/card_turn.dart';
 import 'dart:convert';
+import 'dart:async';
 import 'package:asteria_app/app/data/models/anakra_chat/anakra_chat_message_model.dart';
 import 'package:asteria_app/app/data/models/tarot_card/tarot_card_model.dart';
 import 'package:asteria_app/app/providers/content_provider.dart';
@@ -16,6 +18,7 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 
 import 'guidance_situation.dart';
+import 'daily_guidance_store.dart';
 import 'scenario_sky.dart';
 import 'scenario_ui.dart';
 import 'scenario_completion.dart';
@@ -48,41 +51,144 @@ class StrengthTipStore {
   bool contains(StrengthTip tip) => box.containsKey('$_prefix${tip.id}');
 }
 
-class StrengthScenarioScreen extends StatelessWidget {
+class StrengthScenarioScreen extends StatefulWidget {
   const StrengthScenarioScreen({super.key});
+
+  @override
+  State<StrengthScenarioScreen> createState() => _StrengthScenarioScreenState();
+}
+
+class _StrengthScenarioScreenState extends State<StrengthScenarioScreen>
+    with WidgetsBindingObserver {
+  late final _users = di.get<UserProvider>();
+  Timer? _midnight;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _users.addListener(_refresh);
+    _scheduleMidnight();
+  }
+
+  void _scheduleMidnight() {
+    _midnight?.cancel();
+    final now = DateTime.now();
+    _midnight = Timer(
+      DateTime(now.year, now.month, now.day + 1).difference(now),
+      () {
+        _refresh();
+        _scheduleMidnight();
+      },
+    );
+  }
+
+  void _refresh() {
+    if (mounted) setState(() {});
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _refresh();
+      _scheduleMidnight();
+    }
+  }
+
+  @override
+  void dispose() {
+    _midnight?.cancel();
+    _users.removeListener(_refresh);
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final ru = Localizations.localeOf(context).languageCode == 'ru';
+    final opened = DailyGuidanceStore(_users.currentUser?.id ?? '').read();
     return ScenarioPage(
       title: context.l10n.scenarioStrengthChooseArea,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: AsteriaEntrance.sections([
           ScenarioChoiceHero(
-            description: ru
-                ? 'Выберите ситуацию. Анакра предложит первый шаг, а карта дня поможет взглянуть на него иначе.'
-                : 'Choose a situation. Anakra will suggest a first step, and your daily card will offer another perspective.',
+            description: opened != null
+                ? (ru
+                      ? 'Ваш инсайт на сегодня открыт. К нему можно вернуться в выбранной карточке. Приходите завтра за новым.'
+                      : 'Your insight for today is open. Revisit it in your selected card. Come back tomorrow for a new insight.')
+                : (ru
+                      ? 'Выберите ситуацию. Анакра предложит первый шаг, а карта поможет взглянуть на него иначе.'
+                      : 'Choose a situation. Anakra will suggest a first step, and a card will offer another perspective.'),
             art: 'assets/images/year_animals/horse.webp',
           ),
           const SizedBox(height: 20),
           ScenarioChoiceGrid(
             children: [
               for (final situation in GuidanceSituation.values)
-                ScenarioChoiceCard(
-                  title: situation.title(ru),
-                  art: situation.art,
-                  onTap: () => Navigator.of(context).push<void>(
-                    CupertinoPageRoute<void>(
-                      builder: (_) => ScenarioSkyScope(
-                        child: _GuidanceConversation(situation: situation),
-                      ),
-                    ),
-                  ),
-                ),
+                _choice(situation, ru, opened?.situation),
             ],
           ),
         ]),
+      ),
+    );
+  }
+
+  Widget _choice(
+    GuidanceSituation situation,
+    bool ru,
+    GuidanceSituation? opened,
+  ) {
+    final locked = opened != null && opened != situation;
+    Future<void> open() async {
+      final current = DailyGuidanceStore(_users.currentUser?.id ?? '').read();
+      if (current != null && current.situation != situation) return;
+      await Navigator.of(context).push<void>(
+        CupertinoPageRoute<void>(
+          builder: (_) => ScenarioSkyScope(
+            child: _GuidanceConversation(situation: situation),
+          ),
+        ),
+      );
+      _refresh();
+    }
+
+    final card = ScenarioChoiceCard(
+      title: situation.title(ru),
+      art: situation.art,
+      selected: opened == situation,
+      subtitle: opened == null
+          ? null
+          : (locked
+                ? (ru ? 'Доступно завтра' : 'Available tomorrow')
+                : (ru ? 'Ваш инсайт' : 'Your insight')),
+      onTap: open,
+    );
+    if (!locked) return card;
+    return ExcludeFocus(
+      child: Semantics(
+        label:
+            '${situation.title(ru)}. ${ru ? 'Доступно завтра' : 'Available tomorrow'}',
+        button: true,
+        enabled: false,
+        child: ExcludeSemantics(
+          child: IgnorePointer(
+            child: Stack(
+              children: [
+                Opacity(opacity: .48, child: card),
+                const Positioned(
+                  top: 12,
+                  right: 12,
+                  child: Icon(
+                    Icons.lock_outline_rounded,
+                    size: 20,
+                    color: AppColors.cardTinted,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -100,9 +206,11 @@ class _GuidanceConversationState extends State<_GuidanceConversation>
   late final ContentProvider _content = di.get<ContentProvider>();
   late final UserProvider _users = di.get<UserProvider>();
   late final String? _owner;
+  late final DailyGuidanceStore _store;
+  bool _locked = false;
   late final AnimationController _flip = AnimationController(
     vsync: this,
-    duration: const Duration(milliseconds: 540),
+    duration: CardTurn.duration,
   );
   final _answer = GlobalKey();
   bool _accountChanged = false;
@@ -128,28 +236,24 @@ class _GuidanceConversationState extends State<_GuidanceConversation>
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     _owner = _users.currentUser?.id;
+    _store = DailyGuidanceStore(_owner ?? '');
     _users.addListener(_checkOwner);
     _restore();
   }
 
   void _restore() {
     if (_accountChanged) return;
-    try {
-      if (!_content.isTodayTarotCardOpened()) {
-        _card = null;
-        _tryToday = null;
-        _flip.value = 0;
-      } else if (_content.tarotCards.isNotEmpty) {
-        _card = _content.getTodayTarotCard();
-        _flip.value = 1;
-      } else {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (mounted && !_accountChanged) _reveal();
-        });
-      }
-    } catch (_) {
-      _card = null;
-      _failed = true;
+    final saved = _store.read();
+    _locked = saved != null && saved.situation != widget.situation;
+    if (!_locked && saved != null && _card?.id == saved.cardId) return;
+    _card = null;
+    _tryToday = null;
+    _flip.value = 0;
+    if (_locked) return;
+    if (saved != null || _content.isTodayTarotCardOpened()) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted && !_accountChanged) _reveal(restore: true);
+      });
     }
   }
 
@@ -168,8 +272,9 @@ class _GuidanceConversationState extends State<_GuidanceConversation>
     super.dispose();
   }
 
-  Future<void> _reveal() async {
-    if (_busy || _accountChanged) return;
+  Future<void> _reveal({bool restore = false}) async {
+    if (_busy || _accountChanged || _locked) return;
+    final drawnDay = _store.day;
     setState(() {
       _busy = true;
       _failed = false;
@@ -177,20 +282,33 @@ class _GuidanceConversationState extends State<_GuidanceConversation>
     try {
       if (_content.tarotCards.isEmpty) await _content.loadContent();
       if (!mounted || _accountChanged) return;
-      final today = _content.getTodayTarotCard();
-      if (!_content.isTodayTarotCardOpened()) {
-        await _content.setTodayTarotCardOpened();
+      final saved = _store.read();
+      if (saved != null && saved.situation != widget.situation) {
+        setState(() => _locked = true);
+        return;
       }
-      if (!mounted || _accountChanged) return;
-      _content.setDailySymbolTarotOpened();
+      final isRestoring =
+          restore || saved != null || _content.isTodayTarotCardOpened();
+      final today = saved == null
+          ? _content.getTodayTarotCard()
+          : _content.tarotCards.firstWhere((card) => card.id == saved.cardId);
+      if (saved == null) {
+        if (!_content.isTodayTarotCardOpened()) {
+          await _content.setTodayTarotCardOpened();
+        }
+        if (!mounted || _accountChanged) return;
+        await _store.save(widget.situation, today.id, drawnDay);
+        if (!mounted || _accountChanged) return;
+        _content.setDailySymbolTarotOpened();
+      }
       setState(() => _card = today);
       final reduced = MediaQuery.disableAnimationsOf(context);
-      if (reduced) {
+      if (reduced || isRestoring) {
         _flip.value = 1;
       } else {
         await _flip.forward(from: 0).orCancel;
       }
-      if (!mounted || _accountChanged) return;
+      if (!mounted || _accountChanged || isRestoring) return;
       await WidgetsBinding.instance.endOfFrame;
       if (!mounted || _accountChanged) return;
       final answer = _answer.currentContext;
@@ -233,7 +351,17 @@ class _GuidanceConversationState extends State<_GuidanceConversation>
         ),
       );
     }
-    final revealLabel = ru ? 'Вытянуть карту дня' : 'Draw my daily card';
+    if (_locked) {
+      return ScenarioPage(
+        title: widget.situation.title(ru),
+        child: Text(
+          ru
+              ? 'Ваш инсайт на сегодня уже открыт в другой карточке. Приходите завтра за новым.'
+              : 'Today’s insight is already open in another card. Come back tomorrow for a new insight.',
+        ),
+      );
+    }
+    final revealLabel = ru ? 'Вытянуть карту' : 'Draw a card';
     return ScenarioPage(
       title: widget.situation.title(ru),
       footer: card == null
@@ -259,26 +387,30 @@ class _GuidanceConversationState extends State<_GuidanceConversation>
           ),
           const SizedBox(height: 8),
           _reply(widget.situation.opening(ru), ru),
-          Center(
-            child: LotusFeedback(
-              keyboard: true,
-              onActivate: card == null && !_busy ? _reveal : null,
-              builder: (activate) => Semantics(
-                label: card?.title ?? revealLabel,
-                button: card == null,
-                onTap: activate,
-                child: ExcludeSemantics(
-                  child: GestureDetector(
-                    behavior: HitTestBehavior.opaque,
-                    onTap: activate,
-                    child: DailySymbolFlip(
-                      animation: _flip,
-                      startsFaceDown: true,
-                      back: const DailyTarotCardFace(width: 140, height: 208),
-                      front: DailyTarotCardFace(
-                        card: card,
-                        width: 140,
-                        height: 208,
+          AsteriaEntrance(
+            animateInitially: false,
+            child: Center(
+              child: LotusFeedback(
+                animateEntrance: false,
+                keyboard: true,
+                onActivate: card == null && !_busy ? _reveal : null,
+                builder: (activate) => Semantics(
+                  label: card?.title ?? revealLabel,
+                  button: card == null,
+                  onTap: activate,
+                  child: ExcludeSemantics(
+                    child: GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTap: activate,
+                      child: DailySymbolFlip(
+                        animation: _flip,
+
+                        back: const DailyTarotCardFace(width: 140, height: 208),
+                        front: DailyTarotCardFace(
+                          card: card,
+                          width: 140,
+                          height: 208,
+                        ),
                       ),
                     ),
                   ),
@@ -287,19 +419,15 @@ class _GuidanceConversationState extends State<_GuidanceConversation>
             ),
           ),
           const SizedBox(height: 12),
-          if (card == null)
+          if (card == null && _failed)
             Text(
-              _failed
-                  ? (ru
-                        ? 'Карты пока не загрузились. Попробуем ещё раз?'
-                        : 'The cards haven’t loaded yet. Try again?')
-                  : (ru
-                        ? 'Одна карта на сегодня. Её можно снова открыть на главной.'
-                        : 'One card for today. You can find it again on Home.'),
+              ru
+                  ? 'Карты пока не загрузились. Попробуем ещё раз?'
+                  : 'The cards haven’t loaded yet. Try again?',
               textAlign: TextAlign.center,
               style: AppTypography.text2.copyWith(color: AppColors.cardTinted),
-            )
-          else ...[
+            ),
+          if (card != null) ...[
             Text(
               card.title,
               textAlign: TextAlign.center,

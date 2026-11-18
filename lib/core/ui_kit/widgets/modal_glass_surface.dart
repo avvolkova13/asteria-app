@@ -11,7 +11,7 @@ import 'card_lens_decoration.dart';
 abstract final class ModalGlassTokens {
   static const surface = AppColorsDark.modal;
   static const text = AppColors.textInverse;
-  static const muted = Color(0xCCFFFFFF);
+  static const muted = AppColorsDark.textSecondary;
   static const grabber = AppColorsDark.divider;
   static const barrier = Color(0xCC0F0A1A);
   static const headingGradient = LinearGradient(

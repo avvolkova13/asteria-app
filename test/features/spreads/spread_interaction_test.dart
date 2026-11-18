@@ -1,4 +1,6 @@
+import 'dart:ui' show SemanticsAction;
 import 'dart:async';
+import 'package:asteria_app/core/ui_kit/widgets/card_turn.dart';
 import 'package:asteria_app/features/love_deck/love_deck_screen.dart';
 import 'package:asteria_app/features/monetization/data/feature_execution_api.dart';
 import 'package:asteria_app/features/monetization/domain/feature_execution_models.dart';
@@ -120,6 +122,40 @@ void main() {
     expect(find.byKey(const ValueKey('rune_layout_front_2')), findsOneWidget);
   });
 
+  testWidgets('rune detail waits until its turn finishes', (tester) async {
+    final rune = _runes().first;
+    var opened = false;
+    await tester.pumpWidget(
+      _localizedApp(
+        StatefulBuilder(
+          builder: (context, update) => RunesBlock(
+            rune1: rune,
+            rune2: rune,
+            rune3: rune,
+            isRuneLeftOpened: opened,
+            isRuneCenterOpened: false,
+            isRuneRightOpened: false,
+            onOpenRuneLeft: () => update(() => opened = true),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    final point = tester.getCenter(
+      find.byKey(const ValueKey('rune_layout_back_0')),
+    );
+    await tester.tapAt(point);
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 180));
+    await tester.tapAt(point);
+    await tester.pump();
+    expect(find.byType(BottomSheet), findsNothing);
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('rune_layout_front_0')));
+    await tester.pumpAndSettle();
+    expect(find.byType(BottomSheet), findsOneWidget);
+  });
+
   group('tarot layout interaction', () {
     late UserProvider userProvider;
     late ContentProvider contentProvider;
@@ -158,6 +194,75 @@ void main() {
       contentProvider.dispose();
       userProvider.dispose();
       await di.reset();
+    });
+
+    testWidgets('accessibility opens a tarot card through the shared flip', (
+      tester,
+    ) async {
+      final handle = tester.ensureSemantics();
+      await tester.pumpWidget(_localizedApp(const TarotLayout()));
+      await tester.pumpAndSettle();
+      final card = find.byKey(const ValueKey('tarot_layout_card_0'));
+      final node = tester.getSemantics(card);
+      expect(node.getSemanticsData().hasAction(SemanticsAction.tap), isTrue);
+      node.owner!.performAction(node.id, SemanticsAction.tap);
+      await tester.pumpAndSettle();
+      expect(
+        find.byKey(const ValueKey('tarot_layout_front_0')),
+        findsOneWidget,
+      );
+      handle.dispose();
+    });
+
+    testWidgets('another card stays closed throughout the first turn', (
+      tester,
+    ) async {
+      await tester.pumpWidget(_localizedApp(const TarotLayout()));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const ValueKey('tarot_layout_card_0')));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 180));
+      await tester.tap(find.byKey(const ValueKey('tarot_layout_card_1')));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 180));
+      final second = find.descendant(
+        of: find.byKey(const ValueKey('tarot_layout_card_1')),
+        matching: find.byType(CardTurn),
+      );
+      expect(tester.widget<CardTurn>(second).progress, 0);
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const ValueKey('tarot_layout_card_1')));
+      await tester.pumpAndSettle();
+      expect(
+        find.byKey(const ValueKey('tarot_layout_front_1')),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('missing card content cannot turn a back into another back', (
+      tester,
+    ) async {
+      userProvider.applyServerUserSnapshot(
+        userProvider.currentUser!.copyWith(
+          tarotDeck: TarotDeckModel(
+            cards: List.generate(
+              3,
+              (i) => TarotCardInDeckModel(id: 'not-loaded-$i', isOpened: false),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpWidget(_localizedApp(const TarotLayout()));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const ValueKey('tarot_layout_card_0')));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+      final first = find.descendant(
+        of: find.byKey(const ValueKey('tarot_layout_card_0')),
+        matching: find.byType(CardTurn),
+      );
+      expect(tester.widget<CardTurn>(first).progress, 0);
+      await tester.pumpAndSettle();
     });
 
     testWidgets('starts closed, opens one at a time, and resets on re-entry', (
@@ -265,11 +370,7 @@ void main() {
         expect(
           tester.getSize(action).width,
           tester
-              .getSize(
-                find.text(
-                  'Откройте карту и прислушайтесь к чувствам.',
-                ),
-              )
+              .getSize(find.text('Откройте карту и прислушайтесь к чувствам.'))
               .width,
         );
         expect(tester.getSize(action).height, greaterThanOrEqualTo(50));
@@ -395,6 +496,9 @@ void main() {
           isFalse,
         );
 
+        // pumpAndSettle stops during the deliberate first-card hold.
+        await tester.pump(const Duration(milliseconds: 550));
+        await tester.pumpAndSettle();
         await tester.tapAt(layoutTopLeft + const Offset(75, 313));
         await tester.pumpAndSettle();
 
@@ -440,7 +544,7 @@ List<RuneOfDayModel> _runes() => List.generate(
   (index) => RuneOfDayModel(
     id: 'rune-$index',
     title: 'Rune $index',
-    imageName: 'rune-$index',
+    imageName: ['algiz', 'fehu', 'uruz'][index],
     sort: index,
     cardOfDayDescription: '',
     generalDescription: '',

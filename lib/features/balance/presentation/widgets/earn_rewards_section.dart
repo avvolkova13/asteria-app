@@ -187,13 +187,15 @@ class _RewardCard extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            _RewardArtwork(
-              assetPath: _assetPath,
-              icon: _icon,
-              itemId: item.id,
-              isComplete: _isComplete,
-            ),
-            const SizedBox(width: 10),
+            if (!largeText) ...[
+              _RewardArtwork(
+                assetPath: _assetPath,
+                icon: _icon,
+                itemId: item.id,
+                isComplete: _isComplete,
+              ),
+              const SizedBox(width: 10),
+            ],
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.only(top: 2, right: 2, bottom: 3),

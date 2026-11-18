@@ -1,4 +1,5 @@
 import 'top_bar_geometry.dart';
+
 import 'package:flutter/services.dart';
 import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
@@ -72,16 +73,11 @@ class TopNavBar extends StatelessWidget {
   Widget _buildContent(BuildContext context) {
     switch (type) {
       case TopNavBarType.payment:
-        return AsteriaTopBarFrame(
-          child: Row(
-            children: [
-              Expanded(
-                child: _TopNavBarTitle(userName: userName, canPop: canPop),
-              ),
-              const SizedBox(width: 12),
-              const _MoonTopNavBarActions(),
-            ],
-          ),
+        return _adaptiveMoonHeader(
+          context,
+          userName: userName,
+          canPop: canPop,
+          inlineGap: 12,
         );
       case TopNavBarType.moon:
         return _MoonTopNavBarWidget(
@@ -115,6 +111,7 @@ class TopNavBarDelegate extends SliverPersistentHeaderDelegate {
   final double moonTopPadding;
   final double topInset;
   final double toolbarHeight;
+  final AsteriaTopBarLayout? layout;
 
   const TopNavBarDelegate({
     required this.userName,
@@ -124,7 +121,35 @@ class TopNavBarDelegate extends SliverPersistentHeaderDelegate {
     this.moonTopPadding = 59,
     double? topInset,
     this.toolbarHeight = AsteriaTopBarMetrics.toolbarHeight,
+    this.layout,
   }) : topInset = topInset ?? moonTopPadding;
+
+  factory TopNavBarDelegate.adaptive(
+    BuildContext context, {
+    required String userName,
+    required TopNavBarType type,
+    bool canPop = false,
+    DateTime? birthDate,
+    double? topInset,
+    double? toolbarHeight,
+  }) {
+    final layout = _moonLayout(
+      context,
+      userName: userName,
+      canPop: canPop,
+      width: MediaQuery.sizeOf(context).width,
+      baseHeight: toolbarHeight,
+    );
+    return TopNavBarDelegate(
+      userName: userName,
+      type: type,
+      canPop: canPop,
+      birthDate: birthDate,
+      topInset: topInset ?? MediaQuery.paddingOf(context).top,
+      toolbarHeight: layout.height,
+      layout: layout,
+    );
+  }
 
   @override
   Widget build(
@@ -179,6 +204,7 @@ class TopNavBarDelegate extends SliverPersistentHeaderDelegate {
         canPop: canPop,
         topPadding: topInset,
         toolbarHeight: toolbarHeight,
+        layout: layout,
       );
     }
 
@@ -297,7 +323,9 @@ class TopNavBarDelegate extends SliverPersistentHeaderDelegate {
             oldDelegate.birthDate != birthDate ||
             oldDelegate.moonTopPadding != moonTopPadding ||
             oldDelegate.topInset != topInset ||
-            oldDelegate.toolbarHeight != toolbarHeight);
+            oldDelegate.toolbarHeight != toolbarHeight ||
+            oldDelegate.layout?.width != layout?.width ||
+            oldDelegate.layout?.separateTitle != layout?.separateTitle);
   }
 }
 
@@ -307,30 +335,112 @@ class _MoonTopNavBarWidget extends StatelessWidget {
     required this.canPop,
     this.topPadding = 0,
     this.toolbarHeight = AsteriaTopBarMetrics.toolbarHeight,
+    this.layout,
   });
-
   final String userName;
   final bool canPop;
   final double topPadding;
   final double toolbarHeight;
-
+  final AsteriaTopBarLayout? layout;
   @override
-  Widget build(BuildContext context) => SizedBox(
-    height: topPadding + toolbarHeight,
-    width: double.infinity,
-    child: Padding(
-      padding: EdgeInsets.only(top: topPadding),
-      child: AsteriaTopBarFrame(
-        child: Row(
-          children: [
-            Expanded(
-              child: _TopNavBarTitle(userName: userName, canPop: canPop),
-            ),
-            const SizedBox(width: 8),
-            const _MoonTopNavBarActions(),
-          ],
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (context, constraints) {
+      final geometry =
+          layout ??
+          _moonLayout(
+            context,
+            userName: userName,
+            canPop: canPop,
+            width: constraints.maxWidth,
+            baseHeight: toolbarHeight,
+          );
+      return SizedBox(
+        height: topPadding + geometry.height,
+        width: double.infinity,
+        child: Padding(
+          padding: EdgeInsets.only(top: topPadding),
+          child: _adaptiveMoonHeader(
+            context,
+            userName: userName,
+            canPop: canPop,
+            layout: geometry,
+          ),
         ),
-      ),
+      );
+    },
+  );
+}
+
+AsteriaTopBarLayout _moonLayout(
+  BuildContext context, {
+  required String userName,
+  required bool canPop,
+  required double width,
+  double inlineGap = 8,
+  double? baseHeight,
+}) {
+  final balance = MonetizationProvider.maybeOf(context)?.balance ?? 0;
+  return AsteriaTopBarLayout.resolve(
+    context,
+    title: userName,
+    titleStyle: AppTypography.navTitle.copyWith(color: AppColors.textInverse),
+    actionWidths: [
+      AsteriaTopBarLayout.textSize(
+            context,
+            '$balance ',
+            context.textTheme.inverseUrbanistSemiBold17,
+          ).width +
+          14,
+      76,
+    ],
+    width: width,
+    leadingWidth: canPop ? 48 : 0,
+    inlineGap: inlineGap,
+    baseHeight: baseHeight,
+  );
+}
+
+Widget _adaptiveMoonHeader(
+  BuildContext context, {
+  required String userName,
+  required bool canPop,
+  double inlineGap = 8,
+  AsteriaTopBarLayout? layout,
+}) {
+  final balance = MonetizationProvider.maybeOf(context)?.balance ?? 0;
+  return AsteriaAdaptiveTopBar(
+    title: userName,
+    titleStyle: AppTypography.navTitle.copyWith(color: AppColors.textInverse),
+    leading: canPop
+        ? _TopNavBackButton(
+            onTap: () => _navigateBack(context),
+            child: const SizedBox.square(
+              dimension: LotusArrowBubble.hitExtent,
+              child: Center(child: LotusArrowBubble(back: true)),
+            ),
+          )
+        : null,
+    leadingWidth: canPop ? 48 : 0,
+    inlineGap: inlineGap,
+    layout: layout,
+    actions: _moonActionItems(context),
+    actionWidths: [
+      AsteriaTopBarLayout.textSize(
+            context,
+            '$balance ',
+            context.textTheme.inverseUrbanistSemiBold17,
+          ).width +
+          14,
+      76,
+    ],
+    inline: Row(
+      children: [
+        Expanded(
+          child: _TopNavBarTitle(userName: userName, canPop: canPop),
+        ),
+        SizedBox(width: inlineGap),
+        const _MoonTopNavBarActions(),
+      ],
     ),
   );
 }
@@ -387,53 +497,80 @@ class HomeAccountBar extends StatelessWidget {
     final gender = context.select<UserProvider, Gender?>(
       (provider) => provider.currentUser?.personalInfo?.gender,
     );
+    Widget profileAction({bool wrap = false}) => Tooltip(
+      message: context.l10n.navProfile,
+      excludeFromSemantics: true,
+      child: LotusButtons.text(
+        style: TextButton.styleFrom(
+          minimumSize: const Size(44, 44),
+          visualDensity: VisualDensity.standard,
+          padding: const EdgeInsets.only(right: 8),
+          foregroundColor: AppColors.textInverse,
+        ),
+        onPressed: () => HomeProfileRoute.push(context),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ProfileAvatar(
+              size: 36,
+              gender: gender,
+              userId: context.select<UserProvider, String?>(
+                (provider) => provider.currentUser?.id,
+              ),
+            ),
+            const SizedBox(width: 8),
+            Flexible(
+              child: Text(
+                context.l10n.navProfile,
+                maxLines: wrap ? null : 1,
+                overflow: wrap ? TextOverflow.visible : TextOverflow.ellipsis,
+                style: AppTypography.text1SemiBold,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+    final balance = MonetizationProvider.maybeOf(context)?.balance ?? 0;
+    final balanceStyle =
+        accountLabelStyle ?? context.textTheme.inverseUrbanistSemiBold17;
     return ColoredBox(
       color: backgroundColor,
-      child: AsteriaTopBarFrame(
-        child: Row(
+      child: AsteriaAdaptiveTopBar(
+        title: context.l10n.navProfile,
+        titleStyle: AppTypography.text1SemiBold,
+        leadingWidth: 52,
+        inlineGap: 0,
+        actions: showAccountActions
+            ? _moonActionItems(context, labelStyle: accountLabelStyle)
+            : const [],
+        actionWidths: showAccountActions
+            ? [
+                AsteriaTopBarLayout.textSize(
+                      context,
+                      '$balance ',
+                      balanceStyle,
+                    ).width +
+                    14,
+                76,
+              ]
+            : const [],
+        expandedTitleLeadingWidth: 52,
+        expandedTitleMinHeight: 44,
+        expandedTitle: Align(
+          alignment: Alignment.centerLeft,
+          child: profileAction(wrap: true),
+        ),
+        inline: Row(
           children: [
             Expanded(
               child: Align(
                 alignment: Alignment.centerLeft,
-                child: Tooltip(
-                  message: context.l10n.navProfile,
-                  excludeFromSemantics: true,
-                  child: LotusButtons.text(
-                    style: TextButton.styleFrom(
-                      minimumSize: const Size(44, 44),
-                      visualDensity: VisualDensity.standard,
-                      padding: const EdgeInsets.only(right: 8),
-                      foregroundColor: AppColors.textInverse,
-                    ),
-                    onPressed: () => HomeProfileRoute.push(context),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        ProfileAvatar(
-                          size: 36,
-                          gender: gender,
-                          userId: context.select<UserProvider, String?>(
-                            (provider) => provider.currentUser?.id,
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Flexible(
-                          child: Text(
-                            context.l10n.navProfile,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: AppTypography.text1SemiBold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+                child: profileAction(),
               ),
             ),
-            if (showAccountActions) ...[
+            if (showAccountActions)
               _MoonTopNavBarActions(labelStyle: accountLabelStyle),
-            ],
           ],
         ),
       ),
@@ -447,48 +584,61 @@ class _MoonTopNavBarActions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final items = _moonActionItems(context, labelStyle: labelStyle);
     return Row(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        LotusTap(
-          onTap: () => BalanceRoute.push(context),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Consumer<UserProvider>(
-                builder: (context, userProvider, child) {
-                  return Padding(
-                    padding: EdgeInsets.zero,
-                    child: Text(
-                      '${MonetizationProvider.maybeOf(context)?.balance ?? 0} ',
-                      style:
-                          labelStyle ??
-                          context.textTheme.inverseUrbanistSemiBold17,
-                    ),
-                  );
-                },
-              ),
-              Padding(
-                padding: EdgeInsets.zero,
-                child: LotusRasterIcon(
-                  'assets/icons/star_coin_icon.png',
-                  height: 14,
-                ),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(width: 8),
-        SizedBox(
-          width: 76,
-          height: 28,
-          child: SubscriptionWidget(labelStyle: labelStyle),
-        ),
-      ],
+      children: [items[0], const SizedBox(width: 8), items[1]],
     );
   }
 }
+
+List<Widget> _moonActionItems(
+  BuildContext context, {
+  TextStyle? labelStyle,
+}) => [
+  Semantics(
+    button: true,
+    enabled: true,
+    label: context.l10n.balanceStarsLabel(
+      MonetizationProvider.maybeOf(context)?.balance ?? 0,
+    ),
+    onTap: LotusFeedback.action(() => BalanceRoute.push(context)),
+    excludeSemantics: true,
+    child: LotusTap(
+      onTap: () => BalanceRoute.push(context),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Consumer<UserProvider>(
+            builder: (context, userProvider, child) {
+              return Padding(
+                padding: EdgeInsets.zero,
+                child: Text(
+                  '${MonetizationProvider.maybeOf(context)?.balance ?? 0} ',
+                  style:
+                      labelStyle ?? context.textTheme.inverseUrbanistSemiBold17,
+                ),
+              );
+            },
+          ),
+          Padding(
+            padding: EdgeInsets.zero,
+            child: LotusRasterIcon(
+              'assets/icons/star_coin_icon.png',
+              height: 14,
+            ),
+          ),
+        ],
+      ),
+    ),
+  ),
+  SizedBox(
+    width: 76,
+    height: 28,
+    child: SubscriptionWidget(labelStyle: labelStyle),
+  ),
+];
 
 class _HomeTopNavBarWidget extends StatelessWidget {
   final String userName;
@@ -535,31 +685,42 @@ class _HomeTopNavBarWidget extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       // Coins
-                      LotusTap(
-                        onTap: () => BalanceRoute.push(context),
-                        child: Row(
-                          children: [
-                            Consumer<UserProvider>(
-                              builder: (context, userProvider, child) {
-                                return Padding(
-                                  padding: const EdgeInsets.only(bottom: 4),
-                                  child: Text(
-                                    '${MonetizationProvider.maybeOf(context)?.balance ?? 0} ',
-                                    style: context
-                                        .textTheme
-                                        .inverseUrbanistSemiBold17,
-                                  ).withEntrance(),
-                                );
-                              },
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(bottom: 4),
-                              child: LotusRasterIcon(
-                                'assets/icons/star_coin_icon.png',
-                                height: 16,
+                      Semantics(
+                        button: true,
+                        enabled: true,
+                        label: context.l10n.balanceStarsLabel(
+                          MonetizationProvider.maybeOf(context)?.balance ?? 0,
+                        ),
+                        onTap: LotusFeedback.action(
+                          () => BalanceRoute.push(context),
+                        ),
+                        excludeSemantics: true,
+                        child: LotusTap(
+                          onTap: () => BalanceRoute.push(context),
+                          child: Row(
+                            children: [
+                              Consumer<UserProvider>(
+                                builder: (context, userProvider, child) {
+                                  return Padding(
+                                    padding: const EdgeInsets.only(bottom: 4),
+                                    child: Text(
+                                      '${MonetizationProvider.maybeOf(context)?.balance ?? 0} ',
+                                      style: context
+                                          .textTheme
+                                          .inverseUrbanistSemiBold17,
+                                    ).withEntrance(),
+                                  );
+                                },
                               ),
-                            ),
-                          ],
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 4),
+                                child: LotusRasterIcon(
+                                  'assets/icons/star_coin_icon.png',
+                                  height: 16,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                       const SizedBox(width: 8),
@@ -778,28 +939,39 @@ class _ProfileTopNavBarWidget extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       // Coins
-                      LotusTap(
-                        onTap: () => BalanceRoute.push(context),
-                        child: Row(
-                          children: [
-                            Consumer<UserProvider>(
-                              builder: (context, userProvider, child) {
-                                return Text(
-                                  '${MonetizationProvider.maybeOf(context)?.balance ?? 0} ',
-                                  style: context
-                                      .textTheme
-                                      .inverseUrbanistSemiBold17,
-                                ).withEntrance();
-                              },
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(bottom: 2),
-                              child: LotusRasterIcon(
-                                'assets/icons/star_coin_icon.png',
-                                height: 16,
+                      Semantics(
+                        button: true,
+                        enabled: true,
+                        label: context.l10n.balanceStarsLabel(
+                          MonetizationProvider.maybeOf(context)?.balance ?? 0,
+                        ),
+                        onTap: LotusFeedback.action(
+                          () => BalanceRoute.push(context),
+                        ),
+                        excludeSemantics: true,
+                        child: LotusTap(
+                          onTap: () => BalanceRoute.push(context),
+                          child: Row(
+                            children: [
+                              Consumer<UserProvider>(
+                                builder: (context, userProvider, child) {
+                                  return Text(
+                                    '${MonetizationProvider.maybeOf(context)?.balance ?? 0} ',
+                                    style: context
+                                        .textTheme
+                                        .inverseUrbanistSemiBold17,
+                                  ).withEntrance();
+                                },
                               ),
-                            ),
-                          ],
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 2),
+                                child: LotusRasterIcon(
+                                  'assets/icons/star_coin_icon.png',
+                                  height: 16,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                       const SizedBox(width: 8),

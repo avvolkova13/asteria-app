@@ -214,6 +214,20 @@ void main() {
           textScale: 2,
           locale: locale,
         );
+        for (final id in [
+          'tarot',
+          if (AppFeatureVisibility.horoscopes) 'horoscope',
+          'runes',
+        ]) {
+          final card = find.byKey(ValueKey('achievement-$id'));
+          final title = find
+              .descendant(of: card, matching: find.byType(Text))
+              .first;
+          expect(
+            tester.getTopLeft(title).dy,
+            greaterThan(tester.getTopLeft(card).dy + 112),
+          );
+        }
         for (final text in tester.widgetList<Text>(find.byType(Text))) {
           if (text.data == null) continue;
           final paragraph = tester.renderObject<RenderParagraph>(

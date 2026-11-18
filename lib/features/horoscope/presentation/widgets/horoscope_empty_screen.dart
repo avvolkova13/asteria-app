@@ -1,8 +1,7 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_action_button.dart';
 import 'package:asteria_app/features/monetization/presentation/paywall_features_card.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
-import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
-import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/core/utils/enums.dart';
 import 'package:flutter/material.dart';
@@ -86,12 +85,7 @@ class HoroscopeEmptyScreen extends StatelessWidget {
 
 class _HoroscopePaywall {
   static const maxWidth = 358.0;
-  static const purpleStart = Color(0xFF6E4BFF);
-  static const purpleEnd = Color(0xFF5A3FD1);
 
-  static const purpleGradient = LinearGradient(
-    colors: [purpleStart, purpleEnd],
-  );
 }
 
 class _ChapterIncludesList extends StatelessWidget {
@@ -162,53 +156,12 @@ class _BuyButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return DecoratedBox(
-      decoration: CardLensDecoration.button(
-        gradient: _HoroscopePaywall.purpleGradient,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: AppColors.white.withValues(alpha: 0.1),
-          width: 0.7,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: _HoroscopePaywall.purpleStart.withValues(alpha: 0.28),
-            blurRadius: 18,
-            offset: const Offset(0, 8),
-          ),
-          BoxShadow(
-            color: AppColors.white.withValues(alpha: 0.12),
-            blurRadius: 8,
-            offset: const Offset(0, -1),
-          ),
-        ],
-      ),
-      child: SizedBox(
-        height: 50,
-        child: Semantics(
-          button: true,
-          label: context.l10n.buyYearHoroscopeLabel(
-            HoroscopeTypeEnum.year.price,
-          ),
-          child: LotusButtons.text(
-            onPressed: onPressed,
-            style: TextButton.styleFrom(
-              foregroundColor: AppColors.white,
-              padding: EdgeInsets.zero,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-            ),
-            child: Text(
-              context.l10n.commonBuy,
-              textAlign: TextAlign.center,
-              style: context.textTheme.button.copyWith(
-                color: AppColors.white,
-                letterSpacing: 0,
-              ),
-            ),
-          ),
-        ),
+    return Semantics(
+      label: context.l10n.buyYearHoroscopeLabel(HoroscopeTypeEnum.year.price),
+      child: AsteriaActionButton(
+        text: context.l10n.commonBuy,
+        onPressed: onPressed,
+        width: double.infinity,
       ),
     );
   }

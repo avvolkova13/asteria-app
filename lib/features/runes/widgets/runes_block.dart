@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/card_turn.dart';
 import 'package:asteria_app/core/ui_kit/widgets/artwork_unavailable.dart';
 import 'package:asteria_app/core/ui_kit/widgets/modal_glass_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
@@ -51,29 +52,23 @@ class _RunesBlockState extends State<RunesBlock> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     _leftRuneController = AnimationController(
-      duration: const Duration(milliseconds: 600),
+      duration: CardTurn.duration,
       vsync: this,
     );
     _centerRuneController = AnimationController(
-      duration: const Duration(milliseconds: 600),
+      duration: CardTurn.duration,
       vsync: this,
     );
     _rightRuneController = AnimationController(
-      duration: const Duration(milliseconds: 600),
+      duration: CardTurn.duration,
       vsync: this,
     );
 
-    _leftRuneAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _leftRuneController, curve: Curves.easeInOut),
-    );
+    _leftRuneAnimation = _leftRuneController;
 
-    _centerRuneAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _centerRuneController, curve: Curves.easeInOut),
-    );
+    _centerRuneAnimation = _centerRuneController;
 
-    _rightRuneAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _rightRuneController, curve: Curves.easeInOut),
-    );
+    _rightRuneAnimation = _rightRuneController;
 
     if (widget.isRuneLeftOpened) {
       _leftRuneController.value = 1.0;
@@ -90,25 +85,41 @@ class _RunesBlockState extends State<RunesBlock> with TickerProviderStateMixin {
   void didUpdateWidget(RunesBlock oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.isRuneLeftOpened != oldWidget.isRuneLeftOpened) {
-      if (widget.isRuneLeftOpened) {
+      if (MediaQuery.disableAnimationsOf(context)) {
+        _leftRuneController.value = widget.isRuneLeftOpened ? 1 : 0;
+      } else if (widget.isRuneLeftOpened) {
         _leftRuneController.forward();
       } else {
-        _leftRuneController.reverse();
+        _leftRuneController.value = 0;
       }
     }
     if (widget.isRuneCenterOpened != oldWidget.isRuneCenterOpened) {
-      if (widget.isRuneCenterOpened) {
+      if (MediaQuery.disableAnimationsOf(context)) {
+        _centerRuneController.value = widget.isRuneCenterOpened ? 1 : 0;
+      } else if (widget.isRuneCenterOpened) {
         _centerRuneController.forward();
       } else {
-        _centerRuneController.reverse();
+        _centerRuneController.value = 0;
       }
     }
     if (widget.isRuneRightOpened != oldWidget.isRuneRightOpened) {
-      if (widget.isRuneRightOpened) {
+      if (MediaQuery.disableAnimationsOf(context)) {
+        _rightRuneController.value = widget.isRuneRightOpened ? 1 : 0;
+      } else if (widget.isRuneRightOpened) {
         _rightRuneController.forward();
       } else {
-        _rightRuneController.reverse();
+        _rightRuneController.value = 0;
       }
+    }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (MediaQuery.disableAnimationsOf(context)) {
+      _leftRuneController.value = widget.isRuneLeftOpened ? 1 : 0;
+      _centerRuneController.value = widget.isRuneCenterOpened ? 1 : 0;
+      _rightRuneController.value = widget.isRuneRightOpened ? 1 : 0;
     }
   }
 
@@ -142,11 +153,10 @@ class _RunesBlockState extends State<RunesBlock> with TickerProviderStateMixin {
     return LayoutBuilder(
       builder: (context, constraints) {
         const layoutWidth = 358.0;
-        const layoutHeight = 236.0;
+        const layoutHeight = 270.0;
         const runeWidth = 111.0;
         const runeHeight = 186.0;
         const centerTop = 32.0;
-        const openedSideTop = 4.0;
 
         final availableWidth = constraints.maxWidth.isFinite
             ? constraints.maxWidth
@@ -159,17 +169,17 @@ class _RunesBlockState extends State<RunesBlock> with TickerProviderStateMixin {
         final scaledRuneWidth = runeWidth * scale;
         final scaledRuneHeight = runeHeight * scale;
         final centerOffset = centerTop * scale;
-        final openedSideOffset = openedSideTop * scale;
 
         return Center(
           child: SizedBox(
             width: width,
             height: height,
             child: Stack(
+              clipBehavior: Clip.none,
               children: [
                 _PositionedRune(
                   left: 0,
-                  top: widget.isRuneLeftOpened ? openedSideOffset : 0,
+                  top: 0,
                   width: scaledRuneWidth,
                   child: _buildAnimatedRune(
                     context: context,
@@ -209,7 +219,7 @@ class _RunesBlockState extends State<RunesBlock> with TickerProviderStateMixin {
                 ),
                 _PositionedRune(
                   right: 0,
-                  top: widget.isRuneRightOpened ? openedSideOffset : 0,
+                  top: 0,
                   width: scaledRuneWidth,
                   child: _buildAnimatedRune(
                     context: context,
@@ -248,46 +258,69 @@ class _RunesBlockState extends State<RunesBlock> with TickerProviderStateMixin {
     required VoidCallback onTapOpened,
     required int positionIndex,
   }) {
-    final onTap = isOpened ? onTapOpened : onTapClosed;
-
-    return LotusFeedback(
-      onActivate: onTap,
-      keyboard: true,
-      builder: (activate) => Semantics(
-        button: true,
-        enabled: onTap != null,
-        label: isOpened ? openedSemanticLabel.trim() : closedSemanticLabel,
-        onTap: activate,
-        child: GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          onTap: activate,
-          child: AnimatedBuilder(
-            animation: animation,
-            builder: (context, child) {
-              final showBack = animation.value < 0.5;
-              return Transform(
-                alignment: Alignment.center,
-                transform: Matrix4.identity()
-                  ..setEntry(3, 2, 0.001)
-                  ..rotateY(animation.value * 3.14159),
-                child: showBack
-                    ? _buildRuneBack(positionIndex, width, height)
-                    : Transform(
-                        alignment: Alignment.center,
-                        transform: Matrix4.identity()..rotateY(3.14159),
-                        child: _buildRuneFront(
-                          context,
-                          rune,
-                          width,
-                          height,
-                          positionIndex,
-                        ),
+    return AnimatedBuilder(
+      animation: animation,
+      builder: (context, child) {
+        final turning =
+            animation.status == AnimationStatus.forward ||
+            animation.status == AnimationStatus.reverse;
+        final onTap = rune == null || turning
+            ? null
+            : isOpened
+            ? onTapOpened
+            : onTapClosed;
+        return LotusFeedback(
+          animateEntrance: false,
+          onActivate: onTap,
+          keyboard: true,
+          builder: (activate) => Semantics(
+            button: true,
+            enabled: onTap != null,
+            label: isOpened ? openedSemanticLabel.trim() : closedSemanticLabel,
+            onTap: activate,
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: activate,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SizedBox(
+                    width: width,
+                    height: height,
+                    child: CardTurn(
+                      progress: rune == null ? 0 : animation.value,
+                      back: _buildRuneBack(positionIndex, width, height),
+                      front: _buildRuneFront(
+                        context,
+                        rune,
+                        width,
+                        height,
+                        positionIndex,
                       ),
-              );
-            },
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  if (isOpened && rune != null && animation.value == 1)
+                    SizedBox(
+                      width: width,
+                      child: Text(
+                        rune.title,
+                        style: context.textTheme.urbanistRegular12.copyWith(
+                          color: AppColors.white,
+                          height: 1.2,
+                          letterSpacing: -0.408,
+                        ),
+                        textAlign: TextAlign.center,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                ],
+              ),
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 
@@ -328,49 +361,27 @@ class _RunesBlockState extends State<RunesBlock> with TickerProviderStateMixin {
       );
     }
     final visualHeight = width * 512 / 340;
-    return Column(
+    return SizedBox(
       key: ValueKey('rune_layout_front_$positionIndex'),
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Container(
+      width: width,
+      height: height,
+      child: Center(
+        child: ClipRRect(
           key: ValueKey('rune_layout_front_visual_$positionIndex'),
-          width: width,
-          height: visualHeight,
-          decoration: BoxDecoration(borderRadius: BorderRadius.circular(12)),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(12),
-            child: Image.asset(
-              'assets/images/runes/${rune.imageName}.webp',
-              frameBuilder: AsteriaEntrance.imageFrame,
+          borderRadius: BorderRadius.circular(12),
+          child: Image.asset(
+            'assets/images/runes/${rune.imageName}.webp',
+            width: width,
+            height: visualHeight,
+            fit: BoxFit.fill,
+            errorBuilder: (context, error, stackTrace) => ArtworkUnavailable(
               width: width,
               height: visualHeight,
-              fit: BoxFit.fill,
-              errorBuilder: (context, error, stackTrace) {
-                return ArtworkUnavailable(
-                  width: width,
-                  height: visualHeight,
-                  radius: 12,
-                );
-              },
+              radius: 12,
             ),
           ),
         ),
-        const SizedBox(height: 8),
-        SizedBox(
-          width: width,
-          child: Text(
-            rune.title,
-            style: context.textTheme.urbanistRegular12.copyWith(
-              color: AppColors.white,
-              height: 1.2,
-              letterSpacing: -0.408,
-            ),
-            textAlign: TextAlign.center,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ),
-      ],
+      ),
     );
   }
 }

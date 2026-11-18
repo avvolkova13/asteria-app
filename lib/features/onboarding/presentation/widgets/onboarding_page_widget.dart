@@ -153,6 +153,8 @@ class OnboardingPageWidget extends StatelessWidget {
                                           const OnboardingTarotVisual(),
                                         OnboardingVisualKind.personal =>
                                           const OnboardingPersonalVisual(),
+                                        OnboardingVisualKind.natal =>
+                                          const OnboardingPersonalVisual(),
                                       },
                                     ),
                                   ),

@@ -1,6 +1,7 @@
 import 'package:asteria_app/core/localization/localization.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/features/onboarding/data/onboarding_data.dart';
+import 'package:asteria_app/features/onboarding/data/models/onboarding_page_model.dart';
 import 'package:asteria_app/features/onboarding/localization/onboarding_localization_contract.dart';
 import 'package:asteria_app/features/onboarding/presentation/widgets/onboarding_page_widget.dart';
 import 'package:flutter/material.dart';
@@ -76,7 +77,7 @@ void main() {
       const Size(430, 932),
     ]) {
       for (final scale in [1.0, 1.3, 2.0]) {
-        for (var page = 0; page < 4; page++) {
+        for (var page = 0; page < 5; page++) {
           testWidgets(
             '$locale page ${page + 1} ${size.width}x${size.height} text $scale',
             (tester) async {
@@ -105,7 +106,7 @@ void main() {
                   lessThanOrEqualTo(tester.getRect(content).bottom + .1),
                 );
               }
-              if (page == 1) {
+              if (model.visualKind == OnboardingVisualKind.daily) {
                 expect(
                   find.text(AppLocalizations.of(context).affirmationOfDay),
                   findsOneWidget,

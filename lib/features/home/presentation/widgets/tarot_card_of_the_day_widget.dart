@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/card_turn.dart';
 import 'package:asteria_app/core/ui_kit/widgets/tarot_card_frame.dart';
 import 'package:asteria_app/core/ui_kit/widgets/artwork_unavailable.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
@@ -44,12 +45,10 @@ class _TarotCardOfTheDayWidgetState extends State<TarotCardOfTheDayWidget>
   void initState() {
     super.initState();
     _animationController = AnimationController(
-      duration: const Duration(milliseconds: 600),
+      duration: CardTurn.duration,
       vsync: this,
     );
-    _flipAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
-    );
+    _flipAnimation = _animationController;
 
     if (widget.isOpened) {
       _animationController.value = 1.0; // Показываем лицевую сторону
@@ -62,11 +61,22 @@ class _TarotCardOfTheDayWidgetState extends State<TarotCardOfTheDayWidget>
   void didUpdateWidget(TarotCardOfTheDayWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.isOpened != oldWidget.isOpened) {
-      if (widget.isOpened) {
+      if (MediaQuery.disableAnimationsOf(context)) {
+        _animationController.value = widget.isOpened ? 1 : 0;
+      } else if (widget.isOpened) {
         _animationController.forward();
       } else {
-        _animationController.reverse();
+        // A refreshed symbol is already a different face; keep it hidden.
+        _animationController.value = 0;
       }
+    }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (MediaQuery.disableAnimationsOf(context)) {
+      _animationController.value = widget.isOpened ? 1 : 0;
     }
   }
 
@@ -106,6 +116,9 @@ class _TarotCardOfTheDayWidgetState extends State<TarotCardOfTheDayWidget>
           Semantics(
             button: true,
             label: context.l10n.refreshDailyTarotLabel,
+            onTap: widget.onRefresh == null
+                ? null
+                : LotusFeedback.action(widget.onRefresh!),
             child: ExcludeSemantics(
               child: LotusTap(
                 onTap: widget.onRefresh,
@@ -118,8 +131,8 @@ class _TarotCardOfTheDayWidgetState extends State<TarotCardOfTheDayWidget>
   }
 
   Widget _buildDarkHeader(BuildContext context) {
-    return SizedBox(
-      height: 38,
+    return ConstrainedBox(
+      constraints: const BoxConstraints(minHeight: 44),
       child: Row(
         children: [
           Expanded(
@@ -137,13 +150,16 @@ class _TarotCardOfTheDayWidgetState extends State<TarotCardOfTheDayWidget>
             Semantics(
               button: true,
               label: context.l10n.refreshDailyTarotLabel,
+              onTap: widget.onRefresh == null
+                  ? null
+                  : LotusFeedback.action(widget.onRefresh!),
               child: ExcludeSemantics(
                 child: LotusTap(
                   behavior: HitTestBehavior.opaque,
                   onTap: widget.onRefresh,
                   child: SizedBox(
-                    width: 32,
-                    height: 32,
+                    width: 44,
+                    height: 44,
                     child: ColorFiltered(
                       colorFilter: const ColorFilter.mode(
                         Color(0xFFF3B76A),
@@ -180,12 +196,22 @@ class _TarotCardOfTheDayWidgetState extends State<TarotCardOfTheDayWidget>
     return Column(
       children: AsteriaEntrance.sections([
         // Показываем закрытую карту
-        Center(
-          child: Semantics(
-            button: widget.onCardTap != null,
-            label: context.l10n.dailyTarotFlipLabel,
-            child: ExcludeSemantics(
-              child: LotusTap(onTap: widget.onCardTap, child: _buildCardBack()),
+        AsteriaEntrance(
+          animateInitially: false,
+          child: Center(
+            child: Semantics(
+              button: widget.onCardTap != null,
+              label: context.l10n.dailyTarotFlipLabel,
+              onTap: widget.onCardTap == null
+                  ? null
+                  : LotusFeedback.action(widget.onCardTap!),
+              child: ExcludeSemantics(
+                child: LotusTap(
+                  animateEntrance: false,
+                  onTap: widget.onCardTap,
+                  child: _buildCardBack(),
+                ),
+              ),
             ),
           ),
         ),
@@ -217,32 +243,31 @@ class _TarotCardOfTheDayWidgetState extends State<TarotCardOfTheDayWidget>
     return Column(
       children: AsteriaEntrance.sections([
         // Animated tarot card
-        Center(
-          child: Semantics(
-            button: !widget.isOpened && widget.onCardTap != null,
-            label: widget.isOpened
-                ? context.l10n.dailyTarotOpenedLabel(tarotCard.title)
-                : context.l10n.dailyTarotFlipLabel,
-            child: ExcludeSemantics(
-              child: LotusTap(
-                onTap: widget.isOpened ? null : widget.onCardTap,
-                child: AnimatedBuilder(
-                  animation: _flipAnimation,
-                  builder: (context, child) {
-                    return Transform(
-                      alignment: Alignment.center,
-                      transform: Matrix4.identity()
-                        ..setEntry(3, 2, 0.001)
-                        ..rotateY(_flipAnimation.value * 3.14159),
-                      child: _flipAnimation.value < 0.5
-                          ? _buildCardBack()
-                          : Transform(
-                              alignment: Alignment.center,
-                              transform: Matrix4.identity()..rotateY(3.14159),
-                              child: _buildCardFront(tarotCard),
-                            ),
-                    );
-                  },
+        AsteriaEntrance(
+          animateInitially: false,
+          child: Center(
+            child: Semantics(
+              button: !widget.isOpened && widget.onCardTap != null,
+              label: widget.isOpened
+                  ? context.l10n.dailyTarotOpenedLabel(tarotCard.title)
+                  : context.l10n.dailyTarotFlipLabel,
+              onTap: widget.isOpened || widget.onCardTap == null
+                  ? null
+                  : LotusFeedback.action(widget.onCardTap!),
+              child: ExcludeSemantics(
+                child: LotusTap(
+                  animateEntrance: false,
+                  onTap: widget.isOpened ? null : widget.onCardTap,
+                  child: AnimatedBuilder(
+                    animation: _flipAnimation,
+                    builder: (context, child) {
+                      return CardTurn(
+                        progress: _flipAnimation.value,
+                        back: _buildCardBack(),
+                        front: _buildCardFront(tarotCard),
+                      );
+                    },
+                  ),
                 ),
               ),
             ),

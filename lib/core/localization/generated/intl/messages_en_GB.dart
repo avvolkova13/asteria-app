@@ -31,9 +31,15 @@ class MessageLookup extends MessageLookupByLibrary {
   static String m23(price) =>
       "7 days free, then ${price}. Renews automatically. Cancel anytime.";
 
-  static String m24(current, total) => "Page ${current} of ${total}";
+  static String m24(date) => "Upcoming days · from ${date}";
 
-  static String m44(time) => "Reminder at ${time}";
+  static String m25(date) => "Chosen day: ${date}";
+
+  static String m26(current, total) => "Page ${current} of ${total}";
+
+  static String m46(time) => "Reminder at ${time}";
+
+  static String m64(count) => "Plans: ${count}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -58,6 +64,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "avatarSorceress": MessageLookupByLibrary.simpleMessage("Sorceress"),
     "avatarUnicorn": MessageLookupByLibrary.simpleMessage("Unicorn"),
     "dayFavorable": MessageLookupByLibrary.simpleMessage("Favourable day"),
+    "dayUnfavorable": MessageLookupByLibrary.simpleMessage("Unfavourable day"),
     "googleSubscriptionPerMonth": m19,
     "googleSubscriptionPerWeek": m20,
     "googleSubscriptionPerYear": m21,
@@ -77,19 +84,85 @@ class MessageLookup extends MessageLookupByLibrary {
       "Bringing your insight together…",
     ),
     "introAnakraMessage": MessageLookupByLibrary.simpleMessage(
-      "Which part already interests you? Start there and give yourself ten minutes.",
+      "Give one small step ten minutes. Just try it.",
     ),
     "introAudioError": MessageLookupByLibrary.simpleMessage(
       "Unable to play the recording.",
     ),
+    "introCalendarCompare": MessageLookupByLibrary.simpleMessage(
+      "Compare the next few days",
+    ),
+    "introCalendarCompleted": MessageLookupByLibrary.simpleMessage(
+      "Everything is planned",
+    ),
+    "introCalendarCompletedBody": MessageLookupByLibrary.simpleMessage(
+      "Your haircut is in the calendar. A reminder is set for the day before.",
+    ),
     "introCalendarExample": MessageLookupByLibrary.simpleMessage(
       "Example: choosing a day",
     ),
-    "introDateOne": MessageLookupByLibrary.simpleMessage("November 12"),
-    "introDateTwo": MessageLookupByLibrary.simpleMessage("December 11"),
+    "introCalendarFrom": m24,
+    "introCalendarInsight": MessageLookupByLibrary.simpleMessage(
+      "A favorable time for a new haircut.",
+    ),
+    "introCalendarReminderChoice": MessageLookupByLibrary.simpleMessage(
+      "One day before",
+    ),
+    "introCalendarReminderEnabled": MessageLookupByLibrary.simpleMessage(
+      "Reminder is on",
+    ),
+    "introCalendarReminderTitle": MessageLookupByLibrary.simpleMessage(
+      "Remind me about this plan",
+    ),
+    "introCalendarRequest": MessageLookupByLibrary.simpleMessage(
+      "I want a new haircut.\nWhen should I book it?",
+    ),
+    "introCalendarResult": m25,
+    "introCalendarSavedText": MessageLookupByLibrary.simpleMessage(
+      "Added to my plans",
+    ),
+    "introCalendarSavedTitle": MessageLookupByLibrary.simpleMessage("Haircut"),
+    "introDemoLabel": MessageLookupByLibrary.simpleMessage("Example reading"),
     "introFavorable": MessageLookupByLibrary.simpleMessage("Favorable day"),
     "introFavorableTip": MessageLookupByLibrary.simpleMessage(
       "A day to consider trying a new style.",
+    ),
+    "introMoodAffirmation": MessageLookupByLibrary.simpleMessage(
+      "You can take this moment at your own pace.",
+    ),
+    "introMoodCalm": MessageLookupByLibrary.simpleMessage("Looking for calm"),
+    "introMoodMatched": MessageLookupByLibrary.simpleMessage("Your own pace"),
+    "introMoodPractice": MessageLookupByLibrary.simpleMessage(
+      "Relax your shoulders. Breathe out slowly.",
+    ),
+    "introMoodPracticeTitle": MessageLookupByLibrary.simpleMessage(
+      "A short practice",
+    ),
+    "introMoodRequest": MessageLookupByLibrary.simpleMessage(
+      "I’m always rushing.\nI need a moment to breathe.",
+    ),
+    "introMoodRush": MessageLookupByLibrary.simpleMessage("Always rushing"),
+    "introMoodTired": MessageLookupByLibrary.simpleMessage("Low on energy"),
+    "introNatalDate": MessageLookupByLibrary.simpleMessage(
+      "Example data · 13 May 1995",
+    ),
+    "introNatalPattern": MessageLookupByLibrary.simpleMessage(
+      "Change may bring a need for more clarity and time.",
+    ),
+    "introNatalPatternTitle": MessageLookupByLibrary.simpleMessage(
+      "A familiar reaction",
+    ),
+    "introNatalQuestion": MessageLookupByLibrary.simpleMessage(
+      "What helps you feel grounded before a new step?",
+    ),
+    "introNatalQuestionTitle": MessageLookupByLibrary.simpleMessage(
+      "A question to reflect on",
+    ),
+    "introNatalStrength": MessageLookupByLibrary.simpleMessage(
+      "Following through and finishing what you start.",
+    ),
+    "introNatalStrengthTitle": MessageLookupByLibrary.simpleMessage(
+      "A strength",
     ),
     "introNeutral": MessageLookupByLibrary.simpleMessage("Neutral day"),
     "introNeutralTip": MessageLookupByLibrary.simpleMessage(
@@ -98,25 +171,67 @@ class MessageLookup extends MessageLookupByLibrary {
     "introPairExample": MessageLookupByLibrary.simpleMessage(
       "Example couple’s reading",
     ),
+    "introPairFirst": MessageLookupByLibrary.simpleMessage("Taurus"),
+    "introPairNeedTalk": MessageLookupByLibrary.simpleMessage(
+      "“Talking about what happened helps me.”",
+    ),
+    "introPairNeedTime": MessageLookupByLibrary.simpleMessage(
+      "“I need time to understand how I feel.”",
+    ),
     "introPairPrompt": MessageLookupByLibrary.simpleMessage(
-      "“I’d like to return to our conversation. Would now or a little later work better for you?”",
+      "“This conversation matters to me. Is now a good time, or would later be better?”",
     ),
     "introPairQuestion": MessageLookupByLibrary.simpleMessage(
-      "A question for both of you",
+      "Try starting with this",
     ),
+    "introPairRequest": MessageLookupByLibrary.simpleMessage(
+      "I go quiet after an argument. My partner wants to talk.",
+    ),
+    "introPairSecond": MessageLookupByLibrary.simpleMessage("Gemini"),
     "introPairTip": MessageLookupByLibrary.simpleMessage(
-      "One person wants to talk right away; the other needs time.",
+      "A different pace doesn’t mean they don’t care.",
     ),
     "introPause": MessageLookupByLibrary.simpleMessage("Pause"),
     "introPlay": MessageLookupByLibrary.simpleMessage(
       "Listen to “I have time”",
     ),
-    "introProgress": m24,
+    "introProgress": m26,
     "introReplay": MessageLookupByLibrary.simpleMessage(
       "Replay the card reveal",
     ),
     "introSkip": MessageLookupByLibrary.simpleMessage("Skip"),
     "introStart": MessageLookupByLibrary.simpleMessage("Get started"),
+    "introStoryExample": MessageLookupByLibrary.simpleMessage("Example story"),
+    "introStoryPause": MessageLookupByLibrary.simpleMessage("Pause story"),
+    "introStoryReplay": MessageLookupByLibrary.simpleMessage("Replay"),
+    "introStoryResume": MessageLookupByLibrary.simpleMessage("Resume story"),
+    "introTarotFollowup": MessageLookupByLibrary.simpleMessage(
+      "What if it does not work out?",
+    ),
+    "introTarotHint": MessageLookupByLibrary.simpleMessage(
+      "One question. Three new perspectives.",
+    ),
+    "introTarotInsight": MessageLookupByLibrary.simpleMessage(
+      "Anakra’s advice",
+    ),
+    "introTarotMeaning": MessageLookupByLibrary.simpleMessage(
+      "Start with the part that interests you.",
+    ),
+    "introTarotMeaningTitle": MessageLookupByLibrary.simpleMessage(
+      "A way to read these cards",
+    ),
+    "introTarotReflection": MessageLookupByLibrary.simpleMessage(
+      "What if you followed your curiosity?",
+    ),
+    "introTarotRequest": MessageLookupByLibrary.simpleMessage(
+      "I want to start something new,\nbut I keep putting it off.",
+    ),
+    "moonStatusFavorableShort": MessageLookupByLibrary.simpleMessage(
+      "favourable",
+    ),
+    "moonStatusUnfavorableShort": MessageLookupByLibrary.simpleMessage(
+      "unfavourable",
+    ),
     "natalHousesNeedTime": MessageLookupByLibrary.simpleMessage(
       "An exact birth time is needed to calculate the houses.",
     ),
@@ -131,33 +246,37 @@ class MessageLookup extends MessageLookupByLibrary {
       "Planet positions are currently unavailable. Your saved reading is below.",
     ),
     "onboardingPage1Description": MessageLookupByLibrary.simpleMessage(
-      "Compare dates in the lunar calendar and save a plan, such as a haircut.",
+      "From a suitable day to a plan with a reminder.",
     ),
-    "onboardingPage1Title": MessageLookupByLibrary.simpleMessage(
-      "Which day works for you?",
-    ),
+    "onboardingPage1Title": MessageLookupByLibrary.simpleMessage("Your day"),
     "onboardingPage2Description": MessageLookupByLibrary.simpleMessage(
-      "Listen to “I have time” and notice how you feel.",
+      "Strengths, familiar reactions and new questions to ask yourself.",
     ),
     "onboardingPage2Title": MessageLookupByLibrary.simpleMessage(
-      "A moment to breathe",
+      "Your character",
     ),
     "onboardingPage3Description": MessageLookupByLibrary.simpleMessage(
-      "Explore a couple’s reading and find a question to start a calmer conversation.",
+      "Understand different reactions and find a way to talk.",
     ),
     "onboardingPage3Title": MessageLookupByLibrary.simpleMessage(
-      "How do you talk after a disagreement?",
+      "Your relationship",
     ),
     "onboardingPage4Description": MessageLookupByLibrary.simpleMessage(
-      "Tarot offers another perspective. You can discuss your next step with Anakra.",
+      "From a Tarot reading to reflection and a conversation with Anakra.",
     ),
     "onboardingPage4Title": MessageLookupByLibrary.simpleMessage(
-      "Where do you begin?",
+      "Your question",
+    ),
+    "onboardingPage5Description": MessageLookupByLibrary.simpleMessage(
+      "Affirmations and short practices for a pause in your day.",
+    ),
+    "onboardingPage5Title": MessageLookupByLibrary.simpleMessage(
+      "Time for yourself",
     ),
     "planReminderAdd": MessageLookupByLibrary.simpleMessage(
       "Remind me on the day",
     ),
-    "planReminderAt": m44,
+    "planReminderAt": m46,
     "planReminderDenied": MessageLookupByLibrary.simpleMessage(
       "To get reminders, allow notifications for Asteria in iPhone Settings.",
     ),
@@ -175,6 +294,22 @@ class MessageLookup extends MessageLookupByLibrary {
     "planReminderUnavailable": MessageLookupByLibrary.simpleMessage(
       "Couldn’t update the reminder. Please try again.",
     ),
+    "scenarioPlansAllDay": MessageLookupByLibrary.simpleMessage("No time set"),
+    "scenarioPlansCount": m64,
+    "scenarioPlansDay": MessageLookupByLibrary.simpleMessage("Day"),
+    "scenarioPlansEmptyDay": MessageLookupByLibrary.simpleMessage(
+      "No plans for this day yet.",
+    ),
+    "scenarioPlansEmptyWeek": MessageLookupByLibrary.simpleMessage(
+      "No plans for this week yet.",
+    ),
+    "scenarioPlansMonth": MessageLookupByLibrary.simpleMessage("Month"),
+    "scenarioPlansNext": MessageLookupByLibrary.simpleMessage("Next period"),
+    "scenarioPlansPrevious": MessageLookupByLibrary.simpleMessage(
+      "Previous period",
+    ),
+    "scenarioPlansToday": MessageLookupByLibrary.simpleMessage("Today"),
+    "scenarioPlansWeek": MessageLookupByLibrary.simpleMessage("Week"),
     "sonnikLoadingDetails": MessageLookupByLibrary.simpleMessage(
       "The details form a pattern…",
     ),

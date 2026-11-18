@@ -29,14 +29,16 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   late UserProvider userProvider;
+  late _FakeSession session;
   late _FakeMonetizationApi api;
   late MonetizationProvider monetizationProvider;
 
   setUp(() async {
     await di.reset();
+    session = _FakeSession();
     userProvider = UserProvider(
       userRepository: _FakeUserRepository(),
-      authSessionService: _FakeSession(),
+      authSessionService: session,
     )..applyServerUserSnapshot(UserModel.empty().copyWith(id: 'user-1'));
     api = _FakeMonetizationApi([_state(balance: 100), _state(balance: 60)]);
     monetizationProvider = MonetizationProvider(
@@ -342,6 +344,7 @@ void main() {
         ),
       ),
     );
+    session.uid = 'user-2';
     userProvider.applyServerUserSnapshot(
       UserModel.empty().copyWith(id: 'user-2'),
     );
@@ -495,11 +498,12 @@ class _FakeUserRepository implements UserRepository {
 }
 
 class _FakeSession implements AuthSessionService {
+  String uid = 'user-1';
   @override
   String? get currentEmail => 'user@example.com';
 
   @override
-  String? get currentUid => 'user-1';
+  String? get currentUid => uid;
 
   @override
   bool get hasRecentSignIn => true;

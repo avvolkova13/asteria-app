@@ -7,8 +7,50 @@ import 'package:asteria_app/core/services/auth/auth_session_service.dart';
 import 'package:asteria_app/features/auth/data/datasources/auth_datasource.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter/foundation.dart' show debugPrint;
 
 void main() {
+  for (final fail in [false, true]) {
+    test(
+      'profile creation logs exclude personal data (failure: $fail)',
+      () async {
+        final logs = <String>[];
+        final previousDebugPrint = debugPrint;
+        debugPrint = (String? message, {int? wrapWidth}) {
+          if (message != null) logs.add(message);
+        };
+        addTearDown(() => debugPrint = previousDebugPrint);
+        final adapter = _UserProfileAdapter()..fail = fail;
+        final dio = Dio(BaseOptions(baseUrl: 'https://api.example.com/'))
+          ..httpClientAdapter = adapter;
+        final source = AuthDataSourceImpl(
+          userProfileApi: UserProfileApi.forDio(dio, _FakeSession()),
+        );
+        final user = UserModel.fromJson(_userJson());
+        if (fail) {
+          await expectLater(source.createUser(user), throwsException);
+        } else {
+          expect((await source.createUser(user)).id, user.id);
+        }
+        expect(logs, isNotEmpty);
+        final output = logs.join('\n');
+        for (final personalValue in [
+          'mongo-user',
+          'user@example.com',
+          'Test User',
+          'access-token',
+          'server-pii',
+        ]) {
+          expect(
+            output,
+            isNot(contains(personalValue)),
+            reason: 'Logs must exclude supplied profile and exception data',
+          );
+        }
+      },
+    );
+  }
+
   test(
     'creates the current user profile through backend completion endpoint',
     () async {
@@ -94,6 +136,7 @@ class _FakeSession implements AuthSessionService {
 }
 
 class _UserProfileAdapter implements HttpClientAdapter {
+  bool fail = false;
   final requests = <RequestOptions>[];
 
   @override
@@ -107,8 +150,12 @@ class _UserProfileAdapter implements HttpClientAdapter {
       Headers.contentTypeHeader: [Headers.jsonContentType],
     };
     return ResponseBody.fromString(
-      jsonEncode(_userJson()),
-      200,
+      jsonEncode(
+        fail
+            ? {'detail': 'server-pii user@example.com mongo-user'}
+            : _userJson(),
+      ),
+      fail ? 500 : 200,
       headers: headers,
     );
   }

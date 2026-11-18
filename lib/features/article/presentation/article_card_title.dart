@@ -2,8 +2,7 @@ import 'dart:ui';
 
 import 'package:asteria_app/app/data/models/article/article_model.dart';
 
-/// Short editorial labels for the current library. The original heading and
-/// complete article remain available on the reading screen.
+/// Shared editorial titles for cards, accessibility labels and the reader.
 String articleCardTitle(ArticleModel article, Locale locale) {
   final copy = _titles[article.id];
   if (copy == null || !copy.topic.hasMatch(article.title)) return article.title;
@@ -18,48 +17,48 @@ final _titles = <String, _ArticleTitle>{
   ),
   'article2': _ArticleTitle(
     r'встреч|encounter|meeting',
-    'Повторяющиеся встречи',
-    'Recurring encounters',
+    'Неслучайные встречи',
+    'Meaningful encounters',
   ),
   'article3': _ArticleTitle(
     r'предназнач|purpose|destin|path',
-    'Как найти своё направление',
-    'Finding your direction',
+    'Три признака своего пути',
+    'Three signs of your path',
   ),
   'article4': _ArticleTitle(
     r'ран[ыа]|wound|choos|похож',
-    'Привычные сценарии в отношениях',
-    'Familiar relationship patterns',
+    'Кого мы выбираем',
+    'Who we choose',
   ),
   'article5': _ArticleTitle(
     r'деньг|money|abundan',
-    'Деньги и внутреннее состояние',
-    'Money and your mindset',
+    'Деньги и самоощущение',
+    'Money and mindset',
   ),
   'article6': _ArticleTitle(
     r'тел[оа]|организм|body',
-    'Как услышать своё тело',
-    'Listening to your body',
+    'Сигналы тела',
+    'Body signals',
   ),
   'article7': _ArticleTitle(
     r'натальн|birth chart|natal',
-    'Возможности натальной карты',
-    'Exploring your birth chart',
+    'Что даёт натальная карта',
+    'What your birth chart shows',
   ),
   'article8': _ArticleTitle(
     r'транзит|transit',
-    'Транзиты и поворотные моменты',
-    'Transits and turning points',
+    'Транзиты и перемены',
+    'Transits and change',
   ),
   'article9': _ArticleTitle(
     r'интуиц|intuition|sixth sense',
-    'Как распознать интуицию',
-    'Recognising your intuition',
+    'Как работает интуиция',
+    'How intuition works',
   ),
   'article10': _ArticleTitle(
     r'поток|flow',
-    'Как войти в творческий поток',
-    'Finding your creative flow',
+    'Творческий поток',
+    'Creative flow',
   ),
 };
 

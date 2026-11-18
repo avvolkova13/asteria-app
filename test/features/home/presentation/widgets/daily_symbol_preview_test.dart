@@ -1,3 +1,6 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
+import 'package:asteria_app/core/ui_kit/widgets/card_turn.dart';
+import 'package:asteria_app/features/runes/widgets/runes_block.dart';
 import 'package:asteria_app/app/data/models/rune_of_day/rune_of_day_model.dart';
 import 'package:asteria_app/app/data/models/tarot_card/tarot_card_model.dart';
 import 'package:asteria_app/app/data/models/user/user_model.dart';
@@ -20,6 +23,34 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 void main() {
+  testWidgets('daily symbol makes one forward turn and stays open on rebuild', (
+    tester,
+  ) async {
+    final animation = ValueNotifier<double>(0);
+    addTearDown(animation.dispose);
+    Widget preview() => MaterialApp(
+      home: DailySymbolFlip(
+        animation: AlwaysStoppedAnimation(animation.value),
+        back: const Text('closed rune'),
+        front: const Text('opened rune'),
+      ),
+    );
+    for (var frame = 0; frame <= 60; frame++) {
+      animation.value = frame / 60;
+      await tester.pumpWidget(preview());
+      final turn = tester.widget<CardTurn>(find.byType(CardTurn));
+      expect(turn.progress, closeTo(frame / 60, .00001));
+      expect(
+        find.text(frame < 30 ? 'closed rune' : 'opened rune'),
+        findsOneWidget,
+      );
+    }
+    await tester.pumpWidget(preview());
+    expect(tester.widget<CardTurn>(find.byType(CardTurn)).progress, 1);
+    expect(find.text('opened rune'), findsOneWidget);
+    expect(find.text('closed rune'), findsNothing);
+  });
+
   testWidgets(
     'the daily tarot starts face down and reveals the selected card on tap',
     (tester) async {
@@ -40,6 +71,7 @@ void main() {
       var tarotTaps = 0;
       var tarotOpened = false;
       var runeTaps = 0;
+      var runeOpened = false;
       var refreshes = 0;
       var runeTabSelections = 0;
       final router = GoRouter(
@@ -55,11 +87,15 @@ void main() {
                     onTarotRefresh: () => refreshes++,
                     onRuneRefresh: () => refreshes++,
                     isTarotOpened: tarotOpened,
+                    isRuneOpened: runeOpened,
                     onCardTap: () {
                       tarotTaps++;
                       setState(() => tarotOpened = true);
                     },
-                    onRuneTap: () => runeTaps++,
+                    onRuneTap: () {
+                      runeTaps++;
+                      setState(() => runeOpened = true);
+                    },
                     onRuneTabSelected: () => runeTabSelections++,
                   ),
                 ),
@@ -127,17 +163,43 @@ void main() {
       await tester.tap(find.text('Руна'));
       await tester.pumpAndSettle();
       expect(runeTabSelections, 1);
-      expect(
-        find.image(const AssetImage('assets/images/runes/algiz.webp')),
-        findsOneWidget,
+      final runeImage = find.image(
+        const AssetImage('assets/images/runes/algiz.webp'),
       );
+      expect(runeImage, findsNothing);
+      expect(find.text(_rune.cardOfDayDescription), findsNothing);
+      await tester.tap(find.bySemanticsLabel('Перевернуть руну дня'));
+      await tester.pump();
+      expect(runeImage, findsNothing);
+      await tester.pump(const Duration(milliseconds: 300));
+      expect(runeImage, findsNothing);
+      await tester.pump(const Duration(milliseconds: 300));
+      expect(runeImage, findsOneWidget);
+      await tester.pumpAndSettle();
+      expect(runeImage, findsOneWidget);
+      await tester.tap(runeImage);
+      expect(runeTaps, 1);
       expect(find.text(_rune.title), findsOneWidget);
       expect(find.text(_rune.cardOfDayDescription), findsOneWidget);
       await tester.tap(find.text('Разложить руны'));
       await tester.pumpAndSettle();
       expect(find.text('Расклад рун'), findsOneWidget);
       expect(starts.runes, 1);
-      expect(runeTaps, 0);
+      final turns = find.descendant(
+        of: find.byType(RunesBlock),
+        matching: find.byType(CardTurn),
+      );
+      expect(turns, findsNWidgets(3));
+      for (final turn in turns.evaluate()) {
+        expect(
+          find.ancestor(
+            of: find.byWidget(turn.widget),
+            matching: find.byType(AsteriaEntrance),
+          ),
+          findsNothing,
+        );
+      }
+      expect(runeTaps, 1);
       expect(refreshes, 0);
       router.go(TaroCardsRoute.routeName);
       await tester.pumpAndSettle();
@@ -150,6 +212,152 @@ void main() {
       expect(tester.takeException(), isNull);
     },
   );
+  for (final tarot in [true, false]) {
+    testWidgets(
+      'refresh hides the new ${tarot ? 'tarot' : 'rune'} face immediately',
+      (tester) async {
+        var opened = true;
+        var refreshed = false;
+        late StateSetter update;
+        await tester.pumpWidget(
+          MaterialApp(
+            locale: const Locale('ru'),
+            supportedLocales: AppLocaleService.supportedLocales,
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              ...GlobalMaterialLocalizations.delegates,
+            ],
+            home: Builder(
+              builder: (context) => Theme(
+                data: AppThemeDark.instance.getThemeData(context),
+                child: Scaffold(
+                  body: SingleChildScrollView(
+                    child: StatefulBuilder(
+                      builder: (context, setState) {
+                        update = setState;
+                        return tarot
+                            ? TarotCardOfTheDayWidget(
+                                tarotCard: refreshed
+                                    ? _tarot.copyWith(
+                                        id: 'moon',
+                                        imageName: 'the_moon',
+                                      )
+                                    : _tarot,
+                                isOpened: opened,
+                                isDarkLayout: true,
+                                showMoreButton: false,
+                              )
+                            : RuneOfTheDayWidget(
+                                rune: refreshed
+                                    ? _rune.copyWith(
+                                        id: 'fehu',
+                                        imageName: 'fehu',
+                                      )
+                                    : _rune,
+                                isOpened: opened,
+                                isDarkLayout: true,
+                                showMoreButton: false,
+                                onRefresh: () {},
+                              );
+                      },
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+        final newFace = find.image(
+          AssetImage(
+            tarot
+                ? 'assets/images/cards/the_moon.webp'
+                : 'assets/images/runes/fehu.webp',
+          ),
+        );
+        update(() {
+          opened = false;
+          refreshed = true;
+        });
+        await tester.pump();
+        expect(newFace, findsNothing);
+        await tester.pump(const Duration(milliseconds: 300));
+        expect(newFace, findsNothing);
+        update(() => opened = true);
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 300));
+        expect(newFace, findsNothing);
+        await tester.pumpAndSettle();
+        expect(newFace, findsOneWidget);
+        expect(tester.takeException(), isNull);
+      },
+    );
+  }
+  for (final reduced in [false, true]) {
+    testWidgets('rune faces retain position with reduced motion $reduced', (
+      tester,
+    ) async {
+      await tester.binding.setSurfaceSize(const Size(320, 720));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      var opened = false;
+      late StateSetter update;
+      await tester.pumpWidget(
+        MaterialApp(
+          locale: const Locale('ru'),
+          supportedLocales: AppLocaleService.supportedLocales,
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            ...GlobalMaterialLocalizations.delegates,
+          ],
+          home: Builder(
+            builder: (context) => Theme(
+              data: AppThemeDark.instance.getThemeData(context),
+              child: MediaQuery(
+                data: MediaQuery.of(
+                  context,
+                ).copyWith(disableAnimations: reduced),
+                child: Scaffold(
+                  body: StatefulBuilder(
+                    builder: (context, setState) {
+                      update = setState;
+                      return RunesBlock(
+                        rune1: _rune,
+                        rune2: _rune,
+                        rune3: _rune,
+                        isRuneLeftOpened: opened,
+                        isRuneCenterOpened: opened,
+                        isRuneRightOpened: opened,
+                      );
+                    },
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      final backRects = [
+        for (var i = 0; i < 3; i++)
+          tester.getRect(find.byKey(ValueKey('rune_layout_back_visual_$i'))),
+      ];
+      update(() => opened = true);
+      await tester.pump();
+      if (!reduced) {
+        await tester.pump(const Duration(milliseconds: 300));
+        expect(find.text(_rune.title), findsNothing);
+      }
+      await tester.pumpAndSettle();
+      for (var i = 0; i < 3; i++) {
+        expect(
+          tester.getRect(find.byKey(ValueKey('rune_layout_front_visual_$i'))),
+          backRects[i],
+        );
+      }
+      expect(find.text(_rune.title), findsNWidgets(3));
+      expect(tester.takeException(), isNull);
+    });
+  }
 }
 
 const _tarot = TarotCardModel(

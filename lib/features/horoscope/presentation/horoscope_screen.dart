@@ -222,7 +222,7 @@ class _HoroscopeScreenState extends State<HoroscopeScreen> {
                       16,
                       MediaQuery.paddingOf(context).top + 68,
                       16,
-                      100 + MediaQuery.paddingOf(context).bottom,
+                      24 + MediaQuery.paddingOf(context).bottom,
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,

@@ -1,13 +1,13 @@
 {
   "@@locale": "en",
-  "onboardingPage1Title": "Which day works for you?",
-  "onboardingPage1Description": "Compare dates in the lunar calendar and save a plan, such as a haircut.",
-  "onboardingPage2Title": "A moment to breathe",
-  "onboardingPage2Description": "Listen to “I have time” and notice how you feel.",
-  "onboardingPage3Title": "How do you talk after a disagreement?",
-  "onboardingPage3Description": "Explore a couple’s reading and find a question to start a calmer conversation.",
-  "onboardingPage4Title": "Where do you begin?",
-  "onboardingPage4Description": "Tarot offers another perspective. You can discuss your next step with Anakra.",
+  "onboardingPage1Title": "Your day",
+  "onboardingPage1Description": "From a suitable day to a plan with a reminder.",
+  "onboardingPage2Title": "Your character",
+  "onboardingPage2Description": "Strengths, familiar reactions and new questions to ask yourself.",
+  "onboardingPage3Title": "Your relationship",
+  "onboardingPage3Description": "Understand different reactions and find a way to talk.",
+  "onboardingPage4Title": "Your question",
+  "onboardingPage4Description": "From a Tarot reading to reflection and a conversation with Anakra.",
   "step1Title": "Discover new possibilities",
   "step1Description": "Explore every feature and start using Asteria today",
   "step2Title": "Simple and convenient",
@@ -89,7 +89,13 @@
   "genericSomethingWrong": "Something went wrong",
   "genericCheckConnection": "Check your internet connection and try again.",
   "errorWithDetails": "Error: {details}",
-  "@errorWithDetails": {"placeholders": {"details": {"type": "String"}}},
+  "@errorWithDetails": {
+    "placeholders": {
+      "details": {
+        "type": "String"
+      }
+    }
+  },
   "authUserNotInitialized": "Your profile isn't ready yet. Return to the previous step and try again.",
   "authSaveUserError": "We couldn't save your profile. Check your connection and try again.",
   "anakraWelcomeMessage": "Welcome. I am Anakra, keeper of the star signs and your celestial path. Ask your question or choose where to begin.",
@@ -226,9 +232,27 @@
   "purchaseTitle": "Purchase",
   "purchaseConfirmTitle": "Confirm purchase",
   "purchaseForPrice": "Buy {title} for {price}",
-  "@purchaseForPrice": {"placeholders": {"title": {"type": "String"}, "price": {"type": "int"}}},
+  "@purchaseForPrice": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "price": {
+        "type": "int"
+      }
+    }
+  },
   "purchaseForCoinsLabel": "Buy {title} for {price} Star Coins",
-  "@purchaseForCoinsLabel": {"placeholders": {"title": {"type": "String"}, "price": {"type": "int"}}},
+  "@purchaseForCoinsLabel": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "price": {
+        "type": "int"
+      }
+    }
+  },
   "purchaseNotEnoughGeneric": "Not enough Star Coins for this purchase",
   "purchaseNotEnoughRequests": "Not enough to buy requests",
   "purchaseNotEnoughReading": "Not enough to buy this reading",
@@ -307,9 +331,24 @@
   "achievementHoroscope": "Open your horoscope",
   "achievementRunes": "Open the runes",
   "achievementRemaining": "{count} of {total} remaining",
-  "@achievementRemaining": {"placeholders": {"count": {"type": "int"}, "total": {"type": "int"}}},
+  "@achievementRemaining": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "achievementLocked": "{title}. Locked",
-  "@achievementLocked": {"placeholders": {"title": {"type": "String"}}},
+  "@achievementLocked": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
   "natalIncludedInPro": "Included in PRO",
   "natalCreateCard": "Create your birth chart",
   "natalProAccessDescription": "Your Star Coin balance stays the same.",
@@ -349,19 +388,64 @@
   "shopRequired": "Required",
   "shopAfterPurchase": "After purchase:",
   "openArticleLabel": "Open article: {title}",
-  "@openArticleLabel": {"placeholders": {"title": {"type": "String"}}},
+  "@openArticleLabel": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
   "buyForPrice": "Buy for {price}",
-  "@buyForPrice": {"placeholders": {"price": {"type": "String"}}},
+  "@buyForPrice": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
   "buySpecialReadingLabel": "Buy {title} for {price} Star Coins",
-  "@buySpecialReadingLabel": {"placeholders": {"title": {"type": "String"}, "price": {"type": "String"}}},
+  "@buySpecialReadingLabel": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "price": {
+        "type": "String"
+      }
+    }
+  },
   "requestsLeftThisWeek": "{count, plural, =0{No free requests left this week} one{{count} free request left this week} other{{count} free requests left this week}}",
-  "@requestsLeftThisWeek": {"placeholders": {"count": {"type": "int"}}},
+  "@requestsLeftThisWeek": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "paidRequestsLeft": "{count, plural, =0{No purchased requests} one{{count} purchased request} other{{count} purchased requests}}",
-  "@paidRequestsLeft": {"placeholders": {"count": {"type": "int"}}},
+  "@paidRequestsLeft": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "limitResetsIn": "Your limit resets in {count, plural, one{{count} day} other{{count} days}}.",
-  "@limitResetsIn": {"placeholders": {"count": {"type": "int"}}},
+  "@limitResetsIn": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "freeLimitResetsIn": "Your free requests reset in {count, plural, one{{count} day} other{{count} days}}.",
-  "@freeLimitResetsIn": {"placeholders": {"count": {"type": "int"}}},
+  "@freeLimitResetsIn": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "requestsExhausted": "You've used all your requests.\nWant to continue?",
   "offerProTitle": "Get a PRO subscription",
   "offerIncludesTitle": "You'll get:",
@@ -373,19 +457,52 @@
   "homeLoadError": "Unable to load data",
   "balanceLabel": "Balance",
   "balanceStarsLabel": "Balance: {balance} Star Coins",
-  "@balanceStarsLabel": {"placeholders": {"balance": {"type": "int"}}},
+  "@balanceStarsLabel": {
+    "placeholders": {
+      "balance": {
+        "type": "int"
+      }
+    }
+  },
   "purchasedAttemptsAdd": "Purchased attempts are added to your free attempts",
   "requestsRemaining": "{count} of {total} requests left",
-  "@requestsRemaining": {"placeholders": {"count": {"type": "int"}, "total": {"type": "int"}}},
+  "@requestsRemaining": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "buyAttemptsLabel": "Buy attempts",
   "noSubscriptionQuestion": "No subscription?",
   "buyAttempts": "Buy attempts",
   "questionCoinPrice": "1 question = {price}",
-  "@questionCoinPrice": {"placeholders": {"price": {"type": "int"}}},
+  "@questionCoinPrice": {
+    "placeholders": {
+      "price": {
+        "type": "int"
+      }
+    }
+  },
   "shopItemCount": "{count} pcs",
-  "@shopItemCount": {"placeholders": {"count": {"type": "int"}}},
+  "@shopItemCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "shopUnitPriceValue": "price per item = {price}",
-  "@shopUnitPriceValue": {"placeholders": {"price": {"type": "int"}}},
+  "@shopUnitPriceValue": {
+    "placeholders": {
+      "price": {
+        "type": "int"
+      }
+    }
+  },
   "articlesTitle": "Articles",
   "articlesReadMore": "Read more",
   "compatibilityTitle": "Compatibility",
@@ -402,7 +519,13 @@
   "refreshReadingLabel": "Refresh reading",
   "readingComplete": "Your reading is complete",
   "yearHoroscopePriceTitle": "Your personal yearly horoscope\nfor {price} Star Coins",
-  "@yearHoroscopePriceTitle": {"placeholders": {"price": {"type": "int"}}},
+  "@yearHoroscopePriceTitle": {
+    "placeholders": {
+      "price": {
+        "type": "int"
+      }
+    }
+  },
   "yearHoroscopeIntro": "Open your map of destiny and glimpse the future created just for you.",
   "yearHoroscopeChapters": "Each chapter includes:",
   "horoscopeEssenceDescription": "— strengths and hidden talents.",
@@ -410,12 +533,30 @@
   "horoscopeEvolutionDescription": "— your path of growth and key changes.",
   "horoscopeLifetimeDescription": "Lifetime access—read whenever you like, return, and discover new meaning in every word.",
   "buyYearHoroscopeLabel": "Buy a personal yearly horoscope for {price} Star Coins",
-  "@buyYearHoroscopeLabel": {"placeholders": {"price": {"type": "int"}}},
+  "@buyYearHoroscopeLabel": {
+    "placeholders": {
+      "price": {
+        "type": "int"
+      }
+    }
+  },
   "natalCardPriceTitle": "Your birth chart\nfor {price} Star Coins",
-  "@natalCardPriceTitle": {"placeholders": {"price": {"type": "int"}}},
+  "@natalCardPriceTitle": {
+    "placeholders": {
+      "price": {
+        "type": "int"
+      }
+    }
+  },
   "natalForeverDescription": "Your chart is saved to your account so you can revisit it.",
   "buyNatalCardLabel": "Buy a birth chart for {price} Star Coins",
-  "@buyNatalCardLabel": {"placeholders": {"price": {"type": "int"}}},
+  "@buyNatalCardLabel": {
+    "placeholders": {
+      "price": {
+        "type": "int"
+      }
+    }
+  },
   "natalLoadError": "Unable to load your birth chart. Try again.",
   "natalTimeUnknown": "Not provided",
   "natalWheelSelectPlanet": "Tap a planet to see its connections",
@@ -429,11 +570,29 @@
   "natalGrowthLife": "Growth and life",
   "natalDestinyDepth": "Destiny and depth",
   "natalStrongHouse": "Strong house {number}",
-  "@natalStrongHouse": {"placeholders": {"number": {"type": "int"}}},
+  "@natalStrongHouse": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
   "natalWeakHouse": "Weak house {number}",
-  "@natalWeakHouse": {"placeholders": {"number": {"type": "int"}}},
+  "@natalWeakHouse": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
   "natalAccentHouse": "Emphasis on house {number}",
-  "@natalAccentHouse": {"placeholders": {"number": {"type": "int"}}},
+  "@natalAccentHouse": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
   "natalGetInterpretation": "Get interpretation",
   "planetSun": "Sun",
   "planetMoon": "Moon",
@@ -453,7 +612,13 @@
   "planetParsFortunae": "Part of Fortune",
   "planetVertex": "Vertex",
   "personalGreeting": "Hello, {name}!",
-  "@personalGreeting": {"placeholders": {"name": {"type": "String"}}},
+  "@personalGreeting": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "personalGreetingGeneral": "Hello!",
   "personalDefaultDescription": "See which signs the planets were in when you were born and how their positions relate.",
   "personalYourHoroscope": "Your horoscope",
@@ -465,9 +630,21 @@
   "personalUnlockKeyTheme": "Unlock key theme",
   "personalUnlockWeaknesses": "Unlock weak points",
   "personalWeaknessesPrice": "Weak points for {price}",
-  "@personalWeaknessesPrice": {"placeholders": {"price": {"type": "int"}}},
+  "@personalWeaknessesPrice": {
+    "placeholders": {
+      "price": {
+        "type": "int"
+      }
+    }
+  },
   "personalForecastPrice": "Unlock forecast\nfor {price} Star Coins",
-  "@personalForecastPrice": {"placeholders": {"price": {"type": "int"}}},
+  "@personalForecastPrice": {
+    "placeholders": {
+      "price": {
+        "type": "int"
+      }
+    }
+  },
   "personalWeekPurchaseDescription": "A detailed personal horoscope for the week is available as a one-time purchase.",
   "personalMonthPurchaseDescription": "A detailed personal horoscope for the month is available as a one-time purchase.",
   "personalTodayTab": "Today",
@@ -559,7 +736,13 @@
   "locationNotConfigured": "Current location is not set",
   "subscriptionNextPayment": "Your next payment\nwill be charged",
   "subscriptionNextPaymentOn": "Your next payment\nwill be charged on\n{date}",
-  "@subscriptionNextPaymentOn": {"placeholders": {"date": {"type": "String"}}},
+  "@subscriptionNextPaymentOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "manage": "Manage",
   "subscriptionInactiveDescription": "Unlock advanced PRO\nfeatures and cancel\nany time.",
   "tarotRefreshSubscriptionRequired": "Refreshing the Tarot card is available with a subscription. Subscribe to receive a new card every day.",
@@ -568,7 +751,13 @@
   "subscriptionActivationPending": "Payment received. Your subscription will activate within a few minutes.",
   "subscriptionNoPurchasesToRestore": "No purchases were found to restore",
   "subscriptionPurchasesRestored": "Purchases restored: {count}",
-  "@subscriptionPurchasesRestored": {"placeholders": {"count": {"type": "int"}}},
+  "@subscriptionPurchasesRestored": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "arcPaySubscriptionUnavailable": "Arc Pay subscriptions are not available yet",
   "arcPaySubscriptionUnavailableDescription": "Star Coins can be purchased through the Faster Payments System. Subscriptions will become available after saved-card testing is complete.",
   "subscriptionConfirmingCard": "Confirming your card and first payment…",
@@ -585,9 +774,21 @@
   "cancel": "Cancel",
   "clearMessage": "Clear message",
   "freeRequestsResetIn": "Free requests will reset in {count, plural, one{{count} day} other{{count} days}}.",
-  "@freeRequestsResetIn": {"placeholders": {"count": {"type": "int"}}},
+  "@freeRequestsResetIn": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "requestLimitResetIn": "The limit will reset in {count, plural, one{{count} day} other{{count} days}}.",
-  "@requestLimitResetIn": {"placeholders": {"count": {"type": "int"}}},
+  "@requestLimitResetIn": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "unlimited": "Unlimited",
   "purchasedAttemptsCombine": "Purchased requests are added to your free requests",
   "paymentTitle": "Payment",
@@ -595,9 +796,24 @@
   "paymentWaitingMessage": "Complete the payment in your external browser. The status updates automatically.",
   "paymentSuccess": "Payment successful!",
   "paymentCoinsCredited": "{coins} coins credited. Balance: {balance}",
-  "@paymentCoinsCredited": {"placeholders": {"coins": {"type": "int"}, "balance": {"type": "int"}}},
+  "@paymentCoinsCredited": {
+    "placeholders": {
+      "coins": {
+        "type": "int"
+      },
+      "balance": {
+        "type": "int"
+      }
+    }
+  },
   "paymentCoinsCreditedBalanceUpdated": "{coins} coins credited. Your balance was updated.",
-  "@paymentCoinsCreditedBalanceUpdated": {"placeholders": {"coins": {"type": "int"}}},
+  "@paymentCoinsCreditedBalanceUpdated": {
+    "placeholders": {
+      "coins": {
+        "type": "int"
+      }
+    }
+  },
   "paymentLeaveDescription": "You can create a new payment. If your bank has already confirmed this one, your Star Coins will still be credited after server verification.",
   "paymentAbandonedServerConfirmed": "You can create a new payment. A later bank confirmation for the previous payment won't be lost.",
   "paymentAbandonedLocal": "The attempt was closed on this device. The server will continue to process any bank confirmation safely.",
@@ -606,13 +822,28 @@
   "paymentManualReview": "The payment was sent for manual review.",
   "paymentNotCompleted": "The payment was not completed.",
   "paymentDiagnostics": "Payment diagnostics\nStore region: {countryCode}\nSelected provider: {provider}",
-  "@paymentDiagnostics": {"placeholders": {"countryCode": {"type": "String"}, "provider": {"type": "String"}}},
+  "@paymentDiagnostics": {
+    "placeholders": {
+      "countryCode": {
+        "type": "String"
+      },
+      "provider": {
+        "type": "String"
+      }
+    }
+  },
   "subscriptionUnlimitedAccess": "Subscribe for unlimited access to everything.",
   "coinPackagesUnavailable": "Packages are currently unavailable",
   "coinPackagesUnavailableRetry": "Packages are currently unavailable. Try again later.",
   "coinPackagesLoad": "Load packages",
   "coinPackageFallback": "{coins} Star Coin package",
-  "@coinPackageFallback": {"placeholders": {"coins": {"type": "int"}}},
+  "@coinPackageFallback": {
+    "placeholders": {
+      "coins": {
+        "type": "int"
+      }
+    }
+  },
   "savings": "Save",
   "coinPurchasePending": "Payment received. Your Star Coins will appear within a few minutes.",
   "storeProductsLoadError": "Store products could not be loaded. Try again.",
@@ -640,12 +871,24 @@
   "affirmationCategoryLunar": "Lunar",
   "affirmationCategoryCalm": "Calm",
   "affirmationCategoryLocked": "{category}. Subscription only",
-  "@affirmationCategoryLocked": {"placeholders": {"category": {"type": "String"}}},
+  "@affirmationCategoryLocked": {
+    "placeholders": {
+      "category": {
+        "type": "String"
+      }
+    }
+  },
   "affirmationSubscriptionRequired": "This affirmation is included with a subscription. Get access to every affirmation, including locked categories, and other exclusive features.",
   "affirmationOpenPlayer": "Open the audio player",
   "affirmationSwipeHint": "Swipe the illustration up or down to change the affirmation",
   "affirmationSemantics": "Affirmation: {text}",
-  "@affirmationSemantics": {"placeholders": {"text": {"type": "String"}}},
+  "@affirmationSemantics": {
+    "placeholders": {
+      "text": {
+        "type": "String"
+      }
+    }
+  },
   "tarotTabDay": "Card of the day",
   "tarotTabSpread": "Spread",
   "tarotTabAllCards": "All cards",
@@ -659,9 +902,24 @@
   "tarotSpreadDescription": "A Tarot spread answers a specific question.\nOpen the cards in order—together they form one complete answer.\nFirst phrase your question, then reveal each card and choose the area it relates to.",
   "tarotTapToFlip": "Tap a card to flip it",
   "tarotOpenSpreadCard": "Open card {position} of 3",
-  "@tarotOpenSpreadCard": {"placeholders": {"position": {"type": "int"}}},
+  "@tarotOpenSpreadCard": {
+    "placeholders": {
+      "position": {
+        "type": "int"
+      }
+    }
+  },
   "tarotOpenedSpreadCard": "Card {position} of 3: {card}",
-  "@tarotOpenedSpreadCard": {"placeholders": {"position": {"type": "int"}, "card": {"type": "String"}}},
+  "@tarotOpenedSpreadCard": {
+    "placeholders": {
+      "position": {
+        "type": "int"
+      },
+      "card": {
+        "type": "String"
+      }
+    }
+  },
   "tarotChooseSphere": "Choose an area\nto receive an insight",
   "tarotSphereLove": "Love and relationships",
   "tarotSphereSelfRealization": "Self-realization",
@@ -673,9 +931,21 @@
   "tarotHowToReminder": "Remember: an interpretation is guidance, not a verdict. You are always in charge of your life.",
   "tarotCardsEmpty": "No cards found",
   "tarotOpenCardLabel": "Open {title}",
-  "@tarotOpenCardLabel": {"placeholders": {"title": {"type": "String"}}},
+  "@tarotOpenCardLabel": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
   "tarotLockedCardLabel": "{title} is locked",
-  "@tarotLockedCardLabel": {"placeholders": {"title": {"type": "String"}}},
+  "@tarotLockedCardLabel": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
   "runesTabDay": "Rune of the day",
   "runesTabSpread": "Spread",
   "runesTabAll": "All runes",
@@ -694,18 +964,48 @@
   "runesHowToReminder": "Runes are neither a verdict nor a prediction of fate. They are a mirror that can help you see yourself more clearly. Treat them with respect, and they can become wise companions on your path.",
   "runesEmpty": "No runes found",
   "runeLockedLabel": "{title} is locked",
-  "@runeLockedLabel": {"placeholders": {"title": {"type": "String"}}},
+  "@runeLockedLabel": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
   "runeOpenLabel": "Open {title}",
-  "@runeOpenLabel": {"placeholders": {"title": {"type": "String"}}},
+  "@runeOpenLabel": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
   "runeOpenPast": "Open the past rune",
   "runeOpenPresent": "Open the present rune",
   "runeOpenFuture": "Open the future rune",
   "runeOpenPastMeaning": "Open the meaning of the past rune {title}",
-  "@runeOpenPastMeaning": {"placeholders": {"title": {"type": "String"}}},
+  "@runeOpenPastMeaning": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
   "runeOpenPresentMeaning": "Open the meaning of the present rune {title}",
-  "@runeOpenPresentMeaning": {"placeholders": {"title": {"type": "String"}}},
+  "@runeOpenPresentMeaning": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
   "runeOpenFutureMeaning": "Open the meaning of the future rune {title}",
-  "@runeOpenFutureMeaning": {"placeholders": {"title": {"type": "String"}}},
+  "@runeOpenFutureMeaning": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
   "loveDeckTagline": "Look into your partner's feelings and discover where your relationship is heading",
   "loveDeckDescription": "Six cards reveal your relationship's past, present, and possible future.\nOpen them in order to understand what is happening between you.",
   "loveDeckHowToIntroduction": "The Love spread helps you understand yourself, your partner, and your connection. Its six cards each represent an important aspect of your relationship:",
@@ -717,9 +1017,24 @@
   "loveDeckPositionSupport": "What helps—resources and support in the relationship",
   "loveDeckPositionFuture": "The relationship's future—how the situation may develop",
   "deckCardLabel": "Card {number}",
-  "@deckCardLabel": {"placeholders": {"number": {"type": "int"}}},
+  "@deckCardLabel": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
   "deckOpenedCardLabel": "Card {number}: {title}",
-  "@deckOpenedCardLabel": {"placeholders": {"number": {"type": "int"}, "title": {"type": "String"}}},
+  "@deckOpenedCardLabel": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
+  },
   "keltDeckDescription": "A Tarot spread answers a specific question. Open the cards in order—together they form one complete answer. First phrase your question, then reveal each card and choose the area it relates to.",
   "keltDeckCompletedDescription": "You've opened all 10 cards of the Celtic Cross. This spread offers a complete view of the situation: from roots in the past to future trends, and from inner motives to outside influences.\n✨ Reflect on the question you brought. What resonates most now? Did one card stand out?\nTo explore the spread more deeply:\n• Return to key positions 1, 4, and 6\n• Notice what repeats\n• Consider the guidance in position 10",
   "keltDeckHowToIntroduction": "The Celtic Cross is one of the most detailed Tarot spreads. It helps reveal hidden causes, outside influences, and a likely outcome. Each of its 10 cards represents a specific aspect; read the card and consider its position.",
@@ -755,26 +1070,89 @@
   "keltPosition9Description": "This position offers advice or a caution worth considering.",
   "keltPosition10Description": "This position shows the outcome and direction of the situation.",
   "keltCardPositionTitle": "Card {number} — {position}",
-  "@keltCardPositionTitle": {"placeholders": {"number": {"type": "int"}, "position": {"type": "String"}}},
+  "@keltCardPositionTitle": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      },
+      "position": {
+        "type": "String"
+      }
+    }
+  },
   "requestsLeftCount": "{count, plural, =0{No requests left} one{{count} request left} other{{count} requests left}}",
-  "@requestsLeftCount": {"placeholders": {"count": {"type": "int"}}},
+  "@requestsLeftCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "attemptsLeftCount": "{count, plural, one{{count} attempt left} other{{count} attempts left}}",
-  "@attemptsLeftCount": {"placeholders": {"count": {"type": "int"}}},
+  "@attemptsLeftCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "requestsLeftOfTotal": "{count}/{total} requests left",
-  "@requestsLeftOfTotal": {"placeholders": {"count": {"type": "int"}, "total": {"type": "int"}}},
+  "@requestsLeftOfTotal": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "requestPackageCount": "{count, plural, one{{count} request} other{{count} requests}}",
-  "@requestPackageCount": {"placeholders": {"count": {"type": "int"}}},
+  "@requestPackageCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "requestPackageForCoins": "{count, plural, one{{count} request for {price} Star Coins} other{{count} requests for {price} Star Coins}}",
-  "@requestPackageForCoins": {"placeholders": {"count": {"type": "int"}, "price": {"type": "int"}}},
+  "@requestPackageForCoins": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "price": {
+        "type": "int"
+      }
+    }
+  },
   "purchaseRequestsTitle": "Buy {count, plural, one{{count} request} other{{count} requests}}",
-  "@purchaseRequestsTitle": {"placeholders": {"count": {"type": "int"}}},
+  "@purchaseRequestsTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "anakraName": "Anakra",
   "anakraGreetingTitle": "Welcome.\nI'm Anakra—\nguardian of\nthe stars and\nyour path.",
   "anakraReady": "The stars are ready to answer.",
   "anakraGreetingMessage": "Welcome. I'm Anakra, guardian of the stars and your celestial path. Ask me a question or choose where to begin.",
   "anakraTyping": "Anakra is typing…",
   "anakraFreeAndPurchased": "{free}/{total} free + {paid} purchased",
-  "@anakraFreeAndPurchased": {"placeholders": {"free": {"type": "int"}, "total": {"type": "int"}, "paid": {"type": "int"}}},
+  "@anakraFreeAndPurchased": {
+    "placeholders": {
+      "free": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "paid": {
+        "type": "int"
+      }
+    }
+  },
   "compatibilityPartnerDetailsTitle": "Enter your partner's\ndetails",
   "compatibilityPartnerBirthDate": "Partner's date of birth",
   "compatibilityYou": "You",
@@ -811,7 +1189,13 @@
   "rewardLoadError": "Unable to load rewards.",
   "rewardShareError": "Unable to share Asteria.",
   "rewardShareText": "Explore Tarot and the lunar calendar with Asteria: {link}",
-  "@rewardShareText": {"placeholders": {"link": {"type": "String"}}},
+  "@rewardShareText": {
+    "placeholders": {
+      "link": {
+        "type": "String"
+      }
+    }
+  },
   "rewardShareSubject": "Asteria—your personal astrology guide",
   "paymentSettingsDescription": "Choose your payment method on Arc Pay's secure page when buying Star Coins.",
   "emailSendCodeError": "Unable to send the code. Try again.",
@@ -871,16 +1255,45 @@
   "onboardPreviewMagicDescription": "You came into this world to care for yourself and others while keeping your boundaries. You carry Earth's strength and Water's sensitivity. The Moon guides your inner world — remember to listen to her whispers.",
   "onboardPreviewPersonalState": "You are learning to let go of expectations and trust the flow.",
   "googleSubscriptionPerWeek": "{price} per week",
-  "@googleSubscriptionPerWeek": {"placeholders": {"price": {"type": "String"}}},
+  "@googleSubscriptionPerWeek": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
   "googleSubscriptionPerMonth": "{price} per month",
-  "@googleSubscriptionPerMonth": {"placeholders": {"price": {"type": "String"}}},
+  "@googleSubscriptionPerMonth": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
   "googleSubscriptionPerYear": "{price} per year",
-  "@googleSubscriptionPerYear": {"placeholders": {"price": {"type": "String"}}},
+  "@googleSubscriptionPerYear": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
   "googleSubscriptionTrialTerms": "7 days free, then {price}. Renews automatically. Cancel anytime.",
-  "@googleSubscriptionTrialTerms": {"placeholders": {"price": {"type": "String"}}},
+  "@googleSubscriptionTrialTerms": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
   "googleSubscriptionRecurringTerms": "{price}. Renews automatically. Cancel anytime.",
-  "@googleSubscriptionRecurringTerms": {"placeholders": {"price": {"type": "String"}}},
-
+  "@googleSubscriptionRecurringTerms": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
   "applePurchaseWaiting": "Apple has not confirmed the purchase yet. Check its status before trying again.",
   "applePurchaseApproval": "Waiting for purchase approval. You can check the status here later.",
   "applePurchaseAccount": "This Apple purchase belongs to another Asteria account. Sign in to that account to use it.",
@@ -1033,17 +1446,15 @@
   "introProgress": "Page {current} of {total}",
   "introCalendarExample": "Example: choosing a day",
   "introPairExample": "Example couple’s reading",
-  "introDateOne": "November 12",
-  "introDateTwo": "December 11",
   "introNeutral": "Neutral day",
   "introFavorable": "Favorable day",
   "introNeutralTip": "Refresh your style or trim the ends.",
   "introFavorableTip": "A day to consider trying a new style.",
-  "introPairTip": "One person wants to talk right away; the other needs time.",
-  "introPairQuestion": "A question for both of you",
-  "introPairPrompt": "“I’d like to return to our conversation. Would now or a little later work better for you?”",
+  "introPairTip": "A different pace doesn’t mean they don’t care.",
+  "introPairQuestion": "Try starting with this",
+  "introPairPrompt": "“This conversation matters to me. Is now a good time, or would later be better?”",
   "introReplay": "Replay the card reveal",
-  "introAnakraMessage": "Which part already interests you? Start there and give yourself ten minutes.",
+  "introAnakraMessage": "Give one small step ten minutes. Just try it.",
   "introAudioError": "Unable to play the recording.",
   "introPause": "Pause",
   "introPlay": "Listen to “I have time”",
@@ -1056,5 +1467,82 @@
         "type": "int"
       }
     }
-  }
+  },
+  "introStoryExample": "Example story",
+  "introStoryReplay": "Replay",
+  "introStoryResume": "Resume story",
+  "introCalendarRequest": "I want a new haircut.\nWhen should I book it?",
+  "introCalendarFrom": "Upcoming days · from {date}",
+  "introCalendarCompare": "Compare the next few days",
+  "introCalendarResult": "Chosen day: {date}",
+  "introCalendarInsight": "A favorable time for a new haircut.",
+  "introMoodRequest": "I’m always rushing.\nI need a moment to breathe.",
+  "introMoodRush": "Always rushing",
+  "introMoodTired": "Low on energy",
+  "introMoodCalm": "Looking for calm",
+  "introMoodMatched": "Your own pace",
+  "introMoodAffirmation": "You can take this moment at your own pace.",
+  "introPairRequest": "I go quiet after an argument. My partner wants to talk.",
+  "introPairFirst": "Taurus",
+  "introPairSecond": "Gemini",
+  "introPairNeedTime": "“I need time to understand how I feel.”",
+  "introPairNeedTalk": "“Talking about what happened helps me.”",
+  "introTarotRequest": "I want to start something new,\nbut I keep putting it off.",
+  "introTarotHint": "One question. Three new perspectives.",
+  "introTarotReflection": "What if you followed your curiosity?",
+  "introTarotInsight": "Anakra’s advice",
+  "@introCalendarFrom": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "@introCalendarResult": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "introStoryPause": "Pause story",
+  "scenarioPlansMonth": "Month",
+  "scenarioPlansWeek": "Week",
+  "scenarioPlansDay": "Day",
+  "scenarioPlansToday": "Today",
+  "scenarioPlansPrevious": "Previous period",
+  "scenarioPlansNext": "Next period",
+  "scenarioPlansEmptyDay": "No plans for this day yet.",
+  "scenarioPlansEmptyWeek": "No plans for this week yet.",
+  "scenarioPlansAllDay": "No time set",
+  "scenarioPlansCount": "Plans: {count}",
+  "@scenarioPlansCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "onboardingPage5Title": "Time for yourself",
+  "onboardingPage5Description": "Affirmations and short practices for a pause in your day.",
+  "introDemoLabel": "Example reading",
+  "introNatalDate": "Example data · 13 May 1995",
+  "introNatalStrengthTitle": "A strength",
+  "introNatalStrength": "Following through and finishing what you start.",
+  "introNatalPatternTitle": "A familiar reaction",
+  "introNatalPattern": "Change may bring a need for more clarity and time.",
+  "introNatalQuestion": "What helps you feel grounded before a new step?",
+  "introTarotMeaningTitle": "A way to read these cards",
+  "introTarotMeaning": "Start with the part that interests you.",
+  "introTarotFollowup": "What if it does not work out?",
+  "introMoodPracticeTitle": "A short practice",
+  "introMoodPractice": "Relax your shoulders. Breathe out slowly.",
+  "introNatalQuestionTitle": "A question to reflect on",
+  "introCalendarSavedTitle": "Haircut",
+  "introCalendarSavedText": "Added to my plans",
+  "introCalendarReminderTitle": "Remind me about this plan",
+  "introCalendarReminderChoice": "One day before",
+  "introCalendarReminderEnabled": "Reminder is on",
+  "introCalendarCompleted": "Everything is planned",
+  "introCalendarCompletedBody": "Your haircut is in the calendar. A reminder is set for the day before."
 }

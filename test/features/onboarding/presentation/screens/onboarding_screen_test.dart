@@ -1,3 +1,7 @@
+import 'dart:io';
+import 'dart:ui' as ui;
+import 'package:asteria_app/features/onboarding/presentation/widgets/intro/intro_next_button.dart';
+import 'package:asteria_app/features/onboarding/presentation/widgets/intro/intro_story.dart';
 import 'package:asteria_app/app/data/repositories/app_settings/app_settings_repository.dart';
 import 'package:asteria_app/core/analytics/analytics_events.dart';
 import 'package:asteria_app/core/analytics/analytics_facade.dart';
@@ -25,11 +29,14 @@ void main() {
   late _RecordingAnalyticsFacade analytics;
   late OnboardingBloc bloc;
   late int completions;
+  late List<String> audioCalls;
 
   setUpAll(() async {
     for (final entry in {
       'Lora': 'assets/fonts/lora/Lora-VariableFont_wght.ttf',
       'Onest': 'assets/fonts/onest/Onest-VariableFont_wght.ttf',
+      'MaterialIcons': 'fonts/MaterialIcons-Regular.otf',
+      'CupertinoIcons': 'packages/cupertino_icons/assets/CupertinoIcons.ttf',
     }.entries) {
       final loader = FontLoader(entry.key)
         ..addFont(rootBundle.load(entry.value));
@@ -38,6 +45,24 @@ void main() {
   });
 
   setUp(() async {
+    audioCalls = [];
+    // Any audio platform call is recorded: this tour must remain silent.
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(
+          const MethodChannel('asteria/practice-audio'),
+          (call) async {
+            audioCalls.add(call.method);
+            return call.method == 'close'
+                ? null
+                : {
+                    'duration': 75000,
+                    'position': 75000,
+                    'playing': false,
+                    'loop': false,
+                    'complete': true,
+                  };
+          },
+        );
     await di.reset();
     settings = _RecordingSettings();
     analytics = _RecordingAnalyticsFacade();
@@ -49,9 +74,167 @@ void main() {
   });
 
   tearDown(() async {
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(
+          const MethodChannel('asteria/practice-audio'),
+          null,
+        );
     await bloc.close();
     await di.reset();
   });
+
+  for (final language in ['ru', 'en']) {
+    testWidgets(
+      '$language approved scenes contain no visible example or demo labels',
+      (tester) async {
+        bloc = OnboardingBloc(settings);
+        await _pumpOnboarding(
+          tester,
+          bloc,
+          locale: Locale(language),
+          onComplete: () => completions++,
+        );
+        final unexpected = <String>[];
+        for (var page = 0; page < 5; page++) {
+          for (final text in tester.widgetList<Text>(find.byType(Text))) {
+            final value = text.data ?? text.textSpan?.toPlainText() ?? '';
+            if (RegExp(
+              r'пример|demo|example',
+              caseSensitive: false,
+            ).hasMatch(value)) {
+              unexpected.add('scene${page + 1}: $value');
+            }
+          }
+          if (page < 4) {
+            await tester.tap(_cta(tester));
+            await tester.pumpAndSettle();
+          }
+        }
+        expect(unexpected, isEmpty);
+        expect(audioCalls, isEmpty);
+      },
+    );
+  }
+
+  testWidgets('approved automatic tour has no playback footer controls', (
+    tester,
+  ) async {
+    bloc = OnboardingBloc(settings);
+    await _pumpOnboarding(
+      tester,
+      bloc,
+      locale: const Locale('ru'),
+      disableAnimations: false,
+      onComplete: () => completions++,
+    );
+    await tester.pump(const Duration(seconds: 1));
+    expect(
+      find.textContaining(
+        RegExp(
+          r'Пауза показа|Продолжить показ|Повторить|Pause story|Resume story|Replay',
+        ),
+      ),
+      findsNothing,
+    );
+    final context = tester.element(find.byType(OnboardingScreen));
+    final media = MediaQuery.of(context);
+    expect(
+      tester.getRect(find.byType(IntroNextButton)).bottom,
+      greaterThanOrEqualTo(media.size.height - media.padding.bottom - 12),
+    );
+    await tester.pumpWidget(const SizedBox());
+  });
+
+  testWidgets('five-scene tour starts at progress one of five', (tester) async {
+    bloc = OnboardingBloc(settings);
+    await _pumpOnboarding(
+      tester,
+      bloc,
+      locale: const Locale('ru'),
+      onComplete: () => completions++,
+    );
+    expect(bloc.state.pages, hasLength(5));
+    expect(bloc.state.pages.map((page) => page.title), [
+      'Твой день',
+      'Твой характер',
+      'Ваши отношения',
+      'Твой вопрос',
+      'Время для себя',
+    ]);
+    final semantics = tester.ensureSemantics();
+    await tester.pump();
+    try {
+      expect(
+        find.bySemanticsLabel(
+          AppLocalizations.of(
+            tester.element(find.byType(OnboardingScreen)),
+          ).introProgress(1, 5),
+        ),
+        findsOneWidget,
+      );
+    } finally {
+      semantics.dispose();
+    }
+    expect(bloc.state.pages.map((page) => page.pageIndex), [0, 1, 2, 3, 4]);
+    final progress = tester.widget<OnboardingPaginationWidget>(
+      find.byType(OnboardingPaginationWidget),
+    );
+    expect(progress.totalPages, 5);
+    expect(progress.currentPage, 0);
+    expect(bloc.state.isLastPage, isFalse);
+    expect(completions, 0);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets(
+    'five scenes advance automatically without feature taps or audio',
+    (tester) async {
+      bloc = OnboardingBloc(settings);
+      await _pumpOnboarding(
+        tester,
+        bloc,
+        disableAnimations: false,
+        onComplete: () => completions++,
+      );
+      for (var page = 0; page < 5; page++) {
+        expect(bloc.state.currentPageIndex, page);
+        final context = tester.element(find.byType(OnboardingScreen));
+        expect(
+          find.text(AppLocalizations.of(context).introStart),
+          page == 4 ? findsOneWidget : findsNothing,
+        );
+        expect(settings.onboardingWrites, isEmpty);
+        final duration = _activeStoryDuration(tester);
+        expect(duration.inSeconds, [18, 18, 14, 14, 14][page]);
+        await _pumpStoryTo(tester, page, duration.inMilliseconds - 1500);
+        expect(
+          bloc.state.currentPageIndex,
+          page,
+          reason:
+              'The scene must retain its result for its configured duration',
+        );
+        await tester.pump(const Duration(seconds: 2));
+        await tester.pump();
+        for (var frame = 0; frame < 8; frame++) {
+          await tester.pump(const Duration(milliseconds: 100));
+        }
+      }
+      expect(bloc.state.currentPageIndex, 4);
+      expect(completions, 0);
+      expect(audioCalls, isEmpty);
+      expect(
+        analytics
+            .named(AnalyticsEvents.onboardingStepView)
+            .map((event) => event.params[EventParams.stepIndex]),
+        [0, 1, 2, 3, 4],
+      );
+      await tester.tap(_cta(tester));
+      await tester.pump();
+      expect(completions, 1);
+      expect(settings.onboardingWrites, [false]);
+      expect(tester.takeException(), isNull);
+    },
+  );
 
   testWidgets('swiping updates the real page, progress, and step analytics', (
     tester,
@@ -184,8 +367,8 @@ void main() {
         onComplete: () => completions++,
       );
 
-      expect(bloc.state.pages, hasLength(4));
-      for (var page = 0; page < 4; page++) {
+      expect(bloc.state.pages, hasLength(5));
+      for (var page = 0; page < 5; page++) {
         _expectPage(tester, bloc, page);
         expect(settings.onboardingWrites, isEmpty);
         expect(completions, 0);
@@ -205,7 +388,7 @@ void main() {
       );
       final completion = analytics.named(AstEvents.onboardingComplete);
       expect(completion, hasLength(1));
-      expect(completion.single.params[EventParams.stepsCount], 4);
+      expect(completion.single.params[EventParams.stepsCount], 5);
       expect(
         completion.single.params[EventParams.completionSeconds],
         isNonNegative,
@@ -214,12 +397,12 @@ void main() {
         analytics
             .named(AnalyticsEvents.onboardingStepView)
             .map((event) => event.params[EventParams.stepIndex]),
-        [0, 1, 2, 3],
+        [0, 1, 2, 3, 4],
       );
       expect(tester.takeException(), isNull);
     });
 
-    for (var page = 0; page < 4; page++) {
+    for (var page = 0; page < 5; page++) {
       testWidgets('$language full screen page ${page + 1} reference golden', (
         tester,
       ) async {
@@ -247,6 +430,11 @@ void main() {
         );
         expect(reference, isNotNull);
         try {
+          await _saveReviewImage(
+            tester,
+            reference!,
+            '${language}_${page + 1}_390_static',
+          );
           await expectLater(
             reference,
             matchesGoldenFile(
@@ -275,11 +463,19 @@ void main() {
             lightTheme: lightTheme,
             onComplete: () => completions++,
           );
-          for (var index = 0; index < 4; index++) {
+          for (var index = 0; index < 5; index++) {
             final content = find.byKey(ValueKey('onboarding-content-$index'));
+            await _saveReviewScreen(
+              tester,
+              '${language}_${index + 1}_320_text2_${lightTheme ? 'light' : 'dark'}_top',
+            );
             await tester.drag(content, const Offset(0, -2200));
             await tester.pumpAndSettle();
             expect(_cta(tester).hitTestable(), findsOneWidget);
+            await _saveReviewScreen(
+              tester,
+              '${language}_${index + 1}_320_text2_${lightTheme ? 'light' : 'dark'}_bottom',
+            );
             expect(tester.takeException(), isNull);
             await tester.tap(_cta(tester));
             await tester.pumpAndSettle();
@@ -289,6 +485,484 @@ void main() {
         },
       );
     }
+  }
+
+  for (final scale in [1.0, 1.3]) {
+    testWidgets(
+      'autoplay keeps only the primary control reachable at text scale $scale',
+      (tester) async {
+        bloc = OnboardingBloc(settings);
+        await _pumpOnboarding(
+          tester,
+          bloc,
+          locale: const Locale('ru'),
+          disableAnimations: false,
+          textScale: scale,
+          padding: const EdgeInsets.only(top: 59, bottom: 34),
+          onComplete: () => completions++,
+        );
+        for (var page = 0; page < 5; page++) {
+          _expectPage(tester, bloc, page);
+          await _pumpStoryTo(
+            tester,
+            page,
+            _activeStoryDuration(tester).inMilliseconds - 1500,
+          );
+          expect(_cta(tester).hitTestable(), findsOneWidget);
+          expect(
+            find.textContaining(
+              RegExp(r'Пауза показа|Продолжить показ|Повторить'),
+            ),
+            findsNothing,
+          );
+          expect(tester.takeException(), isNull);
+          await tester.tap(_cta(tester));
+          await tester.pump();
+          await tester.pump(const Duration(milliseconds: 650));
+          await tester.pump();
+        }
+        expect(completions, 1);
+      },
+    );
+  }
+
+  testWidgets(
+    'button morph follows an interrupted swipe and reverses without finishing',
+    (tester) async {
+      bloc = OnboardingBloc(settings);
+      await _pumpOnboarding(
+        tester,
+        bloc,
+        disableAnimations: false,
+        onComplete: () => completions++,
+      );
+      for (var i = 0; i < 3; i++) {
+        await tester.tap(_cta(tester));
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 650));
+        await tester.pump();
+      }
+      final swipe = await tester.startGesture(
+        tester.getCenter(find.byType(PageView)),
+      );
+      await swipe.moveBy(const Offset(-20, 0));
+      await tester.pump();
+      await swipe.moveBy(const Offset(-115, 0));
+      await tester.pump(const Duration(milliseconds: 100));
+      final button = tester.widget<IntroNextButton>(
+        find.byType(IntroNextButton),
+      );
+      expect(button.page, greaterThan(3));
+      expect(button.page, lessThan(4));
+      await swipe.moveBy(const Offset(135, 0));
+      await swipe.up();
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 650));
+      await tester.pump();
+      expect(
+        tester.widget<IntroNextButton>(find.byType(IntroNextButton)).page,
+        3,
+      );
+      expect(completions, 0);
+      await tester.tap(_cta(tester));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 650));
+      await tester.pump();
+      expect(
+        tester.widget<IntroNextButton>(find.byType(IntroNextButton)).page,
+        4,
+      );
+      expect(completions, 0);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  for (final language in ['ru', 'en']) {
+    for (final width in [390.0, 320.0]) {
+      testWidgets('$language autoplay results fit the visible scene at $width', (
+        tester,
+      ) async {
+        bloc = OnboardingBloc(settings);
+        await _pumpOnboarding(
+          tester,
+          bloc,
+          locale: Locale(language),
+          size: Size(width, width == 390 ? 844 : 568),
+          padding: EdgeInsets.only(
+            top: width == 390 ? 59 : 20,
+            bottom: width == 390 ? 34 : 0,
+          ),
+          disableAnimations: false,
+          onComplete: () => completions++,
+        );
+        final context = tester.element(find.byType(OnboardingScreen));
+        final l = AppLocalizations.of(context);
+        final results = <Finder>[
+          find.byKey(const ValueKey('intro-calendar-complete')),
+          find.byKey(const ValueKey('intro-natal-question')),
+          find.text(l.introPairPrompt),
+          find.text(l.introAnakraMessage),
+          find.text(l.introMoodPractice),
+        ];
+        final issues = <String>[];
+        for (var page = 0; page < 5; page++) {
+          await _pumpStoryTo(
+            tester,
+            page,
+            _activeStoryDuration(tester).inMilliseconds - 1500,
+          );
+          final result = results[page];
+          expect(result, findsOneWidget);
+          final bounds = tester.getRect(result);
+          final viewport = tester.getRect(
+            find.byKey(ValueKey('onboarding-content-$page')),
+          );
+          if (bounds.top < viewport.top - .5 ||
+              bounds.bottom > viewport.bottom + .5) {
+            issues.add(
+              'scene${page + 1}: result$bounds outside viewport$viewport',
+            );
+          }
+          await tester.tap(_cta(tester));
+          await tester.pump();
+          await tester.pump(const Duration(milliseconds: 650));
+          await tester.pump();
+        }
+        expect(
+          issues,
+          isEmpty,
+          reason:
+              'Autoplay must display the full result before leaving; scrolling must not be required',
+        );
+        expect(completions, 1);
+        expect(tester.takeException(), isNull);
+        await tester.pumpWidget(const SizedBox());
+      });
+    }
+  }
+
+  for (final width in [390.0, 320.0]) {
+    testWidgets(
+      'holding a scene pauses and releasing resumes automatic playback at $width',
+      (tester) async {
+        bloc = OnboardingBloc(settings);
+        await _pumpOnboarding(
+          tester,
+          bloc,
+          locale: const Locale('ru'),
+          size: Size(width, width == 390 ? 844 : 568),
+          padding: EdgeInsets.only(
+            top: width == 390 ? 59 : 20,
+            bottom: width == 390 ? 34 : 0,
+          ),
+          disableAnimations: false,
+          onComplete: () => completions++,
+        );
+        await _pumpStoryTo(tester, 0, 3000);
+        final content = find.byKey(const ValueKey('onboarding-content-0'));
+        final gesture = await tester.startGesture(tester.getCenter(content));
+        await gesture.moveBy(const Offset(0, -100));
+        await tester.pump();
+        await tester.pump();
+        final progress = tester
+            .widget<OnboardingPaginationWidget>(
+              find.byType(OnboardingPaginationWidget),
+            )
+            .progress[0];
+        final scroll = tester.state<ScrollableState>(
+          find.descendant(of: content, matching: find.byType(Scrollable)),
+        );
+        final heldOffset = scroll.position.pixels;
+        await tester.pump(const Duration(seconds: 20));
+        _expectPage(tester, bloc, 0);
+        expect(
+          tester
+              .widget<OnboardingPaginationWidget>(
+                find.byType(OnboardingPaginationWidget),
+              )
+              .progress[0],
+          progress,
+        );
+        expect(scroll.position.pixels, closeTo(heldOffset, .1));
+        expect(
+          find.textContaining(
+            RegExp(r'Пауза показа|Продолжить показ|Повторить'),
+          ),
+          findsNothing,
+        );
+        await gesture.up();
+        for (var frame = 0; frame < 20; frame++) {
+          await tester.pump(const Duration(milliseconds: 100));
+        }
+        expect(
+          tester
+              .widget<OnboardingPaginationWidget>(
+                find.byType(OnboardingPaginationWidget),
+              )
+              .progress[0],
+          greaterThan(progress),
+        );
+        await _pumpStoryTo(
+          tester,
+          0,
+          _activeStoryDuration(tester).inMilliseconds - 1500,
+        );
+        final result = find.byKey(const ValueKey('intro-calendar-complete'));
+        expect(result, findsOneWidget);
+        expect(
+          tester.getRect(result).bottom,
+          lessThanOrEqualTo(tester.getRect(content).bottom + .5),
+        );
+        await tester.pump(const Duration(seconds: 2));
+        await tester.pump();
+        for (var frame = 0; frame < 8; frame++) {
+          await tester.pump(const Duration(milliseconds: 100));
+        }
+        _expectPage(tester, bloc, 1);
+        expect(completions, 0);
+        expect(audioCalls, isEmpty);
+        await tester.pumpWidget(const SizedBox());
+      },
+    );
+  }
+
+  testWidgets('returning to a scene replays from the top with fresh progress', (
+    tester,
+  ) async {
+    bloc = OnboardingBloc(settings);
+    await _pumpOnboarding(
+      tester,
+      bloc,
+      size: const Size(320, 568),
+      padding: const EdgeInsets.only(top: 20),
+      disableAnimations: false,
+      onComplete: () => completions++,
+    );
+    await _pumpStoryTo(
+      tester,
+      0,
+      _activeStoryDuration(tester).inMilliseconds - 2000,
+    );
+    final firstContent = find.byKey(const ValueKey('onboarding-content-0'));
+    final firstScroll = tester.state<ScrollableState>(
+      find.descendant(of: firstContent, matching: find.byType(Scrollable)),
+    );
+    expect(firstScroll.position.pixels, greaterThan(0));
+    await tester.tap(_cta(tester));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 650));
+    await tester.pump();
+    _expectPage(tester, bloc, 1);
+    final context = tester.element(find.byType(OnboardingScreen));
+    await tester.tap(
+      find.byTooltip(MaterialLocalizations.of(context).backButtonTooltip),
+    );
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 650));
+    await tester.pump();
+    _expectPage(tester, bloc, 0);
+    final returned = tester.state<ScrollableState>(
+      find.descendant(of: firstContent, matching: find.byType(Scrollable)),
+    );
+    expect(returned.position.pixels, 0);
+    expect(
+      tester
+          .widget<OnboardingPaginationWidget>(
+            find.byType(OnboardingPaginationWidget),
+          )
+          .progress[0],
+      lessThan(.1),
+    );
+    expect(completions, 0);
+    await tester.pumpWidget(const SizedBox());
+  });
+
+  if (const bool.fromEnvironment('ONBOARDING_REVIEW_CAPTURE')) {
+    for (final language in ['ru', 'en']) {
+      for (final width in [390.0, 320.0]) {
+        testWidgets('$language animated five-scene review at $width', (
+          tester,
+        ) async {
+          bloc = OnboardingBloc(settings);
+          await _pumpOnboarding(
+            tester,
+            bloc,
+            locale: Locale(language),
+            size: Size(width, width == 390 ? 844 : 568),
+            padding: EdgeInsets.only(
+              top: width == 390 ? 59 : 20,
+              bottom: width == 390 ? 34 : 0,
+            ),
+            disableAnimations: false,
+            onComplete: () => completions++,
+          );
+          for (var page = 0; page < 5; page++) {
+            _expectPage(tester, bloc, page);
+            for (final phase in [
+              (700, 'start'),
+              (
+                (_activeStoryDuration(tester).inMilliseconds * .5).round(),
+                'middle',
+              ),
+              (_activeStoryDuration(tester).inMilliseconds - 1500, 'result'),
+            ]) {
+              await _pumpStoryTo(tester, page, phase.$1);
+              await _saveReviewScreen(
+                tester,
+                '${language}_${page + 1}_${width.toInt()}_animated_${phase.$2}',
+              );
+              expect(tester.takeException(), isNull);
+            }
+            expect(completions, 0);
+            await tester.tap(_cta(tester));
+            await tester.pump();
+            await tester.pump(const Duration(milliseconds: 650));
+            await tester.pump();
+          }
+          expect(completions, 1);
+          expect(audioCalls, isEmpty);
+          await tester.pumpWidget(const SizedBox());
+        });
+      }
+    }
+  }
+
+  if (const bool.fromEnvironment('ONBOARDING_REVIEW_CAPTURE')) {
+    for (final language in ['ru', 'en']) {
+      for (final width in [390.0, 320.0]) {
+        testWidgets('$language additional stage review at $width', (
+          tester,
+        ) async {
+          bloc = OnboardingBloc(settings);
+          await _pumpOnboarding(
+            tester,
+            bloc,
+            locale: Locale(language),
+            size: Size(width, width == 390 ? 844 : 568),
+            padding: EdgeInsets.only(
+              top: width == 390 ? 59 : 20,
+              bottom: width == 390 ? 34 : 0,
+            ),
+            disableAnimations: false,
+            onComplete: () => completions++,
+          );
+          const stages = <int, List<(int, String)>>{
+            0: [(9500, 'plan'), (12500, 'reminder'), (16500, 'complete')],
+            1: [
+              (6700, 'strength'),
+              (10000, 'pattern'),
+              (13300, 'reflection'),
+              (16500, 'lasting-reflection'),
+            ],
+            2: [
+              (4500, 'first-person'),
+              (7500, 'second-person'),
+              (12500, 'conversation'),
+            ],
+            3: [(6500, 'cards'), (12500, 'advice')],
+            4: [(12500, 'practice')],
+          };
+          for (var page = 0; page < 5; page++) {
+            for (final stage in stages[page]!) {
+              await _pumpStoryTo(tester, page, stage.$1);
+              await _saveReviewScreen(
+                tester,
+                '${language}_${page + 1}_${width.toInt()}_stage_${stage.$2}',
+              );
+              expect(tester.takeException(), isNull);
+            }
+            await tester.tap(_cta(tester));
+            await tester.pump();
+            await tester.pump(const Duration(milliseconds: 650));
+            await tester.pump();
+          }
+          expect(completions, 1);
+          expect(audioCalls, isEmpty);
+          await tester.pumpWidget(const SizedBox());
+        });
+      }
+    }
+  }
+
+  testWidgets('automatic navigation waits while app is in background', (
+    tester,
+  ) async {
+    bloc = OnboardingBloc(settings);
+    await _pumpOnboarding(
+      tester,
+      bloc,
+      disableAnimations: false,
+      onComplete: () => completions++,
+    );
+    await tester.pump(const Duration(seconds: 8));
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
+    await tester.pump(const Duration(seconds: 20));
+    _expectPage(tester, bloc, 0);
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+    await tester.pump();
+    await _pumpStoryTo(
+      tester,
+      0,
+      _activeStoryDuration(tester).inMilliseconds - 500,
+    );
+    await tester.pump(const Duration(seconds: 1));
+    await tester.pump();
+    for (var frame = 0; frame < 8; frame++) {
+      await tester.pump(const Duration(milliseconds: 100));
+    }
+    await tester.pump();
+    _expectPage(tester, bloc, 1);
+    expect(completions, 0);
+    await tester.pumpWidget(const SizedBox());
+  });
+
+  for (final mode in ['reduced', 'screenReader', 'largeText']) {
+    testWidgets('$mode tour stays static and never opens audio', (
+      tester,
+    ) async {
+      bloc = OnboardingBloc(settings);
+      await _pumpOnboarding(
+        tester,
+        bloc,
+        disableAnimations: mode == 'reduced',
+        accessibleNavigation: mode == 'screenReader',
+        textScale: mode == 'largeText' ? 2 : 1,
+        onComplete: () => completions++,
+      );
+      await tester.pump(const Duration(minutes: 1));
+      _expectPage(tester, bloc, 0);
+      expect(_cta(tester).hitTestable(), findsOneWidget);
+      expect(completions, 0);
+      expect(audioCalls, isEmpty);
+      await tester.pumpWidget(const SizedBox());
+    });
+  }
+
+  for (var skippedPage = 0; skippedPage < 5; skippedPage++) {
+    testWidgets('skip from scene ${skippedPage + 1} completes once', (
+      tester,
+    ) async {
+      bloc = OnboardingBloc(settings);
+      await _pumpOnboarding(tester, bloc, onComplete: () => completions++);
+      for (var page = 0; page < skippedPage; page++) {
+        await tester.tap(_cta(tester));
+        await tester.pumpAndSettle();
+      }
+      _expectPage(tester, bloc, skippedPage);
+      final context = tester.element(find.byType(OnboardingScreen));
+      final skip = find.text(AppLocalizations.of(context).introSkip);
+      await tester.tap(skip);
+      await tester.tap(skip);
+      await tester.pumpAndSettle();
+      expect(settings.onboardingWrites, [false]);
+      expect(completions, 1);
+      final completed = analytics.named(AstEvents.onboardingComplete);
+      expect(completed, hasLength(1));
+      expect(completed.single.params[EventParams.stepsCount], 5);
+      expect(audioCalls, isEmpty);
+      expect(tester.takeException(), isNull);
+    });
   }
 
   testWidgets('skip completes and a reopened tour completes again', (
@@ -301,8 +975,15 @@ void main() {
       }
       await _pumpOnboarding(tester, bloc, onComplete: () => completions++);
       final context = tester.element(find.byType(OnboardingScreen));
-      await tester.tap(find.text(AppLocalizations.of(context).introSkip));
+      final skip = find.text(AppLocalizations.of(context).introSkip);
+      await tester.tap(skip);
+      await tester.tap(skip);
       await tester.pumpAndSettle();
+      expect(audioCalls, isEmpty);
+      expect(
+        analytics.named(AstEvents.onboardingComplete),
+        hasLength(attempt + 1),
+      );
       expect(completions, attempt + 1);
       expect(tester.takeException(), isNull);
     }
@@ -314,11 +995,11 @@ void main() {
   ) async {
     bloc = OnboardingBloc(settings);
     await _pumpOnboarding(tester, bloc, onComplete: () => completions++);
-    for (var page = 0; page < 3; page++) {
+    for (var page = 0; page < 4; page++) {
       await tester.tap(_cta(tester));
       await tester.pumpAndSettle();
     }
-    _expectPage(tester, bloc, 3);
+    _expectPage(tester, bloc, 4);
 
     // Keep the screen mounted, as navigation can finish after another tap.
     // No frame between taps: both target the same rendered CTA callback.
@@ -334,6 +1015,73 @@ void main() {
     expect(analytics.named(AstEvents.onboardingComplete), hasLength(1));
     expect(tester.takeException(), isNull);
   });
+}
+
+Duration _activeStoryDuration(WidgetTester tester) => tester
+    .widgetList<IntroStory>(find.byType(IntroStory))
+    .singleWhere((story) => story.active)
+    .duration;
+
+Future<void> _pumpStoryTo(
+  WidgetTester tester,
+  int page,
+  int milliseconds,
+) async {
+  final progress = tester
+      .widget<OnboardingPaginationWidget>(
+        find.byType(OnboardingPaginationWidget),
+      )
+      .progress[page];
+  final durationMs = _activeStoryDuration(tester).inMilliseconds;
+  var remaining = (milliseconds - progress * durationMs).round().clamp(
+    0,
+    durationMs,
+  );
+  // Let semantic focus anchors appear on their real frames, including the
+  // camera's scroll animation; a single clock jump skips these transitions.
+  while (remaining > 0) {
+    final frame = remaining.clamp(0, 100);
+    await tester.pump(Duration(milliseconds: frame));
+    remaining -= frame;
+  }
+  await tester.pump();
+}
+
+Future<void> _saveReviewImage(
+  WidgetTester tester,
+  ui.Image image,
+  String name,
+) async {
+  await tester.runAsync(() async {
+    final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
+    final directory = Directory(
+      '/private/tmp/asteria-design-review/onboarding-v2',
+    );
+    await directory.create(recursive: true);
+    await File(
+      '${directory.path}/$name.png',
+    ).writeAsBytes(bytes!.buffer.asUint8List());
+  });
+}
+
+Future<void> _saveReviewScreen(WidgetTester tester, String name) async {
+  for (final text in tester.widgetList<Text>(find.byType(Text))) {
+    expect(
+      text.data ?? text.textSpan?.toPlainText() ?? '',
+      isNot(matches(RegExp(r'пример|demo|example', caseSensitive: false))),
+      reason: name,
+    );
+  }
+  await _waitForGoldenImages(tester);
+  final boundary = tester.renderObject<RenderRepaintBoundary>(
+    find.byKey(const ValueKey('onboarding-screen-golden')),
+  );
+  final image = await tester.runAsync(() => boundary.toImage(pixelRatio: 1));
+  try {
+    await _saveReviewImage(tester, image!, name);
+  } finally {
+    image?.dispose();
+  }
 }
 
 // pumpAndSettle waits for scheduled frames, but a cold asset may still be
@@ -362,6 +1110,8 @@ Future<void> _pumpOnboarding(
   Size size = const Size(390, 844),
   double textScale = 1,
   bool lightTheme = false,
+  bool disableAnimations = true,
+  bool accessibleNavigation = false,
   double devicePixelRatio = 1,
   EdgeInsets padding = EdgeInsets.zero,
   required VoidCallback onComplete,
@@ -390,11 +1140,13 @@ Future<void> _pumpOnboarding(
               data: MediaQuery.of(context).copyWith(
                 textScaler: TextScaler.linear(textScale),
                 padding: padding,
-                disableAnimations: true,
+                disableAnimations: disableAnimations,
+                accessibleNavigation: accessibleNavigation,
               ),
               child: RepaintBoundary(
                 key: const ValueKey('onboarding-screen-golden'),
                 child: OnboardingScreen(
+                  now: () => DateTime(2026, 11, 16, 12),
                   pages: OnboardingData.getPages(context),
                   localization: OnboardingLocalization(),
                   onComplete: onComplete,
@@ -407,7 +1159,12 @@ Future<void> _pumpOnboarding(
     ),
   );
   await tester.pump();
-  await tester.pumpAndSettle();
+  if (disableAnimations) {
+    await tester.pumpAndSettle();
+  } else {
+    await tester.pump(const Duration(milliseconds: 100));
+    await tester.pump();
+  }
 }
 
 Finder _cta(WidgetTester tester) {
@@ -418,7 +1175,7 @@ Finder _cta(WidgetTester tester) {
       )
       .currentPage;
   return find.text(
-    index == 3
+    index == 4
         ? AppLocalizations.of(context).introStart
         : OnboardingLocalization().nextButton(context),
   );
@@ -431,9 +1188,9 @@ void _expectPage(WidgetTester tester, OnboardingBloc bloc, int index) {
   );
   expect(pageView.controller?.page, closeTo(index.toDouble(), 0.01));
   expect(bloc.state.currentPageIndex, index);
-  expect(bloc.state.isLastPage, index == 3);
+  expect(bloc.state.isLastPage, index == 4);
   expect(pagination.currentPage, index);
-  expect(pagination.totalPages, 4);
+  expect(pagination.totalPages, 5);
 }
 
 class _RecordingSettings implements AppSettingsRepository {

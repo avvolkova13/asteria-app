@@ -1,84 +1,104 @@
-import 'dart:math' as math;
-
+import 'package:asteria_app/core/ui_kit/widgets/card_turn.dart';
 import 'package:asteria_app/core/ui_kit/widgets/tarot_card_frame.dart';
 import 'package:flutter/material.dart';
 
-/// Three cards leave a single stack and settle into an upright row.
-/// The parent controls time (seconds) and can restart the scene from zero.
-class NativeTarotDeal extends StatelessWidget {
+/// Cards arrive face down in a row, rest, then turn one at a time.
+class NativeTarotDeal extends StatefulWidget {
   const NativeTarotDeal({super.key, required this.seconds});
-
   final double seconds;
+  @override
+  State<NativeTarotDeal> createState() => _NativeTarotDealState();
+}
 
-  static const _art = 'assets/images/cards';
+class _NativeTarotDealState extends State<NativeTarotDeal> {
+  String? _preloadedLanguage;
+  List<String> _hand = const [];
   static const _back = 'assets/images/home/daily_symbol_tarot_back.webp';
-  static const _hand = [
-    '$_art/the_high_priestess.webp',
-    '$_art/the_star.webp',
-    '$_art/the_moon.webp',
-  ];
 
-  static double _progress(double time, double start, double end) {
-    final t = ((time - start) / (end - start)).clamp(0.0, 1.0);
-    return t * t * (3 - 2 * t);
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final language = Localizations.localeOf(context).languageCode;
+    if (_preloadedLanguage == language) return;
+    _preloadedLanguage = language;
+    final directory = language == 'ru'
+        ? 'assets/images/cards'
+        : 'assets/images/cards/en';
+    _hand = [
+      '$directory/the_high_priestess.webp',
+      '$directory/the_star.webp',
+      '$directory/the_moon.webp',
+    ];
+    // Decode both sides before the first turn, while the question is visible.
+    for (final path in [_back, ..._hand]) {
+      precacheImage(ResizeImage(AssetImage(path), width: 330), context);
+    }
   }
 
-  static Widget _artwork(String image) {
-    return TarotCardFrame(
-      radius: 10,
-      child: Image.asset(
-        image,
-        fit: BoxFit.fill,
-        excludeFromSemantics: true,
-        gaplessPlayback: true,
-        cacheWidth: 330,
-      ),
-    );
-  }
+  static double _progress(double time, double start, double end) => Curves
+      .easeInOutCubic
+      .transform(((time - start) / (end - start)).clamp(0.0, 1.0));
 
   @override
   Widget build(BuildContext context) {
-    final time = MediaQuery.disableAnimationsOf(context) ? 2.54 : seconds;
-    final waiting = <Widget>[];
-    final dealing = <Widget>[];
-    for (var i = 0; i < _hand.length; i++) {
-      final local = time - .15 - i * .58;
-      final travel = _progress(local, 0, .88);
-      final flip = _progress(local, .18, .78);
-      final showFront = flip >= .5;
-      final startY = 114.0 + i * 3;
-      final card = Positioned(
-        key: ValueKey(_hand[i]),
-        left: 165 + (i - 1) * 124 * travel,
-        top: startY + (46 - startY) * travel - 9 * math.sin(math.pi * travel),
-        width: 110,
-        height: 165,
-        child: Transform.scale(
-          scale: .82 + .18 * travel,
-          child: Transform(
-            alignment: Alignment.center,
-            transform: Matrix4.identity()
-              ..setEntry(3, 2, -1 / 720)
-              ..rotateY((showFront ? flip - 1 : flip) * math.pi),
-            child: IndexedStack(
-              sizing: StackFit.expand,
-              index: showFront ? 1 : 0,
-              children: [_artwork(_back), _artwork(_hand[i])],
-            ),
-          ),
-        ),
-      );
-      (local > 0 ? dealing : waiting).add(card);
-    }
-    return AspectRatio(
-      aspectRatio: 440 / 285,
-      child: FittedBox(
-        child: SizedBox(
-          width: 440,
-          height: 285,
-          child: Stack(children: [...waiting.reversed, ...dealing]),
+    final time = MediaQuery.disableAnimationsOf(context) ? 5.0 : widget.seconds;
+    return ExcludeSemantics(
+      child: AspectRatio(
+        aspectRatio: 354 / 232,
+        child: LayoutBuilder(
+          builder: (context, bounds) {
+            final width = (bounds.maxWidth - 24) / 3;
+            return Stack(
+              clipBehavior: Clip.none,
+              children: [
+                for (var i = 0; i < 3; i++)
+                  Positioned(
+                    left: i * (width + 12),
+                    top: 24,
+                    width: width,
+                    height: width * 1.5,
+                    child: Builder(
+                      builder: (context) {
+                        final arrive = _progress(time, i * .13, .5 + i * .13);
+                        final flip = ((time - 1.25 - i * .65) / .85).clamp(
+                          0.0,
+                          1.0,
+                        );
+                        final focus = _progress(time, 3.6, 4.4);
+                        return Opacity(
+                          opacity: arrive * (i == 1 ? 1 : 1 - .24 * focus),
+                          child: Transform.translate(
+                            offset: Offset(
+                              0,
+                              24 * (1 - arrive) - (i == 1 ? 12 * focus : 0),
+                            ),
+                            child: CardTurn(
+                              progress: flip,
+                              back: _face(_back, 'intro-card-$i-back'),
+                              front: _face(_hand[i], 'intro-card-$i-front'),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+              ],
+            );
+          },
         ),
       ),
     );
   }
+
+  Widget _face(String path, String key) => TarotCardFrame(
+    radius: 10,
+    child: Image.asset(
+      path,
+      key: ValueKey(key),
+      fit: BoxFit.fill,
+      gaplessPlayback: true,
+      cacheWidth: 330,
+      excludeFromSemantics: true,
+    ),
+  );
 }

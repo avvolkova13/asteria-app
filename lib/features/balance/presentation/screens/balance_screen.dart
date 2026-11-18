@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/responsive_heading.dart';
 import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/config/app_feature_visibility.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
@@ -50,9 +51,8 @@ class _BalanceScreenState extends State<BalanceScreen> {
                 const SizedBox(height: 28),
                 const _IntroText().withEntrance(),
                 const SizedBox(height: 24),
-                _HistoryButton(
-                  onTap: () => BalanceHistoryRoute.push(context),
-                ).withEntrance(),
+                _HistoryButton(onTap: () => BalanceHistoryRoute.push(context))
+                    .withEntrance(),
                 const SizedBox(height: 24),
                 const _WhereToSpend().withEntrance(),
                 const SizedBox(height: 16),
@@ -109,33 +109,37 @@ class _IntroText extends StatelessWidget {
 
 class _HistoryButton extends StatelessWidget {
   final VoidCallback onTap;
-
   const _HistoryButton({required this.onTap});
-
   @override
   Widget build(BuildContext context) {
+    final largeText = MediaQuery.textScalerOf(context).scale(17) > 25;
     return ProfileGlassCard(
       onTap: onTap,
       borderRadius: AsteriaCardRadii.compact,
       padding: const EdgeInsets.symmetric(horizontal: 14),
       color: const Color(0x5C72418A),
-      child: SizedBox(
-        height: 50,
-        child: Row(
-          children: [
-            Expanded(
-              child: Text(
-                context.l10n.balanceHistoryTitle,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: context.textTheme.inverseUrbanistRegular17.copyWith(
-                  color: ProfileFlowColors.textMuted,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(minHeight: 50),
+        child: Padding(
+          padding: EdgeInsets.symmetric(vertical: largeText ? 12 : 0),
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  context.l10n.balanceHistoryTitle,
+                  maxLines: largeText ? null : 1,
+                  overflow: largeText
+                      ? TextOverflow.visible
+                      : TextOverflow.ellipsis,
+                  style: context.textTheme.inverseUrbanistRegular17.copyWith(
+                    color: ProfileFlowColors.textMuted,
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(width: 12),
-            const LotusArrowBubble(),
-          ],
+              const SizedBox(width: 12),
+              const LotusArrowBubble(),
+            ],
+          ),
         ),
       ),
     );
@@ -180,36 +184,52 @@ class _WhereToSpend extends StatelessWidget {
   ];
 
   Widget _buildItem(_SpendItemData item, BuildContext context) {
+    final label = Text(
+      item.text,
+      style: context.textTheme.inverseUrbanistRegular16.copyWith(
+        color: ProfileFlowColors.textMuted,
+        height: 1.05,
+      ),
+    );
+    final icon = ClayAssetIcon(
+      item.icon,
+      width: 24,
+      height: 24,
+      tint: ProfileFlowColors.accent,
+    );
+    final price = _PricePill(price: item.price);
+    if (MediaQuery.textScalerOf(context).scale(16) > 22) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          label,
+          const SizedBox(height: 8),
+          Row(children: [icon, const Spacer(), price]),
+        ],
+      );
+    }
     return ConstrainedBox(
       constraints: const BoxConstraints(minHeight: 32),
       child: Row(
         children: [
-          ClayAssetIcon(
-            item.icon,
-            width: 24,
-            height: 24,
-            tint: ProfileFlowColors.accent,
-          ),
+          icon,
           const SizedBox(width: 9),
-          Expanded(
-            child: Text(
-              item.text,
-              style: context.textTheme.inverseUrbanistRegular16.copyWith(
-                color: ProfileFlowColors.textMuted,
-                height: 1.05,
-              ),
-            ),
-          ),
+          Expanded(child: label),
           const SizedBox(width: 8),
-          _PricePill(price: item.price),
+          price,
         ],
       ),
     );
   }
 
-  Widget _buildDivider() {
+  Widget _buildDivider(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(left: 33, top: 6, bottom: 6),
+      padding: EdgeInsets.only(
+        left: MediaQuery.textScalerOf(context).scale(16) > 22 ? 0 : 33,
+        top: 6,
+        bottom: 6,
+      ),
       child: Divider(
         height: 1,
         thickness: 1,
@@ -227,14 +247,14 @@ class _WhereToSpend extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          ResponsiveHeading(
             context.l10n.balanceWhereToSpend,
             style: context.textTheme.inversePlayfairSemiBold24,
           ),
           const SizedBox(height: 12),
           for (var index = 0; index < _items(context).length; index++) ...[
             _buildItem(_items(context)[index], context),
-            if (index != _items(context).length - 1) _buildDivider(),
+            if (index != _items(context).length - 1) _buildDivider(context),
           ],
         ],
       ),

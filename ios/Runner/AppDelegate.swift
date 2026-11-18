@@ -59,6 +59,8 @@ private final class StorefrontUpdatesHandler: NSObject, FlutterStreamHandler {
   func didInitializeImplicitFlutterEngine(_ engineBridge: FlutterImplicitEngineBridge) {
     GeneratedPluginRegistrant.register(with: engineBridge.pluginRegistry)
     let messenger = engineBridge.applicationRegistrar.messenger()
+    engineBridge.applicationRegistrar.register(SplashSilkFactory(messenger: messenger),
+                                               withId: "asteria/launch-silk")
     planReminders = CalendarPlanReminders(messenger: messenger)
     practiceAudio = PracticeAudioBridge(messenger: messenger)
     let calendar = FlutterMethodChannel(name: "asteria/calendar", binaryMessenger: messenger)
