@@ -16,12 +16,17 @@ import 'package:asteria_app/features/anakra_chat/presentation/provider/anakra_ch
 import 'package:asteria_app/features/anakra_chat/presentation/widgets/anakra_chat_message.dart';
 import 'package:asteria_app/features/anakra_chat/presentation/widgets/anakra_layout.dart';
 import 'package:asteria_app/features/anakra_chat/presentation/widgets/anakra_quick_actions.dart';
+import 'package:asteria_app/features/monetization/presentation/monetization_provider.dart';
+import 'package:asteria_app/features/scenarios/free_attempt.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../widgets/anakra_composer.dart';
 
 class AnakraChatScreen extends StatefulWidget {
-  const AnakraChatScreen({super.key});
+  const AnakraChatScreen({super.key}) : initialDraft = null;
+  const AnakraChatScreen.freeQuestion({super.key, required String draft})
+    : initialDraft = draft;
+  final String? initialDraft;
 
   @override
   State<AnakraChatScreen> createState() => _AnakraChatScreenState();
@@ -33,6 +38,9 @@ class _AnakraChatScreenState extends State<AnakraChatScreen> {
   bool _hasScrolledToBottom = false;
   bool _hasInput = false;
   bool _isDispatching = false;
+  bool _checkingFreeQuota = true;
+  bool _freeQuotaFailed = false;
+  bool get _freeOnly => widget.initialDraft != null;
   int _previousMessagesCount = 0;
   // 1-based counter of user-originated messages within the current screen
   // lifecycle. Sent as `message_index` to enable conversation-depth analysis.
@@ -43,6 +51,16 @@ class _AnakraChatScreenState extends State<AnakraChatScreen> {
   @override
   void initState() {
     super.initState();
+    if (widget.initialDraft case final draft?) {
+      _messageController.value = TextEditingValue(
+        text: draft,
+        selection: TextSelection.collapsed(offset: draft.length),
+      );
+      _hasInput = draft.trim().isNotEmpty;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _refreshFreeQuota();
+      });
+    }
     _messageController.addListener(_onMessageInputChanged);
     di.get<AnakraChatProvider>().initialize();
     di.get<AnalyticsFacade>().trackEvent(
@@ -52,6 +70,20 @@ class _AnakraChatScreenState extends State<AnakraChatScreen> {
     di.get<ProductAnalyticsService>().trackAnakraStart(
       entrySurface: EntrySurface.home,
     );
+  }
+
+  Future<void> _refreshFreeQuota() async {
+    setState(() {
+      _checkingFreeQuota = true;
+      _freeQuotaFailed = false;
+    });
+    try {
+      await context.read<MonetizationProvider>().refreshForAccess();
+    } catch (_) {
+      if (mounted) setState(() => _freeQuotaFailed = true);
+    } finally {
+      if (mounted) setState(() => _checkingFreeQuota = false);
+    }
   }
 
   void _onMessageInputChanged() {
@@ -140,7 +172,9 @@ class _AnakraChatScreenState extends State<AnakraChatScreen> {
   }) async {
     final facade = di.get<AnalyticsFacade>();
     final productAnalytics = di.get<ProductAnalyticsService>();
-    final canMakeRequest = await checkRequestAccess(context, 'anakra');
+    final canMakeRequest = _freeOnly
+        ? true
+        : await checkRequestAccess(context, 'anakra');
     if (canMakeRequest == null) return;
     if (!mounted || !isCurrent()) return;
     if (!canMakeRequest) {
@@ -157,7 +191,8 @@ class _AnakraChatScreenState extends State<AnakraChatScreen> {
       return;
     }
 
-    if (entrySurface == 'text_input' &&
+    if (!_freeOnly &&
+        entrySurface == 'text_input' &&
         _messageController.text.trim() == text) {
       _messageController.clear();
     }
@@ -176,11 +211,18 @@ class _AnakraChatScreenState extends State<AnakraChatScreen> {
     );
 
     try {
-      final hasResult = await provider.sendMessage(text);
+      final hasResult = _freeOnly
+          ? await provider.sendFreeMessage(text, isCurrent: isCurrent)
+          : await provider.sendMessage(text);
       if (!isCurrent() ||
           hasResult == AnakraSendOutcome.stale ||
           hasResult == AnakraSendOutcome.ignored) {
         return;
+      }
+      if (_freeOnly &&
+          hasResult == AnakraSendOutcome.result &&
+          _messageController.text.trim() == text) {
+        _messageController.clear();
       }
       if (hasResult == AnakraSendOutcome.failed) {
         productAnalytics.trackErrorStateView(
@@ -200,6 +242,18 @@ class _AnakraChatScreenState extends State<AnakraChatScreen> {
       });
     } catch (e) {
       if (!isCurrent()) return;
+      if (_freeOnly) {
+        await _refreshFreeQuota();
+        if (mounted &&
+            isCurrent() &&
+            !e.toString().contains('no_requests') &&
+            !e.toString().contains('request_quota_insufficient')) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(context.l10n.anakraServerError)),
+          );
+        }
+        return;
+      }
       if (e.toString().contains('no_requests')) {
         facade.trackEvent(
           AnalyticsEvents.anakraLimitReached,
@@ -272,6 +326,20 @@ class _AnakraChatScreenState extends State<AnakraChatScreen> {
             _previousMessagesCount = provider.messages.length;
           }
 
+          final access = _freeOnly
+              ? context.watch<MonetizationProvider>()
+              : null;
+          final quota = access?.requestQuotas['anakra'];
+          final uid = provider.currentUserId;
+          final freeAvailable =
+              !_checkingFreeQuota &&
+              !_freeQuotaFailed &&
+              uid != null &&
+              access?.isCurrentUser(uid) == true &&
+              access?.isFeatureEnabled('anakra') == true &&
+              canUseFreeAttempt(quota);
+          final russian = Localizations.localeOf(context).languageCode == 'ru';
+
           return Column(
             children: [
               Expanded(
@@ -281,6 +349,7 @@ class _AnakraChatScreenState extends State<AnakraChatScreen> {
                   slivers: [
                     SliverToBoxAdapter(
                       child: AnakraHeroHeader(
+                        showRequestsBadge: !_freeOnly,
                         onRequestsTap: () =>
                             CreateAnakraRequestsLeftRoute.push(context),
                       ),
@@ -293,11 +362,16 @@ class _AnakraChatScreenState extends State<AnakraChatScreen> {
                           children: [
                             ...provider.messages.map(
                               (message) => AsteriaEntrance(
-                                replayKey: (message.timestamp.toUtc(), message.isUser),
+                                replayKey: (
+                                  message.timestamp.toUtc(),
+                                  message.isUser,
+                                ),
                                 child: AnakraChatMessage(message: message),
                               ),
                             ),
-                            if (provider.showQuickActions && !_isDispatching)
+                            if (!_freeOnly &&
+                                provider.showQuickActions &&
+                                !_isDispatching)
                               AnakraQuickActions(
                                 onDrawCard: () => _onQuickAction(
                                   context.l10n.anakraQuickDrawCard,
@@ -356,6 +430,33 @@ class _AnakraChatScreenState extends State<AnakraChatScreen> {
                   ],
                 ),
               ),
+              if (_freeOnly)
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: _freeQuotaFailed
+                      ? TextButton(
+                          onPressed: _refreshFreeQuota,
+                          child: Text(
+                            russian
+                                ? 'Проверить бесплатные вопросы ещё раз'
+                                : 'Check free questions again',
+                          ),
+                        )
+                      : Text(
+                          _checkingFreeQuota
+                              ? (russian
+                                    ? 'Проверяем бесплатные вопросы…'
+                                    : 'Checking free questions…')
+                              : freeAvailable
+                              ? (russian
+                                    ? 'Бесплатных вопросов осталось: ${quota!.freeRemaining}'
+                                    : 'Free questions left: ${quota!.freeRemaining}')
+                              : (russian
+                                    ? 'Сейчас нет бесплатных вопросов'
+                                    : 'No free questions available right now'),
+                          style: context.textTheme.inverseUrbanistRegular14,
+                        ),
+                ),
               SafeArea(
                 top: false,
                 child: Padding(
@@ -364,6 +465,8 @@ class _AnakraChatScreenState extends State<AnakraChatScreen> {
                     controller: _messageController,
                     busy: provider.isLoadingAnakra || _isDispatching,
                     hasInput: _hasInput,
+                    maxLines: _freeOnly ? 3 : 1,
+                    canSend: !_freeOnly || freeAvailable,
                     onSend: () => _sendMessage(provider),
                   ),
                 ),

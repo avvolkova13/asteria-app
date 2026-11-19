@@ -313,11 +313,15 @@ class ContentProvider extends ChangeNotifier with WidgetsBindingObserver {
   void _clearRuneOpenState() {
     _openedRuneDay = null;
     _isDailySymbolRuneOpenedInSession = false;
-    _openedRuneDeckPositions.clear();
+    resetRuneDeckOpenState();
   }
 
   void resetTarotOpenState() {
     _clearTarotOpenState();
+  }
+
+  void resetRuneDeckOpenState() {
+    _openedRuneDeckPositions.clear();
   }
 
   void resetRuneOpenState() {
@@ -2015,6 +2019,9 @@ class ContentProvider extends ChangeNotifier with WidgetsBindingObserver {
         featureKey: 'request_quota_command',
         payloadKey: payloadKey,
       );
+      if (_userProvider.currentUser?.id != userId) {
+        throw StateError('Account changed before the request');
+      }
       final command = await _requestQuotaCommand(
         'sonnik',
         payload: payload,
@@ -2060,6 +2067,9 @@ class ContentProvider extends ChangeNotifier with WidgetsBindingObserver {
         featureKey: 'request_quota_command',
         payloadKey: payloadKey,
       );
+      if (_userProvider.currentUser?.id != userId) {
+        throw StateError('Account changed before the request');
+      }
       final command = await _requestQuotaCommand(
         'compatibility',
         payload: payload,

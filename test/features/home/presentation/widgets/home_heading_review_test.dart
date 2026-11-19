@@ -54,7 +54,7 @@ void main() {
                               l.moonPhaseTitle,
                               l.navPractices,
                               l.navigationReadings,
-                              l.scenarioStrengthChooseArea,
+                              l.scenarioStrengthTitle,
                               l.scenarioCalendarChooseActivity,
                               l.scenarioCalendarChooseDates,
                               l.scenarioRelationshipChooseSituation,

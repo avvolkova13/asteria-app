@@ -10,7 +10,6 @@ import 'package:asteria_app/app/data/models/user/tarot_card_of_day_item_model.da
 import 'package:asteria_app/core/utils/utils.dart';
 
 import 'package:asteria_app/features/home/presentation/widgets/tarot_card_of_the_day_widget.dart';
-import 'package:asteria_app/core/ui_kit/widgets/custom_button.dart';
 import 'package:asteria_app/features/scenarios/relationships_scenario.dart';
 
 import 'package:asteria_app/app/data/models/rune_of_day/rune_of_day_model.dart';
@@ -362,37 +361,28 @@ void main() {
           ),
         );
         await tester.pumpAndSettle();
-        await tester.tap(find.text('Мои чувства и желания'));
-        await tester.pumpAndSettle();
-        final action = find.widgetWithText(CustomButton, 'Открыть карту дня');
+        final action = find.text('О чём нам поговорить?');
         await tester.ensureVisible(action);
         await tester.pumpAndSettle();
-        expect(
-          tester.getSize(action).width,
-          tester
-              .getSize(find.text('Откройте карту и прислушайтесь к чувствам.'))
-              .width,
-        );
-        expect(tester.getSize(action).height, greaterThanOrEqualTo(50));
         await tester.tap(action);
         await tester.pumpAndSettle();
         expect(find.byType(TarotCardOfTheDayWidget), findsOneWidget);
         expect(find.text('Начать любовный расклад'), findsNothing);
-        expect(find.text('Вопрос для размышления'), findsNothing);
+        expect(find.text('Вопрос для вас двоих'), findsNothing);
         final tarot = find.byType(TarotCardOfTheDayWidget);
         await tester.ensureVisible(tarot);
         await tester.pumpAndSettle();
         await tester.tap(tarot);
         await tester.pumpAndSettle();
         expect(contentProvider.isTodayTarotCardOpened(), isTrue);
-        expect(find.text('Вопрос для размышления'), findsOneWidget);
+        expect(find.text('Вопрос для вас двоих'), findsOneWidget);
         expect(userProvider.currentUser!.loveDeck, isNull);
         await tester.binding.handlePopRoute();
         await tester.pumpAndSettle();
-        expect(find.text('Открыть карту дня'), findsOneWidget);
-        await tester.tap(find.text('Открыть карту дня'));
+        expect(find.text('О чём нам поговорить?'), findsOneWidget);
+        await tester.tap(find.text('О чём нам поговорить?'));
         await tester.pumpAndSettle();
-        expect(find.text('Вопрос для размышления'), findsOneWidget);
+        expect(find.text('Вопрос для вас двоих'), findsOneWidget);
         expect(tester.takeException(), isNull);
       },
     );

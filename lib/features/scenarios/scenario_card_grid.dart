@@ -19,6 +19,10 @@ enum ScenarioMood {
   final Color ground, rim, mist;
 }
 
+bool _usesCompactCardLayout(BuildContext context) =>
+    MediaQuery.sizeOf(context).height < 740 ||
+    MediaQuery.textScalerOf(context).scale(16) > 18;
+
 class ScenarioCardGrid extends StatefulWidget {
   const ScenarioCardGrid({super.key, required this.cards})
     : assert(cards.length == 4);
@@ -101,28 +105,39 @@ class _ScenarioCardGridState extends State<ScenarioCardGrid>
           );
         }
         final width = (bounds.maxWidth - gap) / 2;
-        Widget column(int top, int bottom, int topFlex) => Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Expanded(flex: topFlex, child: widget.cards[top].withEntrance()),
-              const SizedBox(height: gap),
-              Expanded(
-                flex: 5 - topFlex,
-                child: widget.cards[bottom].withEntrance(),
+        final compact = _usesCompactCardLayout(context);
+        final screenHeight = MediaQuery.sizeOf(context).height;
+        final panelHeight = compact
+            ? math.min(screenHeight * .61, 520.0)
+            : math.min(width * 2.86 + gap, screenHeight * .65);
+        final tall = compact ? 6 : 3;
+        final short = compact ? 5 : 2;
+        Widget column(int top, int bottom, int topFlex, int bottomFlex) =>
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Expanded(
+                    flex: topFlex,
+                    child: widget.cards[top].withEntrance(),
+                  ),
+                  const SizedBox(height: gap),
+                  Expanded(
+                    flex: bottomFlex,
+                    child: widget.cards[bottom].withEntrance(),
+                  ),
+                ],
               ),
-            ],
-          ),
-        );
+            );
         return ConstrainedBox(
-          constraints: BoxConstraints(minHeight: width * 2.86 + gap),
+          constraints: BoxConstraints(minHeight: panelHeight),
           child: IntrinsicHeight(
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                column(0, 2, 3),
+                column(0, 2, tall, short),
                 const SizedBox(width: gap),
-                column(1, 3, 2),
+                column(1, 3, short, tall),
               ],
             ),
           ),
@@ -151,25 +166,20 @@ class ScenarioCard extends StatelessWidget {
     super.key,
     required this.mood,
     required this.title,
-    required this.subtitle,
     required this.art,
     required this.onTap,
   });
   final ScenarioMood mood;
-  final String title, subtitle, art;
+  final String title, art;
   final VoidCallback onTap;
 
-  static const _inset = 16.0;
-  static const _gap = 8.0;
   static const _radius = BorderRadius.all(Radius.circular(30));
   static final _title = AppTypography.h3.copyWith(color: AppColors.textInverse);
-  static final _caption = AppTypography.text2.copyWith(
-    color: AppColors.cardTinted,
-  );
 
   @override
   Widget build(BuildContext context) {
     final phase = context.dependOnInheritedWidgetOfExactType<_RimPhase>();
+    final compact = _usesCompactCardLayout(context);
     return Semantics(
       button: true,
       sortKey: OrdinalSortKey(mood.index.toDouble()),
@@ -186,7 +196,7 @@ class ScenarioCard extends StatelessWidget {
               child: CustomPaint(
                 painter: _GlassArtwork(mood),
                 child: Padding(
-                  padding: const EdgeInsets.all(_inset),
+                  padding: EdgeInsets.all(compact ? 12 : 16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -197,24 +207,17 @@ class ScenarioCard extends StatelessWidget {
                           width: 126,
                           height: switch (mood) {
                             ScenarioMood.calendar ||
-                            ScenarioMood.strength => 110,
+                            ScenarioMood.strength => compact ? 62 : 110,
                             ScenarioMood.practice ||
-                            ScenarioMood.relationships => 64,
+                            ScenarioMood.relationships => compact ? 44 : 64,
                           },
                           fit: BoxFit.contain,
                           excludeFromSemantics: true,
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(top: _gap),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(title, style: _title),
-                            const SizedBox(height: 6),
-                            Text(subtitle, style: _caption),
-                          ],
-                        ),
+                        padding: EdgeInsets.only(top: compact ? 6 : 8),
+                        child: Text(title, style: _title),
                       ),
                     ],
                   ),

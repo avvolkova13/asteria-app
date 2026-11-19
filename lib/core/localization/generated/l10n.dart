@@ -8490,6 +8490,16 @@ class AppLocalizations {
     );
   }
 
+  /// `Lunar calendar`
+  String get scenarioPickerCalendarSubtitle {
+    return Intl.message(
+      'Lunar calendar',
+      name: 'scenarioPickerCalendarSubtitle',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Compare dates that work for you in the lunar calendar and save your plan.`
   String get scenarioCalendarSubtitle {
     return Intl.message(
@@ -8510,10 +8520,10 @@ class AppLocalizations {
     );
   }
 
-  /// `Affirmations to match your mood.`
+  /// `Affirmations`
   String get scenarioPracticeSubtitle {
     return Intl.message(
-      'Affirmations to match your mood.',
+      'Affirmations',
       name: 'scenarioPracticeSubtitle',
       desc: '',
       args: [],
@@ -8530,10 +8540,10 @@ class AppLocalizations {
     );
   }
 
-  /// `Choose what is on your mind. Asteria will suggest a place to start.`
+  /// `Compatibility and tarot`
   String get scenarioRelationshipsSubtitle {
     return Intl.message(
-      'Choose what is on your mind. Asteria will suggest a place to start.',
+      'Compatibility and tarot',
       name: 'scenarioRelationshipsSubtitle',
       desc: '',
       args: [],
@@ -8550,10 +8560,10 @@ class AppLocalizations {
     );
   }
 
-  /// `Get a suggestion from Anakra and reveal your daily card.`
+  /// `Tarot, runes and dreams`
   String get scenarioStrengthSubtitle {
     return Intl.message(
-      'Get a suggestion from Anakra and reveal your daily card.',
+      'Tarot, runes and dreams',
       name: 'scenarioStrengthSubtitle',
       desc: '',
       args: [],

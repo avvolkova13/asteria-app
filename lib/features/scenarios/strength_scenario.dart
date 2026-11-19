@@ -23,6 +23,8 @@ import 'scenario_sky.dart';
 import 'scenario_ui.dart';
 import 'scenario_completion.dart';
 import 'strength_guidance.dart';
+import 'free_dream_scenario.dart';
+import 'free_rune_scenario.dart';
 
 class StrengthTipStore {
   const StrengthTipStore(this.box, this.owner);
@@ -51,14 +53,60 @@ class StrengthTipStore {
   bool contains(StrengthTip tip) => box.containsKey('$_prefix${tip.id}');
 }
 
-class StrengthScenarioScreen extends StatefulWidget {
+class StrengthScenarioScreen extends StatelessWidget {
   const StrengthScenarioScreen({super.key});
 
   @override
-  State<StrengthScenarioScreen> createState() => _StrengthScenarioScreenState();
+  Widget build(BuildContext context) {
+    final ru = Localizations.localeOf(context).languageCode == 'ru';
+    void open(Widget child) {
+      Navigator.of(context).push<void>(
+        CupertinoPageRoute(builder: (_) => ScenarioSkyScope(child: child)),
+      );
+    }
+
+    void switchToRunes() {
+      Navigator.of(context).pushReplacement<void, void>(
+        CupertinoPageRoute(
+          builder: (_) => const ScenarioSkyScope(child: FreeRuneScenario()),
+        ),
+      );
+    }
+
+    return ScenarioPage(
+      title: context.l10n.scenarioStrengthTitle,
+      child: ScenarioChoiceGrid(
+        children: [
+          ScenarioChoiceCard(
+            title: context.l10n.scenarioRelationshipOpenSpread,
+            art: 'assets/images/year_animals/horse.webp',
+            onTap: () => open(const _DailyGuidancePicker()),
+          ),
+          ScenarioChoiceCard(
+            title: ru ? 'Вытянуть три руны' : 'Draw three runes',
+            art: 'assets/images/home/practice_runes_clay.webp',
+            onTap: () => open(const FreeRuneScenario()),
+          ),
+          ScenarioChoiceCard(
+            wide: true,
+            title: ru ? 'Растолковать сон' : 'Interpret a dream',
+            art: 'assets/images/sonnik/liveya_character.webp',
+            onTap: () => open(FreeDreamScenario(onOpenRunes: switchToRunes)),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
-class _StrengthScenarioScreenState extends State<StrengthScenarioScreen>
+class _DailyGuidancePicker extends StatefulWidget {
+  const _DailyGuidancePicker();
+
+  @override
+  State<_DailyGuidancePicker> createState() => _DailyGuidancePickerState();
+}
+
+class _DailyGuidancePickerState extends State<_DailyGuidancePicker>
     with WidgetsBindingObserver {
   late final _users = di.get<UserProvider>();
   Timer? _midnight;
@@ -108,18 +156,18 @@ class _StrengthScenarioScreenState extends State<StrengthScenarioScreen>
     final ru = Localizations.localeOf(context).languageCode == 'ru';
     final opened = DailyGuidanceStore(_users.currentUser?.id ?? '').read();
     return ScenarioPage(
-      title: context.l10n.scenarioStrengthChooseArea,
+      title: ru ? 'Подсказка Анакры' : 'Anakra’s guidance',
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: AsteriaEntrance.sections([
           ScenarioChoiceHero(
             description: opened != null
                 ? (ru
-                      ? 'Ваш инсайт на сегодня открыт. К нему можно вернуться в выбранной карточке. Приходите завтра за новым.'
-                      : 'Your insight for today is open. Revisit it in your selected card. Come back tomorrow for a new insight.')
+                      ? 'Сегодняшняя карта открыта. Выберите отмеченную тему, чтобы перечитать подсказку.'
+                      : 'Your daily card is open. Pick the marked topic to revisit its reading.')
                 : (ru
-                      ? 'Выберите ситуацию. Анакра предложит первый шаг, а карта поможет взглянуть на него иначе.'
-                      : 'Choose a situation. Anakra will suggest a first step, and a card will offer another perspective.'),
+                      ? 'Какой вопрос возьмём к карте дня? Сегодня можно выбрать одну тему.'
+                      : 'What would you like to ask your daily card? Choose one theme for today.'),
             art: 'assets/images/year_animals/horse.webp',
           ),
           const SizedBox(height: 20),

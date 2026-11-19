@@ -17,7 +17,6 @@ void main() {
           ScenarioCard(
             mood: mood,
             title: mood.name,
-            subtitle: '',
             onTap: () {},
             art: 'assets/images/scenarios/lotus.webp',
           ),
@@ -62,85 +61,102 @@ void main() {
     expect(lit(), isEmpty);
   });
 
-  for (final (width, scale) in [(375.0, 1.0), (390.0, 1.25), (375.0, 2.0)]) {
-    testWidgets('Russian picker at ${width}pt with text scale $scale', (
-      tester,
-    ) async {
-      tester.view.devicePixelRatio = 1;
-      tester.view.physicalSize = Size(width, 812);
-      addTearDown(tester.view.resetPhysicalSize);
-      addTearDown(tester.view.resetDevicePixelRatio);
-      await tester.pumpWidget(
-        MaterialApp(
-          locale: const Locale('ru'),
-          supportedLocales: AppLocaleService.supportedLocales,
-          localizationsDelegates: const [
-            AppLocalizations.delegate,
-            ...GlobalMaterialLocalizations.delegates,
-          ],
-          builder: (context, child) => MediaQuery(
-            data: MediaQuery.of(
-              context,
-            ).copyWith(textScaler: TextScaler.linear(scale)),
-            child: Theme(
-              data: AppThemeDark.instance.getThemeData(context),
-              child: child!,
+  for (final (width, height, scale) in [
+    (375.0, 667.0, 1.0),
+    (393.0, 852.0, 1.0),
+    (390.0, 812.0, 1.25),
+    (375.0, 812.0, 2.0),
+  ]) {
+    testWidgets(
+      'Russian picker at ${width}x${height}pt with text scale $scale',
+      (tester) async {
+        tester.view.devicePixelRatio = 1;
+        tester.view.physicalSize = Size(width, height);
+        addTearDown(tester.view.resetPhysicalSize);
+        addTearDown(tester.view.resetDevicePixelRatio);
+        await tester.pumpWidget(
+          MaterialApp(
+            locale: const Locale('ru'),
+            supportedLocales: AppLocaleService.supportedLocales,
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              ...GlobalMaterialLocalizations.delegates,
+            ],
+            builder: (context, child) => MediaQuery(
+              data: MediaQuery.of(
+                context,
+              ).copyWith(textScaler: TextScaler.linear(scale)),
+              child: Theme(
+                data: AppThemeDark.instance.getThemeData(context),
+                child: child!,
+              ),
             ),
-          ),
-          home: const ScenarioPicker(),
-        ),
-      );
-      await tester.pumpAndSettle();
-      final cards = find.byType(ScenarioCard);
-      expect(cards, findsNWidgets(4));
-      final entrances = cards.evaluate().map(
-        (element) => element.findAncestorWidgetOfExactType<AsteriaEntrance>(),
-      );
-      expect(entrances, isNot(contains(null)));
-      expect(entrances.toSet(), hasLength(4));
-      // A common outer entrance would consume the four individual reveals.
-      expect(
-        find.ancestor(
-          of: find.byType(ScenarioCardGrid),
-          matching: find.byType(AsteriaEntrance),
-        ),
-        findsNothing,
-      );
-      final boxes = [
-        for (final mood in ScenarioMood.values)
-          tester.getRect(
-            find.byWidgetPredicate((w) => w is ScenarioCard && w.mood == mood),
-          ),
-      ];
-      if (scale < 2) {
-        expect(boxes[0].top, boxes[1].top);
-        expect(boxes[0].height, greaterThan(boxes[1].height));
-        expect(boxes[2].bottom, closeTo(boxes[3].bottom, .01));
-      } else {
-        expect(boxes.map((r) => r.left).toSet(), hasLength(1));
-        final fourthCard = find.byWidgetPredicate(
-          (w) => w is ScenarioCard && w.mood == ScenarioMood.strength,
-        );
-        final title = find.descendant(
-          of: fourthCard,
-          matching: find.text(
-            AppLocalizations.of(
-              tester.element(fourthCard),
-            ).scenarioStrengthTitle,
+            home: const ScenarioPicker(),
           ),
         );
-        await tester.ensureVisible(title);
         await tester.pumpAndSettle();
-        expect(title.hitTestable(), findsOneWidget);
-        final cardBounds = tester.getRect(fourthCard);
-        final titleBounds = tester.getRect(title);
-        expect(cardBounds.contains(titleBounds.topLeft), isTrue);
-        expect(cardBounds.contains(titleBounds.bottomRight), isTrue);
-      }
-      final homeAction = find.text('На главную').hitTestable();
-      expect(homeAction, findsOneWidget);
-      expect(tester.widget<Text>(homeAction).style?.fontFamily, 'Lora');
-      expect(tester.takeException(), isNull);
-    });
+        final cards = find.byType(ScenarioCard);
+        expect(cards, findsNWidgets(4));
+        final entrances = cards.evaluate().map(
+          (element) => element.findAncestorWidgetOfExactType<AsteriaEntrance>(),
+        );
+        expect(entrances, isNot(contains(null)));
+        expect(entrances.toSet(), hasLength(4));
+        // A common outer entrance would consume the four individual reveals.
+        expect(
+          find.ancestor(
+            of: find.byType(ScenarioCardGrid),
+            matching: find.byType(AsteriaEntrance),
+          ),
+          findsNothing,
+        );
+        final boxes = [
+          for (final mood in ScenarioMood.values)
+            tester.getRect(
+              find.byWidgetPredicate(
+                (w) => w is ScenarioCard && w.mood == mood,
+              ),
+            ),
+        ];
+        if (scale < 2) {
+          expect(boxes[0].top, boxes[1].top);
+          expect(boxes[0].height, greaterThan(boxes[1].height));
+          expect(boxes[2].bottom, closeTo(boxes[3].bottom, .01));
+          final footer = tester.getRect(find.text('На главную'));
+          expect(boxes[2].bottom, lessThan(footer.top));
+          expect(
+            tester
+                .state<ScrollableState>(find.byType(Scrollable).first)
+                .position
+                .maxScrollExtent,
+            0,
+          );
+        } else {
+          expect(boxes.map((r) => r.left).toSet(), hasLength(1));
+          final fourthCard = find.byWidgetPredicate(
+            (w) => w is ScenarioCard && w.mood == ScenarioMood.strength,
+          );
+          final title = find.descendant(
+            of: fourthCard,
+            matching: find.text(
+              AppLocalizations.of(
+                tester.element(fourthCard),
+              ).scenarioStrengthTitle,
+            ),
+          );
+          await tester.ensureVisible(title);
+          await tester.pumpAndSettle();
+          expect(title.hitTestable(), findsOneWidget);
+          final cardBounds = tester.getRect(fourthCard);
+          final titleBounds = tester.getRect(title);
+          expect(cardBounds.contains(titleBounds.topLeft), isTrue);
+          expect(cardBounds.contains(titleBounds.bottomRight), isTrue);
+        }
+        final homeAction = find.text('На главную').hitTestable();
+        expect(homeAction, findsOneWidget);
+        expect(tester.widget<Text>(homeAction).style?.fontFamily, 'Lora');
+        expect(tester.takeException(), isNull);
+      },
+    );
   }
 }

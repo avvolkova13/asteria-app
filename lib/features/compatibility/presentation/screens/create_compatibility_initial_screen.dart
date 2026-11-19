@@ -1,3 +1,4 @@
+import 'package:asteria_app/app/data/models/saved_compatibility/saved_compatibility_model.dart';
 import 'package:asteria_app/core/ui_kit/widgets/input_bubble_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
@@ -28,9 +29,15 @@ class CreateCompatibilityInitialScreen extends StatefulWidget {
   const CreateCompatibilityInitialScreen({
     super.key,
     this.returnCreatedPair = false,
+    this.checkFreeAttempt,
+    this.onCreated,
+    this.onHistoryPressed,
   });
 
   final bool returnCreatedPair;
+  final Future<bool> Function()? checkFreeAttempt;
+  final ValueChanged<SavedCompatibilityModel>? onCreated;
+  final VoidCallback? onHistoryPressed;
 
   @override
   State<CreateCompatibilityInitialScreen> createState() =>
@@ -79,7 +86,7 @@ class _CreateCompatibilityInitialScreenState
         return DateTimePickerBottomSheet(
           key: ObjectKey('date_picker'),
           mode: CupertinoDatePickerMode.date,
-          initialDate: DateTime(2000, 1, 1),
+          initialDate: _partnerSelectedDate ?? DateTime(2000, 1, 1),
           minimumDate: DateTime(1900, 1, 1),
           maximumDate: DateTime.now(),
           title: title,
@@ -131,16 +138,25 @@ class _CreateCompatibilityInitialScreenState
     );
     productAnalytics.trackCompatibilityInputComplete();
 
-    final canMakeRequest = await checkRequestAccess(context, 'compatibility');
+    final checkFreeAttempt = widget.checkFreeAttempt;
+    final canMakeRequest = checkFreeAttempt == null
+        ? await checkRequestAccess(context, 'compatibility')
+        : await checkFreeAttempt();
     if (canMakeRequest == null) return;
-    if (!mounted) return;
+    if (!mounted ||
+        ModalRoute.of(context)?.isCurrent == false ||
+        _userProvider.currentUser?.id != user?.id) {
+      return;
+    }
     if (!canMakeRequest) {
       productAnalytics.trackCompatibilityLimitReached(
         limitType: LimitType.requests,
         requestsLeft: 0,
         limitPeriod: LimitPeriod.unknown,
       );
-      CreateCompatibilityRequestsLeftRoute.push(context);
+      if (checkFreeAttempt == null) {
+        CreateCompatibilityRequestsLeftRoute.push(context);
+      }
       return;
     }
 
@@ -163,7 +179,11 @@ class _CreateCompatibilityInitialScreenState
         generationStatus: GenerationStatus.success,
         generationSeconds: stopwatch.elapsed.inSeconds,
       );
-      if (!mounted) return;
+      if (!mounted ||
+          ModalRoute.of(context)?.isCurrent == false ||
+          _userProvider.currentUser?.id != user?.id) {
+        return;
+      }
       try {
         await di.get<CompatibilityProvider>().selectCompatibility(
           compatibility,
@@ -176,8 +196,14 @@ class _CreateCompatibilityInitialScreenState
         );
         return;
       }
-      if (!mounted) return;
-      if (widget.returnCreatedPair) {
+      if (!mounted ||
+          ModalRoute.of(context)?.isCurrent == false ||
+          _userProvider.currentUser?.id != user?.id) {
+        return;
+      }
+      if (widget.onCreated != null) {
+        widget.onCreated!(compatibility);
+      } else if (widget.returnCreatedPair) {
         Navigator.of(context).pop(compatibility);
       } else {
         CreateCompatibilityLoadedRoute.pushReplacement(context);
@@ -209,6 +235,7 @@ class _CreateCompatibilityInitialScreenState
   Widget build(BuildContext context) {
     return CompatibilityLayout(
       resizeToAvoidBottomInset: true,
+      showRequestsBadge: widget.checkFreeAttempt == null,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: AsteriaEntrance.sections([
@@ -239,6 +266,15 @@ class _CreateCompatibilityInitialScreenState
             ),
           ),
           const SizedBox(height: 24),
+          if (widget.checkFreeAttempt != null) ...[
+            Text(
+              Localizations.localeOf(context).languageCode == 'ru'
+                  ? 'Расчёт использует одну бесплатную попытку.'
+                  : 'This reading uses one free attempt.',
+              style: context.textTheme.inverseUrbanistRegular14,
+            ),
+            const SizedBox(height: 8),
+          ],
           CompatibilityGradientButton(
             text: context.l10n.compatibilityCalculate,
             onPressed: _canSubmit && !_submitting
@@ -248,7 +284,9 @@ class _CreateCompatibilityInitialScreenState
           const SizedBox(height: 14),
           if (!widget.returnCreatedPair)
             LotusButtons.text(
-              onPressed: () => CreateCompatibilityHistoryRoute.push(context),
+              onPressed:
+                  widget.onHistoryPressed ??
+                  () => CreateCompatibilityHistoryRoute.push(context),
               child: Text(
                 context.l10n.viewHistory,
                 style: context.textTheme.inverseUrbanistSemiBold14.copyWith(

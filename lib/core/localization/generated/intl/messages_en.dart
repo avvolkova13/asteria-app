@@ -2076,6 +2076,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "There are no lunar notes for this activity yet. You can still compare Moon phases and save a date.",
     ),
     "scenarioGoHome": MessageLookupByLibrary.simpleMessage("Go home"),
+    "scenarioPickerCalendarSubtitle": MessageLookupByLibrary.simpleMessage(
+      "Lunar calendar",
+    ),
     "scenarioPlansAllDay": MessageLookupByLibrary.simpleMessage("No time set"),
     "scenarioPlansCount": m64,
     "scenarioPlansDay": MessageLookupByLibrary.simpleMessage("Day"),
@@ -2102,7 +2105,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Find calm",
     ),
     "scenarioPracticeSubtitle": MessageLookupByLibrary.simpleMessage(
-      "Affirmations to match your mood.",
+      "Affirmations",
     ),
     "scenarioPracticeTitle": MessageLookupByLibrary.simpleMessage(
       "Take a minute for yourself",
@@ -2162,7 +2165,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Open your free daily card and reflect on your feelings.",
     ),
     "scenarioRelationshipsSubtitle": MessageLookupByLibrary.simpleMessage(
-      "Choose what is on your mind. Asteria will suggest a place to start.",
+      "Compatibility and tarot",
     ),
     "scenarioRelationshipsTitle": MessageLookupByLibrary.simpleMessage(
       "Understand our relationship",
@@ -2207,7 +2210,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "My saved tips",
     ),
     "scenarioStrengthSubtitle": MessageLookupByLibrary.simpleMessage(
-      "Get a suggestion from Anakra and reveal your daily card.",
+      "Tarot, runes and dreams",
     ),
     "scenarioStrengthTitle": MessageLookupByLibrary.simpleMessage(
       "Find a way forward",

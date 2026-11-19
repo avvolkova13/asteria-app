@@ -10,18 +10,29 @@ import 'package:asteria_app/features/compatibility/presentation/widgets/compatib
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+double? _percentage(String text) {
+  final value = double.tryParse(
+    text.replaceAll('%', '').replaceAll(',', '.').trim(),
+  );
+  return value != null && value >= 0 && value <= 100 ? value : null;
+}
+
 class CompabilityResults extends StatelessWidget {
   final CompatibilityData compatibilityData;
   final String hisBirthdate;
   final String herBirthdate;
   final VoidCallback onHistoryPressed;
+  final VoidCallback? onNewPairPressed;
+  final bool highlightConflicts;
   const CompabilityResults({
-    Key? key,
+    super.key,
     required this.compatibilityData,
     required this.hisBirthdate,
     required this.herBirthdate,
     required this.onHistoryPressed,
-  }) : super(key: key);
+    this.onNewPairPressed,
+    this.highlightConflicts = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -34,8 +45,24 @@ class CompabilityResults extends StatelessWidget {
         _ZodiacCompatibilityHero(
           firstDate: firstDate,
           secondDate: secondDate,
-          percentage: compatibilityData.percentage.getPercentage,
+          percentage: _percentage(compatibilityData.percentage)?.round(),
         ),
+        if (highlightConflicts &&
+            compatibilityData.conflicts.trim().isNotEmpty) ...[
+          const SizedBox(height: 16),
+          Text(
+            Localizations.localeOf(context).languageCode == 'ru'
+                ? 'Почему мы спорим?'
+                : 'Why do we disagree?',
+            style: context.textTheme.inversePlayfairSemiBold20,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            compatibilityData.conflicts.trim(),
+            style: context.textTheme.inverseUrbanistRegular16,
+          ),
+          const SizedBox(height: 16),
+        ],
         const SizedBox(height: 4),
         Text(
           compatibilityData.phrase,
@@ -54,13 +81,25 @@ class CompabilityResults extends StatelessWidget {
           textAlign: TextAlign.start,
         ),
         const SizedBox(height: 20),
-        _MetricsRow(
-          love:
-              compatibilityData.loveCompatibilityPercentage.getPercentageDouble,
-          conflicts: compatibilityData.conflictsPercentage.getPercentageDouble,
-          family: compatibilityData
-              .familyCompatibilityPercentage
-              .getPercentageDouble,
+        PearlMetricRow(
+          metrics: [
+            for (final (label, reading) in [
+              (
+                context.l10n.compatibilityLove,
+                compatibilityData.loveCompatibilityPercentage,
+              ),
+              (
+                context.l10n.compatibilityConflicts,
+                compatibilityData.conflictsPercentage,
+              ),
+              (
+                context.l10n.compatibilityFamily,
+                compatibilityData.familyCompatibilityPercentage,
+              ),
+            ])
+              if (_percentage(reading) case final value?)
+                PearlMetric(label, '${value.toStringAsFixed(0)}%', value / 100),
+          ],
         ),
         const SizedBox(height: 24),
         Text(
@@ -72,9 +111,9 @@ class CompabilityResults extends StatelessWidget {
         const SizedBox(height: 28),
         CompatibilityGradientButton(
           text: context.l10n.compatibilityNewPair,
-          onPressed: () {
-            CreateCompatibilityInitialRoute.pushReplacement(context);
-          },
+          onPressed:
+              onNewPairPressed ??
+              () => CreateCompatibilityInitialRoute.pushReplacement(context),
         ),
         const SizedBox(height: 14),
         LotusButtons.text(
@@ -94,7 +133,7 @@ class CompabilityResults extends StatelessWidget {
 class _ZodiacCompatibilityHero extends StatelessWidget {
   final DateTime firstDate;
   final DateTime secondDate;
-  final int percentage;
+  final int? percentage;
 
   const _ZodiacCompatibilityHero({
     required this.firstDate,
@@ -168,13 +207,14 @@ class _ZodiacCompatibilityHero extends StatelessWidget {
                   width: 26,
                   excludeFromSemantics: true,
                 ),
-                Text(
-                  '$percentage%',
-                  style: context.textTheme.playfairSemiBold20.copyWith(
-                    color: const Color(0xFFFFB45E),
-                    height: 1.15,
+                if (percentage != null)
+                  Text(
+                    '$percentage%',
+                    style: context.textTheme.playfairSemiBold20.copyWith(
+                      color: const Color(0xFFFFB45E),
+                      height: 1.15,
+                    ),
                   ),
-                ),
                 SvgPicture.asset(
                   'assets/icons/compatibility_heart_left.svg',
                   width: 26,
@@ -184,32 +224,6 @@ class _ZodiacCompatibilityHero extends StatelessWidget {
             ),
           ],
         ),
-      ],
-    );
-  }
-}
-
-class _MetricsRow extends StatelessWidget {
-  final double love;
-  final double conflicts;
-  final double family;
-
-  const _MetricsRow({
-    required this.love,
-    required this.conflicts,
-    required this.family,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return PearlMetricRow(
-      metrics: [
-        for (final (value, label) in [
-          (love, context.l10n.compatibilityLove),
-          (conflicts, context.l10n.compatibilityConflicts),
-          (family, context.l10n.compatibilityFamily),
-        ])
-          PearlMetric(label, '${value.toStringAsFixed(0)}%', value / 100),
       ],
     );
   }

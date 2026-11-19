@@ -12,15 +12,19 @@ class AnakraComposer extends StatelessWidget {
     required this.busy,
     required this.hasInput,
     required this.onSend,
+    this.maxLines = 1,
+    this.canSend = true,
   });
   final TextEditingController controller;
   final bool busy;
   final bool hasInput;
   final VoidCallback onSend;
+  final int maxLines;
+  final bool canSend;
 
   @override
   Widget build(BuildContext context) {
-    final enabled = !busy && hasInput;
+    final enabled = !busy && hasInput && canSend;
     final style = AppTypography.placeholder.copyWith(
       color: const Color(0xFFF5F5F5),
     );
@@ -39,7 +43,8 @@ class AnakraComposer extends StatelessWidget {
                 style: style,
                 textAlignVertical: TextAlignVertical.center,
                 cursorColor: Colors.white,
-                maxLines: 1,
+                minLines: 1,
+                maxLines: maxLines,
                 textInputAction: TextInputAction.send,
                 onSubmitted: (_) {
                   if (!enabled) return;

@@ -1207,7 +1207,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "lunarCosmetology": MessageLookupByLibrary.simpleMessage("Косметология"),
     "lunarCouple": MessageLookupByLibrary.simpleMessage("Пара"),
     "lunarDailyDiet": MessageLookupByLibrary.simpleMessage(
-      "Рацион на каждый день",
+      "Рацион на каждый день",
     ),
     "lunarDay": MessageLookupByLibrary.simpleMessage("лунный день"),
     "lunarEpilationDepilation": MessageLookupByLibrary.simpleMessage(
@@ -1215,10 +1215,10 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "lunarFamily": MessageLookupByLibrary.simpleMessage("Семья"),
     "lunarForThoseAlone": MessageLookupByLibrary.simpleMessage(
-      "Для тех кто один",
+      "Для тех кто один",
     ),
     "lunarFragrancesMagnetism": MessageLookupByLibrary.simpleMessage(
-      "Ароматы и магнетизм",
+      "Ароматы и магнетизм",
     ),
     "lunarFriends": MessageLookupByLibrary.simpleMessage("Друзья"),
     "lunarGarden": MessageLookupByLibrary.simpleMessage("Сад"),
@@ -1227,10 +1227,10 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "lunarHaircut": MessageLookupByLibrary.simpleMessage("Стрижка"),
     "lunarHarvestingPreserving": MessageLookupByLibrary.simpleMessage(
-      "Сбор урожая и заготовки",
+      "Сбор урожая и заготовки",
     ),
     "lunarHealthImmunity": MessageLookupByLibrary.simpleMessage(
-      "Здоровье и иммунитет",
+      "Здоровье и иммунитет",
     ),
     "lunarHouseplants": MessageLookupByLibrary.simpleMessage(
       "Комнатные растения",
@@ -1247,31 +1247,31 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "lunarMeditations": MessageLookupByLibrary.simpleMessage("Медитации"),
     "lunarPestControl": MessageLookupByLibrary.simpleMessage(
-      "Борьба с вредителями",
+      "Борьба с вредителями",
     ),
     "lunarPhysicalActivitySports": MessageLookupByLibrary.simpleMessage(
-      "Физическая активность и спорт",
+      "Физическая активность и спорт",
     ),
     "lunarSex": MessageLookupByLibrary.simpleMessage("Секс"),
-    "lunarSkinCare": MessageLookupByLibrary.simpleMessage("Уход за кожей"),
+    "lunarSkinCare": MessageLookupByLibrary.simpleMessage("Уход за кожей"),
     "lunarSleepRecovery": MessageLookupByLibrary.simpleMessage(
-      "Сон и восстановление",
+      "Сон и восстановление",
     ),
     "lunarSowingPlanting": MessageLookupByLibrary.simpleMessage(
-      "Посев и посадка",
+      "Посев и посадка",
     ),
     "lunarSpaRelaxation": MessageLookupByLibrary.simpleMessage(
-      "Спа и расслабление",
+      "Спа и расслабление",
     ),
     "lunarTransplantingPricking": MessageLookupByLibrary.simpleMessage(
-      "Пересадка и пикировка",
+      "Пересадка и пикировка",
     ),
     "lunarTravel": MessageLookupByLibrary.simpleMessage("Путешествия"),
     "lunarWateringFertilizing": MessageLookupByLibrary.simpleMessage(
-      "Полив и подкормка",
+      "Полив и подкормка",
     ),
     "lunarWeightLossFasting": MessageLookupByLibrary.simpleMessage(
-      "Похудение и разгрузочные дни",
+      "Похудение и разгрузочные дни",
     ),
     "lunarWork": MessageLookupByLibrary.simpleMessage("Работа"),
     "maleGender": MessageLookupByLibrary.simpleMessage("Мужчина"),
@@ -2048,7 +2048,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Название дела",
     ),
     "scenarioCalendarBackToCalendar": MessageLookupByLibrary.simpleMessage(
-      "Вернуться в календарь",
+      "Вернуться в календарь",
     ),
     "scenarioCalendarChangeDate": MessageLookupByLibrary.simpleMessage(
       "Заменить дату",
@@ -2075,7 +2075,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "У обоих дней одинаковая оценка для этого дела.",
     ),
     "scenarioCalendarFindDate": MessageLookupByLibrary.simpleMessage(
-      "Подобрать день для дела",
+      "Подобрать день для дела",
     ),
     "scenarioCalendarMonthError": MessageLookupByLibrary.simpleMessage(
       "Не удалось загрузить месяц.",
@@ -2124,6 +2124,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "Лунных подсказок для выбранного занятия пока нет. Вы можете сравнить фазы Луны и сохранить удобную дату.",
     ),
     "scenarioGoHome": MessageLookupByLibrary.simpleMessage("На главную"),
+    "scenarioPickerCalendarSubtitle": MessageLookupByLibrary.simpleMessage(
+      "Лунный календарь",
+    ),
     "scenarioPlansAllDay": MessageLookupByLibrary.simpleMessage(
       "Без указания времени",
     ),
@@ -2154,7 +2157,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Успокоиться",
     ),
     "scenarioPracticeSubtitle": MessageLookupByLibrary.simpleMessage(
-      "Аффирмации под ваше настроение.",
+      "Аффирмации",
     ),
     "scenarioPracticeTitle": MessageLookupByLibrary.simpleMessage(
       "Взять минуту для себя",
@@ -2214,7 +2217,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Откройте карту и прислушайтесь к чувствам.",
     ),
     "scenarioRelationshipsSubtitle": MessageLookupByLibrary.simpleMessage(
-      "Выберите, что вас волнует в отношениях. Asteria подскажет, с чего начать.",
+      "Совместимость и Таро",
     ),
     "scenarioRelationshipsTitle": MessageLookupByLibrary.simpleMessage(
       "Хочу лучше понять нас",
@@ -2263,10 +2266,10 @@ class MessageLookup extends MessageLookupByLibrary {
       "Мои подсказки",
     ),
     "scenarioStrengthSubtitle": MessageLookupByLibrary.simpleMessage(
-      "Получите подсказку Анакры и откройте карту дня.",
+      "Таро, руны и сонник",
     ),
     "scenarioStrengthTitle": MessageLookupByLibrary.simpleMessage(
-      "Разобраться в ситуации",
+      "Разобраться\nв ситуации",
     ),
     "scenarioStrengthTry": MessageLookupByLibrary.simpleMessage("Попробуйте"),
     "scenarioStrengthTryToday": MessageLookupByLibrary.simpleMessage(

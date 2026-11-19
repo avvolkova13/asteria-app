@@ -10,6 +10,7 @@ import 'package:asteria_app/core/localization/generated/l10n.dart';
 import 'package:asteria_app/features/anakra_chat/data/services/anakra_chat_service.dart';
 import 'package:asteria_app/features/monetization/data/pending_feature_execution_store.dart';
 import 'package:asteria_app/features/monetization/presentation/monetization_provider.dart';
+import 'package:asteria_app/features/scenarios/free_attempt.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/scheduler.dart';
@@ -135,14 +136,24 @@ class AnakraChatProvider extends ChangeNotifier {
     await _userProvider.updateUser(updatedUser);
   }
 
-  Future<AnakraSendOutcome> sendMessage(String text) async {
+  Future<AnakraSendOutcome> sendMessage(String text) => _dispatch(text);
+
+  Future<AnakraSendOutcome> sendFreeMessage(
+    String text, {
+    required bool Function() isCurrent,
+  }) => _dispatch(text, freeRequestIsCurrent: isCurrent);
+
+  Future<AnakraSendOutcome> _dispatch(
+    String text, {
+    bool Function()? freeRequestIsCurrent,
+  }) async {
     if (_disposed || text.trim().isEmpty || _isSending) {
       return AnakraSendOutcome.ignored;
     }
     _isSending = true;
     _safeNotifyListeners();
     try {
-      return await _sendMessage(text);
+      return await _sendMessage(text, freeRequestIsCurrent);
     } finally {
       _isSending = false;
       _isLoadingAnakra = false;
@@ -150,7 +161,10 @@ class AnakraChatProvider extends ChangeNotifier {
     }
   }
 
-  Future<AnakraSendOutcome> _sendMessage(String text) async {
+  Future<AnakraSendOutcome> _sendMessage(
+    String text,
+    bool Function()? freeRequestIsCurrent,
+  ) async {
     final sendingUserId = _userProvider.currentUser?.id;
     final revision = _identityRevision;
     bool stale() =>
@@ -158,12 +172,10 @@ class AnakraChatProvider extends ChangeNotifier {
         _identityRevision != revision ||
         _userProvider.currentUser?.id != sendingUserId;
 
-    final allowed = await _monetizationProvider.canMakeRequestFresh('anakra');
-    if (stale()) {
-      return AnakraSendOutcome.stale;
-    }
-    if (!allowed) {
-      throw Exception('no_requests');
+    if (freeRequestIsCurrent == null) {
+      final allowed = await _monetizationProvider.canMakeRequestFresh('anakra');
+      if (stale()) return AnakraSendOutcome.stale;
+      if (!allowed) throw Exception('no_requests');
     }
     final user = _userProvider.currentUser;
     final userId = user?.id;
@@ -186,6 +198,15 @@ class AnakraChatProvider extends ChangeNotifier {
       payloadKey: payloadKey,
     );
     if (stale()) return AnakraSendOutcome.stale;
+    if (freeRequestIsCurrent != null) {
+      await _monetizationProvider.refreshForAccess();
+      if (stale() || !freeRequestIsCurrent()) return AnakraSendOutcome.stale;
+      if (!_monetizationProvider.isCurrentUser(userId) ||
+          !_monetizationProvider.isFeatureEnabled('anakra') ||
+          !canUseFreeAttempt(_monetizationProvider.requestQuotas['anakra'])) {
+        throw Exception('no_requests');
+      }
+    }
     final conversationHistory = commandMessages
         .map(
           (m) => {'role': m.isUser ? 'user' : 'assistant', 'content': m.text},

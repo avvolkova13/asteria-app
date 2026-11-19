@@ -18,7 +18,8 @@ import 'package:asteria_app/features/home/presentation/cubit/home_state.dart';
 import 'package:asteria_app/features/home/presentation/screens/personal_screen.dart';
 import 'package:asteria_app/features/monetization/presentation/monetization_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:asteria_app/features/monetization/domain/monetization_models.dart';
+import 'package:asteria_app/features/compatibility/presentation/widgets/compability_results.dart';
 import 'package:asteria_app/features/scenarios/relationships_scenario.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -142,86 +143,51 @@ void main() {
     expect(tester.takeException(), isNull);
   }
 
-  testWidgets('themed reading reuses a saved pair and shares only its question', (
+  Future<void> tapLabel(WidgetTester tester, String label) async {
+    final target = find.text(label);
+    await tester.ensureVisible(target);
+    await tester.pumpAndSettle();
+    await tester.tap(target);
+    await tester.pumpAndSettle();
+  }
+
+  testWidgets('relationship menu opens an existing conflict reading', (
     tester,
   ) async {
-    const channel = MethodChannel('dev.fluttercommunity.plus/share');
-    MethodCall? share;
-    final messenger =
-        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
-    messenger.setMockMethodCallHandler(channel, (call) async {
-      share = call;
-      return '';
-    });
-    addTearDown(() => messenger.setMockMethodCallHandler(channel, null));
     await mount(tester);
     router.push('/relationships');
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Напряжение и разногласия'));
-    await tester.pumpAndSettle();
-    await tester.ensureVisible(find.text('Открыть разбор пары'));
-    await tester.tap(find.text('Открыть разбор пары'));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('42%'));
-    await tester.pumpAndSettle();
-    expect(find.text('Общее описание совместимости.'), findsOneWidget);
-    await tester.ensureVisible(find.text('Как снизить напряжение?'));
-    await tester.tap(find.text('Как снизить напряжение?'));
-    await tester.pumpAndSettle();
-    expect(find.text('Конфликты'), findsOneWidget);
-    expect(find.text('Любовь'), findsNothing);
-    await tester.ensureVisible(find.text('Поделиться вопросом'));
-    await tester.tap(find.text('Поделиться вопросом'));
-    await tester.pumpAndSettle();
-    expect(share?.method, 'share');
-    final payload = share!.arguments as Map;
-    expect(
-      payload['text'],
-      'Хочу вернуться к нашему разговору. Тебе удобнее сейчас или немного позже?',
+    await tapLabel(tester, 'Почему мы спорим?');
+    await tapLabel(tester, 'Посмотреть историю');
+    await tapLabel(tester, '42%');
+    final result = tester.widget<CompabilityResults>(
+      find.byType(CompabilityResults),
     );
-    expect(payload.keys.where((key) => !(key as String).startsWith('origin')), [
-      'text',
-    ]);
-    expect(find.text('Конфликты'), findsOneWidget);
+    expect(result.highlightConflicts, isTrue);
+    expect(result.compatibilityData.percentage, '42%');
     expect(user.currentUser!.compatibilityHistory, hasLength(2));
     expect(tester.takeException(), isNull);
     await tester.pumpWidget(const SizedBox.shrink());
   });
 
   testWidgets(
-    'empty history opens the existing pair form and returns its saved result to the chosen topic',
+    'relationship menu opens the partner form and its new conflict reading',
     (tester) async {
       user.currentUser = user.currentUser!.copyWith(compatibilityHistory: []);
       await mount(tester);
       router.push('/relationships');
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Отношения с партнёром'));
-      await tester.pumpAndSettle();
-      await tester.ensureVisible(find.text('Открыть разбор пары'));
-      await tester.tap(find.text('Открыть разбор пары'));
-      await tester.pumpAndSettle();
+      await tapLabel(tester, 'Почему мы спорим?');
       expect(find.byType(CreateCompatibilityInitialScreen), findsOneWidget);
       await tester.enterText(find.byType(TextField), 'Партнёр');
-      await tester.tap(find.text('Дата рождения'));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Выбрать'));
-      await tester.pumpAndSettle();
-      await tester.ensureVisible(find.text('Рассчитать'));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Рассчитать'));
-      await tester.pumpAndSettle();
-      expect(find.byType(RelationshipPairResult), findsOneWidget);
-      expect(find.text('Общее описание совместимости.'), findsOneWidget);
-      await tester.ensureVisible(find.text('Как поддерживать друг друга?'));
-      await tester.tap(find.text('Как поддерживать друг друга?'));
-      await tester.pumpAndSettle();
-      expect(find.text('Семья'), findsOneWidget);
-      expect(find.text('Любовь'), findsNothing);
-      await tester.ensureVisible(find.text('На главную'));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('На главную'));
-      await tester.pumpAndSettle();
-      expect(find.byType(PersonalScreen), findsOneWidget);
+      await tapLabel(tester, 'Дата рождения');
+      await tapLabel(tester, 'Выбрать');
+      await tapLabel(tester, 'Рассчитать');
+      final result = tester.widget<CompabilityResults>(
+        find.byType(CompabilityResults),
+      );
+      expect(result.highlightConflicts, isTrue);
+      expect(result.compatibilityData.percentage, '88%');
       expect(user.currentUser!.compatibilityHistory, hasLength(1));
       expect(tester.takeException(), isNull);
       await tester.pumpWidget(const SizedBox.shrink());
@@ -439,6 +405,20 @@ class _Home extends Cubit<HomeState> implements HomeCubit {
 }
 
 class _Monetization extends ChangeNotifier implements MonetizationProvider {
+  @override
+  bool get isLoading => false;
+  @override
+  Future<void> refresh({bool requireFresh = false}) async {}
+  @override
+  bool isCurrentUser(String uid) => uid == 'user-a';
+  @override
+  RequestQuotaModel requestQuota(String feature) =>
+      RequestQuotaModel.fromJson({'feature': feature, 'free_remaining': 1});
+  @override
+  Map<String, RequestQuotaModel> get requestQuotas => {
+    for (final feature in ['anakra', 'compatibility'])
+      feature: requestQuota(feature),
+  };
   @override
   int get balance => 0;
   @override

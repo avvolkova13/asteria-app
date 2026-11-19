@@ -140,6 +140,108 @@ void main() {
     });
   }
 
+  testWidgets(
+    'free question opens with editable draft and sends only on submit',
+    (tester) async {
+      final user = UserProvider(userRepository: _FakeUserRepository());
+      final access = _FreeMonetizationProvider(user);
+      final chat = _ControlledChat();
+      final events = _ChatEvents();
+      di.registerSingleton<AnakraChatProvider>(chat);
+      di.registerSingleton<AnalyticsFacade>(events);
+      di.registerSingleton<ProductAnalyticsService>(
+        ProductAnalyticsService(events),
+      );
+      addTearDown(() async {
+        await di.reset();
+        chat.dispose();
+        access.dispose();
+        user.dispose();
+      });
+      await tester.pumpWidget(
+        MultiProvider(
+          providers: [
+            ChangeNotifierProvider<AnakraChatProvider>.value(value: chat),
+            ChangeNotifierProvider<MonetizationProvider>.value(value: access),
+          ],
+          child: MaterialApp(
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              ...GlobalMaterialLocalizations.delegates,
+            ],
+            supportedLocales: AppLocalizations.delegate.supportedLocales,
+            home: Builder(
+              builder: (context) => Theme(
+                data: AppThemeDark.instance.getThemeData(context),
+                child: const AnakraChatScreen.freeQuestion(draft: 'A question'),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(chat.freeMessages, isEmpty);
+      expect(
+        tester.widget<TextField>(find.byType(TextField)).controller!.text,
+        'A question',
+      );
+      await tester.enterText(find.byType(TextField), 'My edited question');
+      tester.widget<AnakraComposer>(find.byType(AnakraComposer)).onSend();
+      await tester.pumpAndSettle();
+      expect(chat.freeMessages, ['My edited question']);
+      expect(chat.sends, 0);
+      expect(
+        tester.widget<TextField>(find.byType(TextField)).controller!.text,
+        isEmpty,
+      );
+      access.exhaust();
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byType(TextField), 'Another question');
+      expect(
+        tester.widget<AnakraComposer>(find.byType(AnakraComposer)).canSend,
+        isFalse,
+      );
+      await tester.pumpWidget(const SizedBox());
+    },
+  );
+
+  test(
+    'free-only send cannot use a purchased request, stale route, or PRO balance',
+    () async {
+      final user = UserProvider(userRepository: _FakeUserRepository())
+        ..applyServerUserSnapshot(UserModel.empty().copyWith(id: 'alice'));
+      final access = _FreeMonetizationProvider(user);
+      final chat = AnakraChatProvider(
+        chatService: AnakraChatService(_FakeBackendApi()),
+        userProvider: user,
+        monetizationProvider: access,
+        pendingFeatureExecutionStore: _RecordingPendingStore(),
+        localeService: AppLocaleService(platformLocales: const [Locale('en')]),
+      );
+      addTearDown(chat.dispose);
+      addTearDown(access.dispose);
+      addTearDown(user.dispose);
+      access.exhaust();
+      await expectLater(
+        chat.sendFreeMessage('test', isCurrent: () => true),
+        throwsException,
+      );
+      access.free = 1;
+      access.paid = 2;
+      await expectLater(
+        chat.sendFreeMessage('test', isCurrent: () => true),
+        throwsException,
+      );
+      access.paid = 0;
+      expect(
+        await chat.sendFreeMessage('test', isCurrent: () => false),
+        AnakraSendOutcome.stale,
+      );
+      expect(chat.messages, isEmpty);
+      expect(access.commands, 0);
+    },
+  );
+
   test(
     'A to B to A during preflight is stale, never a failure or a new command',
     () async {
@@ -309,6 +411,17 @@ class _ControlledChat extends ChangeNotifier implements AnakraChatProvider {
   int revision = 0;
   String uid = 'alice';
   int sends = 0;
+  final freeMessages = <String>[];
+  @override
+  Future<AnakraSendOutcome> sendFreeMessage(
+    String text, {
+    required bool Function() isCurrent,
+  }) async {
+    if (!isCurrent()) return AnakraSendOutcome.stale;
+    freeMessages.add(text);
+    return AnakraSendOutcome.result;
+  }
+
   @override
   int get identityRevision => revision;
   @override
@@ -378,6 +491,37 @@ class _FailingMonetizationProvider extends MonetizationProvider {
     String? idempotencyKey,
   }) async {
     throw Exception('network lost after commit');
+  }
+}
+
+class _FreeMonetizationProvider extends _FailingMonetizationProvider {
+  _FreeMonetizationProvider(super.userProvider);
+  int free = 1, paid = 0, commands = 0;
+  void exhaust() {
+    free = 0;
+    notifyListeners();
+  }
+
+  @override
+  bool isCurrentUser(String uid) => uid == 'alice';
+  @override
+  bool get effectivePro => true;
+  @override
+  Map<String, RequestQuotaModel> get requestQuotas => {
+    'anakra': RequestQuotaModel.fromJson({
+      'feature': 'anakra',
+      'free_remaining': free,
+      'paid_remaining': paid,
+    }),
+  };
+  @override
+  Future<RequestQuotaCommandResultModel> executeRequestQuotaCommand(
+    String feature, {
+    required Map<String, dynamic> payload,
+    String? idempotencyKey,
+  }) async {
+    commands++;
+    throw StateError('Unexpected command');
   }
 }
 

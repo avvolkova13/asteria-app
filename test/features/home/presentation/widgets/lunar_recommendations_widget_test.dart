@@ -42,7 +42,7 @@ void main() {
       closeTo(tester.getTopLeft(wateringCard).dy, 0.1),
     );
     expect(find.text('Комнатные растения'), findsOneWidget);
-    expect(find.text('Полив и подкормка'), findsOneWidget);
+    expect(find.text('Полив и\u00a0подкормка'), findsOneWidget);
     expect(find.text('Можно пересаживать комнатные растения.'), findsOneWidget);
     expect(find.text('Полив лучше перенести.'), findsOneWidget);
     expect(
@@ -58,13 +58,16 @@ void main() {
       findsOneWidget,
     );
     expect(find.byType(LunarCardImage), findsNWidgets(2));
-    final firstImageFinder = find.byType(LunarCardImage).first;
-    expect(tester.getSize(firstImageFinder), const Size(83, 44));
+    final plantImage = find.descendant(
+      of: plantCard,
+      matching: find.byType(LunarCardImage),
+    );
+    expect(tester.getSize(plantImage), const Size(83, 44));
     final titleCenter = tester.getCenter(find.text('Комнатные растения'));
-    final imageCenter = tester.getCenter(firstImageFinder);
+    final imageCenter = tester.getCenter(plantImage);
     expect((titleCenter.dy - imageCenter.dy).abs(), lessThan(1));
     final headerRow = tester.widget<Row>(
-      find.ancestor(of: firstImageFinder, matching: find.byType(Row)).first,
+      find.ancestor(of: plantImage, matching: find.byType(Row)).first,
     );
     expect(headerRow.crossAxisAlignment, CrossAxisAlignment.center);
     expect(_dayStatusImages(), findsNothing);
@@ -99,7 +102,7 @@ void main() {
       final titles = [
         strings.lunarHaircut,
         'Окрашивание волос',
-        'Уход за кожей',
+        'Уход за\u00a0кожей',
         'new kind',
       ];
       final positions = [

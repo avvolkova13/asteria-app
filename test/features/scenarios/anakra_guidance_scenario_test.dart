@@ -126,6 +126,11 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
+    final daily = find.text(ru ? 'Открыть карту дня' : 'Open daily card');
+    await tester.ensureVisible(daily);
+    await tester.pumpAndSettle();
+    await tester.tap(daily);
+    await tester.pumpAndSettle();
     expect(find.text('My tips'), findsNothing);
     await tester.ensureVisible(
       find.text(ru ? 'Принять решение' : 'Make a decision'),
@@ -174,7 +179,7 @@ void main() {
 
       await tester.pageBack();
       await tester.pumpAndSettle();
-      expect(find.textContaining('Come back tomorrow'), findsOneWidget);
+      expect(find.textContaining('Pick the marked topic'), findsOneWidget);
       expect(find.text('Available tomorrow'), findsNWidgets(3));
       await tester.ensureVisible(find.text('Start a conversation'));
       await tester.tap(find.text('Start a conversation'), warnIfMissed: false);
