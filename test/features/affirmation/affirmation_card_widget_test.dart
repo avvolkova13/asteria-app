@@ -371,6 +371,21 @@ void main() {
           tester,
         );
         await tester.drag(swipeDetector, const Offset(0, -120));
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 219));
+        final incoming = find.byWidgetPredicate(
+          (widget) => widget is AffirmationCardWidget && widget.imageIndex == 1,
+        );
+        expect(
+          find.descendant(of: incoming, matching: find.text('Вторая')),
+          findsOneWidget,
+        );
+        final beforeHandoff = tester.getRect(incoming);
+        await tester.pump(const Duration(milliseconds: 1));
+        await tester.pump();
+        final afterHandoff = tester.getRect(incoming);
+        expect(afterHandoff.bottom, closeTo(beforeHandoff.bottom, 1));
+        expect(afterHandoff.width, closeTo(beforeHandoff.width, 1));
         await tester.pumpAndSettle();
 
         _expectThreeUniqueLoveImages(tester);

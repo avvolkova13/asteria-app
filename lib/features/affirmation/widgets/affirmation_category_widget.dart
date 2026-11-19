@@ -193,16 +193,19 @@ class AffirmationCardStack extends StatefulWidget {
   State<AffirmationCardStack> createState() => _AffirmationCardStackState();
 }
 
-class _AffirmationCardStackState extends State<AffirmationCardStack> {
+class _AffirmationCardStackState extends State<AffirmationCardStack>
+    with SingleTickerProviderStateMixin {
   static const double _designWidth = 358;
   static const double _swipeThreshold = 80;
   static const double _velocityThreshold = 400;
   static const Duration _animationDuration = Duration(milliseconds: 220);
 
   int _frontIndex = 0;
-  int _deckRevision = 0;
+  late final _release = AnimationController(
+    vsync: this,
+    duration: _animationDuration,
+  );
   double _dragOffset = 0;
-  double _exitOffset = 0;
   bool _isAnimatingOut = false;
   bool _showHint = false;
   int _transitionDirection = -1;
@@ -228,11 +231,10 @@ class _AffirmationCardStackState extends State<AffirmationCardStack> {
     }
 
     if (signatureChanged) {
-      _deckRevision++;
+      _release.reset();
       _frontIndex = 0;
       _trackedContentId = null;
       _dragOffset = 0;
-      _exitOffset = 0;
       _isAnimatingOut = false;
     }
 
@@ -240,6 +242,12 @@ class _AffirmationCardStackState extends State<AffirmationCardStack> {
       _showHint = widget.showSwipeHint && _dragOffset == 0;
       WidgetsBinding.instance.addPostFrameCallback((_) => _trackFrontCard());
     }
+  }
+
+  @override
+  void dispose() {
+    _release.dispose();
+    super.dispose();
   }
 
   String _affirmationSignature(List<AffirmationModel> affirmations) {
@@ -319,23 +327,24 @@ class _AffirmationCardStackState extends State<AffirmationCardStack> {
     );
 
     if (!MediaQuery.disableAnimationsOf(context)) {
-      final revision = _deckRevision;
       setState(() {
         _isAnimatingOut = true;
         _transitionDirection = direction;
-        _exitOffset = direction * 58;
-        _dragOffset = 0;
         _showHint = false;
       });
-      await Future<void>.delayed(_animationDuration);
-      if (!mounted || revision != _deckRevision) return;
+      try {
+        await _release.forward(from: 0).orCancel;
+      } on TickerCanceled {
+        return;
+      }
+      if (!mounted) return;
     }
 
     setState(() {
       _showHint = false;
       _frontIndex = _wrapIndex(_frontIndex - direction);
       _isAnimatingOut = false;
-      _exitOffset = 0;
+      _dragOffset = 0;
     });
     _trackFrontCard();
   }
@@ -400,14 +409,11 @@ class _AffirmationCardStackState extends State<AffirmationCardStack> {
                 onTap: activate,
                 child: SizedBox(
                   width: stackWidth,
-                  child: ClipRect(
-                    child: AnimatedSize(
-                      duration: MediaQuery.disableAnimationsOf(context)
-                          ? Duration.zero
-                          : _animationDuration,
-                      curve: Curves.easeOutCubic,
-                      alignment: Alignment.topCenter,
-                      child: Stack(children: _buildLayerCards(context, scale)),
+                  child: AnimatedBuilder(
+                    animation: _release,
+                    builder: (context, _) => Stack(
+                      clipBehavior: Clip.none,
+                      children: _buildLayerCards(context, scale),
                     ),
                   ),
                 ),
@@ -435,31 +441,56 @@ class _AffirmationCardStackState extends State<AffirmationCardStack> {
 
     final count = widget.affirmations.length.clamp(1, 3);
     final topStep = 12.0 * scale;
-    final sideStep = 28.0 * scale;
     final hasChoices = widget.affirmations.length > 1;
     final reduced = MediaQuery.disableAnimationsOf(context);
     final direction = _isAnimatingOut
         ? _transitionDirection
         : (_dragOffset > 0 ? 1 : -1);
+    final release = _isAnimatingOut && !reduced ? _release.value : 0.0;
+    final travel = Curves.easeOutCubic.transform(release);
+    final landingOffset = -direction * 12.0;
+    final frontTop = (count - 1) * topStep;
     final cards = <Widget>[];
     for (var depth = count - 1; depth > 0; depth--) {
       final index = _wrapIndex(_frontIndex - direction * depth);
+      final nextFace =
+          depth == 1 && !reduced && (_isAnimatingOut || _dragOffset != 0);
+      final remainingDepth = depth - travel;
+      final top = frontTop - remainingDepth * topStep;
       cards.add(
         Positioned(
-          top: (count - depth - 1) * topStep,
-          left: depth * sideStep,
-          right: depth * sideStep,
+          top: top + (nextFace ? landingOffset * travel : 0),
+          left: 0,
+          right: 0,
           child: IgnorePointer(
-            child: AffirmationCardWidget(
-              affirmation: widget.affirmations[index],
-              imageIndex: index,
-              isFront: false,
+            child: ExcludeSemantics(
+              child: Transform.scale(
+                scale: 1 - remainingDepth * 56 / _designWidth,
+                alignment: Alignment.topCenter,
+                child: AffirmationCardWidget(
+                  affirmation: widget.affirmations[index],
+                  imageIndex: index,
+                  isFront: nextFace,
+                  deck: nextFace ? widget.affirmations : null,
+                ),
+              ),
             ),
           ),
         ),
       );
     }
-    final duration = reduced || (_dragOffset != 0 && !_isAnimatingOut)
+    final held = _dragOffset * .28;
+    final travelOffset = held + (direction * 58 - held) * travel;
+    // Ease the last few points of travel into the space between categories.
+    // The card keeps its rounded edge while the neighbouring title stays clear.
+    final limit = travelOffset < 0 ? frontTop + 14 : 22.0;
+    final freeTravel = limit * .65;
+    final excess = travelOffset.abs() - freeTravel;
+    final offset = excess <= 0
+        ? travelOffset
+        : travelOffset.sign *
+              (freeTravel + excess / (1 + excess / (limit - freeTravel)));
+    final duration = reduced || _isAnimatingOut || _dragOffset != 0
         ? Duration.zero
         : _animationDuration;
     cards.add(
@@ -477,14 +508,9 @@ class _AffirmationCardStackState extends State<AffirmationCardStack> {
           child: AnimatedContainer(
             duration: duration,
             curve: Curves.easeOutCubic,
-            transform: Matrix4.translationValues(
-              0,
-              reduced ? 0 : (_isAnimatingOut ? _exitOffset : _dragOffset * .28),
-              0,
-            ),
-            child: AnimatedOpacity(
-              duration: duration,
-              opacity: _isAnimatingOut ? 0 : 1,
+            transform: Matrix4.translationValues(0, reduced ? 0 : offset, 0),
+            child: Opacity(
+              opacity: 1 - Curves.easeInOut.transform(release),
               child: AffirmationCardWidget(
                 affirmation: widget.affirmations[_frontIndex],
                 imageIndex: _frontIndex,
