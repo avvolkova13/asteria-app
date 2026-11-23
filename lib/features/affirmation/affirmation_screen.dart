@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/deck_catalog_scroll.dart';
 import 'package:asteria_app/core/ui_kit/widgets/top_bar_geometry.dart';
 import 'package:asteria_app/core/ui_kit/widgets/subscription_widget.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
@@ -44,51 +45,56 @@ class _AffirmationScreenState extends State<AffirmationScreen> {
     return BaseScaffold(
       child: ColoredBox(
         color: _affirmationSurface,
-        child: CustomScrollView(
-          physics: const ClampingScrollPhysics(),
-          slivers: [
-            SliverPersistentHeader(
-              pinned: true,
-              floating: false,
-              delegate: _AffirmationTopNavBarDelegate(
-                topInset: MediaQuery.paddingOf(context).top,
-                toolbarHeight: AsteriaTopBarMetrics.heightOf(context),
-              ),
-            ),
-            SliverPadding(
-              padding: const EdgeInsets.fromLTRB(16, 22, 16, 34),
-              sliver: SliverToBoxAdapter(
-                child: ListenableBuilder(
-                  listenable: Listenable.merge([userProvider, contentProvider]),
-                  builder: (context, _) {
-                    final hasSubscription =
-                        MonetizationProvider.maybeOf(context)?.effectivePro ??
-                        false;
-
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        for (final category in categories) ...[
-                          AffirmationCategoryWidget(
-                            key: ValueKey('affirmation_category_$category'),
-                            category: category,
-                            affirmations: contentProvider
-                                .getAffirmationsByCategory(category),
-                            showAffirmations:
-                                hasSubscription ||
-                                freeAffirmationCategoryIds.contains(category),
-                            showSwipeHint: category == categories.first,
-                          ),
-                          if (category != categories.last)
-                            const SizedBox(height: 24),
-                        ],
-                      ],
-                    );
-                  },
+        child: DeckCatalogScroll(
+          child: CustomScrollView(
+            physics: const ClampingScrollPhysics(),
+            slivers: [
+              SliverPersistentHeader(
+                pinned: true,
+                floating: false,
+                delegate: _AffirmationTopNavBarDelegate(
+                  topInset: MediaQuery.paddingOf(context).top,
+                  toolbarHeight: AsteriaTopBarMetrics.heightOf(context),
                 ),
               ),
-            ),
-          ],
+              SliverPadding(
+                padding: const EdgeInsets.fromLTRB(16, 22, 16, 34),
+                sliver: SliverToBoxAdapter(
+                  child: ListenableBuilder(
+                    listenable: Listenable.merge([
+                      userProvider,
+                      contentProvider,
+                    ]),
+                    builder: (context, _) {
+                      final hasSubscription =
+                          MonetizationProvider.maybeOf(context)?.effectivePro ??
+                          false;
+
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          for (final category in categories) ...[
+                            AffirmationCategoryWidget(
+                              key: ValueKey('affirmation_category_$category'),
+                              category: category,
+                              affirmations: contentProvider
+                                  .getAffirmationsByCategory(category),
+                              showAffirmations:
+                                  hasSubscription ||
+                                  freeAffirmationCategoryIds.contains(category),
+                              showSwipeHint: category == categories.first,
+                            ),
+                            if (category != categories.last)
+                              const SizedBox(height: 24),
+                          ],
+                        ],
+                      );
+                    },
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

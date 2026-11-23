@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/dictation_button.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/widgets/input_bubble_surface.dart';
@@ -5,7 +6,7 @@ import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 import 'package:flutter/material.dart';
 
-class AnakraComposer extends StatelessWidget {
+class AnakraComposer extends StatefulWidget {
   const AnakraComposer({
     super.key,
     required this.controller,
@@ -23,8 +24,18 @@ class AnakraComposer extends StatelessWidget {
   final bool canSend;
 
   @override
+  State<AnakraComposer> createState() => _AnakraComposerState();
+}
+
+class _AnakraComposerState extends State<AnakraComposer> {
+  bool _dictating = false;
+
+  @override
   Widget build(BuildContext context) {
-    final enabled = !busy && hasInput && canSend;
+    final enabled =
+        !widget.busy && !_dictating && widget.hasInput && widget.canSend;
+    final largeText = MediaQuery.textScalerOf(context).scale(16) > 22;
+    final maxLines = largeText && widget.maxLines == 1 ? 2 : widget.maxLines;
     final style = AppTypography.placeholder.copyWith(
       color: const Color(0xFFF5F5F5),
     );
@@ -32,14 +43,14 @@ class AnakraComposer extends StatelessWidget {
       children: [
         Expanded(
           child: InputBubbleSurface(
-            enabled: !busy,
+            enabled: !widget.busy,
             surfaceBrightness: Brightness.dark,
             child: ConstrainedBox(
               constraints: const BoxConstraints(minHeight: 48),
               child: TextField(
                 onTap: LotusFeedback.selection,
-                controller: controller,
-                enabled: !busy,
+                controller: widget.controller,
+                enabled: !widget.busy,
                 style: style,
                 textAlignVertical: TextAlignVertical.center,
                 cursorColor: Colors.white,
@@ -49,12 +60,13 @@ class AnakraComposer extends StatelessWidget {
                 onSubmitted: (_) {
                   if (!enabled) return;
                   LotusFeedback.selection();
-                  onSend();
+                  widget.onSend();
                 },
                 decoration: InputDecoration(
                   isDense: true,
                   filled: false,
                   hintText: context.l10n.anakraInputHint,
+                  hintMaxLines: maxLines,
                   hintStyle: style.copyWith(
                     color: Colors.white.withValues(alpha: 0.58),
                   ),
@@ -63,16 +75,18 @@ class AnakraComposer extends StatelessWidget {
                   enabledBorder: InputBorder.none,
                   focusedBorder: InputBorder.none,
                   disabledBorder: InputBorder.none,
-                  suffixIcon: hasInput
+                  suffixIcon: widget.hasInput
                       ? LotusButtons.icon(
                           tooltip: context.l10n.clearMessage,
-                          onPressed: busy ? null : controller.clear,
+                          onPressed: widget.busy
+                              ? null
+                              : widget.controller.clear,
                           padding: EdgeInsets.zero,
                           icon: ClayIcon(
                             Icons.cancel,
                             size: 18,
                             color: Colors.white.withValues(
-                              alpha: busy ? 0.35 : 0.78,
+                              alpha: widget.busy ? 0.35 : 0.78,
                             ),
                           ),
                         )
@@ -86,12 +100,17 @@ class AnakraComposer extends StatelessWidget {
             ),
           ),
         ),
+        DictationButton(
+          controller: widget.controller,
+          enabled: !widget.busy,
+          onActiveChanged: (active) => setState(() => _dictating = active),
+        ),
         const SizedBox(width: 8),
         SizedBox.square(
           dimension: 48,
           child: LotusButtons.icon(
             tooltip: context.l10n.anakraSendMessageLabel,
-            onPressed: enabled ? onSend : null,
+            onPressed: enabled ? widget.onSend : null,
             padding: EdgeInsets.zero,
             icon: LotusIconSurface(
               diameter: 46,

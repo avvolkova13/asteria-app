@@ -3,7 +3,7 @@ import Flutter
 
 final class PracticeAudioBridge: NSObject, AVAudioPlayerDelegate {
   private let channel: FlutterMethodChannel
-  private let asset = "assets/audio/practice-75.wav"
+  private let defaultAsset = "assets/audio/practice-75.wav"
   private var player: AVAudioPlayer?
   private var session: Int?
   private var complete = false
@@ -26,7 +26,7 @@ final class PracticeAudioBridge: NSObject, AVAudioPlayerDelegate {
     releasePlayer()
   }
 
-  private func audioURL() throws -> URL {
+  private func audioURL(for asset: String) throws -> URL {
     let key = FlutterDartProject.lookupKey(forAsset: asset)
     guard let url = Bundle.main.url(forResource: key, withExtension: nil) else {
       throw CocoaError(.fileNoSuchFile)
@@ -44,7 +44,7 @@ final class PracticeAudioBridge: NSObject, AVAudioPlayerDelegate {
       switch call.method {
       case "load":
         releasePlayer()
-        let next = try AVAudioPlayer(contentsOf: audioURL())
+        let next = try AVAudioPlayer(contentsOf: audioURL(for: args?["asset"] as? String ?? defaultAsset))
         next.delegate = self
         session = owner
         player = next

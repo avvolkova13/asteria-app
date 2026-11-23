@@ -33,7 +33,7 @@ import 'package:asteria_app/app/data/models/rune_of_day/rune_of_day_model.dart';
 import 'package:asteria_app/app/data/models/sonnik/sonnik_model.dart';
 import 'package:asteria_app/app/data/models/prompt_response.dart';
 import 'package:asteria_app/app/data/models/anakra_chat/anakra_chat_message_model.dart';
-import 'package:asteria_app/features/affirmation/affirmation_detail_screen.dart';
+import 'package:asteria_app/features/affirmation/selected_affirmation_player.dart';
 import 'package:asteria_app/features/affirmation/widgets/affirmation_category_widget.dart';
 import 'package:asteria_app/features/taro_cards/widgets/card_description_modal.dart';
 import 'package:asteria_app/features/taro_cards/widgets/how_to_use_taro_cards.dart';
@@ -113,7 +113,7 @@ Widget buildCase(String name) => switch (name) {
     LoveDeckCardDescriptionModal(card: card, cardNumber: 1),
   ),
   'kelt-detail' => sheet(kelt.CardDescriptionModal(card: card, cardNumber: 1)),
-  'affirmation-detail' => AffirmationDetailScreen(
+  'affirmation-detail' => SelectedAffirmationPlayer(
     selection: AffirmationSelection(affirmation: affirmation),
   ),
   'affirmation-open' => scroll(

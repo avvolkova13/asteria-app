@@ -443,6 +443,7 @@ class _SceneState extends State<_Scene> {
       child: NotificationListener<ScrollNotification>(
         onNotification: _onScroll,
         child: ListView(
+          physics: const AlwaysScrollableScrollPhysics(),
           controller: _scroll,
           key: ValueKey('onboarding-content-$index'),
           padding: const EdgeInsets.fromLTRB(16, 20, 16, 12),

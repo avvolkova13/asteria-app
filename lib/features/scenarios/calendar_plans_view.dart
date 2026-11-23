@@ -94,6 +94,9 @@ class _CalendarPlansViewState extends State<CalendarPlansView> {
     final first = _weekStart(_selected);
     final last = first.add(const Duration(days: 6));
     if (first.year == last.year && first.month == last.month) {
+      if (Localizations.localeOf(context).languageCode == 'en') {
+        return '${DateFormat.MMMd(_locale).format(first)}–${last.day}';
+      }
       return '${first.day}–${DateFormat.MMMMd(_locale).format(last)}';
     }
     return '${DateFormat.MMMd(_locale).format(first)} — ${DateFormat.yMMMd(_locale).format(last)}';
@@ -101,6 +104,78 @@ class _CalendarPlansViewState extends State<CalendarPlansView> {
 
   String _capitalized(String value) =>
       '${value[0].toUpperCase()}${value.substring(1)}';
+
+  double _measureLabel(
+    BuildContext context,
+    String text,
+    TextStyle style,
+    TextScaler scaler,
+  ) {
+    final painter = TextPainter(
+      text: TextSpan(text: text, style: style),
+      textDirection: Directionality.of(context),
+      textScaler: scaler,
+    )..layout();
+    final width = painter.width;
+    painter.dispose();
+    return width;
+  }
+
+  Widget _dateCard(BuildContext context) {
+    final scaler = MediaQuery.textScalerOf(context);
+    final numberScaler = scaler.clamp(maxScaleFactor: 1.3);
+    final day = '${_selected.day}';
+    final monthPrefix = _capitalized(
+      DateFormat.LLLL(_locale).format(_selected),
+    );
+    final month = _capitalized(DateFormat.yMMMM(_locale).format(_selected));
+    final numberStyle = AppTypography.h3.copyWith(
+      fontSize: 56,
+      height: 1,
+      color: AppColorsDark.linkGold,
+    );
+    final monthStyle = AppTypography.h3.copyWith(color: AppColors.textInverse);
+    final number = Text(day, style: numberStyle, textScaler: numberScaler);
+    final detail = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(month, style: monthStyle),
+        const SizedBox(height: 8),
+        Text(
+          context.l10n.scenarioPlansCount(_on(_selected).length),
+          style: AppTypography.text2.copyWith(
+            color: AppColorsDark.textSecondary,
+          ),
+        ),
+      ],
+    );
+    const separation = 20.0;
+    final minimumRowWidth =
+        _measureLabel(context, day, numberStyle, numberScaler) +
+        separation +
+        _measureLabel(context, monthPrefix, monthStyle, scaler);
+    return HomeGlassSurface(
+      animateEntrance: false,
+      tint: AppColorsDark.modal.withValues(alpha: .4),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+        child: LayoutBuilder(
+          builder: (_, constraints) => constraints.maxWidth < minimumRowWidth
+              ? Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [number, const SizedBox(height: 12), detail],
+                )
+              : Row(
+                  children: [
+                    number,
+                    const SizedBox(width: separation),
+                    Expanded(child: detail),
+                  ],
+                ),
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -138,11 +213,17 @@ class _CalendarPlansViewState extends State<CalendarPlansView> {
                 Row(
                   children: [
                     Expanded(
-                      child: Text(
-                        _periodLabel,
-                        style: AppTypography.h3.copyWith(
-                          color: AppColors.textInverse,
-                          height: 1.3,
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        alignment: AlignmentDirectional.centerStart,
+                        child: Text(
+                          _periodLabel,
+                          maxLines: 1,
+                          softWrap: false,
+                          style: AppTypography.h3.copyWith(
+                            color: AppColors.textInverse,
+                            height: 1.3,
+                          ),
                         ),
                       ),
                     ),
@@ -172,54 +253,7 @@ class _CalendarPlansViewState extends State<CalendarPlansView> {
                 ),
               ),
               if (_mode == PlansCalendarMode.day) ...[
-                HomeGlassSurface(
-                  animateEntrance: false,
-                  tint: AppColorsDark.modal.withValues(alpha: .4),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 24,
-                    ),
-                    child: Row(
-                      children: [
-                        MediaQuery.withClampedTextScaling(
-                          maxScaleFactor: 1.3,
-                          child: Text(
-                            '${_selected.day}',
-                            style: AppTypography.h3.copyWith(
-                              fontSize: 56,
-                              height: 1,
-                              color: AppColorsDark.linkGold,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 20),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                _capitalized(
-                                  DateFormat.yMMMM(_locale).format(_selected),
-                                ),
-                                style: AppTypography.h3.copyWith(
-                                  color: AppColors.textInverse,
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                l.scenarioPlansCount(_on(_selected).length),
-                                style: AppTypography.text2.copyWith(
-                                  color: AppColorsDark.textSecondary,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+                _dateCard(context),
                 const SizedBox(height: 24),
               ],
               if (_mode != PlansCalendarMode.day) ...[

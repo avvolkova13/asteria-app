@@ -1,3 +1,5 @@
+import 'package:asteria_app/features/practices/data/practice_notes_store.dart';
+import 'package:asteria_app/features/sonnik/data/dream_journal.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_activity_indicator.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/features/scenarios/first_session.dart';
@@ -40,16 +42,21 @@ class _EmailCodeScreenState extends State<EmailCodeScreen> {
   Future<void> _deleteAccount() async {
     final uid = _verifiedUid;
     if (_isDeleting || uid == null || uid != widget.expectedUid) return;
+    final session = di.get<AuthSessionService>();
     setState(() {
       _isDeleting = true;
       _deleteFailed = false;
     });
     try {
+      if (session.currentUid != uid) throw StateError('User session changed');
       if (!_profileDeleted) {
         await di.get<UserRepository>().deleteUser(uid);
         _profileDeleted = true;
       }
-      await di.get<AuthSessionService>().deleteCurrentIdentity();
+      await DreamJournal(uid).clear();
+      await const PracticeNotesStore().clearForOwner(uid);
+      if (session.currentUid != uid) throw StateError('User session changed');
+      await session.deleteCurrentIdentity();
       await di.get<UserProvider>().clearUser();
       if (mounted) AuthLoginRoute.go(context);
     } catch (_) {

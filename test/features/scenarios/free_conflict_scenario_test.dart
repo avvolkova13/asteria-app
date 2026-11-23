@@ -62,6 +62,12 @@ class _Users extends ChangeNotifier implements UserProvider {
 class _Access extends Fake implements MonetizationProvider {
   int free = 0, paid = 0, checks = 0;
   @override
+  bool effectivePro = false;
+  @override
+  Map<String, RequestQuotaModel> get requestQuotas => {
+    'compatibility': requestQuota('compatibility'),
+  };
+  @override
   Future<void> refreshForAccess() async {
     checks++;
   }
@@ -161,6 +167,22 @@ void main() {
     expect(find.text('Дата рождения партнера'), findsOneWidget);
     await tap(tester, 'Выбрать');
   }
+
+  testWidgets('PRO opens a new pair analysis with zero free requests', (
+    tester,
+  ) async {
+    access.effectivePro = true;
+    await mount(tester);
+    expect(
+      find.text('Расчёт использует одну бесплатную попытку.'),
+      findsNothing,
+    );
+    await fill(tester);
+    await tap(tester, 'Рассчитать');
+    expect(content.calls, hasLength(1));
+    expect(access.checks, 2);
+    expect(find.byType(CompabilityResults), findsOneWidget);
+  });
 
   testWidgets(
     'saved conflicts open without any generation and reset on account change',

@@ -58,8 +58,7 @@ class _DreamPageState extends State<_DreamPage> {
   bool _available(MonetizationProvider access) =>
       widget.uid != null &&
       access.isCurrentUser(widget.uid!) &&
-      access.isFeatureEnabled('sonnik') &&
-      canUseFreeAttempt(access.requestQuotas['sonnik']);
+      canUseScenarioRequest(access, 'sonnik');
 
   Future<bool> _refresh() async {
     final access = context.read<MonetizationProvider>();
@@ -141,6 +140,10 @@ class _DreamPageState extends State<_DreamPage> {
     final history =
         context.watch<UserProvider>().currentUser?.sonnikHistory ??
         const <SonnikModel>[];
+    final usesPro =
+        widget.uid != null &&
+        access.isCurrentUser(widget.uid!) &&
+        access.effectivePro;
     final available = !_checking && !_checkFailed && _available(access);
     final textStyle = context.textTheme.inverseUrbanistRegular16;
     return ScenarioPage(
@@ -158,18 +161,19 @@ class _DreamPageState extends State<_DreamPage> {
                           ? 'Готовим толкование…'
                           : 'Preparing your interpretation…')
                     : (ru
-                          ? 'Проверяем бесплатные толкования…'
-                          : 'Checking free interpretations…'),
+                          ? 'Проверяем доступ к толкованию…'
+                          : 'Checking interpretation access…'),
                 style: textStyle,
               ),
             )
           else if (available) ...[
-            Text(
-              ru
-                  ? 'Бесплатных толкований осталось: ${access.requestQuota('sonnik').freeRemaining}'
-                  : 'Free interpretations left: ${access.requestQuota('sonnik').freeRemaining}',
-              style: textStyle,
-            ),
+            if (!usesPro)
+              Text(
+                ru
+                    ? 'Бесплатных толкований осталось: ${access.requestQuota('sonnik').freeRemaining}'
+                    : 'Free interpretations left: ${access.requestQuota('sonnik').freeRemaining}',
+                style: textStyle,
+              ),
             ScenarioTextField(
               controller: _draft,
               label: ru ? 'Что вам приснилось?' : 'What did you dream about?',
@@ -190,8 +194,12 @@ class _DreamPageState extends State<_DreamPage> {
             Text(
               _checkFailed
                   ? (ru
-                        ? 'Не удалось проверить бесплатные попытки.'
-                        : 'Couldn’t check your free attempts.')
+                        ? 'Не удалось проверить доступ к толкованию.'
+                        : 'Couldn’t check interpretation access.')
+                  : usesPro
+                  ? (ru
+                        ? 'Толкование сейчас недоступно.'
+                        : 'Interpretation is currently unavailable.')
                   : (ru
                         ? 'Сейчас новое бесплатное толкование недоступно.'
                         : 'A new free interpretation is currently unavailable.'),

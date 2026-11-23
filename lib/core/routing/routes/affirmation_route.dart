@@ -37,7 +37,7 @@ class AffirmationPlayerRoute extends AppRoute {
           key: state.pageKey,
           name: routeName,
           child: switch (state.extra) {
-            AffirmationSelection selection => AffirmationDetailScreen(
+            AffirmationSelection selection => SelectedAffirmationPlayer(
               selection: selection,
             ),
             _ => const AffirmationPlayerScreen(),

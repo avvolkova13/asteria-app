@@ -37,12 +37,12 @@ class MoonCalendarWidget extends StatelessWidget {
     required this.firstSelectableDay,
     required this.onPlanDay,
     required this.onPlanMonth,
+    this.week = false,
+    this.periodTitle,
+    this.onPrevious,
+    this.onNext,
   }) : plansOnly = false,
-       week = false,
-       periodTitle = null,
-       currentDay = null,
-       onPrevious = null,
-       onNext = null;
+       currentDay = null;
 
   MoonCalendarWidget.plans({
     super.key,
@@ -109,7 +109,7 @@ class MoonCalendarWidget extends StatelessWidget {
         : StartingDayOfWeek.monday;
     final plansByDay = <DateTime, List<CalendarPlan>>{};
     for (final plan in savedPlans) {
-      if (plansOnly || _isSameMonth(state.focusedDay, plan.day)) {
+      if (plansOnly || week || _isSameMonth(state.focusedDay, plan.day)) {
         (plansByDay[calendarDay(plan.day)] ??= []).add(plan);
       }
     }
@@ -199,8 +199,10 @@ class MoonCalendarWidget extends StatelessWidget {
               children: [
                 _MonthArrow(
                   previous: true,
-                  label: plansOnly ? context.l10n.scenarioPlansPrevious : null,
-                  onTap: plansOnly
+                  label: plansOnly || week
+                      ? context.l10n.scenarioPlansPrevious
+                      : null,
+                  onTap: plansOnly || week
                       ? onPrevious
                       : (state.focusedDay.year * 12 + state.focusedDay.month >
                                 (firstSelectableDay?.year ?? 2000) * 12 +
@@ -224,8 +226,10 @@ class MoonCalendarWidget extends StatelessWidget {
                 const SizedBox(width: 15),
                 _MonthArrow(
                   previous: false,
-                  label: plansOnly ? context.l10n.scenarioPlansNext : null,
-                  onTap: plansOnly
+                  label: plansOnly || week
+                      ? context.l10n.scenarioPlansNext
+                      : null,
+                  onTap: plansOnly || week
                       ? onNext
                       : ((state.focusedDay.year < 2050 ||
                                 state.focusedDay.month < 12)
@@ -294,10 +298,22 @@ class MoonCalendarWidget extends StatelessWidget {
                               final label = DateFormat.E(localeTag).format(day);
                               return Align(
                                 alignment: Alignment.topCenter,
-                                child: Text(
-                                  label[0].toUpperCase() + label.substring(1),
-                                  style: AppTypography.text2SemiBold.copyWith(
-                                    color: AppColorsDark.textTertiary,
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 2,
+                                  ),
+                                  child: FittedBox(
+                                    fit: BoxFit.scaleDown,
+                                    child: Text(
+                                      label[0].toUpperCase() +
+                                          label.substring(1),
+                                      maxLines: 1,
+                                      softWrap: false,
+                                      style: AppTypography.text2SemiBold
+                                          .copyWith(
+                                            color: AppColorsDark.textTertiary,
+                                          ),
+                                    ),
                                   ),
                                 ),
                               );
@@ -383,7 +399,7 @@ class MoonCalendarWidget extends StatelessWidget {
                         day.month,
                         day.day,
                       );
-                      final status = !plansOnly && isInFocusedMonth
+                      final status = !plansOnly && (week || isInFocusedMonth)
                           ? state.dayStatuses[normalizedDay]
                           : null;
                       final phaseChange =

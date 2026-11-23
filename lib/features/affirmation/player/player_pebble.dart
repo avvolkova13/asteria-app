@@ -5,6 +5,7 @@ import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 
 import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
+import 'package:asteria_app/core/ui_kit/widgets/practice_pencil.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_glyph_motion.dart';
 
 import 'package:asteria_app/core/ui_kit/widgets/lotus_sprite.dart';
@@ -19,6 +20,7 @@ enum ClayGlyph {
   close,
   chevron,
   spark,
+  pencil,
 }
 
 class PlayerClayGlyph extends StatelessWidget {
@@ -32,6 +34,7 @@ class PlayerClayGlyph extends StatelessWidget {
     if (glyph == ClayGlyph.share) {
       return ClayIcon(Icons.ios_share, size: size, color: Colors.white);
     }
+    if (glyph == ClayGlyph.pencil) return PracticePencil(size: size);
     return LotusSprite(LotusPose.values[glyph.index], size: size, frame: frame);
   }
 }
@@ -45,6 +48,7 @@ class PlayerPebble extends StatefulWidget {
     this.value,
     this.primary = false,
     this.compact = false,
+    this.inHeader = false,
   });
   final ClayGlyph glyph;
   final String label;
@@ -52,6 +56,7 @@ class PlayerPebble extends StatefulWidget {
   final bool? value;
   final bool primary;
   final bool compact;
+  final bool inHeader;
 
   @override
   State<PlayerPebble> createState() => _PlayerPebbleState();
@@ -81,7 +86,7 @@ class _PlayerPebbleState extends State<PlayerPebble>
   @override
   Widget build(BuildContext context) {
     final glyph = widget.glyph;
-    final header = glyph == ClayGlyph.close || glyph == ClayGlyph.repeat;
+    final header = glyph == ClayGlyph.close || widget.inHeader;
     final width = widget.primary
         ? (widget.compact ? 56.0 : 84.0)
         : header
@@ -104,7 +109,9 @@ class _PlayerPebbleState extends State<PlayerPebble>
     final h = height - 2 * inset;
     final contour = switch (glyph) {
       ClayGlyph.repeat => LotusPebbleContour.repeat,
-      ClayGlyph.bookmark || ClayGlyph.saved => LotusPebbleContour.bookmark,
+      ClayGlyph.bookmark ||
+      ClayGlyph.saved ||
+      ClayGlyph.pencil => LotusPebbleContour.bookmark,
       ClayGlyph.play || ClayGlyph.pause => LotusPebbleContour.play,
       _ => LotusPebbleContour.action,
     };

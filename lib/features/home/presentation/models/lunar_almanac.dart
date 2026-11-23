@@ -14,6 +14,22 @@ enum AlmanacPhase {
   lastQuarter,
   waningCrescent;
 
+  bool get marksPhaseChange => switch (this) {
+    newMoon || firstQuarter || fullMoon || lastQuarter => true,
+    _ => false,
+  };
+
+  int get illustrativeMoonAge => switch (this) {
+    newMoon => 0,
+    waxingCrescent => 4,
+    firstQuarter => 7,
+    waxingGibbous => 11,
+    fullMoon => 14,
+    waningGibbous => 18,
+    lastQuarter => 22,
+    waningCrescent => 26,
+  };
+
   String label(BuildContext c) => switch (this) {
     newMoon => c.l10n.moonPhaseNewMoon,
     waxingCrescent => c.l10n.moonPhaseWaxingCrescent,

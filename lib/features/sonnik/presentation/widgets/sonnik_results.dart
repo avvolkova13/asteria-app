@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/responsive_heading.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/app/data/models/sonnik/sonnik_model.dart';
@@ -21,7 +22,7 @@ class SonnikResults extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: AsteriaEntrance.sections([
-        Text(
+        ResponsiveHeading(
           sonnik.title,
           style: context.textTheme.inversePlayfairSemiBold24,
         ),

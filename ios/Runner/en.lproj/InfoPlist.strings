@@ -2,3 +2,5 @@
 "NSLocationWhenInUseUsageDescription" = "Asteria uses your location to show local moonrise times and the start of the lunar day.";
 "NSLocalNetworkUsageDescription" = "Asteria uses the local network to connect to a development server.";
 "NSUserTrackingUsageDescription" = "Asteria uses this data to understand which features you find useful and improve the app. We never share your personal data with third parties without your consent.";
+"NSMicrophoneUsageDescription" = "Use your microphone to dictate a dream or a question.";
+"NSSpeechRecognitionUsageDescription" = "Turn your speech into editable text for the dream journal and Anakra chat.";

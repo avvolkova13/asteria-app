@@ -178,6 +178,12 @@ class _RewardCard extends StatelessWidget {
       ),
     );
     final amount = _RewardAmount(item: item, isSharing: isSharing);
+    final artwork = _RewardArtwork(
+      assetPath: _assetPath,
+      icon: _icon,
+      itemId: item.id,
+      isComplete: _isComplete,
+    );
     return ProfileGlassCard(
       key: ValueKey('reward_card_${item.id}'),
       onTap: canShare ? () => _share(context) : null,
@@ -187,15 +193,7 @@ class _RewardCard extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            if (!largeText) ...[
-              _RewardArtwork(
-                assetPath: _assetPath,
-                icon: _icon,
-                itemId: item.id,
-                isComplete: _isComplete,
-              ),
-              const SizedBox(width: 10),
-            ],
+            if (!largeText) ...[artwork, const SizedBox(width: 10)],
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.only(top: 2, right: 2, bottom: 3),
@@ -203,7 +201,10 @@ class _RewardCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     if (largeText) ...[
-                      amount,
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [amount, artwork],
+                      ),
                       const SizedBox(height: 6),
                       title,
                     ] else
@@ -346,15 +347,7 @@ class _RewardStatusLabel extends StatelessWidget {
       letterSpacing: -0.08,
     );
 
-    return SizedBox(
-      width: double.infinity,
-      height: 13,
-      child: FittedBox(
-        fit: BoxFit.scaleDown,
-        alignment: Alignment.centerLeft,
-        child: Text(text, maxLines: 1, softWrap: false, style: style),
-      ),
-    );
+    return Text(text, style: style);
   }
 }
 

@@ -40,15 +40,7 @@ class AchievementsScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: AsteriaEntrance.sections([
                     const _AchievementsHeader(),
-                    const SizedBox(height: 30),
-                    Text(
-                      context.l10n.achievementsTitle,
-                      style: AchievementsStyle.title.copyWith(
-                        fontSize: 32,
-                        height: 1,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 24),
                     AchievementCard(
                       key: const ValueKey('achievement-tarot'),
                       id: 'tarot',

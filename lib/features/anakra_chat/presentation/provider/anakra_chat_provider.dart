@@ -202,8 +202,7 @@ class AnakraChatProvider extends ChangeNotifier {
       await _monetizationProvider.refreshForAccess();
       if (stale() || !freeRequestIsCurrent()) return AnakraSendOutcome.stale;
       if (!_monetizationProvider.isCurrentUser(userId) ||
-          !_monetizationProvider.isFeatureEnabled('anakra') ||
-          !canUseFreeAttempt(_monetizationProvider.requestQuotas['anakra'])) {
+          !canUseScenarioRequest(_monetizationProvider, 'anakra')) {
         throw Exception('no_requests');
       }
     }

@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/responsive_heading.dart';
 import 'package:asteria_app/core/ui_kit/widgets/modal_glass_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
@@ -35,7 +36,7 @@ class HowToUseTaroCards extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: AsteriaEntrance.sections([
-                    Text(
+                    ResponsiveHeading(
                       context.l10n.deckHowToUse,
                       style: AppTypography.h2.copyWith(
                         color: ModalGlassTokens.text,

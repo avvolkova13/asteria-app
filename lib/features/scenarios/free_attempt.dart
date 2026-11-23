@@ -1,6 +1,10 @@
-import 'package:asteria_app/features/monetization/domain/monetization_models.dart';
+import 'package:asteria_app/features/monetization/presentation/monetization_provider.dart';
 
-// The command endpoint chooses the balance to debit. Only submit when a
-// free request is available and there is no purchased balance to spend.
-bool canUseFreeAttempt(RequestQuotaModel? quota) =>
-    quota != null && quota.freeRemaining > 0 && quota.paidRemaining == 0;
+// PRO is handled by the command endpoint. For accounts without PRO, only
+// submit when a free request is available and no purchased request can be used.
+bool canUseScenarioRequest(MonetizationProvider access, String feature) {
+  if (!access.isFeatureEnabled(feature)) return false;
+  if (access.effectivePro) return true;
+  final quota = access.requestQuotas[feature];
+  return quota != null && quota.freeRemaining > 0 && quota.paidRemaining == 0;
+}

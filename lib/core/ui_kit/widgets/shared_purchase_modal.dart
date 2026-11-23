@@ -476,24 +476,16 @@ class _PurchaseDescription extends StatelessWidget {
     return Semantics(
       label: context.l10n.purchaseForCoinsLabel(purchaseTitle, price),
       child: ExcludeSemantics(
-        child: Wrap(
-          alignment: WrapAlignment.center,
-          crossAxisAlignment: WrapCrossAlignment.center,
-          spacing: 4,
-          children: [
-            Text(
-              context.l10n.purchaseForPrice(purchaseTitle, price),
-              style: context.textTheme.inverseUrbanistRegular17.copyWith(
-                height: 1.2,
-              ),
-            ),
-            LotusRasterIcon(
-              'assets/icons/star_coin_icon.png',
-              width: 20,
-              height: 20,
-              fit: BoxFit.contain,
-            ),
-          ],
+        child: Text.rich(
+          TextSpan(
+            text:
+                '${context.l10n.purchaseForPrice(purchaseTitle, price)}\u2060',
+            children: const [_coinMark],
+          ),
+          textAlign: TextAlign.center,
+          style: context.textTheme.inverseUrbanistRegular17.copyWith(
+            height: 1.2,
+          ),
         ),
       ),
     );
@@ -578,36 +570,37 @@ class _AmountLabel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Flexible(
-          child: Text.rich(
-            TextSpan(
-              children: [
-                TextSpan(
-                  text: '$label ',
-                  style: context.textTheme.inverseUrbanistRegular16,
-                ),
-                TextSpan(
-                  text: '$amount',
-                  style: context.textTheme.inverseUrbanistSemiBold16,
-                ),
-              ],
-            ),
+    return Text.rich(
+      TextSpan(
+        children: [
+          TextSpan(
+            text: '$label ',
+            style: context.textTheme.inverseUrbanistRegular16,
           ),
-        ),
-        const SizedBox(width: 4),
-        LotusRasterIcon(
-          'assets/icons/star_coin_icon.png',
-          width: 20,
-          height: 20,
-          fit: BoxFit.contain,
-        ),
-      ],
+          TextSpan(
+            text: '$amount\u2060',
+            style: context.textTheme.inverseUrbanistSemiBold16,
+          ),
+          _coinMark,
+        ],
+      ),
+      textAlign: TextAlign.center,
     );
   }
 }
+
+const _coinMark = WidgetSpan(
+  alignment: PlaceholderAlignment.middle,
+  child: Padding(
+    padding: EdgeInsetsDirectional.only(start: 4),
+    child: LotusRasterIcon(
+      'assets/icons/star_coin_icon.png',
+      width: 20,
+      height: 20,
+      fit: BoxFit.contain,
+    ),
+  ),
+);
 
 class _SingleBalance extends StatelessWidget {
   final int balance;

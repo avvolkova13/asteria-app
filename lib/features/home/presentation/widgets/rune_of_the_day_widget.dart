@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/responsive_heading.dart';
 import 'package:asteria_app/core/ui_kit/widgets/card_turn.dart';
 import 'package:asteria_app/core/ui_kit/widgets/artwork_unavailable.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
@@ -95,10 +96,8 @@ class _RuneOfTheDayWidgetState extends State<RuneOfTheDayWidget>
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Expanded(
-                child: Text(
+                child: ResponsiveHeading(
                   context.l10n.dailyRuneTitle,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
                   style: context.textTheme.playfairSemiBold32.copyWith(
                     color: widget.isDarkLayout ? AppColors.white : null,
                     height: 1.2,

@@ -9,10 +9,12 @@ class ResponsiveHeading extends StatelessWidget {
     super.key,
     required this.style,
     this.textAlign,
+    this.minimumFontSize = 18,
   });
   final String text;
   final TextStyle style;
   final TextAlign? textAlign;
+  final double minimumFontSize;
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +30,8 @@ class ResponsiveHeading extends StatelessWidget {
           var longestWord = 0.0;
           for (final word in text.split(RegExp(r'\s+'))) {
             final measurement = TextPainter(
-              text: TextSpan(text: word, style: style),
+              text: TextSpan(text: '$word\u00a0', style: style),
+              locale: Localizations.maybeLocaleOf(context),
               textDirection: Directionality.of(context),
               textScaler: scaler,
             )..layout();
@@ -38,7 +41,7 @@ class ResponsiveHeading extends StatelessWidget {
           if (longestWord > constraints.maxWidth) {
             resolvedStyle = style.copyWith(
               fontSize: math.max(
-                18,
+                minimumFontSize,
                 baseSize * (constraints.maxWidth - 1) / longestWord,
               ),
             );

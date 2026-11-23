@@ -2,7 +2,7 @@ import 'package:asteria_app/app/data/models/affirmation/affirmation_model.dart';
 import 'package:asteria_app/core/localization/localization.dart';
 import 'package:asteria_app/core/ui_kit/theme/theme.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
-import 'package:asteria_app/features/affirmation/affirmation_detail_screen.dart';
+import 'package:asteria_app/features/affirmation/selected_affirmation_player.dart';
 import 'package:asteria_app/features/affirmation/widgets/affirmation_category_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -84,12 +84,12 @@ void main() {
       );
     }
     testWidgets(
-      'detail navigation label keeps the entire word in $language at 320 and text x2',
+      'player category label keeps the entire word in $language at 320 and text x2',
       (tester) async {
         await pump(
           tester,
           language,
-          const AffirmationDetailScreen(
+          const SelectedAffirmationPlayer(
             selection: AffirmationSelection(
               affirmation: AffirmationModel(
                 id: 'review',
@@ -101,7 +101,7 @@ void main() {
             ),
           ),
         );
-        final label = language == 'ru' ? 'Аффирмации' : 'Affirmations';
+        final label = language == 'ru' ? 'АФФИРМАЦИИ' : 'AFFIRMATIONS';
         final paragraph = tester.renderObject<RenderParagraph>(
           find.descendant(
             of: find.text(label),

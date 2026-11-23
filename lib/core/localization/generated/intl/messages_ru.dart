@@ -198,9 +198,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "Раскинуть карты Таро",
     ),
     "achievementsTitle": MessageLookupByLibrary.simpleMessage("Мои достижения"),
-    "adDecode": MessageLookupByLibrary.simpleMessage("Расшифровать"),
+    "adDecode": MessageLookupByLibrary.simpleMessage("Записать сон"),
     "adDreamDescription": MessageLookupByLibrary.simpleMessage(
-      "Расскажи свой сон —\nона откроет\nего значение.",
+      "Запишите сон сейчас или попросите Ливею его растолковать.",
     ),
     "adDreamTitle": MessageLookupByLibrary.simpleMessage("Приснился сон?"),
     "adLiviaName": MessageLookupByLibrary.simpleMessage("Ливея"),
@@ -750,7 +750,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "emailDeliveryError": MessageLookupByLibrary.simpleMessage(
       "Не удалось отправить письмо. Попробуйте позже.",
     ),
-    "emailHint": MessageLookupByLibrary.simpleMessage("Электронная почта"),
+    "emailHint": MessageLookupByLibrary.simpleMessage("Эл. почта"),
     "emailInvalidError": MessageLookupByLibrary.simpleMessage(
       "Введите корректный email",
     ),
@@ -2126,6 +2126,16 @@ class MessageLookup extends MessageLookupByLibrary {
     "scenarioGoHome": MessageLookupByLibrary.simpleMessage("На главную"),
     "scenarioPickerCalendarSubtitle": MessageLookupByLibrary.simpleMessage(
       "Лунный календарь",
+    ),
+    "scenarioPlanDelete": MessageLookupByLibrary.simpleMessage("Удалить план"),
+    "scenarioPlanDeleteConfirm": MessageLookupByLibrary.simpleMessage(
+      "Удалить этот план и его напоминание?",
+    ),
+    "scenarioPlanDeleteError": MessageLookupByLibrary.simpleMessage(
+      "Не удалось удалить план. Попробуйте ещё раз.",
+    ),
+    "scenarioPlanPlanned": MessageLookupByLibrary.simpleMessage(
+      "Запланировано",
     ),
     "scenarioPlansAllDay": MessageLookupByLibrary.simpleMessage(
       "Без указания времени",

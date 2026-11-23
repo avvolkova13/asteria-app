@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart' show CupertinoDialogAction;
 import 'package:asteria_app/features/scenarios/calendar_plan.dart';
 import 'package:asteria_app/app/data/models/lunar_calendar/lunar_month_model.dart';
 import 'package:asteria_app/app/data/models/lunar_calendar/lunar_recommendation_models.dart';
@@ -223,10 +224,38 @@ void main() {
         ),
       );
       await tap(find.text('Repot the ficus'));
+      expect(find.byType(ExpansionTile), findsNothing);
       expect(find.text('Repotting on ${month.month}/12'), findsOneWidget);
       await tap(find.text('Back to calendar'));
       expect(tester.state(find.byType(MoonScreen)), same(originalTab));
       expect(Navigator.of(tester.element(start)).canPop(), isFalse);
+      await tap(start);
+      await tap(find.text('Repotting plants'));
+      await tap(find.text('12').first);
+      expect(find.text('Planned'), findsOneWidget);
+      expect(find.text('Repotting on ${month.month}/12'), findsNothing);
+      await tap(find.byType(ExpansionTile));
+      expect(find.text('Repotting on ${month.month}/12'), findsOneWidget);
+      await tap(find.byType(ExpansionTile));
+      expect(find.text('Repot the ficus'), findsOneWidget);
+      expect(find.text('Choose this day'), findsNothing);
+      await tap(find.text('Week'));
+      expect(
+        tester.widget<MoonCalendarWidget>(find.byType(MoonCalendarWidget)).week,
+        isTrue,
+      );
+      await tap(find.text('Day'));
+      expect(find.byType(MoonCalendarWidget), findsNothing);
+      expect(find.text('Repot the ficus'), findsOneWidget);
+      await tap(find.byTooltip('Next period'));
+      expect(find.text('Choose this day'), findsOneWidget);
+      await tap(find.byTooltip('Previous period'));
+      expect(find.text('Repot the ficus'), findsOneWidget);
+      await tap(find.text('Delete plan'));
+      await tap(find.text('Cancel'));
+      expect(find.text('Repot the ficus'), findsOneWidget);
+      await back();
+      await back();
       calendar.empty = true;
       await tap(start);
       await tap(find.text('Haircuts'));
@@ -237,7 +266,8 @@ void main() {
       await tap(find.text('12').first);
       await tap(find.text('13').first);
       expect(find.text('Compare dates'), findsOneWidget);
-      expect(find.text('Choose this day'), findsNWidgets(2));
+      expect(find.text('Choose this day'), findsOneWidget);
+      expect(find.text('Save plan'), findsOneWidget);
       expect(
         find.text(
           'There is no recommendation for this activity on this date yet.',
@@ -248,7 +278,7 @@ void main() {
         find.text('Both dates have the same rating for this activity.'),
         findsNothing,
       );
-      await tap(find.text('Choose this day').first);
+      await tap(find.text('Save plan'));
       await tap(find.byKey(const ValueKey('plan-activity-watering')));
       await tester.enterText(
         find.byType(TextField),
@@ -285,6 +315,18 @@ void main() {
             .singleWhere((plan) => plan.title == 'Trim without lunar rating')
             .activity,
         CalendarActivity.watering,
+      );
+      await tap(find.text('Delete plan'));
+      await tap(
+        find.descendant(
+          of: find.byType(CupertinoDialogAction),
+          matching: find.text('Delete plan'),
+        ),
+      );
+      expect(selectedPlan, findsOneWidget);
+      expect(
+        CalendarPlans.read(await CalendarPlans.open(), 'test-calendar-user'),
+        hasLength(1),
       );
       expect(tester.takeException(), isNull);
     },

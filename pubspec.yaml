@@ -66,12 +66,14 @@ flutter:
 
   assets:
     - .env
-    - assets/audio/practice-75.wav
+    - assets/audio/
     - assets/lottie/
     - assets/background/
     - assets/images/moon_phase_days/
     - assets/images/articles/
     - assets/images/affirmation/
+    - assets/images/affirmation/motion/subjects/
+    - assets/images/practices/
     - assets/images/onboarding/
     - assets/images/home/
     - assets/images/loading/
@@ -115,7 +117,7 @@ flutter:
   shaders:
     - assets/shaders/splash_fluid.frag
     - assets/shaders/anakra_glass.frag
-    - assets/shaders/affirmation_lotus.frag
+    - assets/shaders/practice_atmosphere.frag
 
   fonts:
     # Each variable font supplies the complete weight axis, including 400/500/600/700.

@@ -5,8 +5,9 @@ import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/features/scenarios/calendar_plan.dart';
 import 'package:asteria_app/features/scenarios/calendar_plans_view.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:table_calendar/table_calendar.dart';
-import 'package:flutter/semantics.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -76,6 +77,44 @@ Future<void> tap(WidgetTester tester, Finder finder) async {
 }
 
 void main() {
+  testWidgets('compact English calendar keeps weekday and month words intact', (
+    tester,
+  ) async {
+    await tester.runAsync(() async {
+      final loader = FontLoader(AppTypography.headingFamily)
+        ..addFont(
+          rootBundle.load('assets/fonts/lora/Lora-VariableFont_wght.ttf'),
+        );
+      await loader.load();
+    });
+    await host(tester, locale: 'en', scale: 2, size: const Size(320, 568));
+
+    List<TextBox> glyphBoxes(String text, int length) {
+      final paragraph = tester.renderObject<RenderParagraph>(
+        find.descendant(of: find.text(text), matching: find.byType(RichText)),
+      );
+      return paragraph.getBoxesForSelection(
+        TextSelection(baseOffset: 0, extentOffset: length),
+      );
+    }
+
+    for (final weekday in ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']) {
+      expect(
+        glyphBoxes(weekday, weekday.length),
+        hasLength(1),
+        reason: weekday,
+      );
+    }
+
+    await tap(tester, find.text('Week'));
+    expect(find.text('Nov 15–21'), findsOneWidget);
+    expect(glyphBoxes('Wed', 3), hasLength(1));
+
+    await tap(tester, find.text('Day'));
+    expect(glyphBoxes('November 2026', 8), hasLength(1));
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('month and week show both activity icons on mixed-plan dates', (
     tester,
   ) async {

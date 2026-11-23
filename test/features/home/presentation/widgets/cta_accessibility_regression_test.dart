@@ -102,7 +102,7 @@ void main() {
     addTearDown(tester.view.reset);
     await tester.pumpWidget(app(const AdvertisingBlockWidget(), scale: 2));
     await tester.pumpAndSettle();
-    final label = find.text('Расшифровать');
+    final label = find.text('Записать сон');
     expect(label, findsOneWidget);
     final paragraph = tester.renderObject<RenderParagraph>(
       find.descendant(of: label, matching: find.byType(RichText)),

@@ -348,6 +348,12 @@ void main() {
           email: email,
           keyboard: 260,
         );
+        final emailField = find.byType(EditableText);
+        expect(emailField.hitTestable(), findsOneWidget);
+        expect(
+          tester.getBottomLeft(emailField).dy,
+          lessThanOrEqualTo(tester.view.physicalSize.height - 260),
+        );
         await capture(tester, 'email_keyboard_$suffix');
         for (final state in <(String, EmailAuthState)>[
           (

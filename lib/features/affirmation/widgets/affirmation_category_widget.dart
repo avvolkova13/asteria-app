@@ -1,4 +1,5 @@
-import 'package:asteria_app/features/affirmation/affirmation_detail_screen.dart';
+import 'package:asteria_app/core/ui_kit/widgets/swipe_card_stack.dart';
+import 'package:asteria_app/features/affirmation/selected_affirmation_player.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/routing/app_route.dart';
@@ -179,352 +180,46 @@ class _CategoryIcon extends StatelessWidget {
   }
 }
 
-class AffirmationCardStack extends StatefulWidget {
-  final List<AffirmationModel> affirmations;
-  final bool showSwipeHint;
-
+class AffirmationCardStack extends StatelessWidget {
   const AffirmationCardStack({
     super.key,
     required this.affirmations,
     this.showSwipeHint = false,
   });
 
-  @override
-  State<AffirmationCardStack> createState() => _AffirmationCardStackState();
-}
-
-class _AffirmationCardStackState extends State<AffirmationCardStack>
-    with SingleTickerProviderStateMixin {
-  static const double _designWidth = 358;
-  static const double _swipeThreshold = 80;
-  static const double _velocityThreshold = 400;
-  static const Duration _animationDuration = Duration(milliseconds: 220);
-
-  int _frontIndex = 0;
-  late final _release = AnimationController(
-    vsync: this,
-    duration: _animationDuration,
-  );
-  double _dragOffset = 0;
-  bool _isAnimatingOut = false;
-  bool _showHint = false;
-  int _transitionDirection = -1;
-  String? _trackedContentId;
+  final List<AffirmationModel> affirmations;
+  final bool showSwipeHint;
 
   @override
-  void initState() {
-    super.initState();
-    _showHint = widget.showSwipeHint;
-    WidgetsBinding.instance.addPostFrameCallback((_) => _trackFrontCard());
-  }
-
-  @override
-  void didUpdateWidget(covariant AffirmationCardStack oldWidget) {
-    super.didUpdateWidget(oldWidget);
-
-    final signatureChanged =
-        _affirmationSignature(oldWidget.affirmations) !=
-        _affirmationSignature(widget.affirmations);
-
-    if (_frontIndex >= widget.affirmations.length) {
-      _frontIndex = 0;
-    }
-
-    if (signatureChanged) {
-      _release.reset();
-      _frontIndex = 0;
-      _trackedContentId = null;
-      _dragOffset = 0;
-      _isAnimatingOut = false;
-    }
-
-    if (signatureChanged || oldWidget.showSwipeHint != widget.showSwipeHint) {
-      _showHint = widget.showSwipeHint && _dragOffset == 0;
-      WidgetsBinding.instance.addPostFrameCallback((_) => _trackFrontCard());
-    }
-  }
-
-  @override
-  void dispose() {
-    _release.dispose();
-    super.dispose();
-  }
-
-  String _affirmationSignature(List<AffirmationModel> affirmations) {
-    return affirmations.map((affirmation) => affirmation.id).join('|');
-  }
-
-  void _trackFrontCard() {
-    if (!mounted || widget.affirmations.isEmpty) {
-      return;
-    }
-
-    final contentId = widget.affirmations[_frontIndex].id;
-    if (_trackedContentId == contentId) {
-      return;
-    }
-
-    _trackedContentId = contentId;
-    di.get<ProductAnalyticsService>().trackAffirmationCardView(
-      contentId: contentId,
-    );
-  }
-
-  void _handleDragUpdate(DragUpdateDetails details) {
-    if (_isAnimatingOut || widget.affirmations.length < 2) {
-      return;
-    }
-
-    setState(() {
-      _showHint = false;
-      _dragOffset = (_dragOffset + details.delta.dy)
-          .clamp(-140.0, 140.0)
-          .toDouble();
-    });
-  }
-
-  void _handleDragEnd(DragEndDetails details) {
-    if (_isAnimatingOut || widget.affirmations.length < 2) {
-      _resetDrag();
-      return;
-    }
-
-    final velocity = details.primaryVelocity ?? 0;
-    final shouldSwipe =
-        _dragOffset.abs() >= _swipeThreshold ||
-        velocity.abs() >= _velocityThreshold;
-
-    if (!shouldSwipe) {
-      _resetDrag();
-      return;
-    }
-
-    final direction = _dragOffset == 0
-        ? (velocity < 0 ? -1 : 1)
-        : (_dragOffset < 0 ? -1 : 1);
-    _animateSwipe(direction);
-  }
-
-  void _resetDrag() {
-    if (!mounted) {
-      return;
-    }
-
-    setState(() => _dragOffset = 0);
-  }
-
-  Future<void> _animateSwipe(int direction) async {
-    if (_isAnimatingOut || widget.affirmations.length < 2) {
-      return;
-    }
-
-    LotusFeedback.selection();
-    final contentId = widget.affirmations[_frontIndex].id;
-
-    di.get<ProductAnalyticsService>().trackAffirmationEngagement(
-      actionType: 'swipe',
-      contentId: contentId,
-    );
-
-    if (!MediaQuery.disableAnimationsOf(context)) {
-      setState(() {
-        _isAnimatingOut = true;
-        _transitionDirection = direction;
-        _showHint = false;
-      });
-      try {
-        await _release.forward(from: 0).orCancel;
-      } on TickerCanceled {
-        return;
-      }
-      if (!mounted) return;
-    }
-
-    setState(() {
-      _showHint = false;
-      _frontIndex = _wrapIndex(_frontIndex - direction);
-      _isAnimatingOut = false;
-      _dragOffset = 0;
-    });
-    _trackFrontCard();
-  }
-
-  int _wrapIndex(int index) {
-    final length = widget.affirmations.length;
-    return (index % length + length) % length;
-  }
-
-  bool _playerOpen = false;
-
-  Future<void> _openPlayer() async {
-    if (_playerOpen || _isAnimatingOut || widget.affirmations.isEmpty) return;
-    _playerOpen = true;
-    try {
+  Widget build(BuildContext context) => SwipeCardStack<AffirmationModel>(
+    items: affirmations,
+    idOf: (item) => item.id,
+    label: (context, item) => context.l10n.affirmationSemantics(item.text),
+    showSwipeHint: showSwipeHint,
+    onView: (item) => di
+        .get<ProductAnalyticsService>()
+        .trackAffirmationCardView(contentId: item.id),
+    onSwipe: (item) => di
+        .get<ProductAnalyticsService>()
+        .trackAffirmationEngagement(actionType: 'swipe', contentId: item.id),
+    onOpen: (context, item, index) async {
       await AffirmationPlayerRoute.push(
         context,
         selection: AffirmationSelection(
-          affirmation: widget.affirmations[_frontIndex],
-          imageIndex: _frontIndex,
-        ),
-      );
-    } finally {
-      _playerOpen = false;
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final stackWidth = constraints.maxWidth
-            .clamp(0.0, _designWidth)
-            .toDouble();
-        final scale = stackWidth / _designWidth;
-
-        return Align(
-          alignment: Alignment.center,
-          child: LotusFeedback(
-            onActivate: widget.affirmations.isEmpty ? null : _openPlayer,
-            keyboard: true,
-            builder: (activate) => Semantics(
-              button: widget.affirmations.isNotEmpty,
-              excludeSemantics: true,
-              onTap: activate,
-              label: _semanticLabel(context),
-              hint: widget.affirmations.length > 1
-                  ? context.l10n.affirmationSwipeHint
-                  : null,
-              onIncrease: widget.affirmations.length > 1
-                  ? () {
-                      _animateSwipe(-1);
-                    }
-                  : null,
-              onDecrease: widget.affirmations.length > 1
-                  ? () {
-                      _animateSwipe(1);
-                    }
-                  : null,
-              child: GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                onTap: activate,
-                child: SizedBox(
-                  width: stackWidth,
-                  child: AnimatedBuilder(
-                    animation: _release,
-                    builder: (context, _) => Stack(
-                      clipBehavior: Clip.none,
-                      children: _buildLayerCards(context, scale),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  String _semanticLabel(BuildContext context) {
-    if (widget.affirmations.isEmpty) {
-      return context.l10n.affirmationsTitle;
-    }
-
-    final affirmation = widget.affirmations[_frontIndex];
-    return context.l10n.affirmationSemantics(affirmation.text);
-  }
-
-  List<Widget> _buildLayerCards(BuildContext context, double scale) {
-    if (widget.affirmations.isEmpty) {
-      return const [];
-    }
-
-    final count = widget.affirmations.length.clamp(1, 3);
-    final topStep = 12.0 * scale;
-    final hasChoices = widget.affirmations.length > 1;
-    final reduced = MediaQuery.disableAnimationsOf(context);
-    final direction = _isAnimatingOut
-        ? _transitionDirection
-        : (_dragOffset > 0 ? 1 : -1);
-    final release = _isAnimatingOut && !reduced ? _release.value : 0.0;
-    final travel = Curves.easeOutCubic.transform(release);
-    final landingOffset = -direction * 12.0;
-    final frontTop = (count - 1) * topStep;
-    final cards = <Widget>[];
-    for (var depth = count - 1; depth > 0; depth--) {
-      final index = _wrapIndex(_frontIndex - direction * depth);
-      final nextFace =
-          depth == 1 && !reduced && (_isAnimatingOut || _dragOffset != 0);
-      final remainingDepth = depth - travel;
-      final top = frontTop - remainingDepth * topStep;
-      cards.add(
-        Positioned(
-          top: top + (nextFace ? landingOffset * travel : 0),
-          left: 0,
-          right: 0,
-          child: IgnorePointer(
-            child: ExcludeSemantics(
-              child: Transform.scale(
-                scale: 1 - remainingDepth * 56 / _designWidth,
-                alignment: Alignment.topCenter,
-                child: AffirmationCardWidget(
-                  affirmation: widget.affirmations[index],
-                  imageIndex: index,
-                  isFront: nextFace,
-                  deck: nextFace ? widget.affirmations : null,
-                ),
-              ),
-            ),
+          affirmation: item,
+          imageIndex: AffirmationCardWidget.coverIndex(
+            index,
+            affirmations.length,
           ),
         ),
       );
-    }
-    final held = _dragOffset * .28;
-    final travelOffset = held + (direction * 58 - held) * travel;
-    // Ease the last few points of travel into the space between categories.
-    // The card keeps its rounded edge while the neighbouring title stays clear.
-    final limit = travelOffset < 0 ? frontTop + 14 : 22.0;
-    final freeTravel = limit * .65;
-    final excess = travelOffset.abs() - freeTravel;
-    final offset = excess <= 0
-        ? travelOffset
-        : travelOffset.sign *
-              (freeTravel + excess / (1 + excess / (limit - freeTravel)));
-    final duration = reduced || _isAnimatingOut || _dragOffset != 0
-        ? Duration.zero
-        : _animationDuration;
-    cards.add(
-      Padding(
-        padding: EdgeInsets.only(top: (count - 1) * topStep),
-        child: TweenAnimationBuilder<double>(
-          key: ValueKey(widget.affirmations[_frontIndex].id),
-          tween: Tween(begin: reduced ? 1.0 : 0.0, end: 1.0),
-          duration: reduced ? Duration.zero : _animationDuration,
-          curve: Curves.easeOutCubic,
-          builder: (_, progress, child) => Transform.translate(
-            offset: Offset(0, -_transitionDirection * 12 * (1 - progress)),
-            child: child,
-          ),
-          child: AnimatedContainer(
-            duration: duration,
-            curve: Curves.easeOutCubic,
-            transform: Matrix4.translationValues(0, reduced ? 0 : offset, 0),
-            child: Opacity(
-              opacity: 1 - Curves.easeInOut.transform(release),
-              child: AffirmationCardWidget(
-                affirmation: widget.affirmations[_frontIndex],
-                imageIndex: _frontIndex,
-                deck: widget.affirmations,
-                showSwipeHint: hasChoices && _showHint,
-                onSwipe: hasChoices ? _handleDragUpdate : null,
-                onSwipeEnd: hasChoices ? _handleDragEnd : null,
-                onSwipeCancel: hasChoices ? _resetDrag : null,
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-    return cards;
-  }
+    },
+    cardBuilder: (context, index, front, hint) => AffirmationCardWidget(
+      affirmation: affirmations[index],
+      imageIndex: index,
+      isFront: front,
+      deck: affirmations,
+      showSwipeHint: hint,
+    ),
+  );
 }

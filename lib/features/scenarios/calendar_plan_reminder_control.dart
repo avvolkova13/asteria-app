@@ -17,10 +17,12 @@ class CalendarPlanReminderControl extends StatefulWidget {
     super.key,
     required this.plan,
     this.reminders = const CalendarPlanReminders(),
+    this.onDeletePlan,
   });
 
   final CalendarPlan plan;
   final CalendarPlanReminders reminders;
+  final Future<bool> Function()? onDeletePlan;
 
   @override
   State<CalendarPlanReminderControl> createState() => _ReminderState();
@@ -163,9 +165,61 @@ class _ReminderState extends State<CalendarPlanReminderControl>
     }
   }
 
+  Future<void> _deletePlan() async {
+    final delete = widget.onDeletePlan;
+    if (_busy || delete == null) return;
+    final texts = context.l10n;
+    ++_revision;
+    setState(() => _busy = true);
+    try {
+      final confirmed = await showCupertinoDialog<bool>(
+        context: context,
+        builder: (dialog) => CupertinoAlertDialog(
+          title: Text(texts.scenarioPlanDelete),
+          content: Text(texts.scenarioPlanDeleteConfirm),
+          actions: [
+            CupertinoDialogAction(
+              onPressed: () => Navigator.pop(dialog, false),
+              child: Text(texts.commonCancel),
+            ),
+            CupertinoDialogAction(
+              isDestructiveAction: true,
+              onPressed: () => Navigator.pop(dialog, true),
+              child: Text(texts.scenarioPlanDelete),
+            ),
+          ],
+        ),
+      );
+      if (!mounted || confirmed != true) return;
+      if (widget.reminders.supported &&
+          !await widget.reminders.cancel(
+            owner: widget.plan.owner,
+            planId: widget.plan.id,
+          )) {
+        throw StateError('Could not cancel plan reminder');
+      }
+      if (!mounted) return;
+      _scheduled = null;
+      if (!await delete()) throw StateError('Could not delete plan');
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(texts.scenarioPlanDeleteError)));
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _busy = false);
+        _refresh();
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext c) {
-    if (!_available) return const SizedBox.shrink();
+    if (!_available && widget.onDeletePlan == null) {
+      return const SizedBox.shrink();
+    }
     final texts = c.l10n;
     final time = _scheduled;
     final error = switch (_error) {
@@ -177,30 +231,36 @@ class _ReminderState extends State<CalendarPlanReminderControl>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        ExcludeFocus(
-          excluding: _busy,
-          child: IgnorePointer(
-            ignoring: _busy,
-            child: ScenarioTile(
-              art: 'assets/icons/clay/profile_notifications_icon.webp',
-              title: time == null
-                  ? texts.planReminderAdd
-                  : texts.planReminderAt(
-                      LocaleFormatters.timeOfDay(
-                        c,
-                        TimeOfDay.fromDateTime(time),
+        if (_available)
+          ExcludeFocus(
+            excluding: _busy,
+            child: IgnorePointer(
+              ignoring: _busy,
+              child: ScenarioTile(
+                art: 'assets/icons/clay/profile_notifications_icon.webp',
+                title: time == null
+                    ? texts.planReminderAdd
+                    : texts.planReminderAt(
+                        LocaleFormatters.timeOfDay(
+                          c,
+                          TimeOfDay.fromDateTime(time),
+                        ),
                       ),
-                    ),
-              subtitle: time == null ? null : texts.planReminderEdit,
-              onTap: _pick,
+                subtitle: time == null ? null : texts.planReminderEdit,
+                onTap: _pick,
+              ),
             ),
           ),
-        ),
-        if (time != null)
+        if (_available && time != null)
           LotusButtons.text(
             onPressed: _busy ? null : _remove,
             style: TextButton.styleFrom(foregroundColor: AppColors.textInverse),
             child: Text(texts.planReminderRemove),
+          ),
+        if (widget.onDeletePlan != null)
+          LotusButtons.text(
+            onPressed: _busy ? null : _deletePlan,
+            child: Text(texts.scenarioPlanDelete),
           ),
         if (error != null)
           Padding(

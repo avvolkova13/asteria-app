@@ -8,8 +8,27 @@ import io.flutter.plugin.common.MethodChannel
 
 class MainActivity : FlutterActivity() {
     private var practiceAudio: PracticeAudioBridge? = null
+    private var dictation: DictationBridge? = null
+
+    override fun onStop() {
+        dictation?.cancel()
+        super.onStop()
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray,
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == DictationBridge.MICROPHONE_REQUEST) {
+            dictation?.onMicrophonePermission(grantResults)
+        }
+    }
 
     override fun cleanUpFlutterEngine(flutterEngine: FlutterEngine) {
+        dictation?.dispose()
+        dictation = null
         practiceAudio?.dispose()
         practiceAudio = null
         super.cleanUpFlutterEngine(flutterEngine)
@@ -17,6 +36,7 @@ class MainActivity : FlutterActivity() {
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
+        dictation = DictationBridge(this, flutterEngine.dartExecutor.binaryMessenger)
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "asteria/calendar")
             .setMethodCallHandler { call, result ->
                 if (call.method != "today") {

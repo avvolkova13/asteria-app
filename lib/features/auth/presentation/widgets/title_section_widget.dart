@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/responsive_heading.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:flutter/material.dart';
@@ -10,8 +11,9 @@ class TitleSectionWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: AsteriaEntrance.sections([
-        Text(
+        ResponsiveHeading(
           context.l10n.authCosmicEssence,
+          minimumFontSize: 12,
           style: AppTypography.navLargeTitle.copyWith(
             color: AppColors.textInverse,
           ),
@@ -24,7 +26,7 @@ class TitleSectionWidget extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 15),
-        Text(
+        ResponsiveHeading(
           context.l10n.authBirthDetailsPrompt,
           style: AppTypography.h2.copyWith(color: AppColors.textInverse),
         ),

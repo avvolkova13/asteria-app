@@ -202,9 +202,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "achievementsTitle": MessageLookupByLibrary.simpleMessage(
       "My achievements",
     ),
-    "adDecode": MessageLookupByLibrary.simpleMessage("Interpret"),
+    "adDecode": MessageLookupByLibrary.simpleMessage("Record a dream"),
     "adDreamDescription": MessageLookupByLibrary.simpleMessage(
-      "Tell her your dream — she will reveal its meaning.",
+      "Save a dream for later or ask Liveya what it means.",
     ),
     "adDreamTitle": MessageLookupByLibrary.simpleMessage("Had a dream?"),
     "adLiviaName": MessageLookupByLibrary.simpleMessage("Livia"),
@@ -2079,6 +2079,14 @@ class MessageLookup extends MessageLookupByLibrary {
     "scenarioPickerCalendarSubtitle": MessageLookupByLibrary.simpleMessage(
       "Lunar calendar",
     ),
+    "scenarioPlanDelete": MessageLookupByLibrary.simpleMessage("Delete plan"),
+    "scenarioPlanDeleteConfirm": MessageLookupByLibrary.simpleMessage(
+      "Delete this plan and its reminder?",
+    ),
+    "scenarioPlanDeleteError": MessageLookupByLibrary.simpleMessage(
+      "Could not delete the plan. Please try again.",
+    ),
+    "scenarioPlanPlanned": MessageLookupByLibrary.simpleMessage("Planned"),
     "scenarioPlansAllDay": MessageLookupByLibrary.simpleMessage("No time set"),
     "scenarioPlansCount": m64,
     "scenarioPlansDay": MessageLookupByLibrary.simpleMessage("Day"),

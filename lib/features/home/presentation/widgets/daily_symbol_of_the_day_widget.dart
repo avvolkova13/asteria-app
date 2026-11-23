@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/responsive_heading.dart';
 import 'package:asteria_app/core/ui_kit/widgets/card_turn.dart';
 import 'package:asteria_app/core/ui_kit/widgets/tarot_card_frame.dart';
 import 'package:asteria_app/core/ui_kit/widgets/artwork_unavailable.dart';
@@ -145,10 +146,8 @@ class _DailySymbolOfTheDayWidgetState extends State<DailySymbolOfTheDayWidget>
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              ResponsiveHeading(
                 context.l10n.dailySymbolTitle,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
                 style: context.textTheme.inversePlayfairSemiBold24.copyWith(
                   fontFamily: 'Lora',
                   height: 1,
@@ -452,7 +451,7 @@ class _SectionTitleRow extends StatelessWidget {
     return Row(
       children: [
         Expanded(
-          child: Text(
+          child: ResponsiveHeading(
             title,
             style: context.textTheme.inversePlayfairSemiBold24.copyWith(
               fontFamily: 'Lora',

@@ -43,6 +43,7 @@ class _PairEntry extends StatefulWidget {
 class _PairEntryState extends State<_PairEntry> {
   late final owner = widget.users.currentUser?.id;
   bool checking = true, available = false, failed = false;
+  bool _usesPro = false;
   int _latestCheck = 0;
 
   @override
@@ -56,14 +57,12 @@ class _PairEntryState extends State<_PairEntry> {
   Future<bool> _check() async {
     final check = ++_latestCheck;
     final access = di.get<MonetizationProvider>();
-    bool allowed = false, error = false;
+    bool allowed = false, error = false, usesPro = false;
     try {
       await access.refreshForAccess();
-      allowed =
-          owner != null &&
-          access.isCurrentUser(owner!) &&
-          access.isFeatureEnabled('compatibility') &&
-          canUseFreeAttempt(access.requestQuota('compatibility'));
+      final current = owner != null && access.isCurrentUser(owner!);
+      usesPro = current && access.effectivePro;
+      allowed = current && canUseScenarioRequest(access, 'compatibility');
     } catch (_) {
       error = true;
     }
@@ -76,6 +75,7 @@ class _PairEntryState extends State<_PairEntry> {
       checking = false;
       failed = error;
       available = allowed;
+      _usesPro = usesPro;
     });
     return allowed;
   }
@@ -150,6 +150,7 @@ class _PairEntryState extends State<_PairEntry> {
     if (!checking && available && hasDate) {
       return CreateCompatibilityInitialScreen(
         checkFreeAttempt: _check,
+        showFreeAttemptNotice: !_usesPro,
         onHistoryPressed: _history,
         onCreated: _result,
       );
@@ -169,6 +170,8 @@ class _PairEntryState extends State<_PairEntry> {
                             : 'Couldn’t check your free readings.')
                       : !hasDate && available
                       ? context.l10n.compatibilityFillBirthDate
+                      : _usesPro
+                      ? context.l10n.compatibilityNoData
                       : (ru
                             ? 'Бесплатных разборов для новой пары сейчас нет.'
                             : 'No free readings for a new pair are available right now.'),
@@ -188,7 +191,9 @@ class _PairEntryState extends State<_PairEntry> {
                 TextButton(
                   onPressed: widget.onOpenTarot,
                   child: Text(
-                    ru ? 'Открыть карту для двоих' : 'Open a card for the two of you',
+                    ru
+                        ? 'Открыть карту для двоих'
+                        : 'Open a card for the two of you',
                   ),
                 ),
               ],

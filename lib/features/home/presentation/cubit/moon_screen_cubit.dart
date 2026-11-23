@@ -3,6 +3,7 @@ import 'package:asteria_app/app/providers/content_provider.dart';
 import 'package:asteria_app/core/di/di.dart';
 import 'package:asteria_app/features/home/presentation/cubit/moon_screen_state.dart';
 import 'package:asteria_app/features/home/presentation/models/day_status.dart';
+import 'package:asteria_app/features/home/presentation/models/lunar_almanac.dart';
 import 'package:asteria_app/features/home/presentation/widgets/sphere_selection_widget.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -50,7 +51,13 @@ class MoonScreenCubit extends Cubit<MoonScreenState> {
     } catch (e) {
       if (isClosed || generation != _requestGeneration) return;
       emit(
-        state.copyWith(isLoading: false, error: MoonScreenErrorCode.loadData),
+        state.copyWith(
+          isLoading: false,
+          primaryPhaseDates: state.primaryPhaseDates.isNotEmpty
+              ? null
+              : _generatePrimaryPhaseDates(state.focusedDay, useAlmanac: true),
+          error: MoonScreenErrorCode.loadData,
+        ),
       );
     }
   }
@@ -170,18 +177,23 @@ class MoonScreenCubit extends Cubit<MoonScreenState> {
     return statuses;
   }
 
-  Set<DateTime> _generatePrimaryPhaseDates(DateTime month) {
+  Set<DateTime> _generatePrimaryPhaseDates(
+    DateTime month, {
+    bool useAlmanac = false,
+  }) {
     final dates = <DateTime>{};
     final lastDay = DateTime(month.year, month.month + 1, 0);
 
     for (int day = 1; day <= lastDay.day; day++) {
       final date = DateTime(month.year, month.month, day);
       final normalizedDate = DateTime(date.year, date.month, date.day);
-      final lunarDay = _contentProvider.getPersonalizedLunarDayByDate(
-        normalizedDate,
-      );
-
-      if (lunarDay?.lunarContext.phaseEvent != null) {
+      final lunarDay = useAlmanac
+          ? null
+          : _contentProvider.getPersonalizedLunarDayByDate(normalizedDate);
+      final marksPhaseChange = lunarDay == null
+          ? LunarAlmanacDay.on(normalizedDate)?.phase.marksPhaseChange == true
+          : lunarDay.lunarContext.phaseEvent != null;
+      if (marksPhaseChange) {
         dates.add(normalizedDate);
       }
     }

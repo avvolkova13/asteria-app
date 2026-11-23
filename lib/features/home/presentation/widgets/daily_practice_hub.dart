@@ -3,6 +3,7 @@ import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
 import 'package:flutter/material.dart';
+
 import 'home_glass_surface.dart';
 
 class HubEntryCard extends StatelessWidget {
@@ -15,11 +16,13 @@ class HubEntryCard extends StatelessWidget {
     required this.onTap,
     this.compact = false,
     this.alignAction = false,
+    this.fitCompactTitle = false,
   });
   final String title, description, action, art;
   final VoidCallback onTap;
   final bool compact;
   final bool alignAction;
+  final bool fitCompactTitle;
   @override
   Widget build(BuildContext context) => Semantics(
     button: true,
@@ -65,10 +68,21 @@ class HubEntryCard extends StatelessWidget {
                   ),
                 if (compact) ...[
                   const SizedBox(height: 10),
-                  Text(
-                    title,
-                    style: context.textTheme.inversePlayfairSemiBold24,
-                  ),
+                  if (fitCompactTitle)
+                    FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: AlignmentDirectional.centerStart,
+                      child: Text(
+                        title,
+                        maxLines: 1,
+                        style: context.textTheme.inversePlayfairSemiBold24,
+                      ),
+                    )
+                  else
+                    Text(
+                      title,
+                      style: context.textTheme.inversePlayfairSemiBold24,
+                    ),
                 ],
                 const SizedBox(height: 10),
                 Text(

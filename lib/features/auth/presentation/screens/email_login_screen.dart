@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/responsive_heading.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/analytics/analytics_events.dart';
@@ -80,6 +81,7 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final keyboardOpen = MediaQuery.viewInsetsOf(context).bottom > 0;
     return AuthFlowScaffold(
       showBackButton: !widget.isRoot,
       background: const AuthSilkBackground(),
@@ -87,96 +89,125 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
         child: LayoutBuilder(
           builder: (context, constraints) {
             final isCompact = constraints.maxHeight < 720;
+            final compactKeyboard = keyboardOpen && constraints.maxHeight < 360;
             return SingleChildScrollView(
               keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
               child: ConstrainedBox(
                 constraints: BoxConstraints(minHeight: constraints.maxHeight),
-                child: IntrinsicHeight(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: BlocBuilder<EmailAuthCubit, EmailAuthState>(
-                      builder: (context, state) {
-                        final isLoading = state is EmailAuthRequesting;
-                        final apiError = state is EmailAuthFailure
-                            ? localizedEmailAuthFailure(context, state.code)
-                            : null;
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: AsteriaEntrance.sections([
-                            if (widget.isRoot) ...[
-                              SizedBox(height: isCompact ? 16 : 28),
-                              Image.asset(
-                                'assets/images/auth/asteria_mark.png',
-                                width: isCompact ? 44 : 56,
-                                height: isCompact ? 44 : 56,
-                                excludeFromSemantics: true,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 18),
+                  child: BlocBuilder<EmailAuthCubit, EmailAuthState>(
+                    builder: (context, state) {
+                      final isLoading = state is EmailAuthRequesting;
+                      final apiError = state is EmailAuthFailure
+                          ? localizedEmailAuthFailure(context, state.code)
+                          : null;
+                      return Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: AsteriaEntrance.sections([
+                              if (widget.isRoot && !compactKeyboard) ...[
+                                SizedBox(height: isCompact ? 16 : 28),
+                                Image.asset(
+                                  'assets/images/auth/asteria_mark.png',
+                                  width: isCompact ? 44 : 56,
+                                  height: isCompact ? 44 : 56,
+                                  excludeFromSemantics: true,
+                                ),
+                                const SizedBox(height: 12),
+                              ] else
+                                SizedBox(
+                                  height: compactKeyboard && widget.isRoot
+                                      ? 16
+                                      : isCompact
+                                      ? 58
+                                      : 68,
+                                ),
+                              if (!compactKeyboard) ...[
+                                ResponsiveHeading(
+                                  l10n.emailAuthTitle.replaceAll('\n', ' '),
+                                  minimumFontSize: 12,
+                                  style: context
+                                      .textTheme
+                                      .inversePlayfairSemiBold24
+                                      .copyWith(height: 1.24),
+                                ),
+                                const SizedBox(height: 14),
+                                Text(
+                                  l10n.emailAuthMessage,
+                                  style: context
+                                      .textTheme
+                                      .inverseUrbanistRegular16
+                                      .copyWith(
+                                        color: AppColors.white.withValues(
+                                          alpha: 0.68,
+                                        ),
+                                        fontSize: 17,
+                                        height: 1.2,
+                                      ),
+                                ),
+                              ],
+                              SizedBox(
+                                height: compactKeyboard
+                                    ? 16
+                                    : isCompact
+                                    ? 24
+                                    : 36,
                               ),
-                              const SizedBox(height: 12),
-                            ] else
-                              SizedBox(height: isCompact ? 58 : 68),
-                            Text(
-                              l10n.emailAuthTitle,
-                              style: context.textTheme.inversePlayfairSemiBold24
-                                  .copyWith(height: 1.24),
-                            ),
-                            const SizedBox(height: 14),
-                            Text(
-                              l10n.emailAuthMessage,
-                              style: context.textTheme.inverseUrbanistRegular16
-                                  .copyWith(
-                                    color: AppColors.white.withValues(
-                                      alpha: 0.68,
-                                    ),
-                                    fontSize: 17,
-                                    height: 1.2,
-                                  ),
-                            ),
-                            SizedBox(height: isCompact ? 24 : 36),
-                            AuthTextInput(
-                              controller: _controller,
-                              focusNode: _focusNode,
-                              hintText: l10n.emailHint,
-                              isError: _showValidationError || apiError != null,
-                              errorText: _showValidationError
-                                  ? l10n.emailInvalidError
-                                  : apiError,
-                              inputFormatters: const [],
-                              keyboardType: TextInputType.emailAddress,
-                              autofillHints: const [AutofillHints.email],
-                              readOnly: widget.expectedEmail != null,
-                              onChanged: (_) {
-                                if (_showValidationError || apiError != null) {
-                                  setState(() => _showValidationError = false);
-                                  context.read<EmailAuthCubit>().clearError();
-                                }
-                              },
-                              onSubmitted: (_) {
-                                if (isLoading) return;
-                                LotusFeedback.selection();
-                                _requestCode();
-                              },
-                            ),
-                            const SizedBox(height: 16),
-                            AuthGradientButton(
-                              text: l10n.getCodeText,
-                              isLoading: isLoading,
-                              onPressed: isLoading ? null : _requestCode,
-                            ),
-                            if (widget.isRoot) ...[
-                              const SizedBox(height: 12),
-                              const _LoginPolicyText(),
-                            ],
-                            const Spacer(),
-                            if (!widget.isRoot && widget.expectedEmail == null)
-                              AuthBottomLink(
+                              AuthTextInput(
+                                controller: _controller,
+                                focusNode: _focusNode,
+                                hintText: l10n.emailHint,
+                                isError:
+                                    _showValidationError || apiError != null,
+                                errorText: _showValidationError
+                                    ? l10n.emailInvalidError
+                                    : apiError,
+                                inputFormatters: const [],
+                                keyboardType: TextInputType.emailAddress,
+                                autofillHints: const [AutofillHints.email],
+                                readOnly: widget.expectedEmail != null,
+                                onChanged: (_) {
+                                  if (_showValidationError ||
+                                      apiError != null) {
+                                    setState(
+                                      () => _showValidationError = false,
+                                    );
+                                    context.read<EmailAuthCubit>().clearError();
+                                  }
+                                },
+                                onSubmitted: (_) {
+                                  if (isLoading) return;
+                                  LotusFeedback.selection();
+                                  _requestCode();
+                                },
+                              ),
+                              const SizedBox(height: 16),
+                              AuthGradientButton(
+                                text: l10n.getCodeText,
+                                isLoading: isLoading,
+                                onPressed: isLoading ? null : _requestCode,
+                              ),
+                              if (widget.isRoot) ...[
+                                const SizedBox(height: 12),
+                                const _LoginPolicyText(),
+                              ],
+                            ]),
+                          ),
+                          if (!widget.isRoot && widget.expectedEmail == null)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 18),
+                              child: AuthBottomLink(
                                 text: l10n.emailAccessIssueText,
                                 onTap: () => Navigator.pop(context),
                               ),
-                            const SizedBox(height: 18),
-                          ]),
-                        );
-                      },
-                    ),
+                            ),
+                        ],
+                      );
+                    },
                   ),
                 ),
               ),
@@ -195,7 +226,8 @@ class _LoginPolicyText extends StatefulWidget {
   State<_LoginPolicyText> createState() => _LoginPolicyTextState();
 }
 
-class _LoginPolicyTextState extends State<_LoginPolicyText> with LotusInlineLinks<_LoginPolicyText> {
+class _LoginPolicyTextState extends State<_LoginPolicyText>
+    with LotusInlineLinks<_LoginPolicyText> {
   @override
   Widget build(BuildContext context) {
     final baseStyle = AppTypography.subtext.copyWith(
@@ -206,6 +238,7 @@ class _LoginPolicyTextState extends State<_LoginPolicyText> with LotusInlineLink
     );
 
     return RichText(
+      textScaler: MediaQuery.textScalerOf(context),
       text: TextSpan(
         children: [
           TextSpan(
@@ -218,7 +251,9 @@ class _LoginPolicyTextState extends State<_LoginPolicyText> with LotusInlineLink
             style: linkStyle,
             onTap: () => AboutUsRoute.push(
               context,
-              params: const AboutUsRouteParams(document: LegalDocumentType.agreement),
+              params: const AboutUsRouteParams(
+                document: LegalDocumentType.agreement,
+              ),
             ),
           ),
           TextSpan(
@@ -231,7 +266,9 @@ class _LoginPolicyTextState extends State<_LoginPolicyText> with LotusInlineLink
             style: linkStyle,
             onTap: () => AboutUsRoute.push(
               context,
-              params: const AboutUsRouteParams(document: LegalDocumentType.privacy),
+              params: const AboutUsRouteParams(
+                document: LegalDocumentType.privacy,
+              ),
             ),
           ),
         ],

@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/responsive_heading.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_activity_indicator.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
@@ -18,6 +19,8 @@ class AboutUsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final languageCode = Localizations.localeOf(context).languageCode;
 
+    final document = initialDocument;
+
     return Scaffold(
       backgroundColor: ProfileFlowColors.background,
       body: ProfileFlowBackground(
@@ -36,54 +39,50 @@ class AboutUsScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 18),
-                _AboutUsContentItemWithAsset(
-                  title: context.l10n.agreementText,
-                  shortDescription: context.l10n.agreementSummary,
-                  initiallyExpanded:
-                      initialDocument == LegalDocumentType.agreement,
-                  assetPath: LegalAssetResolver.resolve(
-                    document: LegalDocumentType.agreement,
-                    languageCode: languageCode,
-                    platform: defaultTargetPlatform,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                _AboutUsContentItemWithAsset(
-                  title: context.l10n.policyText,
-                  shortDescription: context.l10n.privacySummary,
-                  initiallyExpanded:
-                      initialDocument == LegalDocumentType.privacy,
-                  assetPath: LegalAssetResolver.resolve(
-                    document: LegalDocumentType.privacy,
-                    languageCode: languageCode,
-                    platform: defaultTargetPlatform,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                _AboutUsContentItem(
-                  title: context.l10n.subscriptionInfoTitle,
-                  shortDescription: context.l10n.subscriptionInfoDescription,
-                ),
-                const SizedBox(height: 16),
-                _AboutUsContentItem(
-                  title: context.l10n.licensesTitle,
-                  shortDescription: context.l10n.licensesDescription,
-                  links: const [
-                    (
-                      text: 'HadiSharifani',
-                      url: 'https://www.figma.com/@hicon',
+                for (final type in LegalDocumentType.values)
+                  if (document == null || document == type) ...[
+                    _AboutUsContentItemWithAsset(
+                      title: type == LegalDocumentType.agreement
+                          ? context.l10n.agreementText
+                          : context.l10n.policyText,
+                      shortDescription: type == LegalDocumentType.agreement
+                          ? context.l10n.agreementSummary
+                          : context.l10n.privacySummary,
+                      initiallyExpanded: document != null,
+                      assetPath: LegalAssetResolver.resolve(
+                        document: type,
+                        languageCode: languageCode,
+                        platform: defaultTargetPlatform,
+                      ),
                     ),
-                    (
-                      text: 'CC BY 4.0',
-                      url: 'https://creativecommons.org/licenses/by/4.0/',
-                    ),
+                    const SizedBox(height: 16),
                   ],
-                ),
-                const SizedBox(height: 16),
-                _AboutUsContentItem(
-                  title: context.l10n.contactsTitle,
-                  shortDescription: context.l10n.contactsDescription,
-                ),
+                if (document == null) ...[
+                  _AboutUsContentItem(
+                    title: context.l10n.subscriptionInfoTitle,
+                    shortDescription: context.l10n.subscriptionInfoDescription,
+                  ),
+                  const SizedBox(height: 16),
+                  _AboutUsContentItem(
+                    title: context.l10n.licensesTitle,
+                    shortDescription: context.l10n.licensesDescription,
+                    links: const [
+                      (
+                        text: 'HadiSharifani',
+                        url: 'https://www.figma.com/@hicon',
+                      ),
+                      (
+                        text: 'CC BY 4.0',
+                        url: 'https://creativecommons.org/licenses/by/4.0/',
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  _AboutUsContentItem(
+                    title: context.l10n.contactsTitle,
+                    shortDescription: context.l10n.contactsDescription,
+                  ),
+                ],
               ]),
             ),
           ),
@@ -111,8 +110,9 @@ class _AboutUsContentItem extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          ResponsiveHeading(
             title,
+            minimumFontSize: 12,
             style: context.textTheme.inversePlayfairSemiBold20.copyWith(
               height: 1,
             ),
@@ -208,8 +208,9 @@ class _AboutUsContentItemWithAssetState
           Row(
             children: [
               Expanded(
-                child: Text(
+                child: ResponsiveHeading(
                   widget.title,
+                  minimumFontSize: 12,
                   style: context.textTheme.inversePlayfairSemiBold20.copyWith(
                     height: 1,
                   ),

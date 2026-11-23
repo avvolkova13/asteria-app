@@ -7,7 +7,9 @@ import 'package:flutter/widgets.dart';
 /// platform player, so interruptions and seeks also update the transcript.
 class PracticePlaybackController extends ChangeNotifier
     with WidgetsBindingObserver {
-  PracticePlaybackController() {
+  PracticePlaybackController({this.audioAsset, Duration? previewDuration})
+    : _preview = previewDuration != null,
+      _duration = previewDuration ?? const Duration(seconds: 75) {
     WidgetsBinding.instance.addObserver(this);
   }
 
@@ -15,8 +17,12 @@ class PracticePlaybackController extends ChangeNotifier
   static int _nextSession = 0;
   final int _session = ++_nextSession;
 
+  final String? audioAsset;
+  final _previewClock = Stopwatch();
+  Duration _previewStart = Duration.zero;
+  bool _preview;
   Duration _position = Duration.zero;
-  Duration _duration = const Duration(seconds: 75);
+  Duration _duration;
   bool _playing = false;
   bool _looping = false;
   bool _complete = false;
@@ -28,6 +34,7 @@ class PracticePlaybackController extends ChangeNotifier
 
   Duration get position => _position;
   Duration get duration => _duration;
+  bool get isPreview => _preview;
   bool get isPlaying => _playing;
   bool get isLooping => _looping;
   bool get isComplete => _complete;
@@ -39,14 +46,39 @@ class PracticePlaybackController extends ChangeNotifier
 
   Future<void> _load() async {
     try {
-      await _update('load');
+      if (_preview) {
+        final manifest = await AssetManifest.loadFromAssetBundle(rootBundle);
+        if (_closed) return;
+        if (!manifest.listAssets().contains(audioAsset)) return;
+        _preview = false;
+      }
+      await _update('load', {if (audioAsset != null) 'asset': audioAsset!});
     } catch (_) {
       _loading = null;
       rethrow;
     }
   }
 
+  Future<void> continueWithoutAudio() async {
+    if (_closed || _preview) return;
+    _revision++;
+    _playing = false;
+    _syncPoll();
+    _preview = true;
+    _loading = Future<void>.value();
+    try {
+      await _channel.invokeMethod<void>('close', {'session': _session});
+    } on PlatformException {
+      // The failing audio session is unavailable.
+    } on MissingPluginException {
+      // There is no platform player on this device.
+    }
+    if (!_closed) _updatePreview('toggle', const {});
+  }
+
   Future<void> toggle() => _command('toggle');
+
+  Future<void> pause() => _command('pause');
 
   Future<void> seek(Duration position) => _command('seek', {
     'ms': position.inMilliseconds.clamp(0, _duration.inMilliseconds),
@@ -60,7 +92,12 @@ class PracticePlaybackController extends ChangeNotifier
   ]) async {
     if (_closed) return;
     await initialize();
-    if (!_closed) await _update(method, data);
+    if (_closed) return;
+    if (_preview) {
+      _updatePreview(method, data);
+    } else {
+      await _update(method, data);
+    }
   }
 
   Future<void> _update(
@@ -78,6 +115,54 @@ class PracticePlaybackController extends ChangeNotifier
     _playing = state['playing'] as bool;
     _looping = state['loop'] as bool;
     _complete = state['complete'] as bool;
+    _syncPoll();
+    notifyListeners();
+  }
+
+  void _updatePreview(String method, Map<String, Object> data) {
+    if (_playing) {
+      final elapsed = _previewStart + _previewClock.elapsed;
+      _complete = !_looping && elapsed >= _duration;
+      _position = _looping
+          ? Duration(
+              milliseconds: elapsed.inMilliseconds % _duration.inMilliseconds,
+            )
+          : _complete
+          ? _duration
+          : elapsed;
+      if (_complete) _playing = false;
+    }
+
+    switch (method) {
+      case 'toggle':
+        if (_playing) {
+          _playing = false;
+        } else {
+          if (_complete) _position = Duration.zero;
+          _complete = false;
+          _playing = true;
+        }
+      case 'pause':
+        _playing = false;
+      case 'seek':
+        _position = Duration(milliseconds: data['ms'] as int);
+        _complete = _position >= _duration;
+        if (_complete) _playing = false;
+      case 'loop':
+        _looping = data['value'] as bool;
+    }
+    if (method != 'state' || !_playing) {
+      _previewStart = _position;
+      _previewClock
+        ..stop()
+        ..reset();
+      if (_playing) _previewClock.start();
+    }
+    _syncPoll();
+    notifyListeners();
+  }
+
+  void _syncPoll() {
     if (_playing) {
       _poll ??= Timer.periodic(
         const Duration(milliseconds: 120),
@@ -87,11 +172,14 @@ class PracticePlaybackController extends ChangeNotifier
       _poll?.cancel();
       _poll = null;
     }
-    notifyListeners();
   }
 
   Future<void> _readPosition() async {
     if (_closed || _reading) return;
+    if (_preview) {
+      _updatePreview('state', const {});
+      return;
+    }
     _reading = true;
     try {
       await _update('state');
@@ -110,7 +198,7 @@ class PracticePlaybackController extends ChangeNotifier
     if ((state == AppLifecycleState.hidden ||
             state == AppLifecycleState.paused) &&
         _loading != null) {
-      unawaited(_command('pause').catchError(_reportPlatformError));
+      unawaited(pause().catchError(_reportPlatformError));
     }
   }
 
@@ -127,9 +215,10 @@ class PracticePlaybackController extends ChangeNotifier
   @override
   void dispose() {
     _closed = true;
+    _previewClock.stop();
     _poll?.cancel();
     WidgetsBinding.instance.removeObserver(this);
-    if (_loading != null) {
+    if (_loading != null && !_preview) {
       unawaited(
         _channel
             .invokeMethod<void>('close', {'session': _session})

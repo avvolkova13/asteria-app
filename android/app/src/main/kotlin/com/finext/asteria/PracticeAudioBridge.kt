@@ -12,16 +12,16 @@ import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import java.io.File
+import java.io.FileInputStream
 
-/** Plays the packaged affirmation recording. */
+/** Plays packaged affirmation and guided-practice recordings. */
 class PracticeAudioBridge(private val activity: Activity, messenger: BinaryMessenger) {
     companion object {
-        private const val ASSET = "assets/audio/practice-75.wav"
+        private const val DEFAULT_ASSET = "assets/audio/practice-75.wav"
     }
 
     private val channel = MethodChannel(messenger, "asteria/practice-audio")
     private val audio = activity.getSystemService(Context.AUDIO_SERVICE) as AudioManager
-    private val assetKey = FlutterInjector.instance().flutterLoader().getLookupKeyForAsset(ASSET)
     private val speech = AudioAttributes.Builder()
         .setUsage(AudioAttributes.USAGE_MEDIA)
         .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
@@ -56,7 +56,7 @@ class PracticeAudioBridge(private val activity: Activity, messenger: BinaryMesse
                     val next = MediaPlayer()
                     try {
                         next.setAudioAttributes(speech)
-                        setRecording(next)
+                        setRecording(next, call.argument<String>("asset") ?: DEFAULT_ASSET)
                         next.prepare()
                     } catch (error: Exception) {
                         next.release()
@@ -121,17 +121,18 @@ class PracticeAudioBridge(private val activity: Activity, messenger: BinaryMesse
         }
     }
 
-    private fun setRecording(next: MediaPlayer) {
-        // AAPT stores WAV uncompressed by default. Support other packaging too.
+    private fun setRecording(next: MediaPlayer, asset: String) {
+        val assetKey = FlutterInjector.instance().flutterLoader().getLookupKeyForAsset(asset)
+        // Use an asset descriptor where possible, and copy compressed assets to cache.
         val descriptor = try { activity.assets.openFd(assetKey) } catch (_: java.io.FileNotFoundException) { null }
         if (descriptor != null) {
             descriptor.use { next.setDataSource(it.fileDescriptor, it.startOffset, it.length) }
             return
         }
-        val cache = File.createTempFile("practice-", ".wav", activity.cacheDir)
+        val cache = File.createTempFile("practice-", null, activity.cacheDir)
         try {
             activity.assets.open(assetKey).use { source -> cache.outputStream().use { source.copyTo(it) } }
-            next.setDataSource(cache.absolutePath)
+            FileInputStream(cache).use { next.setDataSource(it.fd) }
         } finally {
             cache.delete()
         }

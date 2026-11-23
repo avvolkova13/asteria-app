@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/responsive_heading.dart';
 import 'package:asteria_app/app/data/models/saved_compatibility/saved_compatibility_model.dart';
 import 'package:asteria_app/core/ui_kit/widgets/input_bubble_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
@@ -30,12 +31,14 @@ class CreateCompatibilityInitialScreen extends StatefulWidget {
     super.key,
     this.returnCreatedPair = false,
     this.checkFreeAttempt,
+    this.showFreeAttemptNotice = true,
     this.onCreated,
     this.onHistoryPressed,
   });
 
   final bool returnCreatedPair;
   final Future<bool> Function()? checkFreeAttempt;
+  final bool showFreeAttemptNotice;
   final ValueChanged<SavedCompatibilityModel>? onCreated;
   final VoidCallback? onHistoryPressed;
 
@@ -239,7 +242,7 @@ class _CreateCompatibilityInitialScreenState
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: AsteriaEntrance.sections([
-          Text(
+          ResponsiveHeading(
             context.l10n.compatibilityPartnerDetailsTitle,
             style: context.textTheme.inversePlayfairSemiBold32,
             textAlign: TextAlign.center,
@@ -266,7 +269,8 @@ class _CreateCompatibilityInitialScreenState
             ),
           ),
           const SizedBox(height: 24),
-          if (widget.checkFreeAttempt != null) ...[
+          if (widget.checkFreeAttempt != null &&
+              widget.showFreeAttemptNotice) ...[
             Text(
               Localizations.localeOf(context).languageCode == 'ru'
                   ? 'Расчёт использует одну бесплатную попытку.'

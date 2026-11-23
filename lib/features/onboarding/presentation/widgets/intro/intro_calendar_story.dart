@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
-import 'package:asteria_app/core/ui_kit/card_radii.dart';
 import 'package:asteria_app/features/home/presentation/widgets/home_glass_surface.dart';
 import 'package:asteria_app/features/home/presentation/models/day_status.dart';
 import 'package:asteria_app/features/home/presentation/widgets/moon_phase_widget.dart';
@@ -30,16 +29,42 @@ class IntroCalendarStory extends StatelessWidget {
       final dates = introUpcomingDates(now);
       final locale = Localizations.localeOf(context).toLanguageTag();
       final date = DateFormat.MMMMd(locale).format(dates[2]);
-      final image = SizedBox(
-        height: 190,
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(AsteriaCardRadii.card),
-          child: Image.asset(
-            'assets/images/onboarding/intro_scissors.webp',
-            fit: BoxFit.contain,
-            excludeFromSemantics: true,
-          ),
-        ),
+      final image = LayoutBuilder(
+        builder: (context, bounds) {
+          final height = bounds.maxWidth < 320 ? 132.0 : 190.0;
+          const edgeColors = [
+            Colors.transparent,
+            Colors.white,
+            Colors.white,
+            Colors.transparent,
+          ];
+          return Center(
+            child: ShaderMask(
+              blendMode: BlendMode.dstIn,
+              shaderCallback: (bounds) => const LinearGradient(
+                colors: edgeColors,
+                stops: [0, .12, .88, 1],
+              ).createShader(bounds),
+              child: ShaderMask(
+                blendMode: BlendMode.dstIn,
+                shaderCallback: (bounds) => const LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: edgeColors,
+                  stops: [0, .13, .8, 1],
+                ).createShader(bounds),
+                child: Image.asset(
+                  'assets/images/onboarding/intro_scissors.webp',
+                  width: height * 1.08,
+                  height: height,
+                  fit: BoxFit.cover,
+                  alignment: const Alignment(0, -.38),
+                  excludeFromSemantics: true,
+                ),
+              ),
+            ),
+          );
+        },
       );
       final plan = StoryCard(
         key: const ValueKey('intro-calendar-plan'),

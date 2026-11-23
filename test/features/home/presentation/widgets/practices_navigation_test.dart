@@ -95,7 +95,7 @@ void main() {
       expect(find.byType(PracticesScreen), findsOneWidget);
       expect(find.byType(ProfileScreen), findsNothing);
       expect((home.state as HomeLoaded).currentTabIndex, 2);
-      final affirmationEntry = find.text('Choose an affirmation');
+      final affirmationEntry = find.text(labels.affirmationsTitle);
       await tester.ensureVisible(affirmationEntry);
       await tester.tap(affirmationEntry);
       await tester.pumpAndSettle();

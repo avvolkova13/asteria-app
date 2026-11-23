@@ -180,51 +180,72 @@ class _ZodiacCompatibilityHero extends StatelessWidget {
         ),
       ),
     );
-    return Column(
-      children: [
-        Row(
-          children: [
-            caption(firstDate),
-            const SizedBox(width: 12),
-            caption(secondDate),
-          ],
-        ),
-        const SizedBox(height: 8),
-        Stack(
-          alignment: Alignment.center,
+    final scoreStyle = context.textTheme.playfairSemiBold20.copyWith(
+      color: const Color(0xFFFFB45E),
+      height: 1.15,
+    );
+    final score = percentage == null ? null : '$percentage%';
+    final scoreWidth = TextPainter(
+      text: TextSpan(text: score, style: scoreStyle),
+      textDirection: Directionality.of(context),
+      textScaler: MediaQuery.textScalerOf(context),
+    )..layout();
+    final desiredCenterWidth = (scoreWidth.width + 16).clamp(
+      52.0,
+      double.infinity,
+    );
+    scoreWidth.dispose();
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final centerWidth = desiredCenterWidth.clamp(
+          0.0,
+          constraints.maxWidth * .42,
+        );
+        return Column(
           children: [
             Row(
               children: [
+                caption(firstDate),
+                SizedBox(width: centerWidth),
+                caption(secondDate),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
                 portrait(firstDate),
-                const SizedBox(width: 12),
+                SizedBox(
+                  width: centerWidth,
+                  child: Column(
+                    children: [
+                      SvgPicture.asset(
+                        'assets/icons/compatibility_heart_right.svg',
+                        width: 26,
+                        excludeFromSemantics: true,
+                      ),
+                      if (score != null)
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 4),
+                          child: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Text(score, style: scoreStyle),
+                          ),
+                        ),
+                      SvgPicture.asset(
+                        'assets/icons/compatibility_heart_left.svg',
+                        width: 26,
+                        excludeFromSemantics: true,
+                      ),
+                    ],
+                  ),
+                ),
                 portrait(secondDate),
               ],
             ),
-            Column(
-              children: [
-                SvgPicture.asset(
-                  'assets/icons/compatibility_heart_right.svg',
-                  width: 26,
-                  excludeFromSemantics: true,
-                ),
-                if (percentage != null)
-                  Text(
-                    '$percentage%',
-                    style: context.textTheme.playfairSemiBold20.copyWith(
-                      color: const Color(0xFFFFB45E),
-                      height: 1.15,
-                    ),
-                  ),
-                SvgPicture.asset(
-                  'assets/icons/compatibility_heart_left.svg',
-                  width: 26,
-                  excludeFromSemantics: true,
-                ),
-              ],
-            ),
           ],
-        ),
-      ],
+        );
+      },
     );
   }
 }

@@ -44,7 +44,7 @@ class CompatibilityLayout extends StatelessWidget {
             if (ScenarioSkyScope.of(context))
               const ScenarioSky()
             else
-              const _CompatibilityStarBackground().withEntrance(),
+              const _CompatibilityStarBackground(),
             CustomScrollView(
               physics: physics,
               slivers: [
@@ -112,7 +112,7 @@ class _CompatibilityStarBackground extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CustomPaint(
-      painter: _CompatibilityStarPainter(),
+      foregroundPainter: _CompatibilityStarPainter(),
       child: const DecoratedBox(
         decoration: BoxDecoration(
           gradient: LinearGradient(

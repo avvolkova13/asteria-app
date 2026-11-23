@@ -1,3 +1,9 @@
+import 'package:asteria_app/core/ui_kit/widgets/dictation_button.dart';
+import 'package:asteria_app/core/ui_kit/widgets/responsive_heading.dart';
+import 'package:asteria_app/core/ui_kit/widgets/asteria_action_button.dart';
+import 'package:asteria_app/features/sonnik/data/dream_journal.dart';
+import 'package:asteria_app/app/providers/user_provider.dart';
+import 'package:asteria_app/features/sonnik/presentation/screens/dream_journal_screen.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/app/providers/content_provider.dart';
@@ -22,7 +28,9 @@ import 'package:asteria_app/features/sonnik/presentation/provider/sonnik_provide
 import 'package:asteria_app/features/sonnik/presentation/widgets/sonnik_layout.dart';
 
 class CreateSonnikInitialScreen extends StatefulWidget {
-  const CreateSonnikInitialScreen({super.key});
+  const CreateSonnikInitialScreen({super.key, this.initialEntry});
+
+  final DreamEntry? initialEntry;
 
   @override
   State<CreateSonnikInitialScreen> createState() =>
@@ -30,7 +38,12 @@ class CreateSonnikInitialScreen extends StatefulWidget {
 }
 
 class _CreateSonnikInitialScreenState extends State<CreateSonnikInitialScreen> {
-  final TextEditingController _textController = TextEditingController();
+  late final _textController = TextEditingController(
+    text: widget.initialEntry?.text,
+  );
+  late DreamEntry? _savedEntry = widget.initialEntry;
+  bool _savingDream = false;
+  bool _dictating = false;
   final ContentProvider _contentProvider = di.get<ContentProvider>();
   final GlobalLoaderService _loaderService = di.get<GlobalLoaderService>();
 
@@ -58,6 +71,66 @@ class _CreateSonnikInitialScreenState extends State<CreateSonnikInitialScreen> {
 
   void _onTextChanged(String text) {
     setState(() {});
+  }
+
+  Future<void> _openJournal(UserProvider user) async {
+    final owner = user.currentUser?.id;
+    if (owner == null || owner.isEmpty) return;
+    final entry = await openDreamJournal(context, user);
+    if (!mounted || user.currentUser?.id != owner) return;
+    if (entry != null) {
+      setState(() {
+        _savedEntry = entry;
+        _textController.text = entry.text;
+      });
+      return;
+    }
+
+    final previous = _savedEntry;
+    if (previous == null) return;
+    final List<DreamEntry> entries;
+    try {
+      entries = await DreamJournal(owner).read();
+    } catch (_) {
+      return;
+    }
+    if (!mounted || user.currentUser?.id != owner || _savedEntry != previous) {
+      return;
+    }
+    final updated = entries.where((item) => item.id == previous.id).firstOrNull;
+    setState(() {
+      _savedEntry = updated;
+      if (updated != null && _textController.text.trim() == previous.text) {
+        _textController.text = updated.text;
+      }
+    });
+  }
+
+  Future<void> _saveDream(UserProvider user) async {
+    final owner = user.currentUser?.id;
+    final text = _textController.text.trim();
+    if (_savingDream || owner == null || owner.isEmpty || text.isEmpty) return;
+    FocusManager.instance.primaryFocus?.unfocus();
+    setState(() => _savingDream = true);
+    try {
+      final saved = await DreamJournal(owner).save(text, entry: _savedEntry);
+      if (!mounted || user.currentUser?.id != owner) return;
+      setState(() => _savedEntry = saved);
+    } catch (_) {
+      if (!mounted || user.currentUser?.id != owner) return;
+      final ru = Localizations.localeOf(context).languageCode == 'ru';
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            ru
+                ? 'Не удалось сохранить сон. Попробуйте ещё раз.'
+                : 'Could not save the dream. Please try again.',
+          ),
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _savingDream = false);
+    }
   }
 
   Future<void> _onCreateSonnikTap() async {
@@ -133,13 +206,19 @@ class _CreateSonnikInitialScreenState extends State<CreateSonnikInitialScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final hasText = _textController.text.isNotEmpty;
+    final text = _textController.text.trim();
+    final hasText = text.isNotEmpty;
+    final canSubmit = !_savingDream && !_dictating;
+    final saved = _savedEntry?.text == text && hasText;
+    final user = context.watch<UserProvider?>();
+    final ru = Localizations.localeOf(context).languageCode == 'ru';
 
     return SonnikPageScaffold(
       title: context.l10n.dreamDictionaryTitle,
       resizeToAvoidBottomInset: true,
       child: ListView(
         physics: const ClampingScrollPhysics(),
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
         padding: EdgeInsets.fromLTRB(
           16,
           6,
@@ -160,48 +239,66 @@ class _CreateSonnikInitialScreenState extends State<CreateSonnikInitialScreen> {
                         120.0,
                         156.0,
                       );
+                      final largeText =
+                          constraints.maxWidth < 360 &&
+                          MediaQuery.textScalerOf(context).scale(16) > 20;
+                      Widget introduction() => Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          ResponsiveHeading(
+                            largeText
+                                ? context.l10n.dreamGreeting.replaceAll(
+                                    '\n',
+                                    ' ',
+                                  )
+                                : context.l10n.dreamGreeting,
+                            style: context.textTheme.inversePlayfairSemiBold24
+                                .copyWith(height: 1.0),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            largeText
+                                ? context.l10n.dreamTellPrompt.replaceAll(
+                                    '\n',
+                                    ' ',
+                                  )
+                                : context.l10n.dreamTellPrompt,
+                            style: context.textTheme.inverseUrbanistRegular16
+                                .copyWith(
+                                  color: SonnikPalette.white.withValues(
+                                    alpha: 0.78,
+                                  ),
+                                  height: 1.2,
+                                ),
+                          ),
+                          if (!monetizationProvider.effectivePro) ...[
+                            const SizedBox(height: 8),
+                            SonnikQuotaBadge(requestsLeft: requestsLeft),
+                          ],
+                        ],
+                      );
+                      if (largeText) {
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const SizedBox.square(
+                              dimension: 80,
+                              child: SonnikLiveyaAvatar(),
+                            ),
+                            const SizedBox(height: 12),
+                            introduction(),
+                          ],
+                        );
+                      }
                       return ConstrainedBox(
                         constraints: const BoxConstraints(minHeight: 176),
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    context.l10n.dreamGreeting,
-                                    style: context
-                                        .textTheme
-                                        .inversePlayfairSemiBold24
-                                        .copyWith(height: 1.0),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    context.l10n.dreamTellPrompt,
-                                    style: context
-                                        .textTheme
-                                        .inverseUrbanistRegular16
-                                        .copyWith(
-                                          color: SonnikPalette.white.withValues(
-                                            alpha: 0.78,
-                                          ),
-                                          height: 1.2,
-                                        ),
-                                  ),
-                                  if (!monetizationProvider.effectivePro) ...[
-                                    const SizedBox(height: 8),
-                                    SonnikQuotaBadge(
-                                      requestsLeft: requestsLeft,
-                                    ),
-                                  ],
-                                ],
-                              ),
-                            ),
+                            Expanded(child: introduction()),
                             const SizedBox(width: 12),
-                            SizedBox(
-                              width: avatarSize,
-                              height: avatarSize,
+                            SizedBox.square(
+                              dimension: avatarSize,
                               child: const SonnikLiveyaAvatar(),
                             ),
                           ],
@@ -213,33 +310,76 @@ class _CreateSonnikInitialScreenState extends State<CreateSonnikInitialScreen> {
                   SonnikTextArea(
                     controller: _textController,
                     onChanged: _onTextChanged,
+                    readOnly: _savingDream,
                   ),
-                  const SizedBox(height: 18),
+                  const SizedBox(height: 12),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: DictationButton(
+                      controller: _textController,
+                      enabled: !_savingDream,
+                      showLabel: true,
+                      onActiveChanged: (active) {
+                        setState(() => _dictating = active);
+                      },
+                    ),
+                  ),
                   SonnikGradientButton(
                     text: context.l10n.dreamDecode,
-                    onPressed: hasText ? _onCreateSonnikTap : null,
+                    onPressed: hasText && canSubmit ? _onCreateSonnikTap : null,
                   ),
-                  const SizedBox(height: 18),
-                  Row(
-                    children: [
-                      LotusButtons.text(
-                        onPressed: () =>
-                            CreateSonnikHistoryRoute.pushReplacement(context),
-                        style: TextButton.styleFrom(
-                          foregroundColor: SonnikPalette.white,
-                          padding: EdgeInsets.zero,
-                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  if (user != null &&
+                      user.currentUser?.id.isNotEmpty == true &&
+                      hasText)
+                    if (saved)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        child: Semantics(
+                          liveRegion: true,
+                          child: Text(
+                            ru
+                                ? 'Сохранено в дневнике'
+                                : 'Saved to your journal',
+                            style: context.textTheme.inverseUrbanistRegular14,
+                          ),
                         ),
+                      )
+                    else
+                      LotusButtons.text(
+                        onPressed: canSubmit ? () => _saveDream(user) : null,
                         child: Text(
-                          context.l10n.viewHistory,
-                          style: context.textTheme.inverseUrbanistSemiBold17
-                              .copyWith(
-                                decoration: TextDecoration.underline,
-                                decorationColor: SonnikPalette.white,
-                              ),
+                          ru ? 'Сохранить на потом' : 'Save for later',
                         ),
                       ),
-                    ],
+                  if (user != null &&
+                      user.currentUser?.id.isNotEmpty == true) ...[
+                    const SizedBox(height: 12),
+                    AsteriaActionButton(
+                      text: ru ? 'Открыть дневник снов' : 'Open dream journal',
+                      width: double.infinity,
+                      gold: true,
+                      onPressed: canSubmit ? () => _openJournal(user) : null,
+                    ),
+                  ],
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: LotusButtons.text(
+                      onPressed: () =>
+                          CreateSonnikHistoryRoute.pushReplacement(context),
+                      style: TextButton.styleFrom(
+                        foregroundColor: SonnikPalette.white,
+                        padding: EdgeInsets.zero,
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      ),
+                      child: Text(
+                        context.l10n.viewHistory,
+                        style: context.textTheme.inverseUrbanistSemiBold17
+                            .copyWith(
+                              decoration: TextDecoration.underline,
+                              decorationColor: SonnikPalette.white,
+                            ),
+                      ),
+                    ),
                   ),
                 ]),
               );

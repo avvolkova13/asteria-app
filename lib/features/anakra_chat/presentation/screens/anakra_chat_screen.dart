@@ -331,13 +331,14 @@ class _AnakraChatScreenState extends State<AnakraChatScreen> {
               : null;
           final quota = access?.requestQuotas['anakra'];
           final uid = provider.currentUserId;
-          final freeAvailable =
+          final current =
+              access != null && uid != null && access.isCurrentUser(uid);
+          final usesPro = current && access.effectivePro;
+          final scenarioAvailable =
               !_checkingFreeQuota &&
               !_freeQuotaFailed &&
-              uid != null &&
-              access?.isCurrentUser(uid) == true &&
-              access?.isFeatureEnabled('anakra') == true &&
-              canUseFreeAttempt(quota);
+              current &&
+              canUseScenarioRequest(access, 'anakra');
           final russian = Localizations.localeOf(context).languageCode == 'ru';
 
           return Column(
@@ -430,7 +431,7 @@ class _AnakraChatScreenState extends State<AnakraChatScreen> {
                   ],
                 ),
               ),
-              if (_freeOnly)
+              if (_freeOnly && (!usesPro || !scenarioAvailable))
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: _freeQuotaFailed
@@ -438,19 +439,23 @@ class _AnakraChatScreenState extends State<AnakraChatScreen> {
                           onPressed: _refreshFreeQuota,
                           child: Text(
                             russian
-                                ? 'Проверить бесплатные вопросы ещё раз'
-                                : 'Check free questions again',
+                                ? 'Проверить доступ ещё раз'
+                                : 'Check access again',
                           ),
                         )
                       : Text(
                           _checkingFreeQuota
                               ? (russian
-                                    ? 'Проверяем бесплатные вопросы…'
-                                    : 'Checking free questions…')
-                              : freeAvailable
+                                    ? 'Проверяем доступ…'
+                                    : 'Checking access…')
+                              : scenarioAvailable
                               ? (russian
                                     ? 'Бесплатных вопросов осталось: ${quota!.freeRemaining}'
                                     : 'Free questions left: ${quota!.freeRemaining}')
+                              : usesPro
+                              ? (russian
+                                    ? 'Чат сейчас недоступен'
+                                    : 'Chat is currently unavailable')
                               : (russian
                                     ? 'Сейчас нет бесплатных вопросов'
                                     : 'No free questions available right now'),
@@ -462,11 +467,12 @@ class _AnakraChatScreenState extends State<AnakraChatScreen> {
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
                   child: AnakraComposer(
+                    key: ValueKey(provider.currentUserId),
                     controller: _messageController,
                     busy: provider.isLoadingAnakra || _isDispatching,
                     hasInput: _hasInput,
                     maxLines: _freeOnly ? 3 : 1,
-                    canSend: !_freeOnly || freeAvailable,
+                    canSend: !_freeOnly || scenarioAvailable,
                     onSend: () => _sendMessage(provider),
                   ),
                 ),

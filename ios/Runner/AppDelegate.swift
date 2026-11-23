@@ -30,6 +30,7 @@ private final class StorefrontUpdatesHandler: NSObject, FlutterStreamHandler {
 @main
 @objc class AppDelegate: FlutterAppDelegate, FlutterImplicitEngineDelegate {
   private var planReminders: CalendarPlanReminders?
+  private var dictation: DictationBridge?
   private var practiceAudio: PracticeAudioBridge?
   private var appleTransactionsBridge: AnyObject?
   private var storefrontUpdatesHandler: AnyObject?
@@ -63,6 +64,7 @@ private final class StorefrontUpdatesHandler: NSObject, FlutterStreamHandler {
                                                withId: "asteria/launch-silk")
     planReminders = CalendarPlanReminders(messenger: messenger)
     practiceAudio = PracticeAudioBridge(messenger: messenger)
+    dictation = DictationBridge(messenger: messenger)
     let calendar = FlutterMethodChannel(name: "asteria/calendar", binaryMessenger: messenger)
     calendar.setMethodCallHandler { call, result in
       guard call.method == "today" else { result(FlutterMethodNotImplemented); return }

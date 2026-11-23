@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		A11E000000000000000000B1 /* CalendarPlanReminders.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11E000000000000000000B2 /* CalendarPlanReminders.swift */; };
 		A11E00000000000000000051 /* PracticeAudioBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11E00000000000000000052 /* PracticeAudioBridge.swift */; };
+		A11E00000000000000000093 /* DictationBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11E00000000000000000094 /* DictationBridge.swift */; };
 		AE5100000000000000000001 /* SplashSilk.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE5100000000000000000002 /* SplashSilk.swift */; };
 		AE5100000000000000000003 /* SplashSilk.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = AE5100000000000000000004 /* SplashSilk.mp4 */; };
 		AE5100000000000000000005 /* SplashArtwork.mov in Resources */ = {isa = PBXBuildFile; fileRef = AE5100000000000000000006 /* SplashArtwork.mov */; };
@@ -54,6 +55,7 @@
 /* Begin PBXFileReference section */
 		A11E000000000000000000B2 /* CalendarPlanReminders.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarPlanReminders.swift; sourceTree = "<group>"; };
 		A11E00000000000000000052 /* PracticeAudioBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PracticeAudioBridge.swift; sourceTree = "<group>"; };
+		A11E00000000000000000094 /* DictationBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DictationBridge.swift; sourceTree = "<group>"; };
 		AE5100000000000000000002 /* SplashSilk.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashSilk.swift; sourceTree = "<group>"; };
 		AE5100000000000000000004 /* SplashSilk.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = SplashSilk.mp4; sourceTree = "<group>"; };
 		AE5100000000000000000006 /* SplashArtwork.mov */ = {isa = PBXFileReference; lastKnownFileType = file; path = SplashArtwork.mov; sourceTree = "<group>"; };
@@ -180,6 +182,7 @@
 				74858FAE1ED2DC5600515810 /* AppDelegate.swift */,
 				A11E000000000000000000B2 /* CalendarPlanReminders.swift */,
 				A11E00000000000000000052 /* PracticeAudioBridge.swift */,
+				A11E00000000000000000094 /* DictationBridge.swift */,
 				AE5100000000000000000002 /* SplashSilk.swift */,
 				AE5100000000000000000004 /* SplashSilk.mp4 */,
 				AE5100000000000000000006 /* SplashArtwork.mov */,
@@ -443,6 +446,7 @@
 				74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */,
 				A11E000000000000000000B1 /* CalendarPlanReminders.swift in Sources */,
 				A11E00000000000000000051 /* PracticeAudioBridge.swift in Sources */,
+				A11E00000000000000000093 /* DictationBridge.swift in Sources */,
 				AE5100000000000000000001 /* SplashSilk.swift in Sources */,
 				A11E00000000000000000001 /* AppleTransactionsBridge.swift in Sources */,
 				1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */,

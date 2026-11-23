@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/responsive_heading.dart';
 import 'package:asteria_app/core/ui_kit/widgets/card_turn.dart';
 import 'package:asteria_app/core/ui_kit/widgets/tarot_card_frame.dart';
 import 'package:asteria_app/core/ui_kit/widgets/artwork_unavailable.dart';
@@ -106,12 +107,14 @@ class _TarotCardOfTheDayWidgetState extends State<TarotCardOfTheDayWidget>
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        SizedBox(width: 32),
-        Text(
-          context.l10n.dailyTarotTitle,
-          textAlign: TextAlign.center,
-          style: context.textTheme.playfairSemiBold32,
-        ).withEntrance(),
+        const SizedBox(width: 32),
+        Expanded(
+          child: ResponsiveHeading(
+            context.l10n.dailyTarotTitle,
+            textAlign: TextAlign.center,
+            style: context.textTheme.playfairSemiBold32,
+          ).withEntrance(),
+        ),
         if (widget.onRefresh != null)
           Semantics(
             button: true,
@@ -136,10 +139,8 @@ class _TarotCardOfTheDayWidgetState extends State<TarotCardOfTheDayWidget>
       child: Row(
         children: [
           Expanded(
-            child: Text(
+            child: ResponsiveHeading(
               context.l10n.dailyTarotTitle,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
               style: context.textTheme.playfairSemiBold32.copyWith(
                 color: AppColors.white,
                 height: 1.0,

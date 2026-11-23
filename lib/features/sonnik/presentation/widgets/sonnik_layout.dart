@@ -79,18 +79,10 @@ class SonnikPageScaffold extends StatelessWidget {
         resizeToAvoidBottomInset: resizeToAvoidBottomInset,
         body: Stack(
           children: [
-            const Positioned.fill(
-              child: DecoratedBox(
-                decoration: BoxDecoration(color: SonnikPalette.background),
-              ),
-            ),
             Positioned.fill(
               child: RotatedBox(
                 quarterTurns: 2,
-                child: Image.asset(
-                  SonnikAssets.clouds,
-                  fit: BoxFit.cover,
-                ).withEntrance(),
+                child: Image.asset(SonnikAssets.clouds, fit: BoxFit.cover),
               ),
             ),
             Positioned.fill(
@@ -302,11 +294,13 @@ class SonnikLiveyaAvatar extends StatelessWidget {
 class SonnikTextArea extends StatelessWidget {
   final TextEditingController controller;
   final ValueChanged<String> onChanged;
+  final bool readOnly;
 
   const SonnikTextArea({
     super.key,
     required this.controller,
     required this.onChanged,
+    this.readOnly = false,
   });
 
   @override
@@ -318,6 +312,7 @@ class SonnikTextArea extends StatelessWidget {
         child: TextField(
           onTap: LotusFeedback.selection,
           controller: controller,
+          readOnly: readOnly,
           onChanged: onChanged,
           expands: true,
           minLines: null,

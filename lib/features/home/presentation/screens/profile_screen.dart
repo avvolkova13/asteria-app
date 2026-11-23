@@ -400,8 +400,7 @@ class _ProfileHeroCard extends StatelessWidget {
           const SizedBox(height: 7),
           Text(
             name,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.center,
             style: const TextStyle(
               color: Color(0xFFFFFFFF),
               fontFamily: 'Lora',

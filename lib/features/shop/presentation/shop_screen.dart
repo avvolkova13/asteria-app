@@ -115,24 +115,19 @@ class _ShopScreenState extends State<ShopScreen> {
                   const SliverToBoxAdapter(child: _ShopHeader()),
                   SliverToBoxAdapter(
                     child: Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 30, 16, 24),
+                      padding: const EdgeInsets.fromLTRB(16, 22, 16, 24),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            context.l10n.shopTitle,
-                            style: context.textTheme.inversePlayfairSemiBold32
-                                .copyWith(height: 1.2),
-                          ).withEntrance(),
-                          const SizedBox(height: 13),
                           Text(
                             context.l10n.shopSubtitle,
                             style: context.textTheme.inverseUrbanistRegular16
                                 .copyWith(height: 1.2),
                           ).withEntrance(),
                           const SizedBox(height: 16),
-                          _buildSubscriptionPromoSection(context)
-                              .withEntrance(),
+                          _buildSubscriptionPromoSection(
+                            context,
+                          ).withEntrance(),
                           KeyedSubtree(
                             key: ValueKey(state.runtimeType),
                             child: _buildShopContent(context, state),

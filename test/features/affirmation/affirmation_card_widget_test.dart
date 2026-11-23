@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/swipe_card_stack.dart';
 import 'package:asteria_app/features/affirmation/player/affirmation_player_screen.dart';
 import 'package:asteria_app/app/data/models/user/user_model.dart';
 import 'package:asteria_app/app/providers/content_provider.dart';
@@ -42,6 +43,28 @@ void main() {
         'assets/images/affirmation/category_${categoryEntry.value}_2.webp',
         'assets/images/affirmation/category_${categoryEntry.value}_3.webp',
       });
+    }
+  });
+
+  test('adjacent cards have distinct covers across the deck boundary', () {
+    for (final category in categoryImageNames.keys) {
+      for (final length in [2, 3, 4, 7, 10, 11]) {
+        final deck = List.generate(
+          length,
+          (_) => _affirmation(category: category),
+        );
+        final covers = List.generate(
+          length,
+          (index) => AffirmationCardWidget(
+            affirmation: deck[index],
+            imageIndex: index,
+            deck: deck,
+          ).imageAssetPath,
+        );
+        for (var index = 0; index < length; index++) {
+          expect(covers[index], isNot(covers[(index + 1) % length]));
+        }
+      }
     }
   });
 
@@ -121,6 +144,8 @@ void main() {
         final cards = [
           _affirmation(id: 'first', text: 'Первая'),
           _affirmation(id: 'second', text: 'Вторая'),
+          for (var i = 3; i <= 10; i++)
+            _affirmation(id: 'love-$i', text: 'Карточка $i'),
         ];
         final router = GoRouter(
           routes: [
@@ -132,6 +157,7 @@ void main() {
                     AffirmationCategoryWidget(
                       category: 'love',
                       affirmations: cards,
+                      showSwipeHint: true,
                     ),
                     AffirmationCategoryWidget(
                       category: 'calm',
@@ -165,24 +191,208 @@ void main() {
 
         final stack = find.byType(AffirmationCardStack);
         expect(stack, findsOneWidget);
-        await tester.tap(stack);
+        final art = find.descendant(
+          of: stack,
+          matching: find.byKey(SwipeCardStack.artworkGestureKey),
+        );
+        // A slow first gesture must work even while the hand hint is on screen.
+        await tester.timedDrag(
+          art,
+          const Offset(0, 48),
+          const Duration(milliseconds: 480),
+        );
         await tester.pumpAndSettle();
-        expect(find.byType(AffirmationPlayerScreen), findsNothing);
+        expect(find.text('Карточка 10'), findsOneWidget);
+        expect(_frontImageAssetPath(tester), endsWith('category_love_2.webp'));
+        await tester.tap(art);
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 600));
+        final selected = tester.widget<AffirmationPlayerScreen>(
+          find.byType(AffirmationPlayerScreen),
+        );
+        expect(
+          selected.session!.portraitAsset,
+          endsWith('category_love_2.webp'),
+        );
+        expect(find.text('Карточка 10'), findsOneWidget);
+        router.pop();
+        await tester.pumpAndSettle();
+        await tester.timedDrag(
+          art,
+          const Offset(0, -48),
+          const Duration(milliseconds: 480),
+        );
+        await tester.pumpAndSettle();
+        expect(_frontImageAssetPath(tester), endsWith('category_love.webp'));
+        await tester.tap(stack);
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 600));
+        expect(find.byType(AffirmationPlayerScreen), findsOneWidget);
         expect(find.text('Первая'), findsOneWidget);
         expect(find.text('Любовь'), findsOneWidget);
-        await tester.tap(find.byTooltip(AppLocalizations.current.commonBack));
+        await tester.tap(
+          find.byTooltip(
+            MaterialLocalizations.of(
+              tester.element(find.byType(AffirmationPlayerScreen)),
+            ).backButtonTooltip,
+          ),
+        );
         await tester.pumpAndSettle();
         await tester.drag(stack, const Offset(0, -145));
-        await tester.pumpAndSettle();
-        expect(_frontImageAssetPath(tester), endsWith('category_love_2.webp'));
+        // Even a tap before the release animation finishes opens card two.
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 30));
         await tester.tap(stack);
-        await tester.pumpAndSettle();
-        expect(find.byType(AffirmationPlayerScreen), findsNothing);
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 600));
+        expect(find.byType(AffirmationPlayerScreen), findsOneWidget);
         expect(find.text('Вторая'), findsOneWidget);
         expect(find.text('Первая'), findsNothing);
-        await tester.tap(find.byTooltip(AppLocalizations.current.commonBack));
+        await tester.tap(
+          find.byTooltip(
+            MaterialLocalizations.of(
+              tester.element(find.byType(AffirmationPlayerScreen)),
+            ).backButtonTooltip,
+          ),
+        );
         await tester.pumpAndSettle();
         expect(_frontImageAssetPath(tester), endsWith('category_love_2.webp'));
+      },
+    );
+
+    testWidgets(
+      'every affirmation deck accepts rapid swipes and a gesture held across handoff',
+      (tester) async {
+        for (final category in categoryImageNames.entries) {
+          final items = [
+            for (var i = 0; i < 4; i++)
+              _affirmation(
+                id: '${category.value}-$i',
+                category: category.key,
+                text: '${category.key} $i',
+              ),
+          ];
+          await tester.pumpWidget(
+            MaterialApp(
+              locale: const Locale('ru'),
+              localizationsDelegates: const [
+                AppLocalizations.delegate,
+                ...GlobalMaterialLocalizations.delegates,
+              ],
+              supportedLocales: AppLocaleService.supportedLocales,
+              home: Builder(
+                builder: (context) => Theme(
+                  data: AppThemeDark.instance.getThemeData(context),
+                  child: Scaffold(
+                    body: ListView(
+                      children: [
+                        AffirmationCardStack(
+                          affirmations: items,
+                          showSwipeHint: true,
+                        ),
+                        const SizedBox(height: 800),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          );
+          await tester.pump();
+          final art = find.byKey(SwipeCardStack.artworkGestureKey);
+          final center = tester.getCenter(art);
+          // Two releases inside the same 220 ms animation used to lose #2.
+          await tester.dragFrom(center, const Offset(0, -84));
+          await tester.pump();
+          await tester.pump(const Duration(milliseconds: 35));
+          await tester.dragFrom(center, const Offset(0, -84));
+          await tester.pumpAndSettle();
+          expect(find.text('${category.key} 2'), findsOneWidget);
+          expect(
+            _frontImageAssetPath(tester),
+            endsWith('category_${category.value}_3.webp'),
+          );
+
+          // Begin the new gesture while the previous face is still leaving,
+          // hold through the handoff, then release and wrap to the first card.
+          await tester.dragFrom(center, const Offset(-90, 0));
+          await tester.pump();
+          final held = await tester.startGesture(center);
+          await tester.pump(const Duration(milliseconds: 260));
+          await held.moveBy(const Offset(-24, 0));
+          await held.moveBy(const Offset(-50, 0));
+          await held.up();
+          await tester.pumpAndSettle();
+          expect(find.text('${category.key} 0'), findsOneWidget);
+          expect(
+            _frontImageAssetPath(tester),
+            endsWith('category_${category.value}.webp'),
+          );
+
+          await tester.drag(
+            find.text('${category.key} 0'),
+            const Offset(65, 0),
+          );
+          await tester.pump();
+          await tester.dragFrom(center, const Offset(0, -67));
+          await tester.pumpAndSettle();
+          expect(find.text('${category.key} 0'), findsOneWidget);
+        }
+      },
+    );
+
+    testWidgets(
+      'diagonal swipes follow net travel, including the exposed stack edge',
+      (tester) async {
+        final cards = List.generate(
+          4,
+          (i) => _affirmation(id: 'id-$i', text: 'Card $i'),
+        );
+        await tester.pumpWidget(
+          MaterialApp(
+            locale: const Locale('ru'),
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              ...GlobalMaterialLocalizations.delegates,
+            ],
+            supportedLocales: AppLocaleService.supportedLocales,
+            home: Builder(
+              builder: (context) => Theme(
+                data: AppThemeDark.instance.getThemeData(context),
+                child: Scaffold(
+                  body: ListView(
+                    children: [
+                      AffirmationCardStack(affirmations: cards),
+                      const SizedBox(height: 1000),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+        final stack = find.byType(AffirmationCardStack);
+        final top = tester.getTopLeft(stack);
+        final x = tester.getCenter(stack).dx;
+        final art = Offset(x, top.dy + 110);
+        final edge = Offset(x, top.dy + 8);
+        Future<void> swipe(Offset from, List<Offset> steps, int want) async {
+          final touch = await tester.startGesture(from);
+          for (final step in steps) {
+            await touch.moveBy(step);
+            await tester.pump(const Duration(milliseconds: 12));
+          }
+          await touch.up();
+          await tester.pumpAndSettle();
+          expect(find.text('Card $want').hitTestable(), findsOneWidget);
+        }
+
+        // A thumb can initially drift downward before sweeping to the left.
+        await swipe(art, [const Offset(-8, 21), const Offset(-78, 4)], 1);
+        await swipe(art, [const Offset(65, -22)], 0);
+        await swipe(edge, [const Offset(-56, 0)], 1);
+        await swipe(edge, [const Offset(0, -50)], 2);
       },
     );
 
@@ -211,9 +421,8 @@ void main() {
                   body: ListenableBuilder(
                     listenable: Listenable.merge([deck, reduced]),
                     builder: (context, _) => MediaQuery(
-                      data: MediaQuery.of(
-                        context,
-                      ).copyWith(disableAnimations: reduced.value),
+                      data: MediaQuery.of(context)
+                          .copyWith(disableAnimations: reduced.value),
                       child: SizedBox(
                         width: 358,
                         child: AffirmationCardStack(affirmations: deck.value),
@@ -279,10 +488,7 @@ void main() {
           ),
         );
         await tester.pumpAndSettle();
-        final artwork = find.byWidgetPredicate(
-          (widget) =>
-              widget is GestureDetector && widget.onVerticalDragEnd != null,
-        );
+        final artwork = find.byKey(SwipeCardStack.artworkGestureKey);
         final firstCaption = find.text('Первая');
         final imageGesture = find.descendant(
           of: find.byType(AffirmationCardStack),
@@ -351,10 +557,7 @@ void main() {
         _expectThreeUniqueLoveImages(tester);
         expect(_frontImageAssetPath(tester), endsWith('category_love.webp'));
 
-        final swipeDetector = find.byWidgetPredicate(
-          (widget) =>
-              widget is GestureDetector && widget.onVerticalDragEnd != null,
-        );
+        final swipeDetector = find.byKey(SwipeCardStack.artworkGestureKey);
         final hand = find.image(
           const AssetImage('assets/icons/clay/swipe_hand.webp'),
         );

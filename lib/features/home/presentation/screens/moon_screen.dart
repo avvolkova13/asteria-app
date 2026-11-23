@@ -302,6 +302,8 @@ class _MoonScreenAdvice extends StatelessWidget {
     final lunar = personalizedDay?.lunarContext;
     final almanac = LunarAlmanacDay.on(day);
     final phaseName = lunar?.moonPhaseName ?? almanac?.phase.label(context);
+    final phaseImageDay =
+        lunar?.moonAgeDayIndex ?? almanac?.phase.illustrativeMoonAge;
     final summary =
         personalizedDay?.dailyBackground.summary ??
         almanac?.describeNextEvent(context) ??
@@ -326,9 +328,9 @@ class _MoonScreenAdvice extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    if (lunar != null) ...[
+                    if (phaseImageDay case final imageDay?) ...[
                       Image.asset(
-                        MoonPhaseDayImage.resolve(lunar.moonAgeDayIndex),
+                        MoonPhaseDayImage.resolve(imageDay),
                         width: 56,
                         height: 56,
                         fit: BoxFit.contain,

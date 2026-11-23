@@ -2955,10 +2955,10 @@ class AppLocalizations {
     );
   }
 
-  /// `Tell her your dream — she will reveal its meaning.`
+  /// `Save a dream for later or ask Liveya what it means.`
   String get adDreamDescription {
     return Intl.message(
-      'Tell her your dream — she will reveal its meaning.',
+      'Save a dream for later or ask Liveya what it means.',
       name: 'adDreamDescription',
       desc: '',
       args: [],
@@ -2975,9 +2975,9 @@ class AppLocalizations {
     );
   }
 
-  /// `Interpret`
+  /// `Record a dream`
   String get adDecode {
-    return Intl.message('Interpret', name: 'adDecode', desc: '', args: []);
+    return Intl.message('Record a dream', name: 'adDecode', desc: '', args: []);
   }
 
   /// `Interpret`
@@ -8073,6 +8073,46 @@ class AppLocalizations {
   /// `Save`
   String get scenarioSave {
     return Intl.message('Save', name: 'scenarioSave', desc: '', args: []);
+  }
+
+  /// `Planned`
+  String get scenarioPlanPlanned {
+    return Intl.message(
+      'Planned',
+      name: 'scenarioPlanPlanned',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Delete plan`
+  String get scenarioPlanDelete {
+    return Intl.message(
+      'Delete plan',
+      name: 'scenarioPlanDelete',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Delete this plan and its reminder?`
+  String get scenarioPlanDeleteConfirm {
+    return Intl.message(
+      'Delete this plan and its reminder?',
+      name: 'scenarioPlanDeleteConfirm',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Could not delete the plan. Please try again.`
+  String get scenarioPlanDeleteError {
+    return Intl.message(
+      'Could not delete the plan. Please try again.',
+      name: 'scenarioPlanDeleteError',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Plan saved`

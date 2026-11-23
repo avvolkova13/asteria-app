@@ -82,6 +82,11 @@ class CalendarPlans {
     await box.put('${plan.owner}/${plan.id}', plan.toJson());
   }
 
+  static Future<void> delete(CalendarPlan plan) async {
+    final box = await open();
+    await box.delete('${plan.owner}/${plan.id}');
+  }
+
   static List<CalendarPlan> read(Box<Map> box, String owner) {
     return box.values
         .where((row) => row['owner'] == owner)

@@ -36,6 +36,8 @@ class _Access extends ChangeNotifier implements MonetizationProvider {
   int remaining = 1, paid = 0, checks = 0;
   bool throwOnRefresh = false;
   @override
+  bool effectivePro = false;
+  @override
   Future<void> refreshForAccess() async {
     checks++;
     if (throwOnRefresh) throw StateError('offline');
@@ -109,6 +111,20 @@ void main() {
     );
     await tester.pumpAndSettle();
   }
+
+  testWidgets('PRO interprets dreams with zero free requests', (tester) async {
+    access.remaining = 0;
+    access.effectivePro = true;
+    await mount(tester);
+    expect(find.textContaining('Бесплатных толкований'), findsNothing);
+    await tester.enterText(find.byType(TextField), 'Дом у реки');
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Расшифровать'));
+    await tester.pumpAndSettle();
+    expect(access.checks, 2);
+    expect(content.requests, ['Дом у реки']);
+    expect(find.text(_dream.interpretation), findsOneWidget);
+  });
 
   testWidgets(
     'a new free user can interpret a dream and open its full result',

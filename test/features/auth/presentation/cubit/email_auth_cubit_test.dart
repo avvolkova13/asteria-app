@@ -149,11 +149,14 @@ void main() {
     'deletion failure shows retry and blocks duplicate deletion while loading',
     (tester) async {
       final users = _FakeUserRepository()..deletePending = Completer<void>();
+      final session = _FakeAuthSessionService();
       di.registerSingleton<UserRepository>(users);
+      di.registerSingleton<AuthSessionService>(session);
       addTearDown(() => di.unregister<UserRepository>());
+      addTearDown(() => di.unregister<AuthSessionService>());
       final cubit = EmailAuthCubit(
         repository: _FakeEmailAuthRepository(),
-        sessionService: _FakeAuthSessionService(),
+        sessionService: session,
         userRepository: users,
         userProvider: UserProvider(userRepository: users),
       );
@@ -531,7 +534,7 @@ class _FakeAuthSessionService implements AuthSessionService {
   String? get currentEmail => null;
 
   @override
-  String? get currentUid => null;
+  String? get currentUid => savedUid;
 
   @override
   bool get hasRecentSignIn => false;

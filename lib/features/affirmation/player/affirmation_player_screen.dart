@@ -1,4 +1,5 @@
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
+
 import 'dart:async';
 import 'dart:math' as math;
 
@@ -8,11 +9,14 @@ import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
 
 import 'package:asteria_app/core/localization/generated/l10n.dart';
 import 'package:asteria_app/core/ui_kit/app_typography.dart';
+import 'package:asteria_app/app/providers/user_provider.dart';
+import 'package:asteria_app/features/practices/presentation/practice_notes_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:hive/hive.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:provider/provider.dart';
 
 import 'player_artwork.dart';
 import 'player_pebble.dart';
@@ -22,8 +26,8 @@ import 'practice_playback_controller.dart';
 const _ink = Color(0xfff7f1fb);
 const _headerInk = Color(0xfffff6fe);
 const _recordingTitle = 'У меня есть время';
-const _favoriteKey = 'time';
-const _transcript = [
+const _defaultFavoriteKey = 'time';
+const _defaultTranscript = [
   (1.2, 'Я чувствую опору под ногами.'),
   (8.0, 'Делаю выдох.'),
   (12.6, 'Я замечаю, как опускаются плечи.'),
@@ -40,6 +44,29 @@ const _transcript = [
 String _formatTime(Duration time) =>
     '${time.inMinutes}:${(time.inSeconds % 60).toString().padLeft(2, '0')}';
 
+class PracticePlayerSession {
+  const PracticePlayerSession({
+    required this.id,
+    required this.title,
+    required this.category,
+    required this.metadata,
+    this.audioAsset,
+    required this.duration,
+    required this.transcript,
+    required this.previewLabel,
+    required this.scene,
+    this.subjectAsset,
+    this.portraitAsset,
+  });
+
+  final String id, title, category, metadata, previewLabel;
+  final String? audioAsset;
+  final Duration duration;
+  final PracticeScene scene;
+  final String? subjectAsset, portraitAsset;
+  final List<(double, String)> transcript;
+}
+
 class AffirmationPlayerScreen extends StatefulWidget {
   const AffirmationPlayerScreen({
     super.key,
@@ -47,13 +74,17 @@ class AffirmationPlayerScreen extends StatefulWidget {
     this.showBack = false,
     this.autoPlay = false,
     this.onCompleted,
+    this.onOpenNotes,
+    this.session,
   });
 
   final bool showBack;
   final bool autoPlay;
+  final PracticePlayerSession? session;
 
   /// Called once after playback finishes naturally, never after a seek or loop.
   final VoidCallback? onCompleted;
+  final Future<void> Function()? onOpenNotes;
 
   /// An injected controller belongs to its caller.
   final PracticePlaybackController? controller;
@@ -68,14 +99,26 @@ class _AffirmationPlayerScreenState extends State<AffirmationPlayerScreen> {
   final _readingProgress = ValueNotifier(0.0);
   final _transcriptKey = GlobalKey();
   final _chevronOffset = ValueNotifier<double?>(null);
-  late final _player = widget.controller ?? PracticePlaybackController();
+  late final _player =
+      widget.controller ??
+      PracticePlaybackController(
+        audioAsset: widget.session?.audioAsset,
+        previewDuration: widget.session?.duration,
+      );
+  String get _favoriteKey => widget.session?.id ?? _defaultFavoriteKey;
+  List<(double, String)> get _transcript =>
+      widget.session?.transcript ?? _defaultTranscript;
   Timer? _noticeTimer;
   String? _notice;
   bool _favorite = false;
   bool _savingFavorite = false;
   bool _sharing = false;
   bool _playbackPressed = false;
+  bool _openingNotes = false;
+  bool _audioUnavailable = false;
+  bool _silentFallback = false;
   bool _wasPlaying = false;
+  bool _artworkStarted = false;
   bool _seeking = false;
   bool _completionReported = false;
   double? _seekPreview;
@@ -86,8 +129,9 @@ class _AffirmationPlayerScreenState extends State<AffirmationPlayerScreen> {
     super.initState();
     _scroll.addListener(_updateReadingProgress);
     _wasPlaying = _player.isPlaying;
+    _artworkStarted |= _wasPlaying;
     _player.addListener(_onPlaybackChanged);
-    _readFavorite();
+    if (widget.session == null) _readFavorite();
     _perform(() async {
       await _player.initialize();
       if (mounted &&
@@ -109,6 +153,7 @@ class _AffirmationPlayerScreenState extends State<AffirmationPlayerScreen> {
         !_seeking &&
         _seekPreview == null;
     _wasPlaying = _player.isPlaying;
+    _artworkStarted |= _wasPlaying;
     if (!finished || _completionReported || widget.onCompleted == null) return;
     _completionReported = true;
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -145,7 +190,12 @@ class _AffirmationPlayerScreenState extends State<AffirmationPlayerScreen> {
       await action();
       return true;
     } catch (_) {
-      if (mounted) _announce(AppLocalizations.of(context).playerPlayError);
+      if (mounted) {
+        if (widget.session != null && !_player.isPreview) {
+          setState(() => _audioUnavailable = true);
+        }
+        _announce(AppLocalizations.of(context).playerPlayError);
+      }
       return false;
     }
   }
@@ -158,6 +208,28 @@ class _AffirmationPlayerScreenState extends State<AffirmationPlayerScreen> {
       await _perform(() => _player.seek(position));
     } finally {
       _seeking = false;
+    }
+  }
+
+  Future<void> _showNotes() async {
+    if (_openingNotes) return;
+    _openingNotes = true;
+    _playbackPressed = true;
+    try {
+      if (_player.isPlaying) await _perform(_player.pause);
+      if (mounted && ModalRoute.isCurrentOf(context) != false) {
+        if (widget.onOpenNotes case final open?) {
+          await open();
+        } else if (widget.session == null) {
+          await openPracticeNotes(
+            context,
+            practiceId: 'affirmation:$_defaultFavoriteKey',
+            practiceTitle: _recordingTitle,
+          );
+        }
+      }
+    } finally {
+      _openingNotes = false;
     }
   }
 
@@ -310,17 +382,26 @@ class _AffirmationPlayerScreenState extends State<AffirmationPlayerScreen> {
 
   Widget _buildPanel(EdgeInsets safeArea, bool compact) {
     final strings = AppLocalizations.of(context);
+    final largeText = MediaQuery.textScalerOf(context).scale(18) > 27;
+    Widget artwork({bool backgroundOnly = false}) => ListenableBuilder(
+      listenable: _player,
+      builder: (_, _) => PlayerArtwork(
+        scene: widget.session?.scene ?? PracticeScene.lotus,
+        subjectAsset: widget.session?.subjectAsset,
+        portraitAsset: widget.session?.portraitAsset,
+        position: _player.position,
+        duration: _player.duration,
+        playing: _player.isPlaying,
+        looping: _player.isLooping,
+        previewMotion: widget.session != null && !_artworkStarted,
+        showBackground: backgroundOnly || !largeText,
+        showSubject: !backgroundOnly,
+      ).withEntrance(),
+    );
     return Stack(
       fit: StackFit.expand,
       children: [
-        ListenableBuilder(
-          listenable: _player,
-          builder: (_, _) => PlayerArtwork(
-            position: _player.position,
-            duration: _player.duration,
-            playing: _player.isPlaying,
-          ).withEntrance(),
-        ),
+        artwork(backgroundOnly: largeText),
         ValueListenableBuilder<double>(
           valueListenable: _readingProgress,
           child: const DecoratedBox(
@@ -353,22 +434,39 @@ class _AffirmationPlayerScreenState extends State<AffirmationPlayerScreen> {
             builder: (context, bounds) {
               // With extra-large type or a short landscape window let the whole
               // composition scroll so a pinned header cannot cover the controls.
-              final scrollHeader =
-                  bounds.maxHeight < 360 ||
-                  MediaQuery.textScalerOf(context).scale(18) > 27;
+              final scrollHeader = bounds.maxHeight < 360 || largeText;
               final header = _PlayerHeader(
+                title: widget.session?.title ?? _recordingTitle,
+                category:
+                    widget.session?.category ?? strings.affirmationCategoryCalm,
+                metadata: widget.session?.metadata ?? strings.playerMetadata,
                 showBack: widget.showBack,
                 compact: compact,
                 onExit: () => Navigator.of(context).maybePop(),
-                repeatButton: ListenableBuilder(
-                  listenable: _player,
-                  builder: (_, _) => PlayerPebble(
-                    glyph: ClayGlyph.repeat,
-                    label: strings.playerRepeat,
-                    value: _player.isLooping,
-                    onTap: _toggleRepeat,
-                  ),
-                ),
+                trailingActions: widget.session == null
+                    ? Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Builder(
+                            builder: (buttonContext) => PlayerPebble(
+                              glyph: ClayGlyph.share,
+                              label: strings.playerShare,
+                              inHeader: true,
+                              onTap: () => _share(buttonContext),
+                            ),
+                          ),
+                          PlayerPebble(
+                            glyph: _favorite
+                                ? ClayGlyph.saved
+                                : ClayGlyph.bookmark,
+                            label: strings.playerFavorite,
+                            value: _favorite,
+                            inHeader: true,
+                            onTap: _toggleFavorite,
+                          ),
+                        ],
+                      )
+                    : null,
               );
               Widget contents(double viewportHeight) {
                 return NotificationListener<ScrollMetricsNotification>(
@@ -386,10 +484,16 @@ class _AffirmationPlayerScreenState extends State<AffirmationPlayerScreen> {
                         child: Column(
                           children: [
                             if (scrollHeader) header,
+                            if (largeText)
+                              SizedBox(
+                                height: compact ? 184 : 252,
+                                width: double.infinity,
+                                child: artwork(),
+                              ),
                             ConstrainedBox(
                               constraints: BoxConstraints(
                                 minHeight: scrollHeader
-                                    ? 210
+                                    ? (largeText ? 0 : 210)
                                     : math.max(
                                         200,
                                         viewportHeight - 56 - safeArea.bottom,
@@ -508,8 +612,29 @@ class _AffirmationPlayerScreenState extends State<AffirmationPlayerScreen> {
     );
   }
 
+  Widget _repeatButton() {
+    return ListenableBuilder(
+      listenable: _player,
+      builder: (context, _) => PlayerPebble(
+        glyph: ClayGlyph.repeat,
+        label: AppLocalizations.of(context).playerRepeat,
+        value: _player.isLooping,
+        onTap: _toggleRepeat,
+      ),
+    );
+  }
+
   Widget _controls(bool compact) {
     final strings = AppLocalizations.of(context);
+    final ru = Localizations.localeOf(context).languageCode == 'ru';
+    final hasNotes =
+        widget.onOpenNotes != null ||
+        (widget.session == null &&
+            context.watch<UserProvider?>()?.currentUser?.id.isNotEmpty == true);
+    final silentLabel = ru ? 'Режим без звука' : 'Playing without audio';
+    final continueSilent = ru
+        ? 'Продолжить без звука'
+        : 'Continue without audio';
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Column(
@@ -518,13 +643,14 @@ class _AffirmationPlayerScreenState extends State<AffirmationPlayerScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Builder(
-                builder: (buttonContext) => PlayerPebble(
-                  glyph: ClayGlyph.share,
-                  label: strings.playerShare,
-                  onTap: () => _share(buttonContext),
-                ),
-              ),
+              if (hasNotes)
+                PlayerPebble(
+                  glyph: ClayGlyph.pencil,
+                  label: ru ? 'Мои заметки' : 'My notes',
+                  onTap: _showNotes,
+                )
+              else
+                const SizedBox(width: 49),
               const SizedBox(width: 16),
               ListenableBuilder(
                 listenable: _player,
@@ -545,14 +671,31 @@ class _AffirmationPlayerScreenState extends State<AffirmationPlayerScreen> {
                 ),
               ),
               const SizedBox(width: 16),
-              PlayerPebble(
-                glyph: _favorite ? ClayGlyph.saved : ClayGlyph.bookmark,
-                label: strings.playerFavorite,
-                value: _favorite,
-                onTap: _toggleFavorite,
-              ),
+              _repeatButton(),
             ],
           ),
+          if (widget.session case final session?)
+            ListenableBuilder(
+              listenable: _player,
+              builder: (_, _) => _player.isPreview
+                  ? Padding(
+                      padding: const EdgeInsets.only(top: 8),
+                      child: Text(
+                        _silentFallback ? silentLabel : session.previewLabel,
+                        textAlign: TextAlign.center,
+                        style: AppTypography.label14,
+                      ),
+                    )
+                  : const SizedBox.shrink(),
+            ),
+          if (_audioUnavailable && !_silentFallback)
+            LotusButtons.text(
+              onPressed: () {
+                setState(() => _silentFallback = true);
+                _perform(_player.continueWithoutAudio);
+              },
+              child: Text(continueSilent, textAlign: TextAlign.center),
+            ),
           Padding(
             padding: EdgeInsets.only(
               top: compact ? 4 : 22,
@@ -662,7 +805,7 @@ class _AffirmationPlayerScreenState extends State<AffirmationPlayerScreen> {
                   Padding(
                     padding: EdgeInsets.only(
                       bottom: i == _transcript.length - 1 ? 0 : 12,
-                      right: i == 0 ? 36 : 0,
+                      right: 36,
                     ),
                     child: Text(
                       _transcript[i].$2,
@@ -700,12 +843,16 @@ class _PlayerHeader extends StatelessWidget {
     required this.compact,
     required this.onExit,
     required this.showBack,
-    required this.repeatButton,
+    this.trailingActions,
+    required this.title,
+    required this.category,
+    required this.metadata,
   });
   final bool compact;
   final VoidCallback onExit;
   final bool showBack;
-  final Widget repeatButton;
+  final Widget? trailingActions;
+  final String title, category, metadata;
 
   @override
   Widget build(BuildContext context) {
@@ -722,19 +869,27 @@ class _PlayerHeader extends StatelessWidget {
             child: Column(
               children: AsteriaEntrance.sections([
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(51, 12, 51, 0),
+                  padding: EdgeInsets.fromLTRB(
+                    trailingActions == null ? 51 : 92,
+                    12,
+                    trailingActions == null ? 51 : 92,
+                    0,
+                  ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       const PlayerClayGlyph(ClayGlyph.spark, 16),
                       const SizedBox(width: 7),
                       Flexible(
-                        child: Text(
-                          strings.affirmationCategoryCalm.toUpperCase(),
-                          textAlign: TextAlign.center,
-                          style: AppTypography.h4.copyWith(
-                            color: _headerInk,
-                            shadows: shadow,
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text(
+                            category.toUpperCase(),
+                            maxLines: 1,
+                            style: AppTypography.h4.copyWith(
+                              color: _headerInk,
+                              shadows: shadow,
+                            ),
                           ),
                         ),
                       ),
@@ -749,14 +904,14 @@ class _PlayerHeader extends StatelessWidget {
                   child: Semantics(
                     header: true,
                     child: Text(
-                      _recordingTitle,
+                      title,
                       textAlign: TextAlign.center,
                       style: AppTypography.h1.copyWith(shadows: shadow),
                     ),
                   ),
                 ),
                 Text(
-                  strings.playerMetadata,
+                  metadata,
                   textAlign: TextAlign.center,
                   style: AppTypography.text2.copyWith(
                     color: _headerInk,
@@ -772,9 +927,8 @@ class _PlayerHeader extends StatelessWidget {
             child:
                 (showBack
                         ? LotusButtons.icon(
-                            tooltip: MaterialLocalizations.of(
-                              context,
-                            ).backButtonTooltip,
+                            tooltip: MaterialLocalizations.of(context)
+                                .backButtonTooltip,
                             onPressed: onExit,
                             icon: const LotusArrowBubble(back: true),
                           )
@@ -785,11 +939,8 @@ class _PlayerHeader extends StatelessWidget {
                           ))
                     .withEntrance(order: 0),
           ),
-          Positioned(
-            top: 0,
-            right: 0,
-            child: repeatButton.withEntrance(order: 1),
-          ),
+          if (trailingActions case final actions?)
+            Positioned(top: 0, right: 0, child: actions.withEntrance(order: 1)),
         ],
       ),
     );

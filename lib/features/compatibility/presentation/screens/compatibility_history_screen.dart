@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/responsive_heading.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
@@ -28,8 +29,9 @@ class CompatibilityHistoryScreen extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: AsteriaEntrance.sections([
-        Text(
+        ResponsiveHeading(
           context.l10n.compatibilityHistoryTitle,
+          minimumFontSize: 14,
           style: context.textTheme.inversePlayfairSemiBold32,
           textAlign: TextAlign.center,
         ),

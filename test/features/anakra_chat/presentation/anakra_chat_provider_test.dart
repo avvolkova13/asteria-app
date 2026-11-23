@@ -201,12 +201,19 @@ void main() {
         tester.widget<AnakraComposer>(find.byType(AnakraComposer)).canSend,
         isFalse,
       );
+      access.setPro();
+      await tester.pumpAndSettle();
+      expect(find.text('No free questions available right now'), findsNothing);
+      expect(
+        tester.widget<AnakraComposer>(find.byType(AnakraComposer)).canSend,
+        isTrue,
+      );
       await tester.pumpWidget(const SizedBox());
     },
   );
 
   test(
-    'free-only send cannot use a purchased request, stale route, or PRO balance',
+    'scenario send uses PRO with an empty quota and protects paid requests',
     () async {
       final user = UserProvider(userRepository: _FakeUserRepository())
         ..applyServerUserSnapshot(UserModel.empty().copyWith(id: 'alice'));
@@ -239,6 +246,11 @@ void main() {
       );
       expect(chat.messages, isEmpty);
       expect(access.commands, 0);
+      access.free = 0;
+      access.paid = 2;
+      access.effectivePro = true;
+      await chat.sendFreeMessage('Subscriber question', isCurrent: () => true);
+      expect(access.commands, 1);
     },
   );
 
@@ -505,7 +517,12 @@ class _FreeMonetizationProvider extends _FailingMonetizationProvider {
   @override
   bool isCurrentUser(String uid) => uid == 'alice';
   @override
-  bool get effectivePro => true;
+  bool effectivePro = false;
+  void setPro() {
+    effectivePro = true;
+    notifyListeners();
+  }
+
   @override
   Map<String, RequestQuotaModel> get requestQuotas => {
     'anakra': RequestQuotaModel.fromJson({

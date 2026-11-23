@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/responsive_heading.dart';
 import 'package:asteria_app/core/ui_kit/widgets/modal_glass_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
@@ -45,7 +46,7 @@ class HowToUseKeltDeck extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 16),
-                Text(
+                ResponsiveHeading(
                   context.l10n.deckHowToUse,
                   style: context.textTheme.playfairSemiBold24.copyWith(
                     color: _HowToUseKeltDeckColors.text,

@@ -12,13 +12,16 @@ class AnakraChatMessage extends StatelessWidget {
   Widget build(BuildContext context) {
     final isUser = message.isUser;
     final width = MediaQuery.sizeOf(context).width;
+    final largeText = MediaQuery.textScalerOf(context).scale(16) > 22;
     return Align(
       alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
       child: Padding(
         padding: EdgeInsets.only(left: isUser ? 16 : 11, right: 16, bottom: 16),
         child: ConstrainedBox(
           constraints: BoxConstraints(
-            maxWidth: width * (isUser ? 280 / 390 : 310 / 390),
+            maxWidth: largeText
+                ? width
+                : width * (isUser ? 280 / 390 : 310 / 390),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,

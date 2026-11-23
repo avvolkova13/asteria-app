@@ -7,6 +7,7 @@ import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/core/ui_kit/widgets/top_nav_bar.dart';
 import 'package:asteria_app/features/home/presentation/widgets/home_section_heading.dart';
 import 'package:asteria_app/features/home/presentation/widgets/widgets_index.dart';
+import 'package:asteria_app/features/practices/practice_catalog_screen.dart';
 import 'package:flutter/material.dart';
 
 class PracticesScreen extends StatelessWidget {
@@ -15,6 +16,7 @@ class PracticesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ru = Localizations.localeOf(context).languageCode == 'ru';
+    final openLabel = ru ? 'Открыть' : 'Open';
     final content = di.get<ContentProvider>();
     return ColoredBox(
       color: AppColors.textPrimary,
@@ -40,14 +42,64 @@ class PracticesScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+                  LayoutBuilder(
+                    builder: (context, constraints) {
+                      final twoColumns =
+                          constraints.maxWidth >= 340 &&
+                          MediaQuery.textScalerOf(context).scale(16) <= 20;
+                      const meditation = PracticeCategory.meditation;
+                      final affirmationsCard = HubEntryCard(
+                        compact: true,
+                        alignAction: twoColumns,
+                        fitCompactTitle: true,
+                        title: context.l10n.affirmationsTitle,
+                        description: ru
+                            ? 'Короткие фразы, к которым хочется возвращаться.'
+                            : 'Short phrases worth coming back to.',
+                        action: openLabel,
+                        art: 'assets/images/scenarios/lotus.webp',
+                        onTap: () => AffirmationRoute.push(context),
+                      );
+                      final meditationCard = HubEntryCard(
+                        compact: true,
+                        alignAction: twoColumns,
+                        fitCompactTitle: true,
+                        title: meditation.title(ru),
+                        description: meditation.description(ru),
+                        action: openLabel,
+                        art: meditation.art,
+                        onTap: () => openPracticeCatalog(context, meditation),
+                      );
+                      if (!twoColumns) {
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            affirmationsCard,
+                            const SizedBox(height: 14),
+                            meditationCard,
+                          ],
+                        );
+                      }
+                      return IntrinsicHeight(
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Expanded(child: affirmationsCard),
+                            const SizedBox(width: 14),
+                            Expanded(child: meditationCard),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 14),
                   HubEntryCard(
-                    title: ru ? 'Время для себя' : 'Time for yourself',
-                    description: ru
-                        ? 'Выберите аффирмацию по настроению.'
-                        : 'Choose an affirmation for your mood.',
-                    action: ru ? 'Выбрать аффирмацию' : 'Choose an affirmation',
-                    art: 'assets/images/scenarios/lotus.webp',
-                    onTap: () => AffirmationRoute.push(context),
+                    title: PracticeCategory.body.title(ru),
+                    description: PracticeCategory.body.description(ru),
+                    action: openLabel,
+                    art: PracticeCategory.body.art,
+                    onTap: () =>
+                        openPracticeCatalog(context, PracticeCategory.body),
                   ),
                   const SizedBox(height: 24),
                   const PracticeToolEntries(),

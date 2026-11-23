@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/responsive_heading.dart';
 import 'package:asteria_app/core/ui_kit/widgets/modal_glass_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_raster_icon.dart';
@@ -42,7 +43,7 @@ class HowToUseRunes extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 16),
-                Text(
+                ResponsiveHeading(
                   context.l10n.runesHowToUse,
                   style: context.textTheme.playfairSemiBold24.copyWith(
                     color: AppColors.white,
