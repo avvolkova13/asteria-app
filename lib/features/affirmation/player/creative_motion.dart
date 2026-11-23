@@ -19,7 +19,9 @@ class _CreativeMotion extends StatelessWidget {
         layers.addAll([
           plate(''),
           _TexturedPlate(
-            asset: _roseAsset, phase: phase, painter: _OpeningRose.new,
+            asset: _roseAsset,
+            phase: phase,
+            painter: _OpeningRose.new,
           ),
         ]);
       case PlayerSubjectMotion.quill:
@@ -55,7 +57,7 @@ class _CreativeMotion extends StatelessWidget {
               child: plate('_a'),
             ),
           ),
-          plate(''),
+          ClipPath(clipper: const _BookOpening(), child: plate('')),
         ]);
       default:
         layers.add(plate(''));
@@ -64,7 +66,8 @@ class _CreativeMotion extends StatelessWidget {
   }
 }
 
-const _roseAsset = 'assets/images/affirmation/motion/subjects/category_creative_a.webp';
+const _roseAsset =
+    'assets/images/affirmation/motion/subjects/category_creative_a.webp';
 
 class _OpeningRose extends CustomPainter {
   _OpeningRose(this.texture, this.phase);
@@ -232,4 +235,27 @@ class _QuillStroke extends CustomPainter {
 
   @override
   bool shouldRepaint(_QuillStroke old) => old.time != time;
+}
+
+/// Keep the space between the inner page edges open behind the floating star.
+class _BookOpening extends CustomClipper<Path> {
+  const _BookOpening();
+
+  @override
+  Path getClip(Size size) {
+    final opening = Path()
+      ..fillType = PathFillType.evenOdd
+      ..addRect(const Rect.fromLTWH(0, 0, 430, 430))
+      ..moveTo(173, 135)
+      ..lineTo(257, 135)
+      ..cubicTo(238, 155, 224, 183, 215, 218)
+      ..cubicTo(205, 183, 191, 155, 173, 135)
+      ..close();
+    return opening.transform(
+      Matrix4.diagonal3Values(size.width / 430, size.height / 430, 1).storage,
+    );
+  }
+
+  @override
+  bool shouldReclip(_BookOpening oldClipper) => false;
 }
