@@ -35,24 +35,31 @@ void main() {
   );
 
   testWidgets(
-    'selecting another practice cover keeps its matching note after autoplay',
+    'practice catalogue pages turn, then the meditation gains a note',
     (tester) async {
       await fixture.host(
         tester,
         const IntroJournalStory.practice(active: true),
       );
+      final scene = find.byType(IntroJournalStory);
+      expect(
+        find.descendant(of: scene, matching: find.byType(GestureDetector)),
+        findsNothing,
+      );
       expect(stage('intro-practice-selected-0'), findsOneWidget);
-      await tester.pump(const Duration(milliseconds: 2800));
+      expect(find.text('Сейчас можно никуда не спешить.'), findsOneWidget);
+      expect(
+        tester.getSize(stage('intro-practice-cover-0')).height,
+        greaterThan(200),
+      );
+      await tester.pump(const Duration(milliseconds: 3400));
       expect(stage('intro-practice-selected-1'), findsOneWidget);
-      await tester.pump(const Duration(milliseconds: 2100));
+      expect(stage('intro-practice-selected-0'), findsNothing);
+      await tester.pump(const Duration(seconds: 3));
       expect(stage('intro-practice-selected-2'), findsOneWidget);
-      await tester.tap(stage('intro-practice-cover-1'));
-      await tester.pump();
-      expect(stage('intro-practice-selected-1'), findsOneWidget);
-      final result = tester.widget<Text>(stage('intro-practice-result'));
-      expect(result.data, contains('дня за столом'));
-      await tester.pump(const Duration(seconds: 7));
-      expect(stage('intro-practice-selected-1'), findsOneWidget);
+      expect(stage('intro-practice-result'), findsNothing);
+      await tester.pump(const Duration(seconds: 2));
+      expect(stage('intro-practice-result'), findsOneWidget);
       expect(tester.takeException(), isNull);
       await tester.pumpWidget(const SizedBox());
     },

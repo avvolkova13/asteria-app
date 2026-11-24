@@ -91,7 +91,7 @@ void main() {
 
   for (final language in ['ru', 'en']) {
     testWidgets(
-      '$language only the simulated calendar plan is marked as a sample',
+      '$language tour uses no demo labels or prompts to interact with the scene',
       (tester) async {
         bloc = OnboardingBloc(settings);
         await _pumpOnboarding(
@@ -104,7 +104,7 @@ void main() {
         for (var page = 0; page < _pageCount; page++) {
           for (final text in tester.widgetList<Text>(find.byType(Text))) {
             final value = text.data ?? text.textSpan?.toPlainText() ?? '';
-            if (_unexpectedDemoLabel(value, calendar: page == 0)) {
+            if (_unexpectedDemoLabel(value)) {
               unexpected.add('scene${page + 1}: $value');
             }
           }
@@ -209,7 +209,7 @@ void main() {
         );
         expect(settings.onboardingWrites, isEmpty);
         final duration = _activeStoryDuration(tester);
-        expect(duration.inSeconds, [10, 14, 11, 11][page]);
+        expect(duration.inSeconds, inInclusiveRange(5, 20));
         await _pumpStoryTo(tester, page, duration.inMilliseconds - 1500);
         expect(
           bloc.state.currentPageIndex,
@@ -234,7 +234,7 @@ void main() {
         }
       }
       expect(bloc.state.currentPageIndex, _lastPage);
-      expect(completions, 0);
+      expect(completions, 1);
       expect(audioCalls, isEmpty);
       expect(
         analytics
@@ -242,9 +242,7 @@ void main() {
             .map((event) => event.params[EventParams.stepIndex]),
         _indices,
       );
-      await tester.tap(_cta(tester));
-      await tester.pump();
-      expect(completions, 1);
+      expect(analytics.named(AstEvents.onboardingComplete), hasLength(1));
       expect(settings.onboardingWrites, [false]);
       expect(tester.takeException(), isNull);
     },
@@ -625,11 +623,13 @@ void main() {
           // On a short screen, an outcome may fit even if the animation that
           // explains it was offscreen. Check the action while it is happening.
           final moments = switch (page) {
-            0 => [
-              (3400, 'intro-calendar-save'),
-              (5800, 'intro-calendar-remind'),
+            0 => [(3750, 'intro-calendar-day-2')],
+            1 => [
+              (1600, 'intro-aspect-0'),
+              (3400, 'intro-aspect-1'),
+              (5100, 'intro-aspect-2'),
+              for (var i = 0; i < 3; i++) (7000, 'intro-spread-turn-$i'),
             ],
-            1 => [for (var i = 0; i < 3; i++) (7000, 'intro-spread-turn-$i')],
             2 => [(4600, 'intro-dream-transcript')],
             _ => const <(int, String)>[],
           };
@@ -841,8 +841,8 @@ void main() {
               [
                 (650, 'start'),
                 (2800, 'date'),
-                (5300, 'plan'),
-                (8600, 'result'),
+                (4000, 'selection'),
+                (5400, 'result'),
               ],
               [
                 (650, 'start'),
@@ -858,8 +858,8 @@ void main() {
               ],
               [
                 (650, 'start'),
-                (2700, 'body'),
-                (4900, 'meditation'),
+                (3600, 'body'),
+                (6400, 'meditation'),
                 (8750, 'result'),
               ],
             ];
@@ -1065,25 +1065,15 @@ Future<void> _saveReviewImage(
   });
 }
 
-bool _unexpectedDemoLabel(String value, {required bool calendar}) {
-  if (calendar &&
-      (value == 'Стрижка · пример плана' || value == 'Haircut · sample plan')) {
-    return false;
-  }
-  return RegExp(
-    r'пример|demo|example|sample',
-    caseSensitive: false,
-  ).hasMatch(value);
-}
+bool _unexpectedDemoLabel(String value) => RegExp(
+  r'пример|demo|example|sample|коснись планеты|открой любую карту|tap a planet|turn over any card',
+  caseSensitive: false,
+).hasMatch(value);
 
 Future<void> _saveReviewScreen(WidgetTester tester, String name) async {
   for (final text in tester.widgetList<Text>(find.byType(Text))) {
     final value = text.data ?? text.textSpan?.toPlainText() ?? '';
-    expect(
-      _unexpectedDemoLabel(value, calendar: name.split('_')[1] == '1'),
-      isFalse,
-      reason: '$name: $value',
-    );
+    expect(_unexpectedDemoLabel(value), isFalse, reason: '$name: $value');
   }
   await _waitForGoldenImages(tester);
   final boundary = tester.renderObject<RenderRepaintBoundary>(

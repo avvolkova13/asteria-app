@@ -1,4 +1,9 @@
+import 'package:asteria_app/core/ui_kit/card_radii.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
+import 'package:asteria_app/features/home/presentation/models/day_status.dart';
+import 'package:asteria_app/features/home/presentation/models/day_status_advice.dart';
+import 'package:asteria_app/features/home/presentation/widgets/day_status_icon.dart';
+import 'package:asteria_app/features/home/presentation/widgets/moon_phase_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -8,9 +13,7 @@ import 'intro_story.dart';
 List<DateTime> introUpcomingDates(DateTime now) =>
     List.generate(5, (i) => DateTime(now.year, now.month, now.day + i));
 
-enum _PlanStep { choose, saved, reminder }
-
-class IntroCalendarStory extends StatefulWidget {
+class IntroCalendarStory extends StatelessWidget {
   const IntroCalendarStory({
     super.key,
     required this.active,
@@ -21,79 +24,36 @@ class IntroCalendarStory extends StatefulWidget {
   final DateTime Function() now;
 
   @override
-  State<IntroCalendarStory> createState() => _IntroCalendarStoryState();
-}
-
-class _IntroCalendarStoryState extends State<IntroCalendarStory> {
-  int? _chosenDay;
-  _PlanStep? _manualStep;
-
-  @override
-  void didUpdateWidget(IntroCalendarStory oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (widget.active != oldWidget.active) {
-      _chosenDay = null;
-      _manualStep = null;
-    }
-  }
-
-  void _choose(int day, _PlanStep step) {
-    final playback = IntroPlaybackScope.maybeOf(context);
-    if (playback?.mode == IntroPlaybackMode.pause) playback?.toggle?.call();
-    setState(() {
-      _chosenDay = day;
-      _manualStep = step;
-    });
-  }
-
-  @override
   Widget build(BuildContext context) => IntroStory(
-    active: widget.active,
-    now: widget.now,
-    duration: const Duration(seconds: 10),
+    active: active,
+    now: now,
+    duration: const Duration(seconds: 7),
     builder: (context, time, still, now) {
-      final l = context.l10n;
-      final locale = Localizations.localeOf(context).toLanguageTag();
       final dates = introUpcomingDates(now);
-      final selected =
-          _chosenDay ??
-          (still || time >= 2.4
-              ? 2
-              : time >= 1.1
-              ? 1
-              : 0);
-      final date = dates[selected];
-      final step =
-          _manualStep ??
-          (still || time >= 6.9
-              ? _PlanStep.reminder
-              : time >= 4.8
-              ? _PlanStep.saved
-              : _PlanStep.choose);
-      final status = [
-        l.dayNeutral,
-        l.dayUnfavorable,
-        l.dayFavorable,
-        l.dayFavorable,
-        l.dayNeutral,
+      const statuses = [
+        DayStatus.unfavorable,
+        DayStatus.neutral,
+        DayStatus.favorable,
+        DayStatus.favorable,
+        DayStatus.neutral,
       ];
+      final selected = still || time >= 3
+          ? 2
+          : time >= 1.5
+          ? 1
+          : 0;
+      final date = dates[selected];
+      final locale = Localizations.localeOf(context).toLanguageTag();
       final compact = MediaQuery.sizeOf(context).height < 650;
-      final isRu = Localizations.localeOf(context).languageCode == 'ru';
-      final reminderDate = selected == 0
-          ? date
-          : DateTime(date.year, date.month, date.day - 1);
-      final reminderLabel = DateFormat.MMMMd(locale).format(reminderDate);
       final drift = still
           ? 1.0
           : Curves.easeOutCubic.transform((time / 4.8).clamp(0, 1));
-      return Material(
-        color: AppColors.modal,
-        borderRadius: BorderRadius.circular(22),
-        clipBehavior: Clip.antiAlias,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            DecoratedBox(
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(AsteriaCardRadii.card),
+            child: DecoratedBox(
               decoration: const BoxDecoration(color: AppColorsDark.homeCanvas),
               child: Stack(
                 alignment: Alignment.centerLeft,
@@ -139,9 +99,7 @@ class _IntroCalendarStoryState extends State<IntroCalendarStory> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          isRu
-                              ? 'Стрижка · пример плана'
-                              : 'Haircut · sample plan',
+                          context.l10n.lunarHaircut,
                           style: AppTypography.text2SemiBold.copyWith(
                             color: AppColorsDark.linkGold,
                           ),
@@ -178,219 +136,61 @@ class _IntroCalendarStoryState extends State<IntroCalendarStory> {
                             color: AppColors.textInverse,
                           ),
                         ),
+                        const SizedBox(height: 6),
+                        Row(
+                          key: selected == 2
+                              ? const ValueKey('intro-day-result')
+                              : null,
+                          children: [
+                            DayStatusIcon(
+                              status: statuses[selected],
+                              size: 16,
+                              excludeFromSemantics: true,
+                            ),
+                            const SizedBox(width: 6),
+                            Flexible(
+                              child: Text(
+                                statuses[selected].title(context),
+                                style: AppTypography.text2SemiBold.copyWith(
+                                  color: AppColors.textInverse,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ],
                     ),
                   ),
                 ],
               ),
             ),
-            Padding(
-              padding: EdgeInsets.fromLTRB(12, compact ? 6 : 12, 12, 4),
-              child: LayoutBuilder(
-                builder: (context, bounds) {
-                  final count = bounds.maxWidth < 300 ? 3 : dates.length;
-                  return Row(
-                    children: [
-                      for (var i = 0; i < count; i++)
-                        Expanded(
-                          child: Semantics(
-                            key: ValueKey('intro-calendar-day-$i'),
-                            label:
-                                '${DateFormat.MMMMEEEEd(locale).format(dates[i])}. ${status[i]}',
-                            selected: i == selected,
-                            button: true,
-                            child: InkWell(
-                              onTap: () => _choose(i, _PlanStep.choose),
-                              borderRadius: BorderRadius.circular(12),
-                              child: ExcludeSemantics(
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 4,
-                                  ),
-                                  child: Column(
-                                    children: [
-                                      Text(
-                                        DateFormat.E(locale).format(dates[i]),
-                                        style: AppTypography.text2.copyWith(
-                                          color: AppColors.textSecondary,
-                                        ),
-                                      ),
-                                      Container(
-                                        constraints: const BoxConstraints(
-                                          minWidth: 38,
-                                        ),
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 5,
-                                          vertical: 5,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: i == selected
-                                              ? AppColorsDark.secondary
-                                              : Colors.transparent,
-                                          borderRadius: BorderRadius.circular(
-                                            18,
-                                          ),
-                                        ),
-                                        child: Text(
-                                          '${dates[i].day}',
-                                          textAlign: TextAlign.center,
-                                          style: AppTypography.h3.copyWith(
-                                            color: i == selected
-                                                ? AppColors.textInverse
-                                                : AppColors.deepPurple,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
+          ),
+          const SizedBox(height: 12),
+          IntroStoryFocus(
+            enabled: !still && time >= .6,
+            child: LayoutBuilder(
+              builder: (context, bounds) {
+                final count = bounds.maxWidth < 300 ? 3 : dates.length;
+                return Row(
+                  children: [
+                    for (var i = 0; i < count; i++) ...[
+                      if (i > 0) const SizedBox(width: 6),
+                      Expanded(
+                        child: MoonDayPreview(
+                          key: ValueKey('intro-calendar-day-$i'),
+                          date: dates[i],
+                          status: statuses[i],
+                          isSelected: i == selected,
                         ),
+                      ),
                     ],
-                  );
-                },
-              ),
+                  ],
+                );
+              },
             ),
-            const Divider(
-              height: 1,
-              color: AppColors.divider,
-              indent: 16,
-              endIndent: 16,
-            ),
-            IntroStoryFocus(
-              key: ValueKey(step),
-              child: Padding(
-                padding: EdgeInsets.fromLTRB(
-                  16,
-                  compact ? 9 : 14,
-                  16,
-                  compact ? 10 : 14,
-                ),
-                child: switch (step) {
-                  _PlanStep.choose => Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Text(
-                        status[selected],
-                        style: AppTypography.h3.copyWith(
-                          color: AppColors.deepPurple,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        switch (selected) {
-                          1 =>
-                            isRu
-                                ? 'Посмотри соседние даты для смены образа.'
-                                : 'Compare the nearby dates for a new look.',
-                          2 || 3 => l.introFavorableTip,
-                          _ => l.introNeutralTip,
-                        },
-                        style: AppTypography.text2.copyWith(
-                          color: AppColors.textPrimary,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      _PlannerAction(
-                        key: const ValueKey('intro-calendar-save'),
-                        icon: Icons.add_rounded,
-                        label: isRu ? 'Добавить в планы' : 'Add to my plans',
-                        onTap: () => _choose(selected, _PlanStep.saved),
-                      ),
-                    ],
-                  ),
-                  _PlanStep.saved => Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Text(
-                        l.introCalendarSavedText,
-                        style: AppTypography.h3.copyWith(
-                          color: AppColors.deepPurple,
-                        ),
-                      ),
-                      _PlannerAction(
-                        key: const ValueKey('intro-calendar-remind'),
-                        icon: Icons.notifications_none_rounded,
-                        label: selected == 0
-                            ? (isRu ? 'Напомнить сегодня' : 'Remind me today')
-                            : (isRu
-                                  ? 'Напомнить за день'
-                                  : 'Remind me a day before'),
-                        onTap: () => _choose(selected, _PlanStep.reminder),
-                      ),
-                    ],
-                  ),
-                  _PlanStep.reminder => Column(
-                    key: const ValueKey('intro-day-result'),
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        isRu ? 'Стрижка в планах' : 'Haircut in my plans',
-                        style: AppTypography.h3.copyWith(
-                          color: AppColors.deepPurple,
-                        ),
-                      ),
-                      const SizedBox(height: 6),
-                      Row(
-                        children: [
-                          const Icon(
-                            Icons.notifications_active_outlined,
-                            size: 20,
-                            color: AppColors.deepPurple,
-                          ),
-                          const SizedBox(width: 8),
-                          Flexible(
-                            child: Text(
-                              isRu
-                                  ? 'Напоминание — $reminderLabel'
-                                  : 'Reminder on $reminderLabel',
-                              style: AppTypography.text1.copyWith(
-                                color: AppColors.textPrimary,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                },
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       );
     },
-  );
-}
-
-class _PlannerAction extends StatelessWidget {
-  const _PlannerAction({
-    super.key,
-    required this.icon,
-    required this.label,
-    required this.onTap,
-  });
-
-  final IconData icon;
-  final String label;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) => Align(
-    alignment: Alignment.centerLeft,
-    child: TextButton.icon(
-      icon: Icon(icon, size: 19),
-      onPressed: onTap,
-      label: Text(label),
-      style: TextButton.styleFrom(
-        foregroundColor: AppColors.deepPurple,
-        backgroundColor: AppColors.cardTinted,
-        minimumSize: const Size(44, 44),
-        textStyle: AppTypography.text2SemiBold,
-        padding: const EdgeInsets.symmetric(horizontal: 14),
-      ),
-    ),
   );
 }

@@ -486,10 +486,10 @@ void main() {
       IntroCalendarStory(active: true, now: () => now),
       reduced: true,
     );
-    expect(find.textContaining('Напоминание — 1 января'), findsOneWidget);
+    expect(find.byKey(ValueKey(DateTime(2027, 1, 2))), findsOneWidget);
     now = DateTime(2027, 1, 1);
     await tester.pump(const Duration(seconds: 2));
-    expect(find.textContaining('Напоминание — 2 января'), findsOneWidget);
+    expect(find.byKey(ValueKey(DateTime(2027, 1, 3))), findsOneWidget);
     await tester.pumpWidget(const SizedBox());
   });
 }

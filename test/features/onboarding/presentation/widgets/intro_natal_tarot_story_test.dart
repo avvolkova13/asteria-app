@@ -7,60 +7,63 @@ import 'intro_stories_test.dart' as fixture;
 Finder _key(String value) => find.byKey(ValueKey(value));
 
 void main() {
+  testWidgets('wheel spotlights three aspects before the spread arrives', (
+    tester,
+  ) async {
+    await fixture.host(tester, const IntroNatalTarotStory(active: true));
+    await tester.pump(const Duration(milliseconds: 600));
+    for (var i = 0; i < 3; i++) {
+      if (i != 0) await tester.pump(const Duration(milliseconds: 1700));
+      expect(_key('intro-chart-wheel'), findsOneWidget);
+      expect(_key('intro-aspect-$i'), findsOneWidget);
+      expect(_key('intro-spread'), findsNothing);
+    }
+    await tester.pump(const Duration(milliseconds: 2100));
+    expect(_key('intro-chart-wheel'), findsNothing);
+    for (var i = 0; i < 3; i++) {
+      expect(_key('intro-spread-back-$i'), findsOneWidget);
+      expect(_key('intro-spread-front-$i'), findsNothing);
+    }
+    expect(_key('intro-natal-tarot-result'), findsNothing);
+    await tester.pumpWidget(const SizedBox());
+  });
+
   testWidgets(
-    'a planet tap selects its own reading and survives the automatic highlight',
+    'each card turns in order and the insight follows the last turn',
     (tester) async {
       await fixture.host(tester, const IntroNatalTarotStory(active: true));
-      expect(find.text('Луна в\u00a0Тельце'), findsOneWidget);
-      await tester.tap(_key('natal-wheel-sun'));
-      await tester.pump();
-      expect(find.text('Солнце во\u00a0Льве'), findsOneWidget);
-      expect(find.text('Что я хочу сделать по-своему?'), findsOneWidget);
-      await tester.pump(const Duration(seconds: 3));
-      expect(find.text('Солнце во\u00a0Льве'), findsOneWidget);
-      await tester.tap(_key('natal-wheel-mars'));
-      await tester.pump();
-      expect(find.text('Марс в\u00a0Овне'), findsOneWidget);
+      await tester.pump(const Duration(milliseconds: 7700));
+      for (var i = 0; i < 3; i++) {
+        if (i > 0) await tester.pump(const Duration(milliseconds: 1150));
+        expect(_key('intro-spread-front-$i'), findsOneWidget);
+        if (i < 2) expect(_key('intro-spread-back-${i + 1}'), findsOneWidget);
+        expect(_key('intro-natal-tarot-result'), findsNothing);
+      }
+      await tester.pump(const Duration(milliseconds: 600));
+      expect(_key('intro-natal-tarot-result'), findsOneWidget);
       expect(tester.takeException(), isNull);
       await tester.pumpWidget(const SizedBox());
     },
   );
 
-  testWidgets(
-    'each drawn card turns from its back to a localized face in order',
-    (tester) async {
-      await fixture.host(tester, const IntroNatalTarotStory(active: true));
-      for (var i = 0; i < 3; i++) {
-        expect(_key('intro-spread-back-$i'), findsOneWidget);
-        expect(_key('intro-spread-front-$i'), findsNothing);
-      }
-      await tester.pump(const Duration(milliseconds: 6100));
-      for (var i = 0; i < 3; i++) {
-        if (i > 0) await tester.pump(const Duration(milliseconds: 1350));
-        expect(_key('intro-spread-front-$i'), findsOneWidget);
-        if (i < 2) expect(_key('intro-spread-back-${i + 1}'), findsOneWidget);
-      }
-      expect(_key('intro-natal-tarot-result'), findsOneWidget);
-      await tester.pumpWidget(const SizedBox());
-    },
-  );
-
-  testWidgets('cards can be turned in a different order before autoplay', (
+  testWidgets('tapping the displayed artwork does not alter the timeline', (
     tester,
   ) async {
     await fixture.host(tester, const IntroNatalTarotStory(active: true));
-    for (final i in [2, 0, 1]) {
-      await tester.tap(_key('intro-spread-turn-$i'));
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 880));
-      expect(_key('intro-spread-front-$i'), findsOneWidget);
-    }
-    expect(_key('intro-natal-tarot-result'), findsOneWidget);
+    await tester.pump(const Duration(milliseconds: 1400));
+    await tester.tap(_key('intro-chart-wheel'));
+    await tester.pump();
+    expect(_key('intro-aspect-0'), findsOneWidget);
+    await tester.pump(const Duration(milliseconds: 4800));
+    await tester.tap(_key('intro-spread-turn-2'));
+    await tester.pump();
+    expect(_key('intro-spread-back-2'), findsOneWidget);
+    expect(_key('intro-natal-tarot-result'), findsNothing);
     await tester.pumpWidget(const SizedBox());
   });
 
   testWidgets(
-    'reduced motion exposes all cards and keeps planet selection usable',
+    'reduced motion exposes a static birth chart, spread and combined insight',
     (tester) async {
       await fixture.host(
         tester,
@@ -68,13 +71,11 @@ void main() {
         reduced: true,
         textScale: 2,
       );
+      expect(_key('intro-chart-wheel'), findsOneWidget);
+      expect(_key('intro-natal-tarot-result'), findsOneWidget);
       for (var i = 0; i < 3; i++) {
         expect(_key('intro-spread-front-$i'), findsOneWidget);
       }
-      expect(_key('intro-natal-tarot-result'), findsOneWidget);
-      await tester.tap(_key('natal-wheel-sun'));
-      await tester.pump();
-      expect(find.text('Солнце во\u00a0Льве'), findsOneWidget);
       expect(tester.takeException(), isNull);
       await tester.pumpWidget(const SizedBox());
     },

@@ -61,9 +61,7 @@ class _TourState extends State<OnboardingTour> with WidgetsBindingObserver {
   }
 
   void _scheduleAdvance() {
-    if (_advanceQueued ||
-        _finishedIndex != _index ||
-        _index == widget.pages.length - 1) {
+    if (_advanceQueued || _finishedIndex != _index) {
       return;
     }
     _advanceQueued = true;
@@ -74,7 +72,6 @@ class _TourState extends State<OnboardingTour> with WidgetsBindingObserver {
           _choosing ||
           _moving ||
           _finishedIndex != _index ||
-          _index >= widget.pages.length - 1 ||
           !_pages.hasClients) {
         return;
       }
@@ -82,7 +79,11 @@ class _TourState extends State<OnboardingTour> with WidgetsBindingObserver {
           ((_pages.page ?? _index.toDouble()) - _index).abs() > .01) {
         return;
       }
-      _go(_index + 1);
+      if (_index == widget.pages.length - 1) {
+        _finish();
+      } else {
+        _go(_index + 1);
+      }
     });
     WidgetsBinding.instance.ensureVisualUpdate();
   }
