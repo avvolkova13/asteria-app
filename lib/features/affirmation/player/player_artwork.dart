@@ -59,6 +59,13 @@ class _PlayerArtworkState extends State<PlayerArtwork>
   PlayerSubjectMotion? get _motion => PlayerSubjectMotion.forAsset(
     widget.portraitAsset ?? widget.subjectAsset ?? widget.scene.asset,
   );
+  bool get _hasLunarAmbientMotion => switch (_motion) {
+    PlayerSubjectMotion.moonClouds ||
+    PlayerSubjectMotion.fullMoon ||
+    PlayerSubjectMotion.orb => true,
+    _ => false,
+  };
+
   late final Ticker _ticker = createTicker(_tick);
   final _time = ValueNotifier(0.0);
   double _previewOffset = 0;
@@ -124,25 +131,20 @@ class _PlayerArtworkState extends State<PlayerArtwork>
         _loadAtmosphere();
       }
     }
-    if (oldWidget.previewMotion && !widget.previewMotion) {
+    if (!_hasLunarAmbientMotion &&
+        oldWidget.previewMotion &&
+        !widget.previewMotion) {
       _previewOffset = _time.value - oldWidget.position.inMilliseconds / 1000;
     }
-    // The lunar light cycle spans several audio loops. Carry visual time
-    // through a wrap while the player's position returns to the beginning.
-    if (_motion == PlayerSubjectMotion.fullMoon &&
-        widget.looping &&
-        oldWidget.playing &&
-        widget.playing &&
-        oldWidget.duration == widget.duration &&
-        oldWidget.position >= widget.duration - const Duration(seconds: 1) &&
-        widget.position < const Duration(seconds: 1) &&
-        widget.position < oldWidget.position) {
-      _previewOffset += widget.duration.inMicroseconds / 1000000;
-    }
-    if (widget.position != oldWidget.position ||
-        widget.playing != oldWidget.playing ||
-        widget.previewMotion != oldWidget.previewMotion ||
-        widget.duration != oldWidget.duration) {
+    // Lunar ambience has its own continuous clock; audio updates and seeking
+    // must not freeze or rewind the sky, cloud drift or the slow lunar light.
+    if (oldWidget.portraitAsset != widget.portraitAsset ||
+        oldWidget.subjectAsset != widget.subjectAsset ||
+        (!_hasLunarAmbientMotion &&
+            (widget.position != oldWidget.position ||
+                widget.playing != oldWidget.playing ||
+                widget.previewMotion != oldWidget.previewMotion ||
+                widget.duration != oldWidget.duration))) {
       _syncClock();
     }
   }
@@ -154,11 +156,11 @@ class _PlayerArtworkState extends State<PlayerArtwork>
     final reduced = MediaQuery.disableAnimationsOf(context);
     if (reduced) {
       _time.value = 0;
-    } else if (!widget.previewMotion) {
+    } else if (!widget.previewMotion && !_hasLunarAmbientMotion) {
       _time.value = widget.position.inMilliseconds / 1000 + _previewOffset;
     }
     _anchor = _time.value;
-    if ((widget.playing || widget.previewMotion) &&
+    if ((widget.playing || widget.previewMotion || _hasLunarAmbientMotion) &&
         !reduced &&
         TickerMode.valuesOf(context).enabled) {
       _extrapolation.start();
@@ -352,11 +354,13 @@ class _PracticeSceneArtwork extends StatelessWidget {
                   if (showBackground && scene == PracticeScene.moon)
                     Transform.translate(
                       offset: Offset(
-                        -bounds.maxWidth * .025 * math.sin(backgroundPhase),
-                        2 * (1 - math.cos(backgroundPhase)),
+                        -bounds.maxWidth * .045 * math.sin(backgroundPhase),
+                        bounds.maxHeight *
+                            .012 *
+                            math.sin(backgroundPhase - .5),
                       ),
                       child: Transform.scale(
-                        scale: 1.23,
+                        scale: 1.23 + .012 * math.sin(backgroundPhase - .4),
                         child: Image.asset(
                           'assets/images/sonnik/sonnik_clouds.webp',
                           fit: BoxFit.cover,

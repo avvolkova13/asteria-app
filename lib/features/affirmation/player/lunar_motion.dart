@@ -27,21 +27,27 @@ class _LunarMotion extends StatelessWidget {
         ],
         PlayerSubjectMotion.fullMoon => [
           Transform.translate(
-            offset: Offset(3.5 * wave, -5 * rise),
-            // Isolate the transparent lunar image so srcATop can only shade
-            // existing material, including its antialiased silhouette.
-            child: ShaderMask(
-              blendMode: BlendMode.dstIn,
-              shaderCallback: const LinearGradient(
-                colors: [Colors.white, Colors.white],
-              ).createShader,
-              child: CustomPaint(
-                foregroundPainter: _MoonTerminator(phase),
-                child: plate('_a'),
-              ),
+            offset: Offset(5 * wave, -6 * rise),
+            // The Moon and its hanging star float together so the narrow
+            // attachment stays covered throughout the full motion range.
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                // Shade only existing lunar material, preserving the craters.
+                ShaderMask(
+                  blendMode: BlendMode.dstIn,
+                  shaderCallback: const LinearGradient(
+                    colors: [Colors.white, Colors.white],
+                  ).createShader,
+                  child: CustomPaint(
+                    foregroundPainter: _MoonTerminator(phase),
+                    child: plate('_a'),
+                  ),
+                ),
+                plate(''),
+              ],
             ),
           ),
-          plate(''),
         ],
         PlayerSubjectMotion.orb => [
           plate(''),
@@ -81,12 +87,15 @@ class _CrescentClouds extends CustomPainter {
     final posed = [
       for (var i = 0; i < _cloudWeights.length; i++)
         _SubjectMesh.points[i] +
-            Offset(-17 * follow, 4 * math.cos(phase)) * _cloudWeights[i],
+            Offset(-23 * follow, 6 * math.cos(phase)) * _cloudWeights[i],
     ];
     canvas.save();
-    canvas.scale(size.width / _SubjectMesh.side, size.height / _SubjectMesh.side);
-    canvas.translate(215 + 12 * sway, 248 + 4 * lift);
-    canvas.rotate(.014 * sway);
+    canvas.scale(
+      size.width / _SubjectMesh.side,
+      size.height / _SubjectMesh.side,
+    );
+    canvas.translate(215 + 16 * sway, 248 + 6 * lift);
+    canvas.rotate(.022 * sway);
     canvas.translate(-215, -248);
     _SubjectMesh.draw(canvas, texture, posed);
     canvas.restore();
