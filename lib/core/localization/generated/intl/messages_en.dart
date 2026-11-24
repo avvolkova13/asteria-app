@@ -204,9 +204,9 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "adDecode": MessageLookupByLibrary.simpleMessage("Record a dream"),
     "adDreamDescription": MessageLookupByLibrary.simpleMessage(
-      "Save a dream for later or ask Liveya what it means.",
+      "Write down your dream while it’s fresh. Come back to it in your journal or explore its meaning with Liveya.",
     ),
-    "adDreamTitle": MessageLookupByLibrary.simpleMessage("Had a dream?"),
+    "adDreamTitle": MessageLookupByLibrary.simpleMessage("What did you dream?"),
     "adLiviaName": MessageLookupByLibrary.simpleMessage("Livia"),
     "adLiviaSubtitle": MessageLookupByLibrary.simpleMessage(
       "guardian of dreams.",

@@ -77,16 +77,11 @@ class DreamJournalLink extends StatelessWidget {
 class DreamCaptureButton extends StatelessWidget {
   const DreamCaptureButton({super.key});
   @override
-  Widget build(BuildContext context) => Column(
-    children: [
-      AsteriaActionButton(
-        text: context.l10n.adDecode,
-        gold: true,
-        width: double.infinity,
-        onPressed: () => _showDreams(context, write: true),
-      ),
-      const DreamJournalLink(),
-    ],
+  Widget build(BuildContext context) => AsteriaActionButton(
+    text: context.l10n.adDecode,
+    gold: true,
+    width: double.infinity,
+    onPressed: () => _showDreams(context, write: true),
   );
 }
 

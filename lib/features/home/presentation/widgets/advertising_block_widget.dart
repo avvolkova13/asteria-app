@@ -12,9 +12,13 @@ class AdvertisingBlockWidget extends StatelessWidget {
   // Figma dark Surface/card for the dream banner (node 4379:8613).
   static const _cardBackground = Color(0xFF151028);
   static const _descriptionColor = AppColorsDark.textSecondary;
-  const AdvertisingBlockWidget({super.key, this.horizontalMargin = 16});
+  const AdvertisingBlockWidget({super.key, this.horizontalMargin = 16})
+    : capture = false;
 
+  const AdvertisingBlockWidget.capture({super.key, this.horizontalMargin = 16})
+    : capture = true;
   final double horizontalMargin;
+  final bool capture;
 
   @override
   Widget build(BuildContext context) {
@@ -23,11 +27,17 @@ class AdvertisingBlockWidget extends StatelessWidget {
       margin: EdgeInsets.symmetric(horizontal: horizontalMargin),
       child: LayoutBuilder(
         builder: (context, constraints) {
-          final cardWidth = constraints.maxWidth;
-          final portraitWidth = (cardWidth * .36).clamp(72.0, 152.0);
-          final contentWidth = cardWidth - portraitWidth - 32;
-          final compact =
-              contentWidth < MediaQuery.textScalerOf(context).scale(145);
+          final scale = MediaQuery.textScalerOf(context);
+          final sideBySide = constraints.maxWidth >= scale.scale(306);
+          final portraitWidth = (constraints.maxWidth * .24).clamp(58.0, 100.0);
+          final primary = capture
+              ? const DreamCaptureButton()
+              : AsteriaActionButton(
+                  text: context.l10n.dreamDecode,
+                  gold: true,
+                  width: double.infinity,
+                  onPressed: () => CreateSonnikInitialRoute.push(context),
+                );
           return ClipRRect(
             borderRadius: BorderRadius.circular(AsteriaCardRadii.card),
             child: DecoratedBox(
@@ -35,84 +45,79 @@ class AdvertisingBlockWidget extends StatelessWidget {
               decoration: CardLensDecoration(
                 borderRadius: BorderRadius.circular(AsteriaCardRadii.card),
               ),
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(minHeight: 243),
-                child: Stack(
-                  clipBehavior: Clip.hardEdge,
-                  children: [
-                    const Positioned.fill(
-                      child: ColoredBox(color: _cardBackground),
-                    ),
-                    Positioned.fill(
-                      child: Opacity(
-                        opacity: 0.25,
-                        child: Image.asset(_backgroundAsset, fit: BoxFit.cover),
-                      ),
-                    ),
-                    Positioned(
-                      bottom: compact ? 8 : 14,
-                      right: 8,
-                      width: portraitWidth,
-                      height: compact ? 104 : portraitWidth * 1.47,
+              child: Stack(
+                children: [
+                  const Positioned.fill(
+                    child: ColoredBox(color: _cardBackground),
+                  ),
+                  Positioned.fill(
+                    child: Opacity(
+                      opacity: .28,
                       child: Image.asset(
-                        _liveyaAsset,
-                        fit: BoxFit.contain,
-                        alignment: Alignment.bottomCenter,
+                        _backgroundAsset,
+                        fit: BoxFit.cover,
+                        excludeFromSemantics: true,
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            context.l10n.adDreamTitle,
-                            style: context.textTheme.inversePlayfairSemiBold24,
-                          ),
-                          const SizedBox(height: 12),
-                          SizedBox(
-                            width: compact ? double.infinity : contentWidth,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  context.l10n.adDreamDescription,
-                                  style: context
-                                      .textTheme
-                                      .tertiaryUrbanistRegular16
-                                      .copyWith(color: _descriptionColor),
-                                ),
-                                const SizedBox(height: 14),
-                                SizedBox(
-                                  width: contentWidth,
-                                  child: ConstrainedBox(
-                                    constraints: BoxConstraints(
-                                      minHeight: compact ? 86 : 44,
-                                    ),
-                                    child: Align(
-                                      alignment: Alignment.centerLeft,
-                                      child: AsteriaActionButton(
-                                        text: context.l10n.dreamDecode,
-                                        gold: true,
-                                        width: double.infinity,
-                                        onPressed: () =>
-                                            CreateSonnikInitialRoute.push(
-                                              context,
-                                            ),
-                                      ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 14, 16, 12),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Semantics(
+                                    header: true,
+                                    child: Text(
+                                      context.l10n.adDreamTitle,
+                                      style: context
+                                          .textTheme
+                                          .inversePlayfairSemiBold24,
                                     ),
                                   ),
-                                ),
-                                const DreamJournalLink(),
-                              ],
+                                  if (sideBySide) ...[
+                                    const SizedBox(height: 6),
+                                    _description(context),
+                                  ],
+                                ],
+                              ),
                             ),
-                          ),
+                            const SizedBox(width: 8),
+                            Image.asset(
+                              _liveyaAsset,
+                              width: portraitWidth,
+                              height: sideBySide ? portraitWidth * 1.3 : 64,
+                              fit: BoxFit.contain,
+                              excludeFromSemantics: true,
+                            ),
+                          ],
+                        ),
+                        if (!sideBySide) ...[
+                          const SizedBox(height: 6),
+                          _description(context),
                         ],
-                      ),
+                        const SizedBox(height: 12),
+                        if (sideBySide)
+                          Row(
+                            children: [
+                              Expanded(child: primary),
+                              const SizedBox(width: 8),
+                              const DreamJournalLink(),
+                            ],
+                          )
+                        else ...[
+                          primary,
+                          const DreamJournalLink(),
+                        ],
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           );
@@ -120,4 +125,11 @@ class AdvertisingBlockWidget extends StatelessWidget {
       ),
     );
   }
+
+  Widget _description(BuildContext context) => Text(
+    context.l10n.adDreamDescription,
+    style: context.textTheme.inverseUrbanistRegular16.copyWith(
+      color: _descriptionColor,
+    ),
+  );
 }

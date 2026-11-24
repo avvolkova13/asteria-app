@@ -74,7 +74,10 @@ void main() {
               path: '/',
               builder: (_, __) => const Scaffold(
                 body: Column(
-                  children: [DreamCaptureButton(), AdvertisingBlockWidget()],
+                  children: [
+                    AdvertisingBlockWidget.capture(),
+                    AdvertisingBlockWidget(),
+                  ],
                 ),
               ),
             ),

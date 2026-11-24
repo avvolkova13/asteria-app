@@ -1,4 +1,3 @@
-import 'package:asteria_app/features/sonnik/presentation/screens/dream_journal_screen.dart';
 import 'package:asteria_app/features/scenarios/scenario_ui.dart';
 import 'package:go_router/go_router.dart';
 import 'package:asteria_app/app/providers/content_provider.dart';
@@ -180,10 +179,7 @@ class _MainScreenState extends State<MainScreen> {
                             const SizedBox(height: 26),
                             const MoonPhaseWidget(),
                             const SizedBox(height: 12),
-                            const Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 16),
-                              child: DreamCaptureButton(),
-                            ),
+                            const AdvertisingBlockWidget.capture(),
                             const SizedBox(height: 24),
                             AsteriaEntrance(child: _buildAffirmationCard()),
                             const SizedBox(height: 24),

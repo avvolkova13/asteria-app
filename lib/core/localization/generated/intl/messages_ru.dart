@@ -200,9 +200,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "achievementsTitle": MessageLookupByLibrary.simpleMessage("Мои достижения"),
     "adDecode": MessageLookupByLibrary.simpleMessage("Записать сон"),
     "adDreamDescription": MessageLookupByLibrary.simpleMessage(
-      "Запишите сон сейчас или попросите Ливею его растолковать.",
+      "Запишите сон, пока помните детали. В дневнике его можно перечитать или расшифровать с Ливеей.",
     ),
-    "adDreamTitle": MessageLookupByLibrary.simpleMessage("Приснился сон?"),
+    "adDreamTitle": MessageLookupByLibrary.simpleMessage("Что вам приснилось?"),
     "adLiviaName": MessageLookupByLibrary.simpleMessage("Ливея"),
     "adLiviaSubtitle": MessageLookupByLibrary.simpleMessage(
       "хранительница снов.",

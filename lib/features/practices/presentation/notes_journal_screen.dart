@@ -28,6 +28,8 @@ class NotesJournalLink extends StatelessWidget {
     return LotusButtons.textIcon(
       style: TextButton.styleFrom(
         foregroundColor: AppColorsDark.linkGold,
+        // Balance the smaller Onest label with the Lora section heading.
+        padding: const EdgeInsetsDirectional.fromSTEB(12, 11, 16, 5),
         minimumSize: const Size(44, 44),
       ),
       onPressed: () => Navigator.of(context).push<void>(

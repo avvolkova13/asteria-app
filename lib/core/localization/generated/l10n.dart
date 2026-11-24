@@ -2945,20 +2945,20 @@ class AppLocalizations {
     return Intl.message('Livia', name: 'adLiviaName', desc: '', args: []);
   }
 
-  /// `Had a dream?`
+  /// `What did you dream?`
   String get adDreamTitle {
     return Intl.message(
-      'Had a dream?',
+      'What did you dream?',
       name: 'adDreamTitle',
       desc: '',
       args: [],
     );
   }
 
-  /// `Save a dream for later or ask Liveya what it means.`
+  /// `Write down your dream while it’s fresh. Come back to it in your journal or explore its meaning with Liveya.`
   String get adDreamDescription {
     return Intl.message(
-      'Save a dream for later or ask Liveya what it means.',
+      'Write down your dream while it’s fresh. Come back to it in your journal or explore its meaning with Liveya.',
       name: 'adDreamDescription',
       desc: '',
       args: [],
