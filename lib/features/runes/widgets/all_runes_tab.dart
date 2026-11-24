@@ -1,3 +1,4 @@
+import 'package:asteria_app/features/monetization/presentation/monetization_provider.dart';
 import 'package:asteria_app/core/ui_kit/widgets/artwork_unavailable.dart';
 import 'package:asteria_app/core/ui_kit/widgets/modal_glass_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
@@ -28,9 +29,18 @@ class AllRunesTab extends StatelessWidget {
   Widget build(BuildContext context) {
     final contentProvider = di.get<ContentProvider>();
     final userProvider = di.get<UserProvider>();
+    final monetization =
+        MonetizationProvider.maybeOf(context) ??
+        (di.isRegistered<MonetizationProvider>()
+            ? di.get<MonetizationProvider>()
+            : null);
 
     return ListenableBuilder(
-      listenable: Listenable.merge([contentProvider, userProvider]),
+      listenable: Listenable.merge([
+        contentProvider,
+        userProvider,
+        if (monetization != null) monetization,
+      ]),
       builder: (context, _) {
         if (contentProvider.runes.isEmpty) {
           return Center(
@@ -58,8 +68,9 @@ class AllRunesTab extends StatelessWidget {
               spacing: 16,
               runSpacing: 16,
               children: contentProvider.runes.map((rune) {
-                final bool canView = userProvider.isContentViewed(rune.id);
-                // final bool canView = true;
+                final canView =
+                    monetization?.effectivePro == true ||
+                    userProvider.isContentViewed(rune.id);
                 return SizedBox(
                   width: runeWidth,
                   child: _RuneGridItem(

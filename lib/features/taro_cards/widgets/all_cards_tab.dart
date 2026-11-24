@@ -1,3 +1,4 @@
+import 'package:asteria_app/features/monetization/presentation/monetization_provider.dart';
 import 'package:asteria_app/core/ui_kit/widgets/tarot_card_frame.dart';
 import 'package:asteria_app/core/ui_kit/widgets/modal_glass_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
@@ -28,9 +29,18 @@ class AllCardsTab extends StatelessWidget {
   Widget build(BuildContext context) {
     final contentProvider = di.get<ContentProvider>();
     final userProvider = di.get<UserProvider>();
+    final monetization =
+        MonetizationProvider.maybeOf(context) ??
+        (di.isRegistered<MonetizationProvider>()
+            ? di.get<MonetizationProvider>()
+            : null);
 
     return ListenableBuilder(
-      listenable: Listenable.merge([contentProvider, userProvider]),
+      listenable: Listenable.merge([
+        contentProvider,
+        userProvider,
+        if (monetization != null) monetization,
+      ]),
       builder: (context, _) {
         final cards = contentProvider.tarotCards;
 
@@ -59,8 +69,9 @@ class AllCardsTab extends StatelessWidget {
               spacing: 8,
               runSpacing: 8,
               children: cards.map((card) {
-                final bool canView = userProvider.isContentViewed(card.id);
-                // final bool canView = true;
+                final canView =
+                    monetization?.effectivePro == true ||
+                    userProvider.isContentViewed(card.id);
                 return SizedBox(
                   width: cardWidth,
                   height: cardWidth / 0.67,
