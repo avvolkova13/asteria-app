@@ -142,7 +142,11 @@ class OnboardingPageWidget extends StatelessWidget {
                                     alignment: Alignment.topCenter,
                                     child: SizedBox(
                                       width: 390,
-                                      height: 426,
+                                      height:
+                                          page.visualKind ==
+                                              OnboardingVisualKind.natalTarot
+                                          ? null
+                                          : 426,
                                       child: switch (page.visualKind) {
                                         OnboardingVisualKind.natalTarot =>
                                           IntroNatalTarotStory(active: true),

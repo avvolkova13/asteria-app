@@ -1,12 +1,9 @@
-import 'dart:math' as math;
-
-import 'package:asteria_app/core/ui_kit/ui_kit.dart';
-import 'package:asteria_app/features/home/presentation/widgets/home_glass_surface.dart';
 import 'package:flutter/material.dart';
 
+import 'intro_dream_journal_scene.dart';
+import 'intro_practice_shelf.dart';
 import 'intro_story.dart';
 
-/// A sample entry unfolds on the same clock as the tour's pause and replay.
 class IntroJournalStory extends StatelessWidget {
   const IntroJournalStory.dream({super.key, required this.active})
     : dream = true;
@@ -17,145 +14,11 @@ class IntroJournalStory extends StatelessWidget {
   final bool dream;
 
   @override
-  Widget build(BuildContext context) {
-    final ru = Localizations.localeOf(context).languageCode == 'ru';
-    final (source, entry, destination, takeaway, asset) = dream
-        ? (
-            ru ? 'Дневник снов' : 'Dream journal',
-            ru
-                ? 'На берегу моря мне светил маяк.'
-                : 'A lighthouse lit my way along the shore.',
-            ru ? 'Разбор с Ливеей' : 'Exploring the dream with Liveya',
-            ru
-                ? 'Маяк может быть образом опоры. Кто помогает тебе найти дорогу?'
-                : 'A lighthouse can suggest guidance. Who helps you find your way?',
-            'assets/images/sonnik/liveya_character.webp',
-          )
-        : (
-            ru ? 'Утро без спешки' : 'An Unhurried Morning',
-            ru ? 'Медитация · 3 минуты' : 'Meditation · 3 minutes',
-            ru ? 'Заметка к практике' : 'Practice note',
-            ru
-                ? 'Завтра первым делом открою окно.'
-                : 'Tomorrow I’ll start by opening the window.',
-            'assets/images/home/hand_with_star.webp',
-          );
-    return IntroStory(
-      active: active,
-      duration: const Duration(seconds: 5),
-      builder: (context, time, isStatic, _) {
-        final reveal = isStatic
-            ? 1.0
-            : Curves.easeOutCubic.transform(((time - .9) / .8).clamp(0.0, 1.0));
-        final breath = isStatic ? 0.0 : math.sin(time * math.pi / 5);
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            SizedBox(
-              height: MediaQuery.sizeOf(context).height < 650 ? 112 : 156,
-              child: Transform.translate(
-                offset: Offset(0, -4 * breath),
-                child: Transform.scale(
-                  scale: 1 + .025 * breath,
-                  child: Image.asset(
-                    asset,
-                    fit: BoxFit.contain,
-                    excludeFromSemantics: true,
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(height: 12),
-            IntroStoryFocus(
-              child: HomeGlassSurface(
-                animateEntrance: false,
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        source,
-                        style: AppTypography.text2SemiBold.copyWith(
-                          color: AppColorsDark.linkGold,
-                        ),
-                      ),
-                      const SizedBox(height: 6),
-                      _EntryText(
-                        entry,
-                        progress: dream && !isStatic
-                            ? (time / 1.15).clamp(0, 1)
-                            : 1,
-                      ),
-                      if (reveal > 0)
-                        IntroStoryFocus(
-                          child: Opacity(
-                            opacity: reveal,
-                            child: Transform.translate(
-                              offset: Offset(0, (1 - reveal) * 8),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Divider(height: 28),
-                                  Text(
-                                    destination,
-                                    style: AppTypography.text2SemiBold.copyWith(
-                                      color: AppColorsDark.linkGold,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 6),
-                                  _EntryText(
-                                    takeaway,
-                                    key: ValueKey(
-                                      dream
-                                          ? 'intro-dream-result'
-                                          : 'intro-practice-result',
-                                    ),
-                                    progress: isStatic || !dream
-                                        ? 1
-                                        : ((time - .9) / 1.05).clamp(0, 1),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ],
-        );
-      },
-    );
-  }
-}
-
-// Reserve the final line breaks while the words appear. Assistive technology
-// receives the complete sentence once, including while the demo is paused.
-class _EntryText extends StatelessWidget {
-  const _EntryText(this.text, {super.key, required this.progress});
-  final String text;
-  final double progress;
-
-  @override
-  Widget build(BuildContext context) {
-    final words = text.split(' ');
-    final visible = (progress * words.length).ceil().clamp(1, words.length);
-    return Text.rich(
-      TextSpan(
-        children: [
-          TextSpan(text: words.take(visible).join(' ')),
-          if (visible < words.length)
-            TextSpan(
-              text: ' ${words.skip(visible).join(' ')}',
-              style: const TextStyle(color: Colors.transparent),
-            ),
-        ],
-      ),
-      semanticsLabel: text,
-      style: AppTypography.text1.copyWith(color: AppColors.textInverse),
-    );
-  }
+  Widget build(BuildContext context) => IntroStory(
+    active: active,
+    duration: const Duration(seconds: 11),
+    builder: (context, time, still, _) => dream
+        ? IntroDreamJournalScene(time: time, still: still)
+        : IntroPracticeShelf(time: time, still: still),
+  );
 }

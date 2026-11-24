@@ -1524,10 +1524,10 @@ class MessageLookup extends MessageLookupByLibrary {
       "13.05.1995",
     ),
     "onboardingDreamDescription": MessageLookupByLibrary.simpleMessage(
-      "Запиши или надиктуй сон. Ливея поможет поразмышлять о том, что тебе приснилось.",
+      "Проснулась, а от сна остался только один образ. Почему запомнился именно он?",
     ),
     "onboardingDreamTitle": MessageLookupByLibrary.simpleMessage(
-      "Пока помнишь сон",
+      "Пока сон не растаял",
     ),
     "onboardingEmptyPagesError": MessageLookupByLibrary.simpleMessage(
       "Материалы онбординга недоступны.",
@@ -1542,16 +1542,16 @@ class MessageLookup extends MessageLookupByLibrary {
       "Эта страница онбординга недоступна.",
     ),
     "onboardingNatalTarotDescription": MessageLookupByLibrary.simpleMessage(
-      "Натальная карта подскажет, в чём твоя сила. Таро поможет взглянуть на вопрос с другой стороны.",
+      "Хочу начать своё дело. Что у меня уже получается и каким может быть первый шаг?",
     ),
     "onboardingNatalTarotTitle": MessageLookupByLibrary.simpleMessage(
-      "Что меня поддерживает?",
+      "На что опереться?",
     ),
     "onboardingPage1Description": MessageLookupByLibrary.simpleMessage(
-      "Когда записаться на стрижку? Лунный календарь подскажет дату и напомнит о плане.",
+      "Хочется сменить образ. Посмотрим, какой день для этого предлагает лунный календарь.",
     ),
     "onboardingPage1Title": MessageLookupByLibrary.simpleMessage(
-      "Выбери свой день",
+      "Когда записаться на стрижку?",
     ),
     "onboardingPage2Description": MessageLookupByLibrary.simpleMessage(
       "Натальная карта по дате, времени и месту рождения предлагает взгляд на твои сильные стороны.",
@@ -1578,7 +1578,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Можно выдохнуть",
     ),
     "onboardingPracticeDescription": MessageLookupByLibrary.simpleMessage(
-      "Аффирмации, медитации и телесные практики. К каждой можно оставить заметку.",
+      "Рабочий день позади, а мысли всё ещё на работе. Что поможет переключиться?",
     ),
     "onboardingPracticeTitle": MessageLookupByLibrary.simpleMessage(
       "Минута для себя",

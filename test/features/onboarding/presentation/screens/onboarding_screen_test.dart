@@ -91,7 +91,7 @@ void main() {
 
   for (final language in ['ru', 'en']) {
     testWidgets(
-      '$language approved scenes contain no visible example or demo labels',
+      '$language only the simulated calendar plan is marked as a sample',
       (tester) async {
         bloc = OnboardingBloc(settings);
         await _pumpOnboarding(
@@ -104,10 +104,7 @@ void main() {
         for (var page = 0; page < _pageCount; page++) {
           for (final text in tester.widgetList<Text>(find.byType(Text))) {
             final value = text.data ?? text.textSpan?.toPlainText() ?? '';
-            if (RegExp(
-              r'пример|demo|example',
-              caseSensitive: false,
-            ).hasMatch(value)) {
+            if (_unexpectedDemoLabel(value, calendar: page == 0)) {
               unexpected.add('scene${page + 1}: $value');
             }
           }
@@ -212,7 +209,7 @@ void main() {
         );
         expect(settings.onboardingWrites, isEmpty);
         final duration = _activeStoryDuration(tester);
-        expect(duration, const Duration(seconds: 5));
+        expect(duration.inSeconds, [10, 14, 11, 11][page]);
         await _pumpStoryTo(tester, page, duration.inMilliseconds - 1500);
         expect(
           bloc.state.currentPageIndex,
@@ -511,42 +508,41 @@ void main() {
   }
 
   for (final scale in [1.0, 1.3]) {
-    testWidgets(
-      'autoplay keeps only the primary control reachable at text scale $scale',
-      (tester) async {
-        bloc = OnboardingBloc(settings);
-        await _pumpOnboarding(
+    testWidgets('autoplay keeps navigation reachable at text scale $scale', (
+      tester,
+    ) async {
+      bloc = OnboardingBloc(settings);
+      await _pumpOnboarding(
+        tester,
+        bloc,
+        locale: const Locale('ru'),
+        disableAnimations: false,
+        textScale: scale,
+        padding: const EdgeInsets.only(top: 59, bottom: 34),
+        onComplete: () => completions++,
+      );
+      for (var page = 0; page < _pageCount; page++) {
+        _expectPage(tester, bloc, page);
+        await _pumpStoryTo(
           tester,
-          bloc,
-          locale: const Locale('ru'),
-          disableAnimations: false,
-          textScale: scale,
-          padding: const EdgeInsets.only(top: 59, bottom: 34),
-          onComplete: () => completions++,
+          page,
+          _activeStoryDuration(tester).inMilliseconds - 1500,
         );
-        for (var page = 0; page < _pageCount; page++) {
-          _expectPage(tester, bloc, page);
-          await _pumpStoryTo(
-            tester,
-            page,
-            _activeStoryDuration(tester).inMilliseconds - 1500,
-          );
-          expect(_cta(tester).hitTestable(), findsOneWidget);
-          expect(
-            find.textContaining(
-              RegExp(r'Пауза показа|Продолжить показ|Повторить'),
-            ),
-            findsNothing,
-          );
-          expect(tester.takeException(), isNull);
-          await tester.tap(_cta(tester));
-          await tester.pump();
-          await tester.pump(const Duration(milliseconds: 650));
-          await tester.pump();
-        }
-        expect(completions, 1);
-      },
-    );
+        expect(_cta(tester).hitTestable(), findsOneWidget);
+        expect(
+          find.textContaining(
+            RegExp(r'Пауза показа|Продолжить показ|Повторить'),
+          ),
+          findsNothing,
+        );
+        expect(tester.takeException(), isNull);
+        await tester.tap(_cta(tester));
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 650));
+        await tester.pump();
+      }
+      expect(completions, 1);
+    });
   }
 
   testWidgets(
@@ -626,6 +622,28 @@ void main() {
         ];
         final issues = <String>[];
         for (var page = 0; page < _pageCount; page++) {
+          // On a short screen, an outcome may fit even if the animation that
+          // explains it was offscreen. Check the action while it is happening.
+          final moments = switch (page) {
+            0 => [
+              (3400, 'intro-calendar-save'),
+              (5800, 'intro-calendar-remind'),
+            ],
+            1 => [for (var i = 0; i < 3; i++) (7000, 'intro-spread-turn-$i')],
+            2 => [(4600, 'intro-dream-transcript')],
+            _ => const <(int, String)>[],
+          };
+          final viewport = tester.getRect(
+            find.byKey(ValueKey('onboarding-content-$page')),
+          );
+          for (final (time, key) in moments) {
+            await _pumpStoryTo(tester, page, time);
+            final rect = tester.getRect(find.byKey(ValueKey(key)));
+            if (rect.top < viewport.top - .5 ||
+                rect.bottom > viewport.bottom + .5) {
+              issues.add('scene${page + 1}: $key $rect outside $viewport');
+            }
+          }
           await _pumpStoryTo(
             tester,
             page,
@@ -634,9 +652,6 @@ void main() {
           final result = results[page];
           expect(result, findsOneWidget);
           final bounds = tester.getRect(result);
-          final viewport = tester.getRect(
-            find.byKey(ValueKey('onboarding-content-$page')),
-          );
           if (bounds.top < viewport.top - .5 ||
               bounds.bottom > viewport.bottom + .5) {
             issues.add(
@@ -822,14 +837,33 @@ void main() {
           );
           for (var page = 0; page < _pageCount; page++) {
             _expectPage(tester, bloc, page);
-            for (final phase in [
-              (700, 'start'),
-              (
-                (_activeStoryDuration(tester).inMilliseconds * .5).round(),
-                'middle',
-              ),
-              (_activeStoryDuration(tester).inMilliseconds - 1500, 'result'),
-            ]) {
+            const moments = [
+              [
+                (650, 'start'),
+                (2800, 'date'),
+                (5300, 'plan'),
+                (8600, 'result'),
+              ],
+              [
+                (650, 'start'),
+                (2800, 'chart'),
+                (7000, 'deal'),
+                (12200, 'result'),
+              ],
+              [
+                (650, 'start'),
+                (1600, 'dictation'),
+                (4600, 'saved'),
+                (8750, 'result'),
+              ],
+              [
+                (650, 'start'),
+                (2700, 'body'),
+                (4900, 'meditation'),
+                (8750, 'result'),
+              ],
+            ];
+            for (final phase in moments[page]) {
               await _pumpStoryTo(tester, page, phase.$1);
               await _saveReviewScreen(
                 tester,
@@ -1031,12 +1065,24 @@ Future<void> _saveReviewImage(
   });
 }
 
+bool _unexpectedDemoLabel(String value, {required bool calendar}) {
+  if (calendar &&
+      (value == 'Стрижка · пример плана' || value == 'Haircut · sample plan')) {
+    return false;
+  }
+  return RegExp(
+    r'пример|demo|example|sample',
+    caseSensitive: false,
+  ).hasMatch(value);
+}
+
 Future<void> _saveReviewScreen(WidgetTester tester, String name) async {
   for (final text in tester.widgetList<Text>(find.byType(Text))) {
+    final value = text.data ?? text.textSpan?.toPlainText() ?? '';
     expect(
-      text.data ?? text.textSpan?.toPlainText() ?? '',
-      isNot(matches(RegExp(r'пример|demo|example', caseSensitive: false))),
-      reason: name,
+      _unexpectedDemoLabel(value, calendar: name.split('_')[1] == '1'),
+      isFalse,
+      reason: '$name: $value',
     );
   }
   await _waitForGoldenImages(tester);

@@ -18,11 +18,18 @@ class NatalWheel extends StatefulWidget {
     required this.hasKnownBirthTime,
     this.preview = false,
     this.planetCardBuilder,
+    this.selectedPlanet,
+    this.onSelectionChanged,
   });
 
   final PlanetsHousesDataModel data;
   final bool hasKnownBirthTime;
   final bool preview;
+
+  /// A host providing a separate reading can control the highlighted glyph.
+  /// Without a callback the wheel owns its selection and its inline readout.
+  final String? selectedPlanet;
+  final ValueChanged<String?>? onSelectionChanged;
   final Widget Function(PlanetHousePositionModel planet, String placement)?
   planetCardBuilder;
 
@@ -83,7 +90,10 @@ class _NatalWheelState extends State<NatalWheel> with TickerProviderStateMixin {
   );
   String? _previous;
   late var _layout = _WheelLayout(widget.data);
-  String? _selected;
+  String? _localSelection;
+  String? get _selected => widget.onSelectionChanged == null
+      ? _localSelection
+      : widget.selectedPlanet;
   String? _focused;
   bool _started = false;
 
@@ -104,7 +114,7 @@ class _NatalWheelState extends State<NatalWheel> with TickerProviderStateMixin {
     super.didUpdateWidget(oldWidget);
     if (!identical(widget.data, oldWidget.data)) {
       _layout = _WheelLayout(widget.data);
-      if (!_layout.labels.containsKey(_selected)) _selected = null;
+      if (!_layout.labels.containsKey(_localSelection)) _localSelection = null;
     }
   }
 
@@ -118,10 +128,12 @@ class _NatalWheelState extends State<NatalWheel> with TickerProviderStateMixin {
   void _choose(String? code) {
     if (_selected == null && code == null) return;
     LotusFeedback.selection();
+    final next = _selected == code ? null : code;
     setState(() {
       _previous = _selected;
-      _selected = _selected == code ? null : code;
+      if (widget.onSelectionChanged == null) _localSelection = next;
     });
+    widget.onSelectionChanged?.call(next);
     if (MediaQuery.disableAnimationsOf(context)) {
       _highlight.value = 1;
     } else {
@@ -222,7 +234,7 @@ class _NatalWheelState extends State<NatalWheel> with TickerProviderStateMixin {
             ),
           ),
         ),
-        if (!widget.preview) ...[
+        if (!widget.preview && widget.onSelectionChanged == null) ...[
           const SizedBox(height: 4),
           Semantics(
             liveRegion: true,
@@ -255,7 +267,10 @@ class _NatalWheelState extends State<NatalWheel> with TickerProviderStateMixin {
     final location = center + _layout.labels[planet.code]! * scale;
     final selected = planet.code == _selected;
     final active = selected || _focused == planet.code;
-    final size = 40 * scale;
+    // An embedded chart is smaller than the full reading surface.
+    final size = widget.onSelectionChanged == null
+        ? 40 * scale
+        : math.max(14.0, 40 * scale);
     final hitSize = math.max(44.0, size);
     return Positioned(
       key: ValueKey('natal-wheel-${planet.code}'),

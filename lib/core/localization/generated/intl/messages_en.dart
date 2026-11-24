@@ -1500,7 +1500,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "13 May 1995",
     ),
     "onboardingDreamDescription": MessageLookupByLibrary.simpleMessage(
-      "Write down your dream or dictate it. Explore what it might mean with Liveya.",
+      "I woke up with just one image from my dream. Why did that part stay with me?",
     ),
     "onboardingDreamTitle": MessageLookupByLibrary.simpleMessage(
       "Before the dream fades",
@@ -1518,16 +1518,16 @@ class MessageLookup extends MessageLookupByLibrary {
       "This onboarding page is unavailable.",
     ),
     "onboardingNatalTarotDescription": MessageLookupByLibrary.simpleMessage(
-      "Explore your strengths in your birth chart. Try Tarot for a fresh perspective on a question.",
+      "I want to start a business. What am I already good at, and what could I try first?",
     ),
     "onboardingNatalTarotTitle": MessageLookupByLibrary.simpleMessage(
-      "What gives me strength?",
+      "What can I build on?",
     ),
     "onboardingPage1Description": MessageLookupByLibrary.simpleMessage(
-      "Time for a haircut? Pick a date with the lunar calendar and set a reminder.",
+      "Time for a new look. Which date does the lunar calendar suggest?",
     ),
     "onboardingPage1Title": MessageLookupByLibrary.simpleMessage(
-      "Find your day",
+      "When should I get a haircut?",
     ),
     "onboardingPage2Description": MessageLookupByLibrary.simpleMessage(
       "Explore your strengths through a natal chart based on when and where you were born.",
@@ -1554,7 +1554,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "A moment to breathe",
     ),
     "onboardingPracticeDescription": MessageLookupByLibrary.simpleMessage(
-      "Explore affirmations, meditations and movement practices. Add a note to any of them.",
+      "The workday is over, but my mind is still at work. What would help me unwind?",
     ),
     "onboardingPracticeTitle": MessageLookupByLibrary.simpleMessage(
       "A moment for yourself",

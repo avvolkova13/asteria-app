@@ -1,7 +1,7 @@
 {
   "@@locale": "en",
-  "onboardingPage1Title": "Find your day",
-  "onboardingPage1Description": "Time for a haircut? Pick a date with the lunar calendar and set a reminder.",
+  "onboardingPage1Title": "When should I get a haircut?",
+  "onboardingPage1Description": "Time for a new look. Which date does the lunar calendar suggest?",
   "onboardingPage2Title": "What keeps you steady?",
   "onboardingPage2Description": "Explore your strengths through a natal chart based on when and where you were born.",
   "onboardingPage3Title": "How do you break the silence?",
@@ -1550,12 +1550,12 @@
   "introCalendarReminderEnabled": "Reminder is on",
   "introCalendarCompleted": "Everything is planned",
   "introCalendarCompletedBody": "Your haircut is in the calendar. A reminder is set for the day before.",
-  "onboardingNatalTarotTitle": "What gives me strength?",
-  "onboardingNatalTarotDescription": "Explore your strengths in your birth chart. Try Tarot for a fresh perspective on a question.",
+  "onboardingNatalTarotTitle": "What can I build on?",
+  "onboardingNatalTarotDescription": "I want to start a business. What am I already good at, and what could I try first?",
   "onboardingPracticeTitle": "A moment for yourself",
-  "onboardingPracticeDescription": "Explore affirmations, meditations and movement practices. Add a note to any of them.",
+  "onboardingPracticeDescription": "The workday is over, but my mind is still at work. What would help me unwind?",
   "onboardingDreamTitle": "Before the dream fades",
-  "onboardingDreamDescription": "Write down your dream or dictate it. Explore what it might mean with Liveya.",
+  "onboardingDreamDescription": "I woke up with just one image from my dream. Why did that part stay with me?",
   "onboardingGuideTitle": "What’s on your mind?",
   "onboardingGuideDescription": "Ask Anakra what’s on your mind. Come back to the conversation when you have another question."
 }

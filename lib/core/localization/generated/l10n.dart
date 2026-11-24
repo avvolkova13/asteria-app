@@ -55,20 +55,20 @@ class AppLocalizations {
     return Localizations.of<AppLocalizations>(context, AppLocalizations);
   }
 
-  /// `Find your day`
+  /// `When should I get a haircut?`
   String get onboardingPage1Title {
     return Intl.message(
-      'Find your day',
+      'When should I get a haircut?',
       name: 'onboardingPage1Title',
       desc: '',
       args: [],
     );
   }
 
-  /// `Time for a haircut? Pick a date with the lunar calendar and set a reminder.`
+  /// `Time for a new look. Which date does the lunar calendar suggest?`
   String get onboardingPage1Description {
     return Intl.message(
-      'Time for a haircut? Pick a date with the lunar calendar and set a reminder.',
+      'Time for a new look. Which date does the lunar calendar suggest?',
       name: 'onboardingPage1Description',
       desc: '',
       args: [],
@@ -9760,20 +9760,20 @@ class AppLocalizations {
     );
   }
 
-  /// `What gives me strength?`
+  /// `What can I build on?`
   String get onboardingNatalTarotTitle {
     return Intl.message(
-      'What gives me strength?',
+      'What can I build on?',
       name: 'onboardingNatalTarotTitle',
       desc: '',
       args: [],
     );
   }
 
-  /// `Explore your strengths in your birth chart. Try Tarot for a fresh perspective on a question.`
+  /// `I want to start a business. What am I already good at, and what could I try first?`
   String get onboardingNatalTarotDescription {
     return Intl.message(
-      'Explore your strengths in your birth chart. Try Tarot for a fresh perspective on a question.',
+      'I want to start a business. What am I already good at, and what could I try first?',
       name: 'onboardingNatalTarotDescription',
       desc: '',
       args: [],
@@ -9790,10 +9790,10 @@ class AppLocalizations {
     );
   }
 
-  /// `Explore affirmations, meditations and movement practices. Add a note to any of them.`
+  /// `The workday is over, but my mind is still at work. What would help me unwind?`
   String get onboardingPracticeDescription {
     return Intl.message(
-      'Explore affirmations, meditations and movement practices. Add a note to any of them.',
+      'The workday is over, but my mind is still at work. What would help me unwind?',
       name: 'onboardingPracticeDescription',
       desc: '',
       args: [],
@@ -9810,10 +9810,10 @@ class AppLocalizations {
     );
   }
 
-  /// `Write down your dream or dictate it. Explore what it might mean with Liveya.`
+  /// `I woke up with just one image from my dream. Why did that part stay with me?`
   String get onboardingDreamDescription {
     return Intl.message(
-      'Write down your dream or dictate it. Explore what it might mean with Liveya.',
+      'I woke up with just one image from my dream. Why did that part stay with me?',
       name: 'onboardingDreamDescription',
       desc: '',
       args: [],

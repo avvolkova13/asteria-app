@@ -1,6 +1,4 @@
 import 'package:flutter/services.dart';
-import 'package:asteria_app/features/home/presentation/widgets/moon_phase_widget.dart';
-import 'package:asteria_app/features/home/presentation/models/day_status.dart';
 import 'package:asteria_app/features/onboarding/presentation/widgets/intro/intro_next_button.dart';
 import 'package:asteria_app/core/localization/localization.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
@@ -188,28 +186,6 @@ void main() {
           expect(dates[i], DateTime(now.year, now.month, now.day + i));
         }
       }
-    },
-  );
-
-  testWidgets(
-    'calendar preserves real dates and displays the selected reminder',
-    (tester) async {
-      await host(
-        tester,
-        IntroCalendarStory(active: true, now: () => DateTime(2026, 11, 30)),
-      );
-      await tester.pump(const Duration(seconds: 2));
-      final days = tester.widgetList<MoonDayPreview>(
-        find.byType(MoonDayPreview),
-      );
-      expect(days.first.date, DateTime(2026, 11, 30));
-      expect(days.map((day) => day.status), containsAll(DayStatus.values));
-      expect(
-        days.singleWhere((day) => day.isSelected).date,
-        DateTime(2026, 12, 2),
-      );
-      expect(find.textContaining('2 декабря'), findsOneWidget);
-      await tester.pumpWidget(const SizedBox());
     },
   );
 
@@ -510,10 +486,10 @@ void main() {
       IntroCalendarStory(active: true, now: () => now),
       reduced: true,
     );
-    expect(find.textContaining('2 января'), findsOneWidget);
+    expect(find.textContaining('Напоминание — 1 января'), findsOneWidget);
     now = DateTime(2027, 1, 1);
     await tester.pump(const Duration(seconds: 2));
-    expect(find.textContaining('3 января'), findsOneWidget);
+    expect(find.textContaining('Напоминание — 2 января'), findsOneWidget);
     await tester.pumpWidget(const SizedBox());
   });
 }

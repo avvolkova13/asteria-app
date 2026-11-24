@@ -1,7 +1,7 @@
 {
   "@@locale": "ru",
-  "onboardingPage1Title": "Выбери свой день",
-  "onboardingPage1Description": "Когда записаться на стрижку? Лунный календарь подскажет дату и напомнит о плане.",
+  "onboardingPage1Title": "Когда записаться на стрижку?",
+  "onboardingPage1Description": "Хочется сменить образ. Посмотрим, какой день для этого предлагает лунный календарь.",
   "onboardingPage2Title": "Что даёт тебе опору?",
   "onboardingPage2Description": "Натальная карта по дате, времени и месту рождения предлагает взгляд на твои сильные стороны.",
   "onboardingPage3Title": "Как начать разговор?",
@@ -1550,12 +1550,12 @@
   "introCalendarReminderEnabled": "Напоминание включено",
   "introCalendarCompleted": "Всё запланировано",
   "introCalendarCompletedBody": "Стрижка в календаре. Напоминание придёт за день до события.",
-  "onboardingNatalTarotTitle": "Что меня поддерживает?",
-  "onboardingNatalTarotDescription": "Натальная карта подскажет, в чём твоя сила. Таро поможет взглянуть на вопрос с другой стороны.",
+  "onboardingNatalTarotTitle": "На что опереться?",
+  "onboardingNatalTarotDescription": "Хочу начать своё дело. Что у меня уже получается и каким может быть первый шаг?",
   "onboardingPracticeTitle": "Минута для себя",
-  "onboardingPracticeDescription": "Аффирмации, медитации и телесные практики. К каждой можно оставить заметку.",
-  "onboardingDreamTitle": "Пока помнишь сон",
-  "onboardingDreamDescription": "Запиши или надиктуй сон. Ливея поможет поразмышлять о том, что тебе приснилось.",
+  "onboardingPracticeDescription": "Рабочий день позади, а мысли всё ещё на работе. Что поможет переключиться?",
+  "onboardingDreamTitle": "Пока сон не растаял",
+  "onboardingDreamDescription": "Проснулась, а от сна остался только один образ. Почему запомнился именно он?",
   "onboardingGuideTitle": "Что тебя занимает?",
   "onboardingGuideDescription": "Задай Анакре свой вопрос. К разговору можно вернуться, когда захочется спросить ещё о чём-то."
 }
