@@ -1,3 +1,5 @@
+import 'practice_notes_screen.dart';
+import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/app/providers/user_provider.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
@@ -93,4 +95,56 @@ class PracticeNotesMarker extends StatelessWidget {
             ),
           ),
   );
+}
+
+/// A separate accessible action for the currently visible card in a swipe deck.
+class PracticeDeckNotesAction extends StatelessWidget {
+  const PracticeDeckNotesAction({
+    super.key,
+    required this.practiceId,
+    required this.practiceTitle,
+  });
+  final String practiceId, practiceTitle;
+  @override
+  Widget build(BuildContext context) {
+    if (context.watch<UserProvider?>()?.currentUser?.id.isNotEmpty != true) {
+      return const SizedBox.shrink();
+    }
+    final ru = Localizations.localeOf(context).languageCode == 'ru';
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: PracticeNotesCountBuilder(
+        practiceId: practiceId,
+        builder: (context, count) => LotusButtons.text(
+          onPressed: () => openPracticeNotes(
+            context,
+            practiceId: practiceId,
+            practiceTitle: practiceTitle,
+          ),
+          style: TextButton.styleFrom(
+            foregroundColor: AppColorsDark.linkGold,
+            minimumSize: const Size(48, 48),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const ClayIcon(
+                Icons.edit_note_rounded,
+                size: 21,
+                color: AppColorsDark.linkGold,
+              ),
+              const SizedBox(width: 6),
+              Flexible(
+                child: Text(
+                  count == 0
+                      ? (ru ? 'Оставить заметку' : 'Write a note')
+                      : practiceNoteCountLabel(context, count),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }

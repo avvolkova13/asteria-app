@@ -649,47 +649,42 @@ class _AffirmationPlayerScreenState extends State<AffirmationPlayerScreen> {
                 PracticeNotesCountBuilder(
                   practiceId:
                       widget.session?.id ?? 'affirmation:$_defaultFavoriteKey',
-                  builder: (context, count) => Stack(
-                    clipBehavior: Clip.none,
-                    children: [
-                      Semantics(
-                        value: count > 0
-                            ? practiceNoteCountLabel(context, count)
-                            : null,
-                        child: PlayerPebble(
-                          glyph: ClayGlyph.pencil,
-                          label: ru ? 'Мои заметки' : 'My notes',
-                          onTap: _showNotes,
-                        ),
-                      ),
-                      if (count > 0)
-                        Positioned(
-                          top: -1,
-                          right: -1,
-                          child: ExcludeSemantics(
-                            child: DecoratedBox(
-                              decoration: const ShapeDecoration(
-                                color: AppColorsDark.linkGold,
-                                shape: StadiumBorder(),
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 5,
-                                  vertical: 1,
-                                ),
-                                child: Text(
-                                  count > 99 ? '99+' : '$count',
-                                  style: const TextStyle(
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.w700,
-                                    color: AppColors.textPrimary,
-                                  ),
+                  builder: (context, count) => SizedBox(
+                    width: 64,
+                    child: Semantics(
+                      button: true,
+                      label: ru ? 'Мои заметки' : 'My notes',
+                      value: count > 0
+                          ? practiceNoteCountLabel(context, count)
+                          : null,
+                      onTap: _showNotes,
+                      excludeSemantics: true,
+                      child: GestureDetector(
+                        onTap: _showNotes,
+                        behavior: HitTestBehavior.opaque,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            PlayerPebble(
+                              glyph: ClayGlyph.pencil,
+                              label: ru ? 'Мои заметки' : 'My notes',
+                              onTap: _showNotes,
+                            ),
+                            FittedBox(
+                              fit: BoxFit.scaleDown,
+                              child: Text(
+                                count > 0
+                                    ? practiceNoteCountLabel(context, count)
+                                    : (ru ? 'Заметки' : 'Notes'),
+                                style: AppTypography.text1.copyWith(
+                                  color: AppColorsDark.linkGold,
                                 ),
                               ),
                             ),
-                          ),
+                          ],
                         ),
-                    ],
+                      ),
+                    ),
                   ),
                 )
               else
@@ -714,7 +709,10 @@ class _AffirmationPlayerScreenState extends State<AffirmationPlayerScreen> {
                 ),
               ),
               const SizedBox(width: 16),
-              _repeatButton(),
+              if (hasNotes)
+                SizedBox(width: 64, child: Center(child: _repeatButton()))
+              else
+                _repeatButton(),
             ],
           ),
           if (widget.session case final session?)

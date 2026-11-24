@@ -1,3 +1,4 @@
+import 'dream_journal_screen.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/analytics/analytics_events.dart';
 import 'package:asteria_app/core/analytics/analytics_facade.dart';
@@ -13,7 +14,7 @@ import 'package:asteria_app/features/sonnik/presentation/widgets/sonnik_results.
 import 'package:flutter/material.dart';
 
 class CreateSonnikLoadedScreen extends StatefulWidget {
-  const CreateSonnikLoadedScreen({Key? key}) : super(key: key);
+  const CreateSonnikLoadedScreen({super.key});
 
   @override
   State<CreateSonnikLoadedScreen> createState() =>
@@ -58,6 +59,7 @@ class _CreateSonnikLoadedScreenState extends State<CreateSonnikLoadedScreen> {
             onDecodeAgainPressed: () =>
                 CreateSonnikInitialRoute.pushReplacement(context),
           ),
+          const Center(child: DreamJournalLink()),
         ],
       ),
     );

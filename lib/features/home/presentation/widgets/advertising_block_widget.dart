@@ -1,3 +1,4 @@
+import 'package:asteria_app/features/sonnik/presentation/screens/dream_journal_screen.dart';
 import 'package:asteria_app/core/routing/app_route.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_action_button.dart';
 import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
@@ -11,11 +12,6 @@ class AdvertisingBlockWidget extends StatelessWidget {
   // Figma dark Surface/card for the dream banner (node 4379:8613).
   static const _cardBackground = Color(0xFF151028);
   static const _descriptionColor = AppColorsDark.textSecondary;
-  static const _orangeGradient = LinearGradient(
-    colors: [Color(0xFFE6994D), Color(0xFFF3B76A), Color(0xFFE6994D)],
-    stops: [0, 0.50032, 1],
-  );
-
   const AdvertisingBlockWidget({super.key, this.horizontalMargin = 16});
 
   final double horizontalMargin;
@@ -80,12 +76,6 @@ class AdvertisingBlockWidget extends StatelessWidget {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                _AdvertisingSubtitle(
-                                  textStyle: context
-                                      .textTheme
-                                      .inverseUrbanistSemiBold16,
-                                ),
-                                const SizedBox(height: 8),
                                 Text(
                                   context.l10n.adDreamDescription,
                                   style: context
@@ -114,6 +104,7 @@ class AdvertisingBlockWidget extends StatelessWidget {
                                     ),
                                   ),
                                 ),
+                                const DreamJournalLink(),
                               ],
                             ),
                           ),
@@ -127,35 +118,6 @@ class AdvertisingBlockWidget extends StatelessWidget {
           );
         },
       ),
-    );
-  }
-}
-
-class _AdvertisingSubtitle extends StatelessWidget {
-  final TextStyle textStyle;
-
-  const _AdvertisingSubtitle({required this.textStyle});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ShaderMask(
-              blendMode: BlendMode.srcIn,
-              shaderCallback:
-                  AdvertisingBlockWidget._orangeGradient.createShader,
-              child: Text(context.l10n.adLiviaName, style: textStyle),
-            ),
-            Text(' —', style: textStyle),
-          ],
-        ),
-        Text(context.l10n.adLiviaSubtitle, style: textStyle),
-      ],
     );
   }
 }

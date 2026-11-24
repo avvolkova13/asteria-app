@@ -189,6 +189,10 @@ class _PracticeDeck extends StatelessWidget {
       onOpen: (context, practice, _) => Navigator.of(context).push<void>(
         CupertinoPageRoute(builder: (_) => _PracticeDetailScreen(practice)),
       ),
+      belowCard: (_, practice) => PracticeDeckNotesAction(
+        practiceId: practice.id,
+        practiceTitle: _localized(practice.title, ru),
+      ),
       cardBuilder: (context, index, front, hint) => PracticeDeckCard(
         artwork: _PracticeDeckArtwork(asset: practices[index].art),
         isFront: front,
@@ -212,7 +216,6 @@ class _PracticeDeck extends StatelessWidget {
                       practice.metadata(ru),
                       style: context.textTheme.inverseUrbanistRegular16,
                     ),
-                    PracticeNotesMarker(practiceId: practice.id),
                   ],
                 ),
             ],
@@ -393,15 +396,25 @@ class _PracticeDetailScreen extends StatelessWidget {
   }
 }
 
+String? practiceTitleById(String id, bool ru) {
+  final practice = _practices.where((item) => item.id == id).firstOrNull;
+  return practice == null ? null : _localized(practice.title, ru);
+}
+
 bool _hasPracticeNotes(BuildContext context) =>
     context.watch<UserProvider?>()?.currentUser?.id.isNotEmpty == true;
 
-Future<void> _openNotes(BuildContext context, _Practice practice, bool ru) =>
-    openPracticeNotes(
-      context,
-      practiceId: practice.id,
-      practiceTitle: _localized(practice.title, ru),
-    );
+Future<void> _openNotes(
+  BuildContext context,
+  _Practice practice,
+  bool ru, {
+  bool startNew = false,
+}) => openPracticeNotes(
+  context,
+  practiceId: practice.id,
+  practiceTitle: _localized(practice.title, ru),
+  startNew: startNew,
+);
 
 class _PracticeCompletionScreen extends StatelessWidget {
   const _PracticeCompletionScreen(this.practice);
@@ -422,7 +435,8 @@ class _PracticeCompletionScreen extends StatelessWidget {
         children: [
           if (hasNotes)
             AsteriaActionButton(
-              onPressed: () => _openNotes(context, practice, ru),
+              onPressed: () =>
+                  _openNotes(context, practice, ru, startNew: true),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [

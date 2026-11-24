@@ -1,3 +1,6 @@
+import 'package:asteria_app/features/sonnik/data/dream_journal.dart';
+import 'package:flutter/services.dart';
+import 'package:hive/hive.dart';
 import 'package:asteria_app/app/data/models/sonnik/sonnik_model.dart';
 import 'package:asteria_app/app/data/models/user/user_model.dart';
 import 'package:asteria_app/app/providers/content_provider.dart';
@@ -35,6 +38,8 @@ class _User extends ChangeNotifier implements UserProvider {
 class _Access extends ChangeNotifier implements MonetizationProvider {
   int remaining = 1, paid = 0, checks = 0;
   bool throwOnRefresh = false;
+  @override
+  int get balance => 0;
   @override
   bool effectivePro = false;
   @override
@@ -74,6 +79,9 @@ class _Content extends ChangeNotifier implements ContentProvider {
 }
 
 void main() {
+  setUpAll(() => Hive.openBox<Map>('dream_journal_v1', bytes: Uint8List(0)));
+  setUp(() => Hive.box<Map>('dream_journal_v1').clear());
+  tearDownAll(Hive.close);
   late _Access access;
   late _User user;
   late _Content content;
@@ -152,10 +160,43 @@ void main() {
       await tester.tap(find.text('Interpret'));
       await tester.pumpAndSettle();
       expect(content.requests, isEmpty);
+      expect(find.text('A quiet river'), findsOneWidget);
+      expect(find.text('Dream journal'), findsOneWidget);
+      await tester.tap(find.text('Save dream'));
+      await tester.pumpAndSettle();
+      expect(
+        (await DreamJournal('reader').read()).single.text,
+        'A quiet river',
+      );
+      expect(find.text('A quiet river'), findsOneWidget);
       expect(find.byType(TextField), findsNothing);
+      await tester.tap(find.byTooltip('Back'));
+      await tester.pumpAndSettle();
       expect(access.checks, 2);
       await tester.tap(find.text('Open three runes'));
       expect(openedRunes, isTrue);
+    },
+  );
+
+  testWidgets(
+    'saving preserves the free attempt and the saved dream can be interpreted directly',
+    (tester) async {
+      await mount(tester, lang: 'en');
+      await tester.enterText(find.byType(TextField), 'A dream about the coast');
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Save dream'));
+      await tester.pumpAndSettle();
+      expect(content.requests, isEmpty);
+      expect(access.checks, 1);
+      expect(
+        (await DreamJournal('reader').read()).single.text,
+        'A dream about the coast',
+      );
+      await tester.tap(find.text('Interpret dream'));
+      await tester.pumpAndSettle();
+      expect(content.requests, ['A dream about the coast']);
+      expect(access.checks, 2);
+      expect(find.text(_dream.interpretation), findsOneWidget);
     },
   );
 
@@ -165,7 +206,10 @@ void main() {
       access.throwOnRefresh = true;
       user.currentUser = user.currentUser.copyWith(sonnikHistory: [_dream]);
       await mount(tester);
-      expect(find.byType(TextField), findsNothing);
+      expect(find.byType(TextField), findsOneWidget);
+      expect(find.text('Дневник снов'), findsOneWidget);
+      await tester.ensureVisible(find.text(_dream.title));
+      await tester.pumpAndSettle();
       await tester.tap(find.text(_dream.title));
       await tester.pumpAndSettle();
       expect(find.text(_dream.interpretation), findsOneWidget);

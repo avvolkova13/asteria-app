@@ -1,4 +1,3 @@
-import 'package:asteria_app/features/practices/presentation/practice_note_indicators.dart';
 import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/app/data/models/affirmation/affirmation_model.dart';
 import 'package:asteria_app/core/ui_kit/card_radii.dart';
@@ -80,7 +79,6 @@ class AffirmationCardWidget extends StatelessWidget {
                 ),
             ],
           ),
-          PracticeNotesMarker(practiceId: 'affirmation:${affirmation.id}'),
         ],
       ),
     ),

@@ -1,3 +1,4 @@
+import 'dream_journal_screen.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/app/data/models/sonnik/sonnik_model.dart';
@@ -13,7 +14,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class CreateSonnikHistoryScreen extends StatelessWidget {
-  const CreateSonnikHistoryScreen({Key? key}) : super(key: key);
+  const CreateSonnikHistoryScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +32,11 @@ class CreateSonnikHistoryScreen extends StatelessWidget {
                 context.l10n.dreamHistoryTitle,
                 style: context.textTheme.inversePlayfairSemiBold32,
               ),
-              const SizedBox(height: 24),
+              const Align(
+                alignment: Alignment.centerLeft,
+                child: DreamJournalLink(),
+              ),
+              const SizedBox(height: 12),
               if (history.isEmpty)
                 SonnikGlassPanel(
                   child: Center(

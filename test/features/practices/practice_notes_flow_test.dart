@@ -78,6 +78,14 @@ void main() {
 
     await tester.tap(find.text('Meditations'));
     await tester.pumpAndSettle();
+    final deckNoteAction = find.text('Write a note').hitTestable();
+    expect(deckNoteAction, findsOneWidget);
+    await tester.tap(deckNoteAction);
+    await tester.pumpAndSettle();
+    expect(find.text('New note'), findsOneWidget);
+    expect(find.text('An Unhurried Morning'), findsOneWidget);
+    await tester.pageBack();
+    await tester.pumpAndSettle();
     await tester.tap(find.text('An Unhurried Morning').hitTestable());
     await tester.pumpAndSettle();
     await tester.ensureVisible(find.text('My notes'));
@@ -172,9 +180,8 @@ void main() {
     await tester.tap(find.text('Write a note'));
     await tester.pumpAndSettle();
     expect(find.byType(TextField), findsOneWidget);
-    final row = find.text('My garden is sunny').last;
-    await tester.ensureVisible(row);
-    await tester.tap(row);
+    expect(tester.widget<TextField>(editor).controller!.text, isEmpty);
+    await tester.pageBack();
     await tester.pumpAndSettle();
     final menu = find.byType(PopupMenuButton<String>);
     await tester.ensureVisible(menu);

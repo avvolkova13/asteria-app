@@ -37,30 +37,57 @@ Future<DreamEntry?> openDreamJournal(
   return user.currentUser?.id == owner ? text : null;
 }
 
-class DreamCaptureButton extends StatelessWidget {
-  const DreamCaptureButton({super.key});
+Future<void> _showDreams(BuildContext context, {required bool write}) async {
+  final user = context.read<UserProvider?>();
+  final owner = user?.currentUser?.id;
+  if (user == null || owner == null || owner.isEmpty) {
+    CreateSonnikInitialRoute.push(context);
+    return;
+  }
+  final entry = await openDreamJournal(context, user, startNew: write);
+  if (!context.mounted || user.currentUser?.id != owner || entry == null) {
+    return;
+  }
+  CreateSonnikInitialRoute.push(
+    context,
+    params: CreateSonnikInitialRouteParams(initialEntry: entry, ownerId: owner),
+  );
+}
+
+class DreamJournalLink extends StatelessWidget {
+  const DreamJournalLink({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return AsteriaActionButton(
-      text: context.l10n.adDecode,
-      gold: true,
-      width: double.infinity,
-      onPressed: () async {
-        final user = context.read<UserProvider?>();
-        if (user == null || user.currentUser?.id.isNotEmpty != true) {
-          CreateSonnikInitialRoute.push(context);
-          return;
-        }
-        final draft = await openDreamJournal(context, user, startNew: true);
-        if (!context.mounted || draft == null) return;
-        CreateSonnikInitialRoute.push(
-          context,
-          params: CreateSonnikInitialRouteParams(initialEntry: draft),
-        );
-      },
+    final owner = context.watch<UserProvider?>()?.currentUser?.id;
+    if (owner == null || owner.isEmpty) return const SizedBox.shrink();
+    final ru = Localizations.localeOf(context).languageCode == 'ru';
+    return LotusButtons.textIcon(
+      style: TextButton.styleFrom(
+        foregroundColor: AppColorsDark.linkGold,
+        minimumSize: const Size(44, 44),
+      ),
+      onPressed: () => _showDreams(context, write: false),
+      icon: const Icon(Icons.menu_book_rounded, size: 19),
+      label: Text(ru ? 'Дневник снов' : 'Dream journal'),
     );
   }
+}
+
+class DreamCaptureButton extends StatelessWidget {
+  const DreamCaptureButton({super.key});
+  @override
+  Widget build(BuildContext context) => Column(
+    children: [
+      AsteriaActionButton(
+        text: context.l10n.adDecode,
+        gold: true,
+        width: double.infinity,
+        onPressed: () => _showDreams(context, write: true),
+      ),
+      const DreamJournalLink(),
+    ],
+  );
 }
 
 class DreamJournalScreen extends StatefulWidget {

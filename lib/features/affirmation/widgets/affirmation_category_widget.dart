@@ -1,3 +1,4 @@
+import 'package:asteria_app/features/practices/presentation/practice_note_indicators.dart';
 import 'package:asteria_app/core/ui_kit/widgets/swipe_card_stack.dart';
 import 'package:asteria_app/features/affirmation/selected_affirmation_player.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
@@ -196,6 +197,10 @@ class AffirmationCardStack extends StatelessWidget {
     idOf: (item) => item.id,
     label: (context, item) => context.l10n.affirmationSemantics(item.text),
     showSwipeHint: showSwipeHint,
+    belowCard: (_, item) => PracticeDeckNotesAction(
+      practiceId: 'affirmation:${item.id}',
+      practiceTitle: item.text,
+    ),
     onView: (item) => di
         .get<ProductAnalyticsService>()
         .trackAffirmationCardView(contentId: item.id),

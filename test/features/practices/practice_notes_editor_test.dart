@@ -25,7 +25,7 @@ void main() {
 
   for (final ru in [true, false]) {
     testWidgets(
-      'saved text remains readable and Add starts a focused draft, ru=$ru',
+      'save returns to the list, edit protects revisions, and Add starts a focused draft, ru=$ru',
       (tester) async {
         tester.view.physicalSize = ru
             ? const Size(390, 844)
@@ -82,10 +82,8 @@ void main() {
         await tester.pumpAndSettle();
         await tester.tap(find.text(ru ? 'Сохранить заметку' : 'Save note'));
         await tester.pumpAndSettle();
-        expect(
-          tester.widget<TextField>(editor).controller!.text,
-          'A quiet morning',
-        );
+        expect(editor, findsNothing);
+        expect(find.text('A quiet morning'), findsOneWidget);
         expect(find.text(ru ? 'Сохранено' : 'Saved'), findsOneWidget);
         expect(find.text(ru ? 'Удалить заметку' : 'Delete note'), findsNothing);
         final add = find.text(ru ? 'Добавить заметку' : 'Add note');
@@ -110,10 +108,11 @@ void main() {
           await const PracticeNotesStore().read('editor-owner', 'morning'),
           hasLength(2),
         );
+        await tester.tap(find.text('A second thought'));
+        await tester.pumpAndSettle();
         await tester.enterText(editor, 'An unsaved revision');
         await tester.pumpAndSettle();
-        await tester.ensureVisible(add);
-        await tester.tap(add);
+        await tester.tap(find.byTooltip(ru ? 'Назад' : 'Back'));
         await tester.pumpAndSettle();
         await tester.tap(find.text(ru ? 'Отмена' : 'Cancel'));
         await tester.pumpAndSettle();
@@ -121,22 +120,23 @@ void main() {
           tester.widget<TextField>(editor).controller!.text,
           'An unsaved revision',
         );
+        await tester.tap(find.byTooltip(ru ? 'Назад' : 'Back'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text(ru ? 'Сбросить' : 'Discard'));
+        await tester.pumpAndSettle();
         final firstRow = find.widgetWithText(ListTile, 'A quiet morning');
         final menu = find.descendant(
           of: firstRow,
           matching: find.byType(PopupMenuButton<String>),
         );
         await tester.ensureVisible(menu);
+        await tester.pumpAndSettle();
         await tester.tap(menu);
         await tester.pumpAndSettle();
         await tester.tap(find.text(ru ? 'Удалить заметку' : 'Delete note'));
         await tester.pumpAndSettle();
         await tester.tap(find.text(ru ? 'Удалить' : 'Delete'));
         await tester.pumpAndSettle();
-        expect(
-          tester.widget<TextField>(editor).controller!.text,
-          'An unsaved revision',
-        );
         final remaining = await const PracticeNotesStore().read(
           'editor-owner',
           'morning',

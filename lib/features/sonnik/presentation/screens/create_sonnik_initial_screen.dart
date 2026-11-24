@@ -28,9 +28,13 @@ import 'package:asteria_app/features/sonnik/presentation/provider/sonnik_provide
 import 'package:asteria_app/features/sonnik/presentation/widgets/sonnik_layout.dart';
 
 class CreateSonnikInitialScreen extends StatefulWidget {
-  const CreateSonnikInitialScreen({super.key, this.initialEntry});
-
+  const CreateSonnikInitialScreen({
+    super.key,
+    this.initialEntry,
+    this.entryOwnerId,
+  });
   final DreamEntry? initialEntry;
+  final String? entryOwnerId;
 
   @override
   State<CreateSonnikInitialScreen> createState() =>
@@ -38,10 +42,43 @@ class CreateSonnikInitialScreen extends StatefulWidget {
 }
 
 class _CreateSonnikInitialScreenState extends State<CreateSonnikInitialScreen> {
+  late DreamEntry? _routeEntry = widget.initialEntry;
+  String? _owner;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _owner = Provider.of<UserProvider?>(context)?.currentUser?.id;
+    // Once the account changes, returning to it must not replay a request.
+    if (_owner == null || _owner != widget.entryOwnerId) _routeEntry = null;
+  }
+
+  @override
+  Widget build(BuildContext context) => _DreamForm(
+    key: ValueKey(_owner),
+    owner: _owner,
+    initialEntry: _routeEntry,
+  );
+}
+
+class _DreamForm extends StatefulWidget {
+  const _DreamForm({super.key, required this.owner, this.initialEntry});
+  final String? owner;
+  final DreamEntry? initialEntry;
+  @override
+  State<_DreamForm> createState() => _DreamFormState();
+}
+
+class _DreamFormState extends State<_DreamForm> {
   late final _textController = TextEditingController(
     text: widget.initialEntry?.text,
   );
   late DreamEntry? _savedEntry = widget.initialEntry;
+  bool _submitting = false;
+  bool get _current =>
+      mounted && context.read<UserProvider?>()?.currentUser?.id == widget.owner;
+  bool get _canShowResult =>
+      _current && ModalRoute.of(context)?.isCurrent == true;
   bool _savingDream = false;
   bool _dictating = false;
   final ContentProvider _contentProvider = di.get<ContentProvider>();
@@ -52,6 +89,11 @@ class _CreateSonnikInitialScreenState extends State<CreateSonnikInitialScreen> {
   @override
   void initState() {
     super.initState();
+    if (widget.initialEntry != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (_canShowResult) _onCreateSonnikTap();
+      });
+    }
     final facade = di.get<AnalyticsFacade>();
     facade.trackEvent(AnalyticsEvents.sonnikFunnelStart, params: _featureParam);
     facade.trackEvent(
@@ -79,10 +121,25 @@ class _CreateSonnikInitialScreenState extends State<CreateSonnikInitialScreen> {
     final entry = await openDreamJournal(context, user);
     if (!mounted || user.currentUser?.id != owner) return;
     if (entry != null) {
+      final draft = _textController.text.trim();
+      if (draft.isNotEmpty &&
+          draft != _savedEntry?.text &&
+          draft != entry.text) {
+        // Keep the unfinished form on the stack when interpreting another entry.
+        CreateSonnikInitialRoute.push(
+          context,
+          params: CreateSonnikInitialRouteParams(
+            initialEntry: entry,
+            ownerId: owner,
+          ),
+        );
+        return;
+      }
       setState(() {
         _savedEntry = entry;
         _textController.text = entry.text;
       });
+      await _onCreateSonnikTap();
       return;
     }
 
@@ -109,7 +166,14 @@ class _CreateSonnikInitialScreenState extends State<CreateSonnikInitialScreen> {
   Future<void> _saveDream(UserProvider user) async {
     final owner = user.currentUser?.id;
     final text = _textController.text.trim();
-    if (_savingDream || owner == null || owner.isEmpty || text.isEmpty) return;
+    if (!_current ||
+        _submitting ||
+        _savingDream ||
+        owner == null ||
+        owner.isEmpty ||
+        text.isEmpty) {
+      return;
+    }
     FocusManager.instance.primaryFocus?.unfocus();
     setState(() => _savingDream = true);
     try {
@@ -134,13 +198,28 @@ class _CreateSonnikInitialScreenState extends State<CreateSonnikInitialScreen> {
   }
 
   Future<void> _onCreateSonnikTap() async {
-    if (_textController.text.isEmpty) return;
+    final text = _textController.text.trim();
+    if (!_canShowResult ||
+        _submitting ||
+        _savingDream ||
+        _dictating ||
+        text.isEmpty) {
+      return;
+    }
+    setState(() => _submitting = true);
+    try {
+      await _interpret(text);
+    } finally {
+      if (mounted) setState(() => _submitting = false);
+    }
+  }
 
+  Future<void> _interpret(String text) async {
     final facade = di.get<AnalyticsFacade>();
     final productAnalytics = di.get<ProductAnalyticsService>();
     // Bucket the dream length BEFORE the text leaves this method — the raw
     // text must never be logged. See spec §2.5 R36.
-    final dreamLengthBand = LengthBand.fromText(_textController.text);
+    final dreamLengthBand = LengthBand.fromText(text);
     facade.trackEvent(
       AnalyticsEvents.sonnikInputCompleted,
       params: _featureParam,
@@ -148,8 +227,7 @@ class _CreateSonnikInitialScreenState extends State<CreateSonnikInitialScreen> {
     productAnalytics.trackSonnikDreamSubmit(dreamLengthBand: dreamLengthBand);
 
     final canMakeRequest = await checkRequestAccess(context, 'sonnik');
-    if (canMakeRequest == null) return;
-    if (!mounted) return;
+    if (!mounted || canMakeRequest == null || !_canShowResult) return;
     if (!canMakeRequest) {
       productAnalytics.trackSonnikLimitReached(
         limitType: LimitType.requests,
@@ -168,7 +246,7 @@ class _CreateSonnikInitialScreenState extends State<CreateSonnikInitialScreen> {
     _loaderService.showWithSpheres(GlobalLoaderType.sonnik);
     final stopwatch = Stopwatch()..start();
     try {
-      final sonnik = await _contentProvider.createSonnik(_textController.text);
+      final sonnik = await _contentProvider.createSonnik(text);
       stopwatch.stop();
       facade.trackEvent(
         AnalyticsEvents.calculationCompleted,
@@ -178,7 +256,7 @@ class _CreateSonnikInitialScreenState extends State<CreateSonnikInitialScreen> {
         generationStatus: GenerationStatus.success,
         generationSeconds: stopwatch.elapsed.inSeconds,
       );
-      if (!mounted) return;
+      if (!mounted || !_canShowResult) return;
       di.get<SonnikProvider>().selectSonnik(sonnik);
       CreateSonnikLoadedRoute.pushReplacement(context);
     } catch (e) {
@@ -188,14 +266,14 @@ class _CreateSonnikInitialScreenState extends State<CreateSonnikInitialScreen> {
         params: {
           ..._featureParam,
           EventParams.resultStatus: 'failed',
-          EventParams.failureReason: e.toString(),
+          EventParams.failureReason: e.runtimeType.toString(),
         },
       );
       productAnalytics.trackSonnikGenerationComplete(
         generationStatus: GenerationStatus.failed,
         generationSeconds: stopwatch.elapsed.inSeconds,
       );
-      if (!mounted) return;
+      if (!mounted || !_canShowResult) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(context.l10n.dreamCalculationError)),
       );
@@ -208,7 +286,7 @@ class _CreateSonnikInitialScreenState extends State<CreateSonnikInitialScreen> {
   Widget build(BuildContext context) {
     final text = _textController.text.trim();
     final hasText = text.isNotEmpty;
-    final canSubmit = !_savingDream && !_dictating;
+    final canSubmit = !_savingDream && !_dictating && !_submitting;
     final saved = _savedEntry?.text == text && hasText;
     final user = context.watch<UserProvider?>();
     final ru = Localizations.localeOf(context).languageCode == 'ru';
@@ -310,14 +388,14 @@ class _CreateSonnikInitialScreenState extends State<CreateSonnikInitialScreen> {
                   SonnikTextArea(
                     controller: _textController,
                     onChanged: _onTextChanged,
-                    readOnly: _savingDream,
+                    readOnly: _savingDream || _submitting,
                   ),
                   const SizedBox(height: 12),
                   Align(
                     alignment: Alignment.centerLeft,
                     child: DictationButton(
                       controller: _textController,
-                      enabled: !_savingDream,
+                      enabled: !_savingDream && !_submitting,
                       showLabel: true,
                       onActiveChanged: (active) {
                         setState(() => _dictating = active);

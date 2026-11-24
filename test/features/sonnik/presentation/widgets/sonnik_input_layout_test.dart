@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'package:asteria_app/app/data/models/sonnik/sonnik_model.dart';
+import 'package:asteria_app/features/sonnik/presentation/provider/sonnik_provider.dart';
 import 'package:asteria_app/features/sonnik/presentation/screens/dream_entry_screen.dart';
 import 'package:asteria_app/features/home/presentation/widgets/advertising_block_widget.dart';
 import 'package:asteria_app/core/routing/app_route.dart';
@@ -47,7 +50,9 @@ void main() {
         await Hive.openBox<Map>('dream_journal_v1', bytes: Uint8List(0));
         addTearDown(Hive.close);
         final monetization = _Monetization(pro);
-        di.registerSingleton<ContentProvider>(_Content());
+        final content = _Content();
+        di.registerSingleton<ContentProvider>(content);
+        di.registerSingleton<SonnikProvider>(SonnikProvider());
         di.registerSingleton<GlobalLoaderService>(GlobalLoaderService());
         di.registerSingleton<AnalyticsFacade>(facade);
         di.registerSingleton<ProductAnalyticsService>(
@@ -74,6 +79,17 @@ void main() {
               ),
             ),
             CreateSonnikInitialRoute(),
+            GoRoute(
+              name: SonnikRoutes.createSonnikLoadedRouteName,
+              path: SonnikRoutes.createSonnikLoadedRouteName,
+              builder: (_, __) =>
+                  const Scaffold(body: Text('Interpretation result')),
+            ),
+            GoRoute(
+              name: SonnikRoutes.createSonnikRequestsLeftRouteName,
+              path: SonnikRoutes.createSonnikRequestsLeftRouteName,
+              builder: (_, __) => const Scaffold(body: Text('Quota reached')),
+            ),
           ],
         );
         addTearDown(router.dispose);
@@ -155,7 +171,10 @@ void main() {
           final records = await DreamJournal('test-user').read();
           expect(records.single.text, 'Мне приснилось море');
           expect(await DreamJournal('another-user').read(), isEmpty);
-          await tester.enterText(find.byType(TextField), '');
+          await tester.enterText(
+            find.byType(TextField),
+            'Черновик для другого сна',
+          );
           await tester.pumpAndSettle();
           await tester.ensureVisible(journal);
           await tester.tap(journal);
@@ -173,16 +192,67 @@ void main() {
             (await DreamJournal('test-user').read()).single.id,
             records.single.id,
           );
-          await tester.ensureVisible(find.text('Спросить Ливею'));
-          await tester.tap(find.text('Спросить Ливею'));
+          await tester.ensureVisible(find.text('Расшифровать сон'));
+          await tester.tap(find.text('Расшифровать сон'));
           await tester.pumpAndSettle();
-          expect(find.byType(SonnikTextArea), findsOneWidget);
+          expect(content.requests, ['Море и маяк']);
+          expect(find.text('Interpretation result'), findsOneWidget);
+          router.pop();
+          await tester.pumpAndSettle();
           expect(
             tester.widget<TextField>(find.byType(TextField)).controller!.text,
-            'Море и маяк',
+            'Черновик для другого сна',
           );
-          expect(find.textContaining('Сохранено в'), findsOneWidget);
           expect(await DreamJournal('test-user').read(), hasLength(1));
+        } else {
+          tester.view.resetViewInsets();
+          final params = CreateSonnikInitialRouteParams(
+            initialEntry: DreamEntry(
+              id: 'existing',
+              text: 'Тихий лес',
+              recordedAt: DateTime(2026),
+            ),
+            ownerId: user.id,
+          );
+          monetization.allowed = false;
+          router.pushNamed(
+            SonnikRoutes.createSonnikInitialRouteName,
+            extra: params,
+          );
+          await tester.pumpAndSettle();
+          expect(content.requests, isEmpty);
+          expect(find.text('Quota reached'), findsOneWidget);
+          router.pop();
+          await tester.pumpAndSettle();
+          expect(
+            tester.widget<TextField>(find.byType(TextField)).controller!.text,
+            'Тихий лес',
+          );
+          monetization.allowed = true;
+          content.failNext = true;
+          await tester.ensureVisible(find.byType(SonnikGradientButton));
+          await tester.tap(find.byType(SonnikGradientButton));
+          await tester.pumpAndSettle();
+          expect(content.requests, ['Тихий лес']);
+          expect(find.text(l10n.dreamCalculationError), findsOneWidget);
+          monetization.gate = Completer<void>();
+          await tester.tap(find.byType(SonnikGradientButton));
+          await tester.pump();
+          user.switchAccount();
+          monetization.gate!.complete();
+          await tester.pumpAndSettle();
+          expect(content.requests, ['Тихий лес']);
+          expect(
+            tester.widget<TextField>(find.byType(TextField)).controller!.text,
+            isEmpty,
+          );
+          user.switchAccount();
+          await tester.pumpAndSettle();
+          expect(content.requests, ['Тихий лес']);
+          expect(
+            tester.widget<TextField>(find.byType(TextField)).controller!.text,
+            isEmpty,
+          );
         }
         expect(tester.takeException(), isNull);
         await tester.pumpWidget(const SizedBox());
@@ -191,17 +261,51 @@ void main() {
   }
 }
 
-class _Content extends Fake implements ContentProvider {}
+class _Content extends Fake implements ContentProvider {
+  final requests = <String>[];
+  bool failNext = false;
+  @override
+  Future<SonnikModel> createSonnik(String text) async {
+    requests.add(text);
+    if (failNext) {
+      failNext = false;
+      throw StateError('offline');
+    }
+    return SonnikModel(
+      id: 'generated',
+      dateGenerated: DateTime(2026),
+      title: 'result',
+      interpretation: 'meaning',
+    );
+  }
+}
 
 class _User extends ChangeNotifier implements UserProvider {
+  String id = 'test-user';
+  void switchAccount() {
+    id = id == 'test-user' ? 'another-user' : 'test-user';
+    notifyListeners();
+  }
+
   @override
-  UserModel get currentUser => UserModel.empty().copyWith(id: 'test-user');
+  UserModel get currentUser => UserModel.empty().copyWith(id: id);
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
 class _Monetization extends ChangeNotifier implements MonetizationProvider {
   _Monetization(this.effectivePro);
+  bool allowed = true;
+  Completer<void>? gate;
+  @override
+  Future<void> refreshForAccess() async {
+    await gate?.future;
+  }
+
+  @override
+  bool isFeatureEnabled(String feature) => true;
+  @override
+  bool canMakeRequest(String feature) => allowed;
   @override
   final bool effectivePro;
   @override

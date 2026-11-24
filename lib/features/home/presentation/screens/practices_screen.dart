@@ -1,3 +1,4 @@
+import 'package:asteria_app/features/practices/presentation/notes_journal_screen.dart';
 import 'package:asteria_app/core/routing/app_route.dart';
 import 'package:asteria_app/features/home/presentation/widgets/daily_practice_hub.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
@@ -33,7 +34,15 @@ class PracticesScreen extends StatelessWidget {
             AsteriaEntrance(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: HomeSectionHeading(context.l10n.navPractices),
+                child: Wrap(
+                  alignment: WrapAlignment.spaceBetween,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  spacing: 12,
+                  children: [
+                    HomeSectionHeading(context.l10n.navPractices),
+                    const NotesJournalLink(),
+                  ],
+                ),
               ),
             ),
             const SizedBox(height: 16),

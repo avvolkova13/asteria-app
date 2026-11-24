@@ -117,7 +117,9 @@ void main() {
         expect(find.byType(TextField), findsNothing);
         await tester.tap(find.text('A quiet lighthouse'));
         await tester.pumpAndSettle();
-        await tester.tap(find.text(ru ? 'Спросить Ливею' : 'Ask Liveya'));
+        await tester.tap(
+          find.text(ru ? 'Расшифровать сон' : 'Interpret dream'),
+        );
         await tester.pumpAndSettle();
         expect(chosen?.id, entries.single.id);
         expect(chosen?.text, 'A quiet lighthouse');
@@ -138,6 +140,24 @@ void main() {
         await tester.pumpAndSettle();
         expect(await DreamJournal('journal-owner').read(), isEmpty);
         expect(find.text('A quiet lighthouse'), findsNothing);
+        await tester.tap(find.text(ru ? 'Записать сон' : 'Write a dream'));
+        await tester.pumpAndSettle();
+        await tester.enterText(
+          find.byType(TextField),
+          'The new dream to interpret',
+        );
+        await tester.pumpAndSettle();
+        await tester.tap(
+          find.text(ru ? 'Сохранить и расшифровать' : 'Save and interpret'),
+        );
+        await tester.pumpAndSettle();
+        expect(chosen?.text, 'The new dream to interpret');
+        expect(
+          (await DreamJournal('journal-owner').read()).single.id,
+          chosen?.id,
+        );
+        await tester.tap(find.text('Journal'));
+        await tester.pumpAndSettle();
         await tester.tap(find.text(ru ? 'Записать сон' : 'Write a dream'));
         await tester.pumpAndSettle();
         await tester.enterText(find.byType(TextField), 'Private unsaved dream');

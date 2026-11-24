@@ -90,6 +90,18 @@ void main() {
       expect((await store.read('a/b', 'body')).single.text, 'Body');
       expect((await store.read('a', 'b/morning')).single.text, 'Other');
       expect(await store.read('new', 'morning'), isEmpty);
+      final journal = await store.readJournal('a/b');
+      expect(
+        journal.map((entry) => entry.note.text),
+        unorderedEquals(['First', 'Body']),
+      );
+      expect(
+        journal.singleWhere((entry) => entry.note.id == first.id).practiceId,
+        'morning',
+      );
+      final other = await store.readJournal('a');
+      expect(other.single.practiceId, 'b/morning');
+      expect(other.single.note.text, 'Other');
     },
   );
 

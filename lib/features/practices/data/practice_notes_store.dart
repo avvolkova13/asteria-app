@@ -13,6 +13,8 @@ class PracticeNote {
   final DateTime recordedAt;
 }
 
+typedef JournalNote = ({String practiceId, PracticeNote note});
+
 class PracticeNotesStore {
   const PracticeNotesStore();
 
@@ -44,6 +46,32 @@ class PracticeNotesStore {
           ),
     ];
     return notes..sort((a, b) => b.recordedAt.compareTo(a.recordedAt));
+  }
+
+  Future<List<JournalNote>> readJournal(String ownerId) async {
+    final prefix = _ownerPrefix(ownerId);
+    final box = await _open();
+    final notes = <JournalNote>[];
+    for (final key in _scopedKeys(box, prefix)) {
+      final parts = key.substring(prefix.length).split('/');
+      if (parts.length != 2 || parts.any((part) => part.isEmpty)) continue;
+      if (box.get(key) case {'text': final String text, 'at': final int at}) {
+        try {
+          notes.add((
+            practiceId: Uri.decodeComponent(parts.first),
+            note: PracticeNote(
+              id: Uri.decodeComponent(parts.last),
+              text: text,
+              recordedAt: DateTime.fromMillisecondsSinceEpoch(at),
+            ),
+          ));
+        } on ArgumentError {
+          continue;
+        }
+      }
+    }
+    return notes
+      ..sort((a, b) => b.note.recordedAt.compareTo(a.note.recordedAt));
   }
 
   Stream<int> watchCount(String ownerId, String practiceId) async* {

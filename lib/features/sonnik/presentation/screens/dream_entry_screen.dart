@@ -101,6 +101,12 @@ class _DreamEntryScreenState extends State<DreamEntryScreen> {
     }
   }
 
+  Future<void> _interpret() async {
+    if (_busy || _dictating || !_owns || _text.text.trim().isEmpty) return;
+    if (_changed && !await _save()) return;
+    if (mounted && _owns && _entry != null) Navigator.pop(context, _entry);
+  }
+
   Future<void> _exit() async {
     if (_asking || _busy || _dictating || !_owns) return;
     _asking = true;
@@ -192,7 +198,7 @@ class _DreamEntryScreenState extends State<DreamEntryScreen> {
                   ? (entry == null
                         ? (ru ? 'Сохранить сон' : 'Save dream')
                         : (ru ? 'Сохранить изменения' : 'Save changes'))
-                  : (ru ? 'Спросить Ливею' : 'Ask Liveya'),
+                  : (ru ? 'Расшифровать сон' : 'Interpret dream'),
               width: double.infinity,
               isLoading: _busy,
               onPressed:
@@ -203,23 +209,20 @@ class _DreamEntryScreenState extends State<DreamEntryScreen> {
                   : () {
                       if (_editing) {
                         _save();
-                      } else if (_owns) {
-                        Navigator.pop(context, entry);
+                      } else {
+                        _interpret();
                       }
                     },
             ),
-            if (!_editing)
-              Padding(
-                padding: const EdgeInsets.only(top: 10),
-                child: Text(
-                  ru
-                      ? 'Перейти к расшифровке этого сна'
-                      : 'Explore the meaning of this dream',
-                  style: context.textTheme.inverseUrbanistRegular14.copyWith(
-                    color: AppColorsDark.textSecondary,
-                  ),
-                  textAlign: TextAlign.center,
+            if (_editing && _text.text.trim().isNotEmpty)
+              LotusButtons.textIcon(
+                icon: const Icon(Icons.auto_awesome_outlined, size: 18),
+                label: Text(
+                  _changed
+                      ? (ru ? 'Сохранить и расшифровать' : 'Save and interpret')
+                      : (ru ? 'Расшифровать сон' : 'Interpret dream'),
                 ),
+                onPressed: _busy || _dictating ? null : _interpret,
               ),
           ],
         ),
@@ -261,7 +264,7 @@ class _DreamEntryScreenState extends State<DreamEntryScreen> {
                   focusNode: _focus,
                   autofocus: entry == null,
                   readOnly: _busy || _dictating,
-                  minLines: 7,
+                  minLines: MediaQuery.viewInsetsOf(context).bottom > 0 ? 3 : 5,
                   maxLines: null,
                   keyboardType: TextInputType.multiline,
                   style: context.textTheme.inverseUrbanistRegular16.copyWith(
@@ -292,15 +295,6 @@ class _DreamEntryScreenState extends State<DreamEntryScreen> {
                   onActiveChanged: (active) {
                     if (mounted) setState(() => _dictating = active);
                   },
-                ),
-              ),
-              const SizedBox(height: 12),
-              Text(
-                ru
-                    ? 'Можно просто сохранить сон. Расшифровка — когда захотите.'
-                    : 'Save your dream now. Explore its meaning whenever you like.',
-                style: context.textTheme.inverseUrbanistRegular14.copyWith(
-                  color: AppColorsDark.textSecondary,
                 ),
               ),
             ] else ...[

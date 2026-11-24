@@ -40,9 +40,10 @@ class CreateSonnikRoute extends AppRoute {
 }
 
 final class CreateSonnikInitialRouteParams {
-  const CreateSonnikInitialRouteParams({this.initialEntry});
+  const CreateSonnikInitialRouteParams({required this.initialEntry, required this.ownerId});
 
-  final DreamEntry? initialEntry;
+  final DreamEntry initialEntry;
+  final String ownerId;
 }
 
 class CreateSonnikInitialRoute extends AppRoute {
@@ -55,13 +56,14 @@ class CreateSonnikInitialRoute extends AppRoute {
           name: SonnikRoutes.createSonnikInitialRouteName,
           path: SonnikRoutes.createSonnikInitialRouteName,
           pageBuilder: (context, state) {
+            final extra = state.extra;
+            final params = extra is CreateSonnikInitialRouteParams ? extra : null;
             return AsteriaPage<void>(
               name: SonnikRoutes.createSonnikInitialRouteName,
               key: state.pageKey,
               child: CreateSonnikInitialScreen(
-                initialEntry: state.extra is CreateSonnikInitialRouteParams
-                    ? (state.extra as CreateSonnikInitialRouteParams).initialEntry
-                    : null,
+                initialEntry: params?.initialEntry,
+                entryOwnerId: params?.ownerId,
               ),
             );
           },

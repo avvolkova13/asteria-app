@@ -1,3 +1,7 @@
+import 'package:asteria_app/features/sonnik/data/dream_journal.dart';
+import 'package:asteria_app/features/sonnik/presentation/screens/dream_entry_screen.dart';
+import 'package:asteria_app/features/sonnik/presentation/screens/dream_journal_screen.dart';
+import 'package:asteria_app/core/ui_kit/widgets/asteria_action_button.dart';
 import 'package:asteria_app/app/data/models/sonnik/sonnik_model.dart';
 import 'package:asteria_app/app/providers/content_provider.dart';
 import 'package:asteria_app/app/providers/user_provider.dart';
@@ -40,6 +44,8 @@ class _DreamPageState extends State<_DreamPage> {
   bool _checkFailed = false;
   bool _submitting = false;
   bool _calculationFailed = false;
+  bool _saving = false;
+  bool _saveFailed = false;
 
   @override
   void initState() {
@@ -108,9 +114,49 @@ class _DreamPageState extends State<_DreamPage> {
     );
   }
 
-  Future<void> _submit() async {
-    final dream = _draft.text.trim();
-    if (_submitting || dream.isEmpty) return;
+  Future<void> _save() async {
+    final owner = widget.uid;
+    final user = context.read<UserProvider>();
+    final text = _draft.text.trim();
+    if (_saving ||
+        _submitting ||
+        owner == null ||
+        owner.isEmpty ||
+        owner != user.currentUser?.id ||
+        text.isEmpty) {
+      return;
+    }
+    setState(() {
+      _saving = true;
+      _saveFailed = false;
+    });
+    FocusManager.instance.primaryFocus?.unfocus();
+    late final DreamEntry entry;
+    try {
+      entry = await DreamJournal(owner).save(text);
+    } catch (_) {
+      if (mounted) setState(() => _saveFailed = true);
+      return;
+    } finally {
+      if (mounted) setState(() => _saving = false);
+    }
+    if (!mounted || user.currentUser?.id != owner) return;
+    _draft.clear();
+    if (ModalRoute.isCurrentOf(context) == false) return;
+    final chosen = await openDreamEntry(
+      context,
+      user,
+      owner: owner,
+      entry: entry,
+    );
+    if (chosen != null && mounted && user.currentUser?.id == owner) {
+      await _submit(chosen.text);
+    }
+  }
+
+  Future<void> _submit([String? savedText]) async {
+    final dream = savedText ?? _draft.text.trim();
+    if (_saving || _submitting || dream.isEmpty) return;
     setState(() {
       _submitting = true;
       _calculationFailed = false;
@@ -174,22 +220,6 @@ class _DreamPageState extends State<_DreamPage> {
                     : 'Free interpretations left: ${access.requestQuota('sonnik').freeRemaining}',
                 style: textStyle,
               ),
-            ScenarioTextField(
-              controller: _draft,
-              label: ru ? 'Что вам приснилось?' : 'What did you dream about?',
-              hint: ru
-                  ? 'Какая деталь сна вам запомнилась?'
-                  : 'Which detail do you remember?',
-              minLines: 3,
-              onChanged: (_) => setState(() {}),
-            ),
-            if (_calculationFailed)
-              Text(context.l10n.dreamCalculationError, style: textStyle),
-            CustomButton(
-              isFullWidth: true,
-              text: context.l10n.dreamDecode,
-              onPressed: _draft.text.trim().isEmpty ? null : _submit,
-            ),
           ] else ...[
             Text(
               _checkFailed
@@ -207,6 +237,59 @@ class _DreamPageState extends State<_DreamPage> {
             ),
             if (_checkFailed)
               TextButton(onPressed: _refresh, child: Text(context.l10n.retry)),
+          ],
+          if (!_checking &&
+              !_submitting &&
+              (available || widget.uid?.isNotEmpty == true)) ...[
+            AbsorbPointer(
+              absorbing: _saving,
+              child: ScenarioTextField(
+                controller: _draft,
+                label: ru ? 'Что вам приснилось?' : 'What did you dream about?',
+                hint: ru
+                    ? 'Какая деталь сна вам запомнилась?'
+                    : 'Which detail do you remember?',
+                minLines: 3,
+                onChanged: (_) => setState(() {}),
+              ),
+            ),
+            if (_saveFailed)
+              Text(
+                ru
+                    ? 'Не удалось сохранить сон. Попробуйте ещё раз.'
+                    : 'Could not save your dream. Please try again.',
+                style: textStyle,
+              ),
+            if (_calculationFailed && available)
+              Text(context.l10n.dreamCalculationError, style: textStyle),
+            if (available)
+              AsteriaActionButton(
+                width: double.infinity,
+                text: context.l10n.dreamDecode,
+                onPressed: _saving || _draft.text.trim().isEmpty
+                    ? null
+                    : () => _submit(),
+              ),
+            if (widget.uid?.isNotEmpty == true)
+              if (!available)
+                AsteriaActionButton(
+                  width: double.infinity,
+                  isLoading: _saving,
+                  text: ru ? 'Сохранить сон' : 'Save dream',
+                  onPressed: _saving || _draft.text.trim().isEmpty
+                      ? null
+                      : _save,
+                )
+              else if (_draft.text.trim().isNotEmpty)
+                TextButton.icon(
+                  onPressed: _saving ? null : _save,
+                  icon: const Icon(Icons.bookmark_add_outlined),
+                  label: Text(ru ? 'Сохранить сон' : 'Save dream'),
+                ),
+            IgnorePointer(
+              ignoring: _saving,
+              child: const Center(child: DreamJournalLink()),
+            ),
           ],
           if (!_checking &&
               !_submitting &&
