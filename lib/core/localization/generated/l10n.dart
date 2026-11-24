@@ -9760,6 +9760,26 @@ class AppLocalizations {
     );
   }
 
+  /// `What gives me strength?`
+  String get onboardingNatalTarotTitle {
+    return Intl.message(
+      'What gives me strength?',
+      name: 'onboardingNatalTarotTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Explore your strengths in your birth chart. Try Tarot for a fresh perspective on a question.`
+  String get onboardingNatalTarotDescription {
+    return Intl.message(
+      'Explore your strengths in your birth chart. Try Tarot for a fresh perspective on a question.',
+      name: 'onboardingNatalTarotDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `A moment for yourself`
   String get onboardingPracticeTitle {
     return Intl.message(
@@ -9770,10 +9790,10 @@ class AppLocalizations {
     );
   }
 
-  /// `Try a short practice. Keep a thought from it in your notes.`
+  /// `Explore affirmations, meditations and movement practices. Add a note to any of them.`
   String get onboardingPracticeDescription {
     return Intl.message(
-      'Try a short practice. Keep a thought from it in your notes.',
+      'Explore affirmations, meditations and movement practices. Add a note to any of them.',
       name: 'onboardingPracticeDescription',
       desc: '',
       args: [],

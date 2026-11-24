@@ -33,12 +33,8 @@ class IntroJournalStory extends StatelessWidget {
           )
         : (
             ru ? 'Утро без спешки' : 'An Unhurried Morning',
-            ru
-                ? 'Опусти плечи. Сделай спокойный выдох.'
-                : 'Let your shoulders drop. Breathe out slowly.',
-            ru
-                ? 'Мои заметки · Утро без спешки'
-                : 'My notes · An Unhurried Morning',
+            ru ? 'Медитация · 3 минуты' : 'Meditation · 3 minutes',
+            ru ? 'Заметка к практике' : 'Practice note',
             ru
                 ? 'Завтра первым делом открою окно.'
                 : 'Tomorrow I’ll start by opening the window.',
@@ -46,13 +42,11 @@ class IntroJournalStory extends StatelessWidget {
           );
     return IntroStory(
       active: active,
-      duration: const Duration(seconds: 8),
+      duration: const Duration(seconds: 5),
       builder: (context, time, isStatic, _) {
         final reveal = isStatic
             ? 1.0
-            : Curves.easeOutCubic.transform(
-                ((time - 1.35) / .8).clamp(0.0, 1.0),
-              );
+            : Curves.easeOutCubic.transform(((time - .9) / .8).clamp(0.0, 1.0));
         final breath = isStatic ? 0.0 : math.sin(time * math.pi / 5);
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -117,9 +111,9 @@ class IntroJournalStory extends StatelessWidget {
                                           ? 'intro-dream-result'
                                           : 'intro-practice-result',
                                     ),
-                                    progress: isStatic
+                                    progress: isStatic || !dream
                                         ? 1
-                                        : ((time - 1.35) / 1.45).clamp(0, 1),
+                                        : ((time - .9) / 1.05).clamp(0, 1),
                                   ),
                                 ],
                               ),

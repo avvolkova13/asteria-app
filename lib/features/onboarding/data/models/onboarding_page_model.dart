@@ -4,6 +4,7 @@ enum OnboardingVisualKind {
   tarot,
   personal,
   natal,
+  natalTarot,
   practice,
   dream,
   guide,

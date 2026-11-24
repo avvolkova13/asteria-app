@@ -76,7 +76,7 @@ void main() {
       const Size(430, 932),
     ]) {
       for (final scale in [1.0, 1.3, 2.0]) {
-        for (var page = 0; page < 3; page++) {
+        for (var page = 0; page < 4; page++) {
           testWidgets(
             '$locale page ${page + 1} ${size.width}x${size.height} text $scale',
             (tester) async {

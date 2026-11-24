@@ -1,3 +1,4 @@
+import 'intro_natal_tarot_story.dart';
 import 'intro_journal_story.dart';
 import 'intro_guide_story.dart';
 import 'package:flutter/material.dart';
@@ -225,6 +226,10 @@ class _TourState extends State<OnboardingTour> with WidgetsBindingObserver {
                                   child: switch (widget
                                       .pages[index]
                                       .visualKind) {
+                                    OnboardingVisualKind.natalTarot =>
+                                      IntroNatalTarotStory(
+                                        active: _index == index && !_choosing,
+                                      ),
                                     OnboardingVisualKind.practice =>
                                       IntroJournalStory.practice(
                                         active: _index == index && !_choosing,

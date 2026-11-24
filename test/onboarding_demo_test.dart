@@ -26,7 +26,7 @@ void main() {
       );
       expect(
         tester.widget<OnboardingTour>(find.byType(OnboardingTour)).pages.length,
-        3,
+        4,
       );
       await tester.tap(find.text('Пропустить'));
       await tester.pumpAndSettle();

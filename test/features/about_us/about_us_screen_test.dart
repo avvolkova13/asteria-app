@@ -14,7 +14,7 @@ import 'package:provider/provider.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  testWidgets('profile replay opens three stories and returns to About', (
+  testWidgets('profile replay opens four stories and returns to About', (
     tester,
   ) async {
     tester.platformDispatcher.accessibilityFeaturesTestValue =
@@ -29,10 +29,11 @@ void main() {
         .pages;
     expect(pages.map((page) => page.visualKind.name), [
       'hero',
+      'natalTarot',
       'dream',
       'practice',
     ]);
-    for (var step = 0; step < 2; step++) {
+    for (var step = 0; step < pages.length - 1; step++) {
       await tester.tap(find.text('Далее'));
       await tester.pumpAndSettle();
     }

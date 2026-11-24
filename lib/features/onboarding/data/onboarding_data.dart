@@ -14,16 +14,22 @@ class OnboardingData {
         pageIndex: 0,
       ),
       OnboardingPageModel(
+        title: l.onboardingNatalTarotTitle,
+        description: l.onboardingNatalTarotDescription,
+        visualKind: OnboardingVisualKind.natalTarot,
+        pageIndex: 1,
+      ),
+      OnboardingPageModel(
         title: l.onboardingDreamTitle,
         description: l.onboardingDreamDescription,
         visualKind: OnboardingVisualKind.dream,
-        pageIndex: 1,
+        pageIndex: 2,
       ),
       OnboardingPageModel(
         title: l.onboardingPracticeTitle,
         description: l.onboardingPracticeDescription,
         visualKind: OnboardingVisualKind.practice,
-        pageIndex: 2,
+        pageIndex: 3,
       ),
     ];
   }

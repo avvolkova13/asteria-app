@@ -25,7 +25,7 @@ class IntroCalendarStory extends StatelessWidget {
   Widget build(BuildContext context) => IntroStory(
     active: active,
     now: now,
-    duration: const Duration(seconds: 8),
+    duration: const Duration(seconds: 5),
     builder: (context, time, isStatic, now) {
       final dates = introUpcomingDates(now);
       final settled = isStatic || time >= 1.3;
@@ -46,7 +46,7 @@ class IntroCalendarStory extends StatelessWidget {
           _CalendarPreview(
             dates: dates,
             selected: selected,
-            time: isStatic ? 8 : time,
+            time: isStatic ? 5 : time,
           ),
         ],
       );

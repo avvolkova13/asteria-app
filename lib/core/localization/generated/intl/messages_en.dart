@@ -1517,6 +1517,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "onboardingInvalidPageError": MessageLookupByLibrary.simpleMessage(
       "This onboarding page is unavailable.",
     ),
+    "onboardingNatalTarotDescription": MessageLookupByLibrary.simpleMessage(
+      "Explore your strengths in your birth chart. Try Tarot for a fresh perspective on a question.",
+    ),
+    "onboardingNatalTarotTitle": MessageLookupByLibrary.simpleMessage(
+      "What gives me strength?",
+    ),
     "onboardingPage1Description": MessageLookupByLibrary.simpleMessage(
       "Time for a haircut? Pick a date with the lunar calendar and set a reminder.",
     ),
@@ -1548,7 +1554,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "A moment to breathe",
     ),
     "onboardingPracticeDescription": MessageLookupByLibrary.simpleMessage(
-      "Try a short practice. Keep a thought from it in your notes.",
+      "Explore affirmations, meditations and movement practices. Add a note to any of them.",
     ),
     "onboardingPracticeTitle": MessageLookupByLibrary.simpleMessage(
       "A moment for yourself",

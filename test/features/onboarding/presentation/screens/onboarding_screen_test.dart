@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:asteria_app/features/affirmation/player/affirmation_player_screen.dart';
 import 'dart:ui' as ui;
 import 'package:asteria_app/features/onboarding/presentation/widgets/intro/intro_next_button.dart';
 import 'package:asteria_app/features/onboarding/presentation/widgets/intro/intro_story.dart';
@@ -23,7 +24,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-const _storySequence = ['hero', 'dream', 'practice'];
+const _storySequence = ['hero', 'natalTarot', 'dream', 'practice'];
 int get _pageCount => _storySequence.length;
 int get _lastPage => _pageCount - 1;
 Iterable<int> get _indices => Iterable<int>.generate(_pageCount);
@@ -150,9 +151,7 @@ void main() {
     await tester.pumpWidget(const SizedBox());
   });
 
-  testWidgets('tour starts at the first of three short stories', (
-    tester,
-  ) async {
+  testWidgets('tour starts at the first of four short stories', (tester) async {
     bloc = OnboardingBloc(settings);
     await _pumpOnboarding(
       tester,
@@ -213,7 +212,7 @@ void main() {
         );
         expect(settings.onboardingWrites, isEmpty);
         final duration = _activeStoryDuration(tester);
-        expect(duration, const Duration(seconds: 8));
+        expect(duration, const Duration(seconds: 5));
         await _pumpStoryTo(tester, page, duration.inMilliseconds - 1500);
         expect(
           bloc.state.currentPageIndex,
@@ -221,6 +220,16 @@ void main() {
           reason:
               'The scene must retain its result for its configured duration',
         );
+        if (page == _lastPage) {
+          expect(
+            find.byKey(const ValueKey('intro-practice-result')),
+            findsOneWidget,
+          );
+          expect(
+            find.byType(AffirmationPlayerScreen, skipOffstage: false),
+            findsNothing,
+          );
+        }
         await tester.pump(const Duration(seconds: 2));
         await tester.pump();
         for (var frame = 0; frame < 8; frame++) {
@@ -611,6 +620,7 @@ void main() {
         );
         final results = <Finder>[
           find.byKey(const ValueKey('intro-day-result')),
+          find.byKey(const ValueKey('intro-natal-tarot-result')),
           find.byKey(const ValueKey('intro-dream-result')),
           find.byKey(const ValueKey('intro-practice-result')),
         ];
@@ -668,7 +678,7 @@ void main() {
           disableAnimations: false,
           onComplete: () => completions++,
         );
-        await _pumpStoryTo(tester, 0, 3000);
+        await _pumpStoryTo(tester, 0, 1500);
         final content = find.byKey(const ValueKey('onboarding-content-0'));
         final gesture = await tester.startGesture(tester.getCenter(content));
         await gesture.moveBy(const Offset(0, -100));

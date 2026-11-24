@@ -1,3 +1,4 @@
+import 'intro/intro_natal_tarot_story.dart';
 import 'intro/intro_journal_story.dart';
 import 'intro/intro_guide_story.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
@@ -143,6 +144,8 @@ class OnboardingPageWidget extends StatelessWidget {
                                       width: 390,
                                       height: 426,
                                       child: switch (page.visualKind) {
+                                        OnboardingVisualKind.natalTarot =>
+                                          IntroNatalTarotStory(active: true),
                                         OnboardingVisualKind.practice =>
                                           IntroJournalStory.practice(
                                             active: true,

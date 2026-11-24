@@ -31,7 +31,7 @@ void main() {
         expect(find.byKey(const ValueKey('intro-day-result')), findsOneWidget);
         expect(
           tester.widget<IntroStory>(find.byType(IntroStory)).duration,
-          const Duration(seconds: 8),
+          const Duration(seconds: 5),
         );
         expect(tester.takeException(), isNull);
         await tester.pumpWidget(const SizedBox());

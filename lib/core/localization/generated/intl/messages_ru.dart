@@ -1541,6 +1541,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "onboardingInvalidPageError": MessageLookupByLibrary.simpleMessage(
       "Эта страница онбординга недоступна.",
     ),
+    "onboardingNatalTarotDescription": MessageLookupByLibrary.simpleMessage(
+      "Натальная карта подскажет, в чём твоя сила. Таро поможет взглянуть на вопрос с другой стороны.",
+    ),
+    "onboardingNatalTarotTitle": MessageLookupByLibrary.simpleMessage(
+      "Что меня поддерживает?",
+    ),
     "onboardingPage1Description": MessageLookupByLibrary.simpleMessage(
       "Когда записаться на стрижку? Лунный календарь подскажет дату и напомнит о плане.",
     ),
@@ -1572,7 +1578,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Можно выдохнуть",
     ),
     "onboardingPracticeDescription": MessageLookupByLibrary.simpleMessage(
-      "Попробуй короткую практику. Мысль, которую хочется забрать с собой, сохрани в заметках.",
+      "Аффирмации, медитации и телесные практики. К каждой можно оставить заметку.",
     ),
     "onboardingPracticeTitle": MessageLookupByLibrary.simpleMessage(
       "Минута для себя",
