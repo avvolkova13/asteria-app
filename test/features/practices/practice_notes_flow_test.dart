@@ -78,14 +78,7 @@ void main() {
 
     await tester.tap(find.text('Meditations'));
     await tester.pumpAndSettle();
-    final deckNoteAction = find.text('Write a note').hitTestable();
-    expect(deckNoteAction, findsOneWidget);
-    await tester.tap(deckNoteAction);
-    await tester.pumpAndSettle();
-    expect(find.text('New note'), findsOneWidget);
-    expect(find.text('An Unhurried Morning'), findsOneWidget);
-    await tester.pageBack();
-    await tester.pumpAndSettle();
+    expect(find.text('Write a note'), findsNothing);
     await tester.tap(find.text('An Unhurried Morning').hitTestable());
     await tester.pumpAndSettle();
     await tester.ensureVisible(find.text('My notes'));

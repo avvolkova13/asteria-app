@@ -22,7 +22,6 @@ class SwipeCardStack<T> extends StatefulWidget {
     required this.cardBuilder,
     this.showSwipeHint = false,
     this.onView,
-    this.belowCard,
     this.onSwipe,
   });
 
@@ -34,7 +33,6 @@ class SwipeCardStack<T> extends StatefulWidget {
   final String Function(BuildContext, T) label;
   final Future<void> Function(BuildContext, T, int) onOpen;
   final SwipeStackCardBuilder cardBuilder;
-  final Widget Function(BuildContext context, T selected)? belowCard;
   final bool showSwipeHint;
   final ValueChanged<T>? onView, onSwipe;
 
@@ -214,7 +212,7 @@ class _SwipeCardStackState<T> extends State<SwipeCardStack<T>>
 
         final hasChoices = widget.items.length > 1;
         final peek = (widget.items.length.clamp(1, 3) - 1) * 12 * scale;
-        final deck = Align(
+        return Align(
           alignment: Alignment.center,
           child: LotusFeedback(
             onActivate: widget.items.isEmpty ? null : _openPlayer,
@@ -294,18 +292,6 @@ class _SwipeCardStackState<T> extends State<SwipeCardStack<T>>
               ),
             ),
           ),
-        );
-        final below = widget.belowCard;
-        if (below == null || widget.items.isEmpty) return deck;
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            deck,
-            SizedBox(
-              width: stackWidth,
-              child: below(context, widget.items[_frontIndex]),
-            ),
-          ],
         );
       },
     );

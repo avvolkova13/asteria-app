@@ -189,10 +189,6 @@ class _PracticeDeck extends StatelessWidget {
       onOpen: (context, practice, _) => Navigator.of(context).push<void>(
         CupertinoPageRoute(builder: (_) => _PracticeDetailScreen(practice)),
       ),
-      belowCard: (_, practice) => PracticeDeckNotesAction(
-        practiceId: practice.id,
-        practiceTitle: _localized(practice.title, ru),
-      ),
       cardBuilder: (context, index, front, hint) => PracticeDeckCard(
         artwork: _PracticeDeckArtwork(asset: practices[index].art),
         isFront: front,
