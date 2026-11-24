@@ -1,4 +1,3 @@
-import 'package:asteria_app/features/practices/presentation/practice_note_indicators.dart';
 import 'package:asteria_app/core/ui_kit/widgets/deck_catalog_scroll.dart';
 import 'package:asteria_app/app/providers/user_provider.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_action_button.dart';
@@ -303,63 +302,59 @@ class _PracticeDetailScreen extends StatelessWidget {
 
     return ScenarioPage(
       title: _localized(practice.title, ru),
-      footer: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (_hasPracticeNotes(context)) ...[
-            HomeGlassSurface(
-              animateEntrance: false,
-              radius: 16,
-              child: LotusButtons.text(
-                onPressed: () => _openNotes(context, practice, ru),
-                style: TextButton.styleFrom(
-                  minimumSize: const Size(0, 52),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 8,
+      footer: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (_hasPracticeNotes(context)) ...[
+              HomeGlassSurface(
+                animateEntrance: false,
+                radius: 16,
+                child: LotusButtons.text(
+                  onPressed: () => _openNotes(context, practice, ru),
+                  style: TextButton.styleFrom(
+                    minimumSize: const Size(0, 52),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 12,
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      const SizedBox.square(
+                        dimension: 34,
+                        child: LotusIconSurface(
+                          diameter: 34,
+                          child: Center(child: PracticePencil()),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          ru ? 'Мои заметки' : 'My notes',
+                          style: context.textTheme.inverseUrbanistMedium16,
+                        ),
+                      ),
+                      const ClayIcon(
+                        Icons.chevron_right,
+                        size: 20,
+                        color: AppColors.cardTinted,
+                      ),
+                    ],
                   ),
                 ),
-                child: Row(
-                  children: [
-                    const SizedBox.square(
-                      dimension: 34,
-                      child: LotusIconSurface(
-                        diameter: 34,
-                        child: Center(child: PracticePencil()),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            ru ? 'Мои заметки' : 'My notes',
-                            style: context.textTheme.inverseUrbanistMedium16,
-                          ),
-                          PracticeNotesMarker(practiceId: practice.id),
-                        ],
-                      ),
-                    ),
-                    const ClayIcon(
-                      Icons.chevron_right,
-                      size: 20,
-                      color: AppColors.cardTinted,
-                    ),
-                  ],
-                ),
               ),
+              const SizedBox(height: 12),
+            ],
+            AuthGradientButton(
+              key: const ValueKey('open-practice-player'),
+              text: ru ? 'Начать практику' : 'Start practice',
+              onPressed: () => _openPlayer(context, ru),
             ),
-            const SizedBox(height: 8),
           ],
-          AuthGradientButton(
-            key: const ValueKey('open-practice-player'),
-            text: ru ? 'Начать практику' : 'Start practice',
-            onPressed: () => _openPlayer(context, ru),
-          ),
-        ],
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,

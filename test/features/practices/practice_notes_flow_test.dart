@@ -112,6 +112,9 @@ void main() {
     await tester.pageBack();
     await tester.pumpAndSettle();
 
+    expect(find.text('My notes'), findsOneWidget);
+    expect(find.text('1 note'), findsNothing);
+
     const channel = MethodChannel('asteria/practice-audio');
     final messenger = tester.binding.defaultBinaryMessenger;
     var playing = false;

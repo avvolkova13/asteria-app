@@ -27,7 +27,7 @@ void main() {
   setUpAll(() => Hive.openBox<Map>('practice_notes_v1', bytes: Uint8List(0)));
   tearDownAll(Hive.close);
   testWidgets(
-    'markers update, clear, and never leak across account or logout changes',
+    'counts update, clear, and never leak across account or logout changes',
     (tester) async {
       final user = _User();
       addTearDown(user.dispose);
@@ -42,8 +42,16 @@ void main() {
             home: Scaffold(
               body: Column(
                 children: [
-                  PracticeNotesMarker(practiceId: 'morning'),
-                  PracticeNotesMarker(practiceId: 'body'),
+                  PracticeNotesCountBuilder(
+                    practiceId: 'morning',
+                    builder: (context, count) =>
+                        Text(practiceNoteCountLabel(context, count)),
+                  ),
+                  PracticeNotesCountBuilder(
+                    practiceId: 'body',
+                    builder: (context, count) =>
+                        Text(practiceNoteCountLabel(context, count)),
+                  ),
                 ],
               ),
             ),

@@ -1,6 +1,4 @@
 import 'package:asteria_app/app/providers/user_provider.dart';
-import 'package:asteria_app/core/ui_kit/ui_kit.dart';
-import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 import 'package:asteria_app/features/practices/data/practice_notes_store.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -59,38 +57,4 @@ class _PracticeNotesCountBuilderState extends State<PracticeNotesCountBuilder> {
           widget.builder(context, snapshot.hasError ? 0 : snapshot.data ?? 0),
     );
   }
-}
-
-class PracticeNotesMarker extends StatelessWidget {
-  const PracticeNotesMarker({super.key, required this.practiceId});
-  final String practiceId;
-
-  @override
-  Widget build(BuildContext context) => PracticeNotesCountBuilder(
-    practiceId: practiceId,
-    builder: (context, count) => count == 0
-        ? const SizedBox.shrink()
-        : Padding(
-            padding: const EdgeInsets.only(top: 6),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const ClayIcon(
-                  Icons.notes_rounded,
-                  size: 15,
-                  color: AppColorsDark.linkGold,
-                ),
-                const SizedBox(width: 5),
-                Flexible(
-                  child: Text(
-                    practiceNoteCountLabel(context, count),
-                    style: context.textTheme.inverseUrbanistRegular14.copyWith(
-                      color: AppColorsDark.linkGold,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-  );
 }
