@@ -135,6 +135,7 @@ void main() {
     expect(playing, isTrue);
     final pencil = find.bySemanticsLabel('My notes');
     expect(pencil.hitTestable(), findsOneWidget);
+    expect(find.text('1 note'), findsNothing);
     final repeat = find.bySemanticsLabel('Repeat recording');
     expect(repeat.hitTestable(), findsOneWidget);
     final playCenter = tester.getCenter(find.bySemanticsLabel('Pause'));

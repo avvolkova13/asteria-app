@@ -1,4 +1,3 @@
-import 'package:asteria_app/core/ui_kit/app_colors/app_colors.dart';
 import 'package:asteria_app/features/practices/presentation/practice_note_indicators.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 
@@ -659,29 +658,11 @@ class _AffirmationPlayerScreenState extends State<AffirmationPlayerScreen> {
                           : null,
                       onTap: _showNotes,
                       excludeSemantics: true,
-                      child: GestureDetector(
-                        onTap: _showNotes,
-                        behavior: HitTestBehavior.opaque,
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            PlayerPebble(
-                              glyph: ClayGlyph.pencil,
-                              label: ru ? 'Мои заметки' : 'My notes',
-                              onTap: _showNotes,
-                            ),
-                            FittedBox(
-                              fit: BoxFit.scaleDown,
-                              child: Text(
-                                count > 0
-                                    ? practiceNoteCountLabel(context, count)
-                                    : (ru ? 'Заметки' : 'Notes'),
-                                style: AppTypography.text1.copyWith(
-                                  color: AppColorsDark.linkGold,
-                                ),
-                              ),
-                            ),
-                          ],
+                      child: Center(
+                        child: PlayerPebble(
+                          glyph: ClayGlyph.pencil,
+                          label: ru ? 'Мои заметки' : 'My notes',
+                          onTap: _showNotes,
                         ),
                       ),
                     ),

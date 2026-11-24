@@ -138,6 +138,8 @@ void main() {
         await tester.ensureVisible(play);
         await tester.pumpAndSettle();
         final center = tester.getCenter(play);
+        expect(find.text(language == 'ru' ? 'Заметки' : 'Notes'), findsNothing);
+        expect(tester.getCenter(notes).dy, closeTo(center.dy, .5));
         expect(tester.getCenter(notes).dx, lessThan(center.dx));
         expect(tester.getCenter(repeat).dx, greaterThan(center.dx));
         await tester.tap(repeat);
