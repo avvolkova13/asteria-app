@@ -46,6 +46,26 @@ class PracticeNotesStore {
     return notes..sort((a, b) => b.recordedAt.compareTo(a.recordedAt));
   }
 
+  Stream<int> watchCount(String ownerId, String practiceId) async* {
+    final prefix = _practicePrefix(ownerId, practiceId);
+    final box = await _open();
+    int count() => _scopedKeys(box, prefix).where((key) {
+      final value = box.get(key);
+      return value?['text'] is String && value?['at'] is int;
+    }).length;
+    yield* Stream<int>.multi((controller) {
+      final subscription = box
+          .watch()
+          .where(
+            (event) =>
+                event.key is String && (event.key as String).startsWith(prefix),
+          )
+          .listen((_) => controller.add(count()), onError: controller.addError);
+      controller.add(count());
+      controller.onCancel = subscription.cancel;
+    });
+  }
+
   Future<PracticeNote> save({
     required String ownerId,
     required String practiceId,

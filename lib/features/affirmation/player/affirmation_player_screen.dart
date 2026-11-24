@@ -1,3 +1,5 @@
+import 'package:asteria_app/core/ui_kit/app_colors/app_colors.dart';
+import 'package:asteria_app/features/practices/presentation/practice_note_indicators.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 
 import 'dart:async';
@@ -644,10 +646,51 @@ class _AffirmationPlayerScreenState extends State<AffirmationPlayerScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               if (hasNotes)
-                PlayerPebble(
-                  glyph: ClayGlyph.pencil,
-                  label: ru ? 'Мои заметки' : 'My notes',
-                  onTap: _showNotes,
+                PracticeNotesCountBuilder(
+                  practiceId:
+                      widget.session?.id ?? 'affirmation:$_defaultFavoriteKey',
+                  builder: (context, count) => Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      Semantics(
+                        value: count > 0
+                            ? practiceNoteCountLabel(context, count)
+                            : null,
+                        child: PlayerPebble(
+                          glyph: ClayGlyph.pencil,
+                          label: ru ? 'Мои заметки' : 'My notes',
+                          onTap: _showNotes,
+                        ),
+                      ),
+                      if (count > 0)
+                        Positioned(
+                          top: -1,
+                          right: -1,
+                          child: ExcludeSemantics(
+                            child: DecoratedBox(
+                              decoration: const ShapeDecoration(
+                                color: AppColorsDark.linkGold,
+                                shape: StadiumBorder(),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 5,
+                                  vertical: 1,
+                                ),
+                                child: Text(
+                                  count > 99 ? '99+' : '$count',
+                                  style: const TextStyle(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w700,
+                                    color: AppColors.textPrimary,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
                 )
               else
                 const SizedBox(width: 49),
@@ -927,8 +970,9 @@ class _PlayerHeader extends StatelessWidget {
             child:
                 (showBack
                         ? LotusButtons.icon(
-                            tooltip: MaterialLocalizations.of(context)
-                                .backButtonTooltip,
+                            tooltip: MaterialLocalizations.of(
+                              context,
+                            ).backButtonTooltip,
                             onPressed: onExit,
                             icon: const LotusArrowBubble(back: true),
                           )

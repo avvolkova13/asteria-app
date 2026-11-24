@@ -1,3 +1,4 @@
+import 'package:asteria_app/features/practices/presentation/practice_note_indicators.dart';
 import 'package:asteria_app/core/ui_kit/widgets/deck_catalog_scroll.dart';
 import 'package:asteria_app/app/providers/user_provider.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_action_button.dart';
@@ -211,6 +212,7 @@ class _PracticeDeck extends StatelessWidget {
                       practice.metadata(ru),
                       style: context.textTheme.inverseUrbanistRegular16,
                     ),
+                    PracticeNotesMarker(practiceId: practice.id),
                   ],
                 ),
             ],
@@ -264,8 +266,8 @@ class _PracticeDetailScreen extends StatelessWidget {
           onOpenNotes: _hasPracticeNotes(playerContext)
               ? () => _openNotes(playerContext, practice, ru)
               : null,
-          onCompleted: () => Navigator.of(playerContext)
-              .pushReplacement<void, void>(
+          onCompleted: () =>
+              Navigator.of(playerContext).pushReplacement<void, void>(
                 CupertinoPageRoute(
                   builder: (_) => _PracticeCompletionScreen(practice),
                 ),
@@ -330,9 +332,16 @@ class _PracticeDetailScreen extends StatelessWidget {
                     ),
                     const SizedBox(width: 12),
                     Expanded(
-                      child: Text(
-                        ru ? 'Мои заметки' : 'My notes',
-                        style: context.textTheme.inverseUrbanistMedium16,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            ru ? 'Мои заметки' : 'My notes',
+                            style: context.textTheme.inverseUrbanistMedium16,
+                          ),
+                          PracticeNotesMarker(practiceId: practice.id),
+                        ],
                       ),
                     ),
                     const ClayIcon(

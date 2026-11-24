@@ -137,7 +137,7 @@ class SonnikTopNavBar extends StatelessWidget {
         height: 44,
         child: canPop
             ? LotusButtons.icon(
-                onPressed: () => Navigator.of(context).pop(),
+                onPressed: () => Navigator.of(context).maybePop(),
                 tooltip: MaterialLocalizations.of(context).backButtonTooltip,
                 icon: const LotusArrowBubble(back: true),
                 padding: EdgeInsets.zero,
@@ -190,7 +190,7 @@ class SonnikTopNavBar extends StatelessWidget {
             height: 44,
             child: canPop
                 ? LotusButtons.icon(
-                    onPressed: () => Navigator.of(context).pop(),
+                    onPressed: () => Navigator.of(context).maybePop(),
                     tooltip: MaterialLocalizations.of(
                       context,
                     ).backButtonTooltip,
@@ -295,12 +295,14 @@ class SonnikTextArea extends StatelessWidget {
   final TextEditingController controller;
   final ValueChanged<String> onChanged;
   final bool readOnly;
+  final FocusNode? focusNode;
 
   const SonnikTextArea({
     super.key,
     required this.controller,
     required this.onChanged,
     this.readOnly = false,
+    this.focusNode,
   });
 
   @override
@@ -312,6 +314,7 @@ class SonnikTextArea extends StatelessWidget {
         child: TextField(
           onTap: LotusFeedback.selection,
           controller: controller,
+          focusNode: focusNode,
           readOnly: readOnly,
           onChanged: onChanged,
           expands: true,

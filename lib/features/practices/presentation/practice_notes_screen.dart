@@ -5,6 +5,7 @@ import 'package:asteria_app/core/ui_kit/widgets/input_bubble_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/features/practices/data/practice_notes_store.dart';
 import 'package:asteria_app/features/scenarios/scenario_ui.dart';
+import 'package:asteria_app/core/ui_kit/widgets/journal_actions.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -69,6 +70,7 @@ class _PracticeNotesScreenState extends State<_PracticeNotesScreen> {
   static const _store = PracticeNotesStore();
   final _editorKey = GlobalKey();
   final _text = TextEditingController();
+  final _focus = FocusNode();
   List<PracticeNote> _notes = [];
   PracticeNote? _selected;
   _NoteStatus _status = _NoteStatus.ready;
@@ -89,6 +91,7 @@ class _PracticeNotesScreenState extends State<_PracticeNotesScreen> {
 
   @override
   void dispose() {
+    _focus.dispose();
     _text.dispose();
     super.dispose();
   }
@@ -99,6 +102,8 @@ class _PracticeNotesScreenState extends State<_PracticeNotesScreen> {
       if (!mounted || !_ownsNotes) return;
       setState(() {
         _notes = notes;
+        _selected = notes.isEmpty ? null : notes.first;
+        _text.text = _selected?.text ?? '';
         _loadFailed = false;
         _loading = false;
       });
@@ -145,7 +150,7 @@ class _PracticeNotesScreenState extends State<_PracticeNotesScreen> {
   );
 
   Future<void> _select(PracticeNote? note) async {
-    if (_writing || note?.id == _selected?.id) return;
+    if (_writing || (note != null && note.id == _selected?.id)) return;
     if (_changed && !await _discardChanges()) return;
     if (!mounted || !_ownsNotes) return;
     FocusManager.instance.primaryFocus?.unfocus();
@@ -154,6 +159,7 @@ class _PracticeNotesScreenState extends State<_PracticeNotesScreen> {
       _text.text = note?.text ?? '';
       _status = _NoteStatus.ready;
     });
+    if (note == null) _focus.requestFocus();
     final editor = _editorKey.currentContext;
     if (editor != null && editor.mounted) {
       await Scrollable.ensureVisible(
@@ -185,8 +191,8 @@ class _PracticeNotesScreenState extends State<_PracticeNotesScreen> {
       setState(() {
         _notes = [..._notes.where((entry) => entry.id != note.id), note]
           ..sort((a, b) => b.recordedAt.compareTo(a.recordedAt));
-        _selected = null;
-        _text.clear();
+        _selected = note;
+        _text.text = note.text;
         _status = _NoteStatus.saved;
       });
     } catch (_) {
@@ -217,8 +223,10 @@ class _PracticeNotesScreenState extends State<_PracticeNotesScreen> {
       if (!mounted || !_ownsNotes) return;
       setState(() {
         _notes = _notes.where((entry) => entry.id != note.id).toList();
-        _selected = null;
-        _text.clear();
+        if (_selected?.id == note.id) {
+          _selected = null;
+          _text.clear();
+        }
         _status = _NoteStatus.deleted;
       });
     } catch (_) {
@@ -231,7 +239,7 @@ class _PracticeNotesScreenState extends State<_PracticeNotesScreen> {
   }
 
   String _date(DateTime date) =>
-      MaterialLocalizations.of(context).formatFullDate(date);
+      '${MaterialLocalizations.of(context).formatShortDate(date)} · ${TimeOfDay.fromDateTime(date).format(context)}';
 
   @override
   Widget build(BuildContext context) {
@@ -239,8 +247,9 @@ class _PracticeNotesScreenState extends State<_PracticeNotesScreen> {
     final selected = _selected;
     final changed = _changed;
     final status = switch (_status) {
-      _NoteStatus.ready => null,
-      _NoteStatus.saved => ru ? 'Заметка сохранена.' : 'Note saved.',
+      _NoteStatus.ready =>
+        selected != null && !changed ? (ru ? 'Сохранено' : 'Saved') : null,
+      _NoteStatus.saved => ru ? 'Сохранено' : 'Saved',
       _NoteStatus.deleted => ru ? 'Заметка удалена.' : 'Note deleted.',
       _NoteStatus.writeFailed =>
         ru
@@ -291,6 +300,11 @@ class _PracticeNotesScreenState extends State<_PracticeNotesScreen> {
                 ),
               ),
             ] else ...[
+              JournalAddButton(
+                label: ru ? 'Добавить заметку' : 'Add note',
+                onPressed: _writing ? null : () => _select(null),
+              ),
+              const SizedBox(height: 8),
               if (selected != null) ...[
                 Text(
                   _date(selected.recordedAt),
@@ -303,6 +317,7 @@ class _PracticeNotesScreenState extends State<_PracticeNotesScreen> {
                 surfaceBrightness: Brightness.dark,
                 child: TextField(
                   controller: _text,
+                  focusNode: _focus,
                   readOnly: _writing,
                   onChanged: (_) => setState(() => _status = _NoteStatus.ready),
                   minLines: 4,
@@ -323,41 +338,63 @@ class _PracticeNotesScreenState extends State<_PracticeNotesScreen> {
                 ),
               ),
               const SizedBox(height: 12),
-              AsteriaActionButton(
-                text: ru ? 'Сохранить заметку' : 'Save note',
-                onPressed: !_writing && changed && _text.text.trim().isNotEmpty
-                    ? _save
-                    : null,
-                width: double.infinity,
-              ),
+              if (changed || selected == null || _writing)
+                AsteriaActionButton(
+                  text: selected == null
+                      ? (ru ? 'Сохранить заметку' : 'Save note')
+                      : (ru ? 'Сохранить изменения' : 'Save changes'),
+                  isLoading: _writing,
+                  onPressed:
+                      !_writing && changed && _text.text.trim().isNotEmpty
+                      ? _save
+                      : null,
+                  width: double.infinity,
+                ),
               if (status != null) ...[
                 const SizedBox(height: 8),
-                Semantics(liveRegion: true, child: Text(status)),
-              ],
-              if (selected != null)
-                Wrap(
-                  spacing: 8,
-                  children: [
-                    LotusButtons.text(
-                      onPressed: _writing ? null : () => _select(null),
-                      child: Text(ru ? 'Новая заметка' : 'New note'),
-                    ),
-                    LotusButtons.text(
-                      onPressed: _writing ? null : () => _delete(selected),
-                      child: Text(ru ? 'Удалить заметку' : 'Delete note'),
-                    ),
-                  ],
+                Semantics(
+                  liveRegion: true,
+                  child: Row(
+                    children: [
+                      if (_status != _NoteStatus.writeFailed) ...[
+                        const Icon(
+                          Icons.check_circle_outline,
+                          size: 17,
+                          color: AppColorsDark.linkGold,
+                        ),
+                        const SizedBox(width: 6),
+                      ],
+                      Expanded(
+                        child: Text(
+                          status,
+                          style: context.textTheme.inverseUrbanistRegular14,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
+              ],
               if (_notes.isNotEmpty) ...[
                 const SizedBox(height: 20),
                 Text(
-                  ru ? 'Сохранённые заметки' : 'Saved notes',
+                  ru
+                      ? 'Заметки · ${_notes.length}'
+                      : 'Notes · ${_notes.length}',
                   style: context.textTheme.inversePlayfairSemiBold20,
                 ),
                 const SizedBox(height: 8),
                 for (final note in _notes)
                   ListTile(
-                    contentPadding: EdgeInsets.zero,
+                    key: ValueKey('practice-note-${note.id}'),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    selectedTileColor: AppColorsDark.modal,
+
                     selected: note.id == selected?.id,
                     textColor: AppColors.textInverse,
                     selectedColor: AppColors.cardTinted,
@@ -367,9 +404,10 @@ class _PracticeNotesScreenState extends State<_PracticeNotesScreen> {
                       overflow: TextOverflow.ellipsis,
                     ),
                     subtitle: Text(_date(note.recordedAt)),
-                    trailing: const Icon(
-                      Icons.chevron_right,
-                      color: AppColors.cardTinted,
+                    trailing: JournalEntryMenu(
+                      label: ru ? 'Действия с заметкой' : 'Note actions',
+                      deleteLabel: ru ? 'Удалить заметку' : 'Delete note',
+                      onDelete: _writing ? null : () => _delete(note),
                     ),
                     onTap: _writing ? null : () => _select(note),
                   ),

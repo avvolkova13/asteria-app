@@ -91,7 +91,7 @@ void main() {
     await tester.ensureVisible(save);
     await tester.tap(save);
     await tester.pumpAndSettle();
-    expect(find.text('Note saved.'), findsOneWidget);
+    expect(find.text('Saved'), findsOneWidget);
     const store = PracticeNotesStore();
     final note = (await store.read('owner', 'unhurried-morning')).single;
     expect(note.text, 'My garden is quiet');
@@ -101,8 +101,8 @@ void main() {
     await tester.pumpAndSettle();
     await tester.enterText(editor, 'My garden is sunny');
     await tester.pumpAndSettle();
-    await tester.ensureVisible(save);
-    await tester.tap(save);
+    await tester.ensureVisible(find.text('Save changes'));
+    await tester.tap(find.text('Save changes'));
     await tester.pumpAndSettle();
     final changed = (await store.read('owner', 'unhurried-morning')).single;
     expect(changed.text, 'My garden is sunny');
@@ -155,7 +155,7 @@ void main() {
     await tester.tap(pencil);
     await tester.pumpAndSettle();
     expect(find.text('My notes'), findsOneWidget);
-    expect(find.text('My garden is sunny'), findsOneWidget);
+    expect(find.text('My garden is sunny'), findsAtLeastNWidgets(1));
     expect(playing, isFalse);
     await tester.pageBack();
     await tester.pumpAndSettle();
@@ -176,9 +176,11 @@ void main() {
     await tester.ensureVisible(row);
     await tester.tap(row);
     await tester.pumpAndSettle();
-    final remove = find.text('Delete note');
-    await tester.ensureVisible(remove);
-    await tester.tap(remove);
+    final menu = find.byType(PopupMenuButton<String>);
+    await tester.ensureVisible(menu);
+    await tester.tap(menu);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Delete note'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Delete'));
     await tester.pumpAndSettle();

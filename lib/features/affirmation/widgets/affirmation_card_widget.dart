@@ -1,3 +1,4 @@
+import 'package:asteria_app/features/practices/presentation/practice_note_indicators.dart';
 import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/app/data/models/affirmation/affirmation_model.dart';
 import 'package:asteria_app/core/ui_kit/card_radii.dart';
@@ -62,17 +63,24 @@ class AffirmationCardWidget extends StatelessWidget {
     showOpenIndicator: showOpenIndicator,
     footer: Padding(
       padding: const EdgeInsets.fromLTRB(16, 14, 16, 18),
-      child: IndexedStack(
-        index: deck == null ? 0 : imageIndex,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          for (final card in deck ?? [affirmation])
-            Text(
-              card.text,
-              style: context.textTheme.inverseUrbanistRegular16.copyWith(
-                height: 1.3,
-              ),
-              textAlign: TextAlign.start,
-            ),
+          IndexedStack(
+            index: deck == null ? 0 : imageIndex,
+            children: [
+              for (final card in deck ?? [affirmation])
+                Text(
+                  card.text,
+                  style: context.textTheme.inverseUrbanistRegular16.copyWith(
+                    height: 1.3,
+                  ),
+                  textAlign: TextAlign.start,
+                ),
+            ],
+          ),
+          PracticeNotesMarker(practiceId: 'affirmation:${affirmation.id}'),
         ],
       ),
     ),

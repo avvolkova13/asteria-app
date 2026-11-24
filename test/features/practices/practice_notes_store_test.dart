@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:async';
 
 import 'package:asteria_app/features/practices/data/practice_notes_store.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -19,6 +20,57 @@ void main() {
     await Hive.close();
     await directory.delete(recursive: true);
   });
+
+  test(
+    'note counts follow only the owner and practice and survive reopen',
+    () async {
+      final counts = StreamIterator(store.watchCount('a/b', 'morning'));
+      expect(await counts.moveNext(), isTrue);
+      expect(counts.current, 0);
+      final first = await store.save(
+        ownerId: 'a/b',
+        practiceId: 'morning',
+        text: 'First',
+      );
+      expect(await counts.moveNext(), isTrue);
+      expect(counts.current, 1);
+      await store.save(
+        ownerId: 'a',
+        practiceId: 'b/morning',
+        text: 'Other account',
+      );
+      await store.save(
+        ownerId: 'a/b',
+        practiceId: 'body',
+        text: 'Other practice',
+      );
+      await store.save(
+        ownerId: 'a/b',
+        practiceId: 'morning',
+        text: 'Edited',
+        noteId: first.id,
+      );
+      expect(await counts.moveNext(), isTrue);
+      expect(counts.current, 1);
+      final second = await store.save(
+        ownerId: 'a/b',
+        practiceId: 'morning',
+        text: 'Second',
+      );
+      expect(await counts.moveNext(), isTrue);
+      expect(counts.current, 2);
+      await store.delete('a/b', 'morning', second.id);
+      expect(await counts.moveNext(), isTrue);
+      expect(counts.current, 1);
+      await counts.cancel();
+      await Hive.close();
+      Hive.init(directory.path);
+      expect(await store.watchCount('a/b', 'morning').first, 1);
+      await store.clearForOwner('a/b');
+      expect(await store.watchCount('a/b', 'morning').first, 0);
+      expect(await store.watchCount('a', 'b/morning').first, 1);
+    },
+  );
 
   test(
     'notes persist after reopen and resolve by both owner and practice',
