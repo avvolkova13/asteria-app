@@ -1,3 +1,4 @@
+import 'package:asteria_app/features/sonnik/presentation/screens/dream_entry_screen.dart';
 import 'package:asteria_app/features/home/presentation/widgets/advertising_block_widget.dart';
 import 'package:asteria_app/core/routing/app_route.dart';
 import 'package:asteria_app/core/ui_kit/widgets/dictation_button.dart';
@@ -103,8 +104,8 @@ void main() {
         final l10n = AppLocalizations.current;
         await tester.tap(find.text(l10n.adDecode));
         await tester.pumpAndSettle();
-        expect(find.byType(DreamJournalScreen), findsOneWidget);
-        Navigator.of(tester.element(find.byType(DreamJournalScreen))).pop();
+        expect(find.byType(DreamEntryScreen), findsOneWidget);
+        Navigator.of(tester.element(find.byType(DreamEntryScreen))).pop();
         await tester.pumpAndSettle();
         await tester.tap(find.text(l10n.dreamDecode));
         await tester.pumpAndSettle();
@@ -162,9 +163,11 @@ void main() {
           await tester.ensureVisible(find.text('Мне приснилось море'));
           await tester.tap(find.text('Мне приснилось море'));
           await tester.pumpAndSettle();
+          await tester.tap(find.text('Изменить'));
+          await tester.pumpAndSettle();
           await tester.enterText(find.byType(TextField), 'Море и маяк');
           await tester.pumpAndSettle();
-          await tester.tap(find.text('Сохранить сон'));
+          await tester.tap(find.text('Сохранить изменения'));
           await tester.pumpAndSettle();
           expect(
             (await DreamJournal('test-user').read()).single.id,

@@ -1,5 +1,6 @@
 import 'package:asteria_app/core/ui_kit/widgets/journal_actions.dart';
-import 'package:asteria_app/core/ui_kit/widgets/dictation_button.dart';
+import 'dream_entry_screen.dart';
+import '../widgets/dream_journal_layout.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_action_button.dart';
 import 'package:asteria_app/core/routing/app_route.dart';
 import 'package:provider/provider.dart';
@@ -14,17 +15,19 @@ import 'package:intl/intl.dart';
 
 Future<DreamEntry?> openDreamJournal(
   BuildContext context,
-  UserProvider user,
-) async {
+  UserProvider user, {
+  bool startNew = false,
+}) async {
   final owner = user.currentUser?.id;
   if (owner == null || owner.isEmpty) return null;
+  if (startNew) return openDreamEntry(context, user, owner: owner);
   FocusManager.instance.primaryFocus?.unfocus();
   final page = InheritedTheme.captureAll(
     context,
     ListenableBuilder(
       listenable: user,
       builder: (context, _) => user.currentUser?.id == owner
-          ? DreamJournalScreen(owner: owner)
+          ? DreamJournalScreen(owner: owner, user: user)
           : const SizedBox.shrink(),
     ),
   );
@@ -49,7 +52,7 @@ class DreamCaptureButton extends StatelessWidget {
           CreateSonnikInitialRoute.push(context);
           return;
         }
-        final draft = await openDreamJournal(context, user);
+        final draft = await openDreamJournal(context, user, startNew: true);
         if (!context.mounted || draft == null) return;
         CreateSonnikInitialRoute.push(
           context,
@@ -61,65 +64,75 @@ class DreamCaptureButton extends StatelessWidget {
 }
 
 class DreamJournalScreen extends StatefulWidget {
-  const DreamJournalScreen({super.key, required this.owner});
-
+  const DreamJournalScreen({
+    super.key,
+    required this.owner,
+    required this.user,
+  });
   final String owner;
-
+  final UserProvider user;
   @override
   State<DreamJournalScreen> createState() => _DreamJournalScreenState();
 }
 
 class _DreamJournalScreenState extends State<DreamJournalScreen> {
-  final _scroll = ScrollController();
   late final _journal = DreamJournal(widget.owner);
-  final _text = TextEditingController();
-  final _focus = FocusNode();
   List<DreamEntry> _entries = [];
-  DreamEntry? _selected;
-  bool _loading = true;
-  bool _busy = false;
-  bool _dictating = false;
-  bool _loadFailed = false;
-  bool _writeFailed = false;
-
-  bool get _russian => Localizations.localeOf(context).languageCode == 'ru';
-
+  bool _loading = true, _failed = false, _busy = false, _opening = false;
+  bool get _owns => widget.user.currentUser?.id == widget.owner;
+  bool get _ru => Localizations.localeOf(context).languageCode == 'ru';
   @override
   void initState() {
     super.initState();
     _load();
   }
 
-  @override
-  void dispose() {
-    _scroll.dispose();
-    _focus.dispose();
-    _text.dispose();
-    super.dispose();
-  }
-
   Future<void> _load() async {
     try {
       final entries = await _journal.read();
-      if (!mounted) return;
-      setState(() {
-        _entries = entries;
-        _loadFailed = false;
-      });
+      if (mounted && _owns) {
+        setState(() {
+          _entries = entries;
+          _failed = false;
+        });
+      }
     } catch (_) {
-      if (mounted) setState(() => _loadFailed = true);
+      if (mounted && _owns) setState(() => _failed = true);
     } finally {
       if (mounted) setState(() => _loading = false);
     }
   }
 
-  bool get _changed => _text.text.trim() != (_selected?.text ?? '');
+  Future<void> _open([DreamEntry? entry]) async {
+    if (_busy || _opening || !_owns) return;
+    _opening = true;
+    final chosen = await openDreamEntry(
+      context,
+      widget.user,
+      owner: widget.owner,
+      entry: entry,
+    );
+    _opening = false;
+    if (!mounted || !_owns) return;
+    if (chosen != null) {
+      Navigator.pop(context, chosen);
+    } else {
+      await _load();
+    }
+  }
 
-  Future<bool> _discardChanges() async =>
-      await showCupertinoDialog<bool>(
-        context: context,
-        builder: (dialog) => CupertinoAlertDialog(
-          title: Text(_russian ? 'Сбросить изменения?' : 'Discard changes?'),
+  Future<void> _delete(DreamEntry entry) async {
+    if (_busy || !_owns) return;
+    final confirmed = await showCupertinoDialog<bool>(
+      context: context,
+      builder: (dialog) => dreamJournalDialog(
+        CupertinoAlertDialog(
+          title: Text(
+            _ru ? 'Удалить запись о сне?' : 'Delete this dream entry?',
+          ),
+          content: Text(
+            _ru ? 'Восстановить её не получится.' : 'This cannot be undone.',
+          ),
           actions: [
             CupertinoDialogAction(
               onPressed: () => Navigator.pop(dialog, false),
@@ -128,88 +141,19 @@ class _DreamJournalScreenState extends State<DreamJournalScreen> {
             CupertinoDialogAction(
               isDestructiveAction: true,
               onPressed: () => Navigator.pop(dialog, true),
-              child: Text(_russian ? 'Сбросить' : 'Discard'),
+              child: Text(_ru ? 'Удалить' : 'Delete'),
             ),
           ],
         ),
-      ) ==
-      true;
-
-  Future<void> _select(DreamEntry? entry) async {
-    if (_busy || _dictating || (entry != null && entry.id == _selected?.id)) {
-      return;
-    }
-    if (_changed && !await _discardChanges()) return;
-    if (!mounted) return;
-    FocusManager.instance.primaryFocus?.unfocus();
-    setState(() {
-      _selected = entry;
-      _text.text = entry?.text ?? '';
-      _writeFailed = false;
-    });
-    if (_scroll.hasClients) _scroll.jumpTo(0);
-    if (entry == null) _focus.requestFocus();
-  }
-
-  Future<void> _save() async {
-    if (_busy || _text.text.trim().isEmpty) return;
-    FocusManager.instance.primaryFocus?.unfocus();
-    setState(() {
-      _busy = true;
-      _writeFailed = false;
-    });
-    try {
-      final entry = await _journal.save(_text.text, entry: _selected);
-      if (!mounted) return;
-      setState(() {
-        _entries = [..._entries.where((saved) => saved.id != entry.id), entry]
-          ..sort((a, b) => b.recordedAt.compareTo(a.recordedAt));
-        _selected = entry;
-        _text.text = entry.text;
-      });
-    } catch (_) {
-      if (mounted) setState(() => _writeFailed = true);
-    } finally {
-      if (mounted) setState(() => _busy = false);
-    }
-  }
-
-  Future<void> _delete(DreamEntry entry) async {
-    final ru = _russian;
-    final confirmed = await showCupertinoDialog<bool>(
-      context: context,
-      builder: (dialog) => CupertinoAlertDialog(
-        title: Text(ru ? 'Удалить запись о сне?' : 'Delete this dream entry?'),
-        actions: [
-          CupertinoDialogAction(
-            onPressed: () => Navigator.pop(dialog, false),
-            child: Text(dialog.l10n.commonCancel),
-          ),
-          CupertinoDialogAction(
-            isDestructiveAction: true,
-            onPressed: () => Navigator.pop(dialog, true),
-            child: Text(ru ? 'Удалить' : 'Delete'),
-          ),
-        ],
       ),
     );
-    if (!mounted || confirmed != true) return;
-    setState(() {
-      _busy = true;
-      _writeFailed = false;
-    });
+    if (!mounted || !_owns || confirmed != true) return;
+    setState(() => _busy = true);
     try {
       await _journal.delete(entry.id);
-      if (!mounted) return;
-      setState(() {
-        _entries = _entries.where((saved) => saved.id != entry.id).toList();
-        if (_selected?.id == entry.id) {
-          _selected = null;
-          _text.clear();
-        }
-      });
+      if (mounted && _owns) await _load();
     } catch (_) {
-      if (mounted) setState(() => _writeFailed = true);
+      if (mounted && _owns) setState(() => _failed = true);
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -217,145 +161,151 @@ class _DreamJournalScreenState extends State<DreamJournalScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final ru = _russian;
-    final saved = _selected;
-    final text = _text.text.trim();
-    final canEdit = !_busy && !_loading && !_loadFailed;
-    final date = DateFormat.yMMMd(
-      Localizations.localeOf(context).toLanguageTag(),
-    );
-    return PopScope<DreamEntry>(
-      canPop: !_busy && !_dictating && !_changed,
-      onPopInvokedWithResult: (didPop, _) async {
-        if (didPop || _busy || _dictating || !_changed) return;
-        if (await _discardChanges() && context.mounted) {
-          Navigator.of(context).pop();
-        }
-      },
-      child: SonnikPageScaffold(
-        title: ru ? 'Дневник снов' : 'Dream journal',
-        resizeToAvoidBottomInset: true,
-        child: ListView(
-          controller: _scroll,
-          padding: EdgeInsets.fromLTRB(
-            16,
-            6,
-            16,
-            28 + MediaQuery.paddingOf(context).bottom,
+    final ru = _ru;
+    final locale = Localizations.localeOf(context).toLanguageTag();
+    return DreamJournalScaffold(
+      title: ru ? 'Дневник снов' : 'Dream journal',
+      footer: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          AsteriaActionButton(
+            text: ru ? 'Записать сон' : 'Write a dream',
+            width: double.infinity,
+            onPressed: _busy ? null : () => _open(),
           ),
-          children: [
-            if (_loading)
-              const Center(child: CircularProgressIndicator())
-            else if (_loadFailed) ...[
-              Text(
-                ru
-                    ? 'Не удалось открыть дневник.'
-                    : 'Could not open the journal.',
-              ),
-              LotusButtons.text(
-                onPressed: () {
-                  setState(() => _loading = true);
-                  _load();
-                },
-                child: Text(context.l10n.retry),
-              ),
-            ] else ...[
-              Text(
-                ru
-                    ? 'Записи хранятся на\u00a0этом устройстве.'
-                    : 'Entries are stored on this device.',
-                style: context.textTheme.inverseUrbanistRegular14,
-              ),
-              const SizedBox(height: 8),
-              JournalAddButton(
-                label: ru ? 'Добавить сон' : 'Add dream',
-                onPressed: canEdit && !_dictating ? () => _select(null) : null,
-              ),
-              const SizedBox(height: 8),
-              if (saved != null) ...[
-                Text(
-                  date.format(saved.recordedAt),
-                  style: context.textTheme.inverseUrbanistRegular14,
-                ),
-                const SizedBox(height: 8),
-              ],
-              SonnikTextArea(
-                controller: _text,
-                focusNode: _focus,
-                readOnly: _busy,
-                onChanged: (_) => setState(() => _writeFailed = false),
-              ),
-              const SizedBox(height: 12),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: DictationButton(
-                  controller: _text,
-                  enabled: canEdit,
-                  showLabel: true,
-                  onActiveChanged: (active) =>
-                      setState(() => _dictating = active),
-                ),
-              ),
-              if (_writeFailed) ...[
-                Semantics(
-                  liveRegion: true,
-                  child: Text(
-                    ru
-                        ? 'Не удалось обновить запись. Попробуйте ещё раз.'
-                        : 'Could not update the entry. Please try again.',
-                  ),
-                ),
-                const SizedBox(height: 8),
-              ],
-              if (saved != null && saved.text == text)
-                SonnikGradientButton(
-                  text: ru ? 'Спросить Ливею' : 'Ask Liveya',
-                  onPressed: canEdit && !_dictating
-                      ? () => Navigator.pop(context, saved)
-                      : null,
-                )
-              else
-                SonnikGradientButton(
-                  text: ru ? 'Сохранить сон' : 'Save dream',
-                  onPressed: canEdit && !_dictating && text.isNotEmpty
-                      ? _save
-                      : null,
-                ),
-              if (_entries.isNotEmpty) ...[
-                const SizedBox(height: 20),
-                Text(
-                  ru ? 'Мои сны' : 'My dreams',
-                  style: context.textTheme.inversePlayfairSemiBold20,
-                ),
-                const SizedBox(height: 8),
-                for (final entry in _entries)
-                  ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    title: Text(
-                      entry.text,
-                      style: context.textTheme.inverseUrbanistRegular16,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    subtitle: Text(
-                      date.format(entry.recordedAt),
-                      style: context.textTheme.inverseUrbanistRegular14
-                          .copyWith(color: AppColors.cardTinted),
-                    ),
-                    trailing: JournalEntryMenu(
-                      label: ru ? 'Действия с записью' : 'Entry actions',
-                      deleteLabel: ru ? 'Удалить запись' : 'Delete entry',
-                      onDelete: !canEdit || _dictating
-                          ? null
-                          : () => _delete(entry),
-                    ),
-                    onTap: !canEdit || _dictating ? null : () => _select(entry),
-                  ),
-              ],
-            ],
-          ],
-        ),
+          const SizedBox(height: 10),
+          Text(
+            ru
+                ? 'Записи хранятся на этом устройстве'
+                : 'Entries stay on this device',
+            style: context.textTheme.inverseUrbanistRegular14.copyWith(
+              color: AppColorsDark.textSecondary,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
       ),
+      child: _loading
+          ? const Center(child: CircularProgressIndicator())
+          : ListView(
+              padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
+              children: [
+                if (_failed) ...[
+                  Text(
+                    ru
+                        ? 'Не удалось обновить дневник.'
+                        : 'Could not update the journal.',
+                  ),
+                  LotusButtons.text(
+                    onPressed: _load,
+                    child: Text(context.l10n.retry),
+                  ),
+                ],
+                if (_entries.isEmpty && !_failed)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 56),
+                    child: Column(
+                      children: [
+                        const Icon(
+                          Icons.nights_stay_outlined,
+                          size: 42,
+                          color: AppColorsDark.linkGold,
+                        ),
+                        const SizedBox(height: 20),
+                        Text(
+                          ru
+                              ? 'Сохраните свой первый сон'
+                              : 'Keep your first dream',
+                          style: context.textTheme.inversePlayfairSemiBold20,
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 12),
+                        Text(
+                          ru
+                              ? 'Запишите образы и чувства, пока они свежи в памяти. К расшифровке можно вернуться позже.'
+                              : 'Capture the images and feelings while they are fresh. You can explore their meaning later.',
+                          style: context.textTheme.inverseUrbanistRegular16
+                              .copyWith(color: AppColorsDark.textSecondary),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                  ),
+                for (final (index, entry) in _entries.indexed) ...[
+                  if (index == 0 ||
+                      !DateUtils.isSameDay(
+                        entry.recordedAt,
+                        _entries[index - 1].recordedAt,
+                      ))
+                    Padding(
+                      padding: const EdgeInsets.only(top: 10, bottom: 8),
+                      child: Text(
+                        DateFormat.yMMMd(locale).format(entry.recordedAt),
+                        style: context.textTheme.inverseUrbanistMedium16
+                            .copyWith(color: AppColorsDark.linkGold),
+                      ),
+                    ),
+                  SonnikGlassPanel(
+                    padding: EdgeInsets.zero,
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: InkWell(
+                            onTap: _busy ? null : () => _open(entry),
+                            borderRadius: BorderRadius.circular(24),
+                            child: Padding(
+                              padding: const EdgeInsets.fromLTRB(16, 18, 0, 18),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    entry.text.replaceAll(RegExp(r'\s+'), ' '),
+                                    maxLines: 3,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: context
+                                        .textTheme
+                                        .inverseUrbanistRegular16,
+                                  ),
+                                  const SizedBox(height: 12),
+                                  Row(
+                                    children: [
+                                      Text(
+                                        DateFormat.Hm(
+                                          locale,
+                                        ).format(entry.recordedAt),
+                                        style: context
+                                            .textTheme
+                                            .inverseUrbanistRegular14
+                                            .copyWith(
+                                              color:
+                                                  AppColorsDark.textSecondary,
+                                            ),
+                                      ),
+                                      const Spacer(),
+                                      const Icon(
+                                        Icons.chevron_right,
+                                        size: 20,
+                                        color: AppColorsDark.textSecondary,
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        JournalEntryMenu(
+                          label: ru ? 'Действия с записью' : 'Entry actions',
+                          deleteLabel: ru ? 'Удалить запись' : 'Delete entry',
+                          onDelete: _busy ? null : () => _delete(entry),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                ],
+              ],
+            ),
     );
   }
 }

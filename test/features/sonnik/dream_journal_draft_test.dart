@@ -1,3 +1,4 @@
+import 'package:asteria_app/features/sonnik/data/dream_journal.dart';
 import 'package:asteria_app/app/data/models/user/user_model.dart';
 import 'package:asteria_app/app/providers/user_provider.dart';
 import 'package:asteria_app/core/localization/localization.dart';
@@ -19,10 +20,11 @@ class _User extends ChangeNotifier implements UserProvider {
 
 void main() {
   setUpAll(() => Hive.openBox<Map>('dream_journal_v1', bytes: Uint8List(0)));
+  setUp(() => Hive.box<Map>('dream_journal_v1').clear());
   tearDownAll(Hive.close);
   for (final width in [800.0, 320.0]) {
     testWidgets(
-      'Add and the actual toolbar Back protect a dream draft, width=$width',
+      'Quick capture and toolbar Back protect a dream draft, width=$width',
       (tester) async {
         tester.view.physicalSize = Size(width, 844);
         tester.view.devicePixelRatio = 1;
@@ -51,7 +53,8 @@ void main() {
               home: Scaffold(
                 body: Builder(
                   builder: (context) => TextButton(
-                    onPressed: () => openDreamJournal(context, user),
+                    onPressed: () =>
+                        openDreamJournal(context, user, startNew: true),
                     child: const Text('Open dreams'),
                   ),
                 ),
@@ -66,16 +69,10 @@ void main() {
           'Do not lose this dream',
         );
         await tester.pumpAndSettle();
-        await tester.ensureVisible(find.text('Add dream'));
-        await tester.tap(find.text('Add dream'));
-        await tester.pumpAndSettle();
-        expect(find.text('Discard changes?'), findsOneWidget);
-        await tester.tap(find.text('Cancel'));
-        await tester.pumpAndSettle();
         await tester.tap(find.byTooltip('Back'));
         await tester.pumpAndSettle();
-        expect(find.text('Discard changes?'), findsOneWidget);
-        await tester.tap(find.text('Cancel'));
+        expect(find.text('Save your changes?'), findsOneWidget);
+        await tester.tap(find.text('Keep editing'));
         await tester.pumpAndSettle();
         expect(
           tester.widget<TextField>(find.byType(TextField)).controller!.text,
@@ -86,6 +83,20 @@ void main() {
         await tester.tap(find.text('Discard'));
         await tester.pumpAndSettle();
         expect(find.text('Open dreams'), findsOneWidget);
+        expect(await DreamJournal('draft-owner').read(), isEmpty);
+        await tester.tap(find.text('Open dreams'));
+        await tester.pumpAndSettle();
+        await tester.enterText(find.byType(TextField), 'Save before leaving');
+        await tester.pumpAndSettle();
+        await tester.tap(find.byTooltip('Back'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Save'));
+        await tester.pumpAndSettle();
+        expect(find.text('Open dreams'), findsOneWidget);
+        expect(
+          (await DreamJournal('draft-owner').read()).single.text,
+          'Save before leaving',
+        );
         expect(find.byType(DreamJournalScreen), findsNothing);
       },
     );
