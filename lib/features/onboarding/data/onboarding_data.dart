@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/localization/localization.dart';
 import 'models/onboarding_page_model.dart';
 import '../localization/onboarding_localization_contract.dart';
 import 'package:flutter/material.dart';
@@ -36,6 +37,24 @@ class OnboardingData {
         description: localization.onboardingPage5Description(context),
         visualKind: OnboardingVisualKind.daily,
         pageIndex: 4,
+      ),
+      OnboardingPageModel(
+        title: AppLocalizations.of(context).onboardingPracticeTitle,
+        description: AppLocalizations.of(context).onboardingPracticeDescription,
+        visualKind: OnboardingVisualKind.practice,
+        pageIndex: 5,
+      ),
+      OnboardingPageModel(
+        title: AppLocalizations.of(context).onboardingDreamTitle,
+        description: AppLocalizations.of(context).onboardingDreamDescription,
+        visualKind: OnboardingVisualKind.dream,
+        pageIndex: 6,
+      ),
+      OnboardingPageModel(
+        title: AppLocalizations.of(context).onboardingGuideTitle,
+        description: AppLocalizations.of(context).onboardingGuideDescription,
+        visualKind: OnboardingVisualKind.guide,
+        pageIndex: 7,
       ),
     ];
 

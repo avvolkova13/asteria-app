@@ -886,7 +886,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Bringing your insight together…",
     ),
     "introAnakraMessage": MessageLookupByLibrary.simpleMessage(
-      "Give one small step ten minutes. Just try it.",
+      "Which part are you curious to try? Start there and give yourself ten minutes.",
     ),
     "introAudioError": MessageLookupByLibrary.simpleMessage(
       "Unable to play the recording.",
@@ -933,12 +933,14 @@ class MessageLookup extends MessageLookupByLibrary {
       "You can take this moment at your own pace.",
     ),
     "introMoodCalm": MessageLookupByLibrary.simpleMessage("Looking for calm"),
-    "introMoodMatched": MessageLookupByLibrary.simpleMessage("Your own pace"),
+    "introMoodMatched": MessageLookupByLibrary.simpleMessage(
+      "An affirmation for a quiet moment",
+    ),
     "introMoodPractice": MessageLookupByLibrary.simpleMessage(
-      "Relax your shoulders. Breathe out slowly.",
+      "Let your shoulders drop. Breathe out slowly.",
     ),
     "introMoodPracticeTitle": MessageLookupByLibrary.simpleMessage(
-      "A short practice",
+      "Try it now",
     ),
     "introMoodRequest": MessageLookupByLibrary.simpleMessage(
       "I’m always rushing.\nI need a moment to breathe.",
@@ -949,19 +951,19 @@ class MessageLookup extends MessageLookupByLibrary {
       "Example data · 13 May 1995",
     ),
     "introNatalPattern": MessageLookupByLibrary.simpleMessage(
-      "Change may bring a need for more clarity and time.",
+      "Change can feel easier when you know what the first step looks like.",
     ),
     "introNatalPatternTitle": MessageLookupByLibrary.simpleMessage(
       "A familiar reaction",
     ),
     "introNatalQuestion": MessageLookupByLibrary.simpleMessage(
-      "What helps you feel grounded before a new step?",
+      "Think of the last time something changed. What helped you then?",
     ),
     "introNatalQuestionTitle": MessageLookupByLibrary.simpleMessage(
       "A question to reflect on",
     ),
     "introNatalStrength": MessageLookupByLibrary.simpleMessage(
-      "Following through and finishing what you start.",
+      "You see things through.",
     ),
     "introNatalStrengthTitle": MessageLookupByLibrary.simpleMessage(
       "A strength",
@@ -984,7 +986,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "“This conversation matters to me. Is now a good time, or would later be better?”",
     ),
     "introPairQuestion": MessageLookupByLibrary.simpleMessage(
-      "Try starting with this",
+      "One way to begin",
     ),
     "introPairRequest": MessageLookupByLibrary.simpleMessage(
       "I go quiet after an argument. My partner wants to talk.",
@@ -1497,39 +1499,59 @@ class MessageLookup extends MessageLookupByLibrary {
     "onboardPreviewTaurusDates": MessageLookupByLibrary.simpleMessage(
       "13 May 1995",
     ),
+    "onboardingDreamDescription": MessageLookupByLibrary.simpleMessage(
+      "Write down your dream or dictate a few details. Keep it in your journal and ask Liveya for a reading whenever you like.",
+    ),
+    "onboardingDreamTitle": MessageLookupByLibrary.simpleMessage(
+      "Before the dream fades",
+    ),
     "onboardingEmptyPagesError": MessageLookupByLibrary.simpleMessage(
       "Onboarding content is unavailable.",
+    ),
+    "onboardingGuideDescription": MessageLookupByLibrary.simpleMessage(
+      "Ask Anakra what’s on your mind. Come back to the conversation when you have another question.",
+    ),
+    "onboardingGuideTitle": MessageLookupByLibrary.simpleMessage(
+      "What’s on your mind?",
     ),
     "onboardingInvalidPageError": MessageLookupByLibrary.simpleMessage(
       "This onboarding page is unavailable.",
     ),
     "onboardingPage1Description": MessageLookupByLibrary.simpleMessage(
-      "From a suitable day to a plan with a reminder.",
+      "Find a day for your plan in the lunar calendar, then set a reminder.",
     ),
-    "onboardingPage1Title": MessageLookupByLibrary.simpleMessage("Your day"),
+    "onboardingPage1Title": MessageLookupByLibrary.simpleMessage(
+      "When is a good day?",
+    ),
     "onboardingPage2Description": MessageLookupByLibrary.simpleMessage(
-      "Strengths, familiar reactions and new questions to ask yourself.",
+      "Explore your strengths through a natal chart based on when and where you were born.",
     ),
     "onboardingPage2Title": MessageLookupByLibrary.simpleMessage(
-      "Your character",
+      "What keeps you steady?",
     ),
     "onboardingPage3Description": MessageLookupByLibrary.simpleMessage(
-      "Understand different reactions and find a way to talk.",
+      "After an argument, one of you wants to talk and the other needs time. A compatibility reading offers a way into the conversation.",
     ),
     "onboardingPage3Title": MessageLookupByLibrary.simpleMessage(
-      "Your relationship",
+      "How do you break the silence?",
     ),
     "onboardingPage4Description": MessageLookupByLibrary.simpleMessage(
-      "From a Tarot reading to reflection and a conversation with Anakra.",
+      "Turn over today’s card or rune. For a question that stays with you, try a spread and talk it through with Anakra.",
     ),
     "onboardingPage4Title": MessageLookupByLibrary.simpleMessage(
-      "Your question",
+      "What could you try next?",
     ),
     "onboardingPage5Description": MessageLookupByLibrary.simpleMessage(
-      "Affirmations and short practices for a pause in your day.",
+      "When your thoughts race ahead, choose an affirmation and read it to yourself. Come back to the words as often as you like.",
     ),
     "onboardingPage5Title": MessageLookupByLibrary.simpleMessage(
-      "Time for yourself",
+      "A moment to breathe",
+    ),
+    "onboardingPracticeDescription": MessageLookupByLibrary.simpleMessage(
+      "Try a meditation or a movement practice. If a thought comes to mind, tap the pencil in the player to keep it.",
+    ),
+    "onboardingPracticeTitle": MessageLookupByLibrary.simpleMessage(
+      "What will you take with you?",
     ),
     "onboardingPreviewAffirmation": MessageLookupByLibrary.simpleMessage(
       "My inner strength grows with every breath, filling me with confidence and calm in every moment of life.",

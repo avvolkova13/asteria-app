@@ -1,3 +1,5 @@
+import 'intro_journal_story.dart';
+import 'intro_guide_story.dart';
 import 'package:flutter/material.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/core/ui_kit/widgets/top_bar_geometry.dart';
@@ -223,6 +225,18 @@ class _TourState extends State<OnboardingTour> with WidgetsBindingObserver {
                                   child: switch (widget
                                       .pages[index]
                                       .visualKind) {
+                                    OnboardingVisualKind.practice =>
+                                      IntroJournalStory.practice(
+                                        active: _index == index && !_choosing,
+                                      ),
+                                    OnboardingVisualKind.dream =>
+                                      IntroJournalStory.dream(
+                                        active: _index == index && !_choosing,
+                                      ),
+                                    OnboardingVisualKind.guide =>
+                                      IntroGuideStory(
+                                        active: _index == index && !_choosing,
+                                      ),
                                     OnboardingVisualKind.hero =>
                                       IntroCalendarStory(
                                         now: widget.now,

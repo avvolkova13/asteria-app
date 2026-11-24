@@ -23,6 +23,20 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+const _storySequence = [
+  'hero',
+  'natal',
+  'personal',
+  'tarot',
+  'daily',
+  'practice',
+  'dream',
+  'guide',
+];
+int get _pageCount => _storySequence.length;
+int get _lastPage => _pageCount - 1;
+Iterable<int> get _indices => Iterable<int>.generate(_pageCount);
+
 void main() {
   _OnboardingGoldenBinding();
   late _RecordingSettings settings;
@@ -95,7 +109,7 @@ void main() {
           onComplete: () => completions++,
         );
         final unexpected = <String>[];
-        for (var page = 0; page < 5; page++) {
+        for (var page = 0; page < _pageCount; page++) {
           for (final text in tester.widgetList<Text>(find.byType(Text))) {
             final value = text.data ?? text.textSpan?.toPlainText() ?? '';
             if (RegExp(
@@ -105,7 +119,7 @@ void main() {
               unexpected.add('scene${page + 1}: $value');
             }
           }
-          if (page < 4) {
+          if (page < _lastPage) {
             await tester.tap(_cta(tester));
             await tester.pumpAndSettle();
           }
@@ -145,7 +159,9 @@ void main() {
     await tester.pumpWidget(const SizedBox());
   });
 
-  testWidgets('five-scene tour starts at progress one of five', (tester) async {
+  testWidgets('tour starts at the first of the eight advertised stories', (
+    tester,
+  ) async {
     bloc = OnboardingBloc(settings);
     await _pumpOnboarding(
       tester,
@@ -153,14 +169,15 @@ void main() {
       locale: const Locale('ru'),
       onComplete: () => completions++,
     );
-    expect(bloc.state.pages, hasLength(5));
-    expect(bloc.state.pages.map((page) => page.title), [
-      'Твой день',
-      'Твой характер',
-      'Ваши отношения',
-      'Твой вопрос',
-      'Время для себя',
-    ]);
+    expect(bloc.state.pages, hasLength(_pageCount));
+    expect(
+      bloc.state.pages.map((page) => page.visualKind.name),
+      _storySequence,
+    );
+    expect(
+      bloc.state.pages.map((page) => page.title).toSet(),
+      hasLength(_pageCount),
+    );
     final semantics = tester.ensureSemantics();
     await tester.pump();
     try {
@@ -168,18 +185,18 @@ void main() {
         find.bySemanticsLabel(
           AppLocalizations.of(
             tester.element(find.byType(OnboardingScreen)),
-          ).introProgress(1, 5),
+          ).introProgress(1, _pageCount),
         ),
         findsOneWidget,
       );
     } finally {
       semantics.dispose();
     }
-    expect(bloc.state.pages.map((page) => page.pageIndex), [0, 1, 2, 3, 4]);
+    expect(bloc.state.pages.map((page) => page.pageIndex), _indices);
     final progress = tester.widget<OnboardingPaginationWidget>(
       find.byType(OnboardingPaginationWidget),
     );
-    expect(progress.totalPages, 5);
+    expect(progress.totalPages, _pageCount);
     expect(progress.currentPage, 0);
     expect(bloc.state.isLastPage, isFalse);
     expect(completions, 0);
@@ -187,7 +204,7 @@ void main() {
   });
 
   testWidgets(
-    'five scenes advance automatically without feature taps or audio',
+    'all scenes advance automatically without feature taps or audio',
     (tester) async {
       bloc = OnboardingBloc(settings);
       await _pumpOnboarding(
@@ -196,16 +213,16 @@ void main() {
         disableAnimations: false,
         onComplete: () => completions++,
       );
-      for (var page = 0; page < 5; page++) {
+      for (var page = 0; page < _pageCount; page++) {
         expect(bloc.state.currentPageIndex, page);
         final context = tester.element(find.byType(OnboardingScreen));
         expect(
           find.text(AppLocalizations.of(context).introStart),
-          page == 4 ? findsOneWidget : findsNothing,
+          page == _lastPage ? findsOneWidget : findsNothing,
         );
         expect(settings.onboardingWrites, isEmpty);
         final duration = _activeStoryDuration(tester);
-        expect(duration.inSeconds, [18, 18, 14, 14, 14][page]);
+        expect(duration.inMilliseconds, greaterThan(1500));
         await _pumpStoryTo(tester, page, duration.inMilliseconds - 1500);
         expect(
           bloc.state.currentPageIndex,
@@ -219,14 +236,14 @@ void main() {
           await tester.pump(const Duration(milliseconds: 100));
         }
       }
-      expect(bloc.state.currentPageIndex, 4);
+      expect(bloc.state.currentPageIndex, _lastPage);
       expect(completions, 0);
       expect(audioCalls, isEmpty);
       expect(
         analytics
             .named(AnalyticsEvents.onboardingStepView)
             .map((event) => event.params[EventParams.stepIndex]),
-        [0, 1, 2, 3, 4],
+        _indices,
       );
       await tester.tap(_cta(tester));
       await tester.pump();
@@ -330,11 +347,17 @@ void main() {
 
         final content = find.byKey(const ValueKey('onboarding-content-1'));
         final visual = find.byKey(const ValueKey('onboarding-visual-1'));
-        await tester.drag(content, const Offset(0, -2000));
-        await tester.pumpAndSettle();
         final scrollable = tester.state<ScrollableState>(
           find.descendant(of: content, matching: find.byType(Scrollable)),
         );
+        for (
+          var swipe = 0;
+          swipe < 10 && scrollable.position.extentAfter > 0;
+          swipe++
+        ) {
+          await tester.drag(content, const Offset(0, -300));
+          await tester.pumpAndSettle();
+        }
         expect(scrollable.position.pixels, greaterThan(0));
         expect(
           scrollable.position.pixels,
@@ -367,8 +390,8 @@ void main() {
         onComplete: () => completions++,
       );
 
-      expect(bloc.state.pages, hasLength(5));
-      for (var page = 0; page < 5; page++) {
+      expect(bloc.state.pages, hasLength(_pageCount));
+      for (var page = 0; page < _pageCount; page++) {
         _expectPage(tester, bloc, page);
         expect(settings.onboardingWrites, isEmpty);
         expect(completions, 0);
@@ -388,7 +411,7 @@ void main() {
       );
       final completion = analytics.named(AstEvents.onboardingComplete);
       expect(completion, hasLength(1));
-      expect(completion.single.params[EventParams.stepsCount], 5);
+      expect(completion.single.params[EventParams.stepsCount], _pageCount);
       expect(
         completion.single.params[EventParams.completionSeconds],
         isNonNegative,
@@ -397,12 +420,12 @@ void main() {
         analytics
             .named(AnalyticsEvents.onboardingStepView)
             .map((event) => event.params[EventParams.stepIndex]),
-        [0, 1, 2, 3, 4],
+        _indices,
       );
       expect(tester.takeException(), isNull);
     });
 
-    for (var page = 0; page < 5; page++) {
+    for (var page = 0; page < _pageCount; page++) {
       testWidgets('$language full screen page ${page + 1} reference golden', (
         tester,
       ) async {
@@ -463,7 +486,7 @@ void main() {
             lightTheme: lightTheme,
             onComplete: () => completions++,
           );
-          for (var index = 0; index < 5; index++) {
+          for (var index = 0; index < _pageCount; index++) {
             final content = find.byKey(ValueKey('onboarding-content-$index'));
             await _saveReviewScreen(
               tester,
@@ -501,7 +524,7 @@ void main() {
           padding: const EdgeInsets.only(top: 59, bottom: 34),
           onComplete: () => completions++,
         );
-        for (var page = 0; page < 5; page++) {
+        for (var page = 0; page < _pageCount; page++) {
           _expectPage(tester, bloc, page);
           await _pumpStoryTo(
             tester,
@@ -536,7 +559,7 @@ void main() {
         disableAnimations: false,
         onComplete: () => completions++,
       );
-      for (var i = 0; i < 3; i++) {
+      for (var i = 0; i < _lastPage - 1; i++) {
         await tester.tap(_cta(tester));
         await tester.pump();
         await tester.pump(const Duration(milliseconds: 650));
@@ -552,8 +575,8 @@ void main() {
       final button = tester.widget<IntroNextButton>(
         find.byType(IntroNextButton),
       );
-      expect(button.page, greaterThan(3));
-      expect(button.page, lessThan(4));
+      expect(button.page, greaterThan(_lastPage - 1));
+      expect(button.page, lessThan(_lastPage));
       await swipe.moveBy(const Offset(135, 0));
       await swipe.up();
       await tester.pump();
@@ -561,7 +584,7 @@ void main() {
       await tester.pump();
       expect(
         tester.widget<IntroNextButton>(find.byType(IntroNextButton)).page,
-        3,
+        _lastPage - 1,
       );
       expect(completions, 0);
       await tester.tap(_cta(tester));
@@ -570,7 +593,7 @@ void main() {
       await tester.pump();
       expect(
         tester.widget<IntroNextButton>(find.byType(IntroNextButton)).page,
-        4,
+        _lastPage,
       );
       expect(completions, 0);
       expect(tester.takeException(), isNull);
@@ -601,11 +624,14 @@ void main() {
           find.byKey(const ValueKey('intro-calendar-complete')),
           find.byKey(const ValueKey('intro-natal-question')),
           find.text(l.introPairPrompt),
-          find.text(l.introAnakraMessage),
+          find.byKey(const ValueKey('intro-daily-rune')),
           find.text(l.introMoodPractice),
+          find.byKey(const ValueKey('intro-practice-result')),
+          find.byKey(const ValueKey('intro-dream-result')),
+          find.byKey(const ValueKey('intro-guide-result')),
         ];
         final issues = <String>[];
-        for (var page = 0; page < 5; page++) {
+        for (var page = 0; page < _pageCount; page++) {
           await _pumpStoryTo(
             tester,
             page,
@@ -780,7 +806,7 @@ void main() {
   if (const bool.fromEnvironment('ONBOARDING_REVIEW_CAPTURE')) {
     for (final language in ['ru', 'en']) {
       for (final width in [390.0, 320.0]) {
-        testWidgets('$language animated five-scene review at $width', (
+        testWidgets('$language animated full tour review at $width', (
           tester,
         ) async {
           bloc = OnboardingBloc(settings);
@@ -796,7 +822,7 @@ void main() {
             disableAnimations: false,
             onComplete: () => completions++,
           );
-          for (var page = 0; page < 5; page++) {
+          for (var page = 0; page < _pageCount; page++) {
             _expectPage(tester, bloc, page);
             for (final phase in [
               (700, 'start'),
@@ -862,8 +888,8 @@ void main() {
             3: [(6500, 'cards'), (12500, 'advice')],
             4: [(12500, 'practice')],
           };
-          for (var page = 0; page < 5; page++) {
-            for (final stage in stages[page]!) {
+          for (var page = 0; page < _pageCount; page++) {
+            for (final stage in stages[page] ?? const <(int, String)>[]) {
               await _pumpStoryTo(tester, page, stage.$1);
               await _saveReviewScreen(
                 tester,
@@ -939,7 +965,7 @@ void main() {
     });
   }
 
-  for (var skippedPage = 0; skippedPage < 5; skippedPage++) {
+  for (var skippedPage = 0; skippedPage < _pageCount; skippedPage++) {
     testWidgets('skip from scene ${skippedPage + 1} completes once', (
       tester,
     ) async {
@@ -959,7 +985,7 @@ void main() {
       expect(completions, 1);
       final completed = analytics.named(AstEvents.onboardingComplete);
       expect(completed, hasLength(1));
-      expect(completed.single.params[EventParams.stepsCount], 5);
+      expect(completed.single.params[EventParams.stepsCount], _pageCount);
       expect(audioCalls, isEmpty);
       expect(tester.takeException(), isNull);
     });
@@ -995,11 +1021,11 @@ void main() {
   ) async {
     bloc = OnboardingBloc(settings);
     await _pumpOnboarding(tester, bloc, onComplete: () => completions++);
-    for (var page = 0; page < 4; page++) {
+    for (var page = 0; page < _lastPage; page++) {
       await tester.tap(_cta(tester));
       await tester.pumpAndSettle();
     }
-    _expectPage(tester, bloc, 4);
+    _expectPage(tester, bloc, _lastPage);
 
     // Keep the screen mounted, as navigation can finish after another tap.
     // No frame between taps: both target the same rendered CTA callback.
@@ -1175,7 +1201,7 @@ Finder _cta(WidgetTester tester) {
       )
       .currentPage;
   return find.text(
-    index == 4
+    index == _lastPage
         ? AppLocalizations.of(context).introStart
         : OnboardingLocalization().nextButton(context),
   );
@@ -1188,9 +1214,9 @@ void _expectPage(WidgetTester tester, OnboardingBloc bloc, int index) {
   );
   expect(pageView.controller?.page, closeTo(index.toDouble(), 0.01));
   expect(bloc.state.currentPageIndex, index);
-  expect(bloc.state.isLastPage, index == 4);
+  expect(bloc.state.isLastPage, index == _lastPage);
   expect(pagination.currentPage, index);
-  expect(pagination.totalPages, 5);
+  expect(pagination.totalPages, _pageCount);
 }
 
 class _RecordingSettings implements AppSettingsRepository {

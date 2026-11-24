@@ -1,3 +1,5 @@
+import 'intro/intro_journal_story.dart';
+import 'intro/intro_guide_story.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
@@ -141,6 +143,14 @@ class OnboardingPageWidget extends StatelessWidget {
                                       width: 390,
                                       height: 426,
                                       child: switch (page.visualKind) {
+                                        OnboardingVisualKind.practice =>
+                                          IntroJournalStory.practice(
+                                            active: true,
+                                          ),
+                                        OnboardingVisualKind.dream =>
+                                          IntroJournalStory.dream(active: true),
+                                        OnboardingVisualKind.guide =>
+                                          IntroGuideStory(active: true),
                                         OnboardingVisualKind.hero =>
                                           Image.asset(
                                             _heroAsset,

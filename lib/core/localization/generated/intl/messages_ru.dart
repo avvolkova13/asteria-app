@@ -896,7 +896,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Собираем подсказку для вас…",
     ),
     "introAnakraMessage": MessageLookupByLibrary.simpleMessage(
-      "Дайте одному шагу десять минут. Просто попробуйте.",
+      "Какую часть дела тебе уже интересно попробовать? Начни с неё и дай себе десять минут.",
     ),
     "introAudioError": MessageLookupByLibrary.simpleMessage(
       "Не удалось воспроизвести запись.",
@@ -945,12 +945,14 @@ class MessageLookup extends MessageLookupByLibrary {
       "Сейчас можно никуда не спешить.",
     ),
     "introMoodCalm": MessageLookupByLibrary.simpleMessage("Хочу спокойствия"),
-    "introMoodMatched": MessageLookupByLibrary.simpleMessage("Свой темп"),
+    "introMoodMatched": MessageLookupByLibrary.simpleMessage(
+      "Аффирмация для паузы",
+    ),
     "introMoodPractice": MessageLookupByLibrary.simpleMessage(
-      "Опустите плечи. Медленно выдохните.",
+      "Опусти плечи. Медленно выдохни.",
     ),
     "introMoodPracticeTitle": MessageLookupByLibrary.simpleMessage(
-      "Небольшая практика",
+      "Попробуй сейчас",
     ),
     "introMoodRequest": MessageLookupByLibrary.simpleMessage(
       "Всё время спешу.\nХочется выдохнуть.",
@@ -961,19 +963,19 @@ class MessageLookup extends MessageLookupByLibrary {
       "Данные примера · 13 мая 1995",
     ),
     "introNatalPattern": MessageLookupByLibrary.simpleMessage(
-      "В переменах может хотеться больше ясности и времени.",
+      "Проще решиться на перемены, когда знаешь, каким будет первый шаг.",
     ),
     "introNatalPatternTitle": MessageLookupByLibrary.simpleMessage(
       "Привычная реакция",
     ),
     "introNatalQuestion": MessageLookupByLibrary.simpleMessage(
-      "Что даёт вам опору перед новым шагом?",
+      "Вспомни недавнюю перемену. Что помогло тебе тогда?",
     ),
     "introNatalQuestionTitle": MessageLookupByLibrary.simpleMessage(
       "Вопрос для размышления",
     ),
     "introNatalStrength": MessageLookupByLibrary.simpleMessage(
-      "Умение доводить начатое до результата.",
+      "Ты умеешь доводить начатое до конца.",
     ),
     "introNatalStrengthTitle": MessageLookupByLibrary.simpleMessage(
       "Сильная сторона",
@@ -995,9 +997,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "introPairPrompt": MessageLookupByLibrary.simpleMessage(
       "«Мне важен наш разговор. Тебе удобнее сейчас или чуть позже?»",
     ),
-    "introPairQuestion": MessageLookupByLibrary.simpleMessage(
-      "Попробуйте начать так",
-    ),
+    "introPairQuestion": MessageLookupByLibrary.simpleMessage("Первые слова"),
     "introPairRequest": MessageLookupByLibrary.simpleMessage(
       "Я молчу после спора, а партнёр ждёт разговора.",
     ),
@@ -1523,37 +1523,59 @@ class MessageLookup extends MessageLookupByLibrary {
     "onboardPreviewTaurusDates": MessageLookupByLibrary.simpleMessage(
       "13.05.1995",
     ),
+    "onboardingDreamDescription": MessageLookupByLibrary.simpleMessage(
+      "Опиши сон или надиктуй пару деталей. Запись останется в дневнике, а за толкованием можно обратиться к Ливее.",
+    ),
+    "onboardingDreamTitle": MessageLookupByLibrary.simpleMessage(
+      "Пока помнишь сон",
+    ),
     "onboardingEmptyPagesError": MessageLookupByLibrary.simpleMessage(
       "Материалы онбординга недоступны.",
+    ),
+    "onboardingGuideDescription": MessageLookupByLibrary.simpleMessage(
+      "Задай Анакре свой вопрос. К разговору можно вернуться, когда захочется спросить ещё о чём-то.",
+    ),
+    "onboardingGuideTitle": MessageLookupByLibrary.simpleMessage(
+      "Что тебя занимает?",
     ),
     "onboardingInvalidPageError": MessageLookupByLibrary.simpleMessage(
       "Эта страница онбординга недоступна.",
     ),
     "onboardingPage1Description": MessageLookupByLibrary.simpleMessage(
-      "От подходящего дня — к плану с напоминанием.",
+      "В лунном календаре выбери день для своего плана. Напоминание поможет о нём вспомнить.",
     ),
-    "onboardingPage1Title": MessageLookupByLibrary.simpleMessage("Твой день"),
+    "onboardingPage1Title": MessageLookupByLibrary.simpleMessage(
+      "Когда лучше начать?",
+    ),
     "onboardingPage2Description": MessageLookupByLibrary.simpleMessage(
-      "Сильные стороны, привычные реакции и новые вопросы к себе.",
+      "Натальная карта по дате, времени и месту рождения предлагает взгляд на твои сильные стороны.",
     ),
     "onboardingPage2Title": MessageLookupByLibrary.simpleMessage(
-      "Твой характер",
+      "Что даёт тебе опору?",
     ),
     "onboardingPage3Description": MessageLookupByLibrary.simpleMessage(
-      "Увидеть разные реакции — и найти слова для разговора.",
+      "После спора одному хочется поговорить, другому — побыть в тишине. Посмотри, как разбор совместимости помогает подобрать слова.",
     ),
     "onboardingPage3Title": MessageLookupByLibrary.simpleMessage(
-      "Ваши отношения",
+      "Как начать разговор?",
     ),
     "onboardingPage4Description": MessageLookupByLibrary.simpleMessage(
-      "От расклада Таро — к размышлению и диалогу с Анакрой.",
+      "Открой карту или руну дня. Для вопроса, который занимает тебя дольше, есть расклады и беседа с Анакрой.",
     ),
-    "onboardingPage4Title": MessageLookupByLibrary.simpleMessage("Твой вопрос"),
+    "onboardingPage4Title": MessageLookupByLibrary.simpleMessage(
+      "С чем идти дальше?",
+    ),
     "onboardingPage5Description": MessageLookupByLibrary.simpleMessage(
-      "Аффирмации и небольшие практики для паузы среди дел.",
+      "Когда мысли бегут вперёд, выбери аффирмацию и прочитай её про себя. Можно повторить столько раз, сколько захочется.",
     ),
     "onboardingPage5Title": MessageLookupByLibrary.simpleMessage(
-      "Время для себя",
+      "Можно выдохнуть",
+    ),
+    "onboardingPracticeDescription": MessageLookupByLibrary.simpleMessage(
+      "Попробуй медитацию или телесную практику. Мысль, которая пришла в процессе, можно записать прямо в плеере.",
+    ),
+    "onboardingPracticeTitle": MessageLookupByLibrary.simpleMessage(
+      "Что хочется запомнить?",
     ),
     "onboardingPreviewAffirmation": MessageLookupByLibrary.simpleMessage(
       "Моя внутренняя сила растёт с каждым вдохом, наполняя меня уверенностью и спокойствием в любые моменты жизни.",

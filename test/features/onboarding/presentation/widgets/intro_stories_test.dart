@@ -7,7 +7,6 @@ import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/features/onboarding/presentation/widgets/intro/intro_stories.dart';
 import 'package:asteria_app/features/onboarding/presentation/widgets/intro/intro_story.dart';
 import 'package:asteria_app/features/onboarding/presentation/widgets/intro/intro_natal_story.dart';
-import 'package:asteria_app/features/onboarding/presentation/widgets/intro/native_tarot_deal.dart';
 import 'package:asteria_app/features/onboarding/presentation/widgets/intro/native_intro_audio.dart';
 import 'package:asteria_app/features/onboarding/presentation/widgets/intro/intro_mood_artwork.dart';
 import 'package:flutter/material.dart';
@@ -212,11 +211,22 @@ void main() {
       expect(days.first.date, DateTime(2026, 11, 30));
       expect(days[1].date, DateTime(2026, 12, 1));
       expect(days.map((day) => day.status), containsAll(DayStatus.values));
-      expect(days[1].isSelected, isTrue);
+      expect(days.first.isSelected, isTrue);
+      await tester.pump(const Duration(milliseconds: 700));
+      expect(
+        tester
+            .widgetList<MoonDayPreview>(find.byType(MoonDayPreview))
+            .elementAt(1)
+            .isSelected,
+        isTrue,
+      );
       final image = tester.widget<Image>(find.byType(Image).first);
-      expect(image.fit, BoxFit.contain);
-      await tester.pump(const Duration(seconds: 6));
-      expect(find.text('Например, 2 декабря'), findsOneWidget);
+      expect(image.fit, BoxFit.cover);
+      await tester.pump(const Duration(seconds: 3));
+      expect(
+        find.text(AppLocalizations.current.introCalendarResult('2 декабря')),
+        findsOneWidget,
+      );
       expect(find.text('Ближайшие дни · с 30 ноября'), findsNothing);
       await tester.pumpWidget(const SizedBox());
     },
@@ -345,6 +355,8 @@ void main() {
     await tester.pump(const Duration(seconds: 6));
     expect(find.text(l.introAnakraMessage), findsOneWidget);
     expect(find.byKey(const ValueKey('intro-tarot-insight')), findsOneWidget);
+    await tester.pump(const Duration(seconds: 3));
+    expect(find.byKey(const ValueKey('intro-daily-rune')), findsOneWidget);
     expect(tester.takeException(), isNull);
     await tester.pumpWidget(const SizedBox());
   });
@@ -538,10 +550,10 @@ void main() {
       IntroCalendarStory(active: true, now: () => now),
       reduced: true,
     );
-    expect(find.text('Ближайшие дни · с 31 декабря'), findsOneWidget);
+    expect(find.textContaining('2 января'), findsOneWidget);
     now = DateTime(2027, 1, 1);
     await tester.pump(const Duration(seconds: 2));
-    expect(find.text('Ближайшие дни · с 1 января'), findsOneWidget);
+    expect(find.textContaining('3 января'), findsOneWidget);
     await tester.pumpWidget(const SizedBox());
   });
 }

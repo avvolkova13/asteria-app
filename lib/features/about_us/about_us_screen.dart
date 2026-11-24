@@ -1,3 +1,6 @@
+import 'package:asteria_app/core/ui_kit/widgets/asteria_action_button.dart';
+import 'package:asteria_app/features/onboarding/data/onboarding_data.dart';
+import 'package:asteria_app/features/onboarding/presentation/widgets/intro/onboarding_tour.dart';
 import 'package:asteria_app/core/ui_kit/widgets/responsive_heading.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_activity_indicator.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
@@ -39,6 +42,24 @@ class AboutUsScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 18),
+                if (document == null) ...[
+                  AsteriaActionButton(
+                    text: languageCode == 'ru'
+                        ? 'Знакомство с Asteria'
+                        : 'Explore Asteria',
+                    onPressed: () => Navigator.of(context).push<void>(
+                      MaterialPageRoute(
+                        builder: (tourContext) => OnboardingTour(
+                          pages: OnboardingData.getPages(tourContext),
+                          now: DateTime.now,
+                          onComplete: () => Navigator.pop(tourContext),
+                          onPageChanged: (_) {},
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                ],
                 for (final type in LegalDocumentType.values)
                   if (document == null || document == type) ...[
                     _AboutUsContentItemWithAsset(

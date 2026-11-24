@@ -55,80 +55,80 @@ class AppLocalizations {
     return Localizations.of<AppLocalizations>(context, AppLocalizations);
   }
 
-  /// `Your day`
+  /// `When is a good day?`
   String get onboardingPage1Title {
     return Intl.message(
-      'Your day',
+      'When is a good day?',
       name: 'onboardingPage1Title',
       desc: '',
       args: [],
     );
   }
 
-  /// `From a suitable day to a plan with a reminder.`
+  /// `Find a day for your plan in the lunar calendar, then set a reminder.`
   String get onboardingPage1Description {
     return Intl.message(
-      'From a suitable day to a plan with a reminder.',
+      'Find a day for your plan in the lunar calendar, then set a reminder.',
       name: 'onboardingPage1Description',
       desc: '',
       args: [],
     );
   }
 
-  /// `Your character`
+  /// `What keeps you steady?`
   String get onboardingPage2Title {
     return Intl.message(
-      'Your character',
+      'What keeps you steady?',
       name: 'onboardingPage2Title',
       desc: '',
       args: [],
     );
   }
 
-  /// `Strengths, familiar reactions and new questions to ask yourself.`
+  /// `Explore your strengths through a natal chart based on when and where you were born.`
   String get onboardingPage2Description {
     return Intl.message(
-      'Strengths, familiar reactions and new questions to ask yourself.',
+      'Explore your strengths through a natal chart based on when and where you were born.',
       name: 'onboardingPage2Description',
       desc: '',
       args: [],
     );
   }
 
-  /// `Your relationship`
+  /// `How do you break the silence?`
   String get onboardingPage3Title {
     return Intl.message(
-      'Your relationship',
+      'How do you break the silence?',
       name: 'onboardingPage3Title',
       desc: '',
       args: [],
     );
   }
 
-  /// `Understand different reactions and find a way to talk.`
+  /// `After an argument, one of you wants to talk and the other needs time. A compatibility reading offers a way into the conversation.`
   String get onboardingPage3Description {
     return Intl.message(
-      'Understand different reactions and find a way to talk.',
+      'After an argument, one of you wants to talk and the other needs time. A compatibility reading offers a way into the conversation.',
       name: 'onboardingPage3Description',
       desc: '',
       args: [],
     );
   }
 
-  /// `Your question`
+  /// `What could you try next?`
   String get onboardingPage4Title {
     return Intl.message(
-      'Your question',
+      'What could you try next?',
       name: 'onboardingPage4Title',
       desc: '',
       args: [],
     );
   }
 
-  /// `From a Tarot reading to reflection and a conversation with Anakra.`
+  /// `Turn over today’s card or rune. For a question that stays with you, try a spread and talk it through with Anakra.`
   String get onboardingPage4Description {
     return Intl.message(
-      'From a Tarot reading to reflection and a conversation with Anakra.',
+      'Turn over today’s card or rune. For a question that stays with you, try a spread and talk it through with Anakra.',
       name: 'onboardingPage4Description',
       desc: '',
       args: [],
@@ -9160,10 +9160,10 @@ class AppLocalizations {
     );
   }
 
-  /// `Try starting with this`
+  /// `One way to begin`
   String get introPairQuestion {
     return Intl.message(
-      'Try starting with this',
+      'One way to begin',
       name: 'introPairQuestion',
       desc: '',
       args: [],
@@ -9190,10 +9190,10 @@ class AppLocalizations {
     );
   }
 
-  /// `Give one small step ten minutes. Just try it.`
+  /// `Which part are you curious to try? Start there and give yourself ten minutes.`
   String get introAnakraMessage {
     return Intl.message(
-      'Give one small step ten minutes. Just try it.',
+      'Which part are you curious to try? Start there and give yourself ten minutes.',
       name: 'introAnakraMessage',
       desc: '',
       args: [],
@@ -9340,10 +9340,10 @@ class AppLocalizations {
     );
   }
 
-  /// `Your own pace`
+  /// `An affirmation for a quiet moment`
   String get introMoodMatched {
     return Intl.message(
-      'Your own pace',
+      'An affirmation for a quiet moment',
       name: 'introMoodMatched',
       desc: '',
       args: [],
@@ -9540,20 +9540,20 @@ class AppLocalizations {
     );
   }
 
-  /// `Time for yourself`
+  /// `A moment to breathe`
   String get onboardingPage5Title {
     return Intl.message(
-      'Time for yourself',
+      'A moment to breathe',
       name: 'onboardingPage5Title',
       desc: '',
       args: [],
     );
   }
 
-  /// `Affirmations and short practices for a pause in your day.`
+  /// `When your thoughts race ahead, choose an affirmation and read it to yourself. Come back to the words as often as you like.`
   String get onboardingPage5Description {
     return Intl.message(
-      'Affirmations and short practices for a pause in your day.',
+      'When your thoughts race ahead, choose an affirmation and read it to yourself. Come back to the words as often as you like.',
       name: 'onboardingPage5Description',
       desc: '',
       args: [],
@@ -9590,10 +9590,10 @@ class AppLocalizations {
     );
   }
 
-  /// `Following through and finishing what you start.`
+  /// `You see things through.`
   String get introNatalStrength {
     return Intl.message(
-      'Following through and finishing what you start.',
+      'You see things through.',
       name: 'introNatalStrength',
       desc: '',
       args: [],
@@ -9610,20 +9610,20 @@ class AppLocalizations {
     );
   }
 
-  /// `Change may bring a need for more clarity and time.`
+  /// `Change can feel easier when you know what the first step looks like.`
   String get introNatalPattern {
     return Intl.message(
-      'Change may bring a need for more clarity and time.',
+      'Change can feel easier when you know what the first step looks like.',
       name: 'introNatalPattern',
       desc: '',
       args: [],
     );
   }
 
-  /// `What helps you feel grounded before a new step?`
+  /// `Think of the last time something changed. What helped you then?`
   String get introNatalQuestion {
     return Intl.message(
-      'What helps you feel grounded before a new step?',
+      'Think of the last time something changed. What helped you then?',
       name: 'introNatalQuestion',
       desc: '',
       args: [],
@@ -9660,20 +9660,20 @@ class AppLocalizations {
     );
   }
 
-  /// `A short practice`
+  /// `Try it now`
   String get introMoodPracticeTitle {
     return Intl.message(
-      'A short practice',
+      'Try it now',
       name: 'introMoodPracticeTitle',
       desc: '',
       args: [],
     );
   }
 
-  /// `Relax your shoulders. Breathe out slowly.`
+  /// `Let your shoulders drop. Breathe out slowly.`
   String get introMoodPractice {
     return Intl.message(
-      'Relax your shoulders. Breathe out slowly.',
+      'Let your shoulders drop. Breathe out slowly.',
       name: 'introMoodPractice',
       desc: '',
       args: [],
@@ -9755,6 +9755,66 @@ class AppLocalizations {
     return Intl.message(
       'Your haircut is in the calendar. A reminder is set for the day before.',
       name: 'introCalendarCompletedBody',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `What will you take with you?`
+  String get onboardingPracticeTitle {
+    return Intl.message(
+      'What will you take with you?',
+      name: 'onboardingPracticeTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Try a meditation or a movement practice. If a thought comes to mind, tap the pencil in the player to keep it.`
+  String get onboardingPracticeDescription {
+    return Intl.message(
+      'Try a meditation or a movement practice. If a thought comes to mind, tap the pencil in the player to keep it.',
+      name: 'onboardingPracticeDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Before the dream fades`
+  String get onboardingDreamTitle {
+    return Intl.message(
+      'Before the dream fades',
+      name: 'onboardingDreamTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Write down your dream or dictate a few details. Keep it in your journal and ask Liveya for a reading whenever you like.`
+  String get onboardingDreamDescription {
+    return Intl.message(
+      'Write down your dream or dictate a few details. Keep it in your journal and ask Liveya for a reading whenever you like.',
+      name: 'onboardingDreamDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `What’s on your mind?`
+  String get onboardingGuideTitle {
+    return Intl.message(
+      'What’s on your mind?',
+      name: 'onboardingGuideTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Ask Anakra what’s on your mind. Come back to the conversation when you have another question.`
+  String get onboardingGuideDescription {
+    return Intl.message(
+      'Ask Anakra what’s on your mind. Come back to the conversation when you have another question.',
+      name: 'onboardingGuideDescription',
       desc: '',
       args: [],
     );
