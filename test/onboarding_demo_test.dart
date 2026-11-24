@@ -24,6 +24,10 @@ void main() {
             .currentPage,
         0,
       );
+      expect(
+        tester.widget<OnboardingTour>(find.byType(OnboardingTour)).pages.length,
+        3,
+      );
       await tester.tap(find.text('Пропустить'));
       await tester.pumpAndSettle();
       expect(find.text('Демонстрация завершена'), findsOneWidget);

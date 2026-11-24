@@ -1,7 +1,7 @@
 {
   "@@locale": "ru",
-  "onboardingPage1Title": "Когда лучше начать?",
-  "onboardingPage1Description": "В лунном календаре выбери день для своего плана. Напоминание поможет о нём вспомнить.",
+  "onboardingPage1Title": "Выбери свой день",
+  "onboardingPage1Description": "Когда записаться на стрижку? Лунный календарь подскажет дату и напомнит о плане.",
   "onboardingPage2Title": "Что даёт тебе опору?",
   "onboardingPage2Description": "Натальная карта по дате, времени и месту рождения предлагает взгляд на твои сильные стороны.",
   "onboardingPage3Title": "Как начать разговор?",
@@ -1550,10 +1550,10 @@
   "introCalendarReminderEnabled": "Напоминание включено",
   "introCalendarCompleted": "Всё запланировано",
   "introCalendarCompletedBody": "Стрижка в календаре. Напоминание придёт за день до события.",
-  "onboardingPracticeTitle": "Что хочется запомнить?",
-  "onboardingPracticeDescription": "Попробуй медитацию или телесную практику. Мысль, которая пришла в процессе, можно записать прямо в плеере.",
+  "onboardingPracticeTitle": "Минута для себя",
+  "onboardingPracticeDescription": "Попробуй короткую практику. Мысль, которую хочется забрать с собой, сохрани в заметках.",
   "onboardingDreamTitle": "Пока помнишь сон",
-  "onboardingDreamDescription": "Опиши сон или надиктуй пару деталей. Запись останется в дневнике, а за толкованием можно обратиться к Ливее.",
+  "onboardingDreamDescription": "Запиши или надиктуй сон. Ливея поможет поразмышлять о том, что тебе приснилось.",
   "onboardingGuideTitle": "Что тебя занимает?",
   "onboardingGuideDescription": "Задай Анакре свой вопрос. К разговору можно вернуться, когда захочется спросить ещё о чём-то."
 }

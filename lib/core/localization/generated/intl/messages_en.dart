@@ -1500,7 +1500,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "13 May 1995",
     ),
     "onboardingDreamDescription": MessageLookupByLibrary.simpleMessage(
-      "Write down your dream or dictate a few details. Keep it in your journal and ask Liveya for a reading whenever you like.",
+      "Write down your dream or dictate it. Explore what it might mean with Liveya.",
     ),
     "onboardingDreamTitle": MessageLookupByLibrary.simpleMessage(
       "Before the dream fades",
@@ -1518,10 +1518,10 @@ class MessageLookup extends MessageLookupByLibrary {
       "This onboarding page is unavailable.",
     ),
     "onboardingPage1Description": MessageLookupByLibrary.simpleMessage(
-      "Find a day for your plan in the lunar calendar, then set a reminder.",
+      "Time for a haircut? Pick a date with the lunar calendar and set a reminder.",
     ),
     "onboardingPage1Title": MessageLookupByLibrary.simpleMessage(
-      "When is a good day?",
+      "Find your day",
     ),
     "onboardingPage2Description": MessageLookupByLibrary.simpleMessage(
       "Explore your strengths through a natal chart based on when and where you were born.",
@@ -1548,10 +1548,10 @@ class MessageLookup extends MessageLookupByLibrary {
       "A moment to breathe",
     ),
     "onboardingPracticeDescription": MessageLookupByLibrary.simpleMessage(
-      "Try a meditation or a movement practice. If a thought comes to mind, tap the pencil in the player to keep it.",
+      "Try a short practice. Keep a thought from it in your notes.",
     ),
     "onboardingPracticeTitle": MessageLookupByLibrary.simpleMessage(
-      "What will you take with you?",
+      "A moment for yourself",
     ),
     "onboardingPreviewAffirmation": MessageLookupByLibrary.simpleMessage(
       "My inner strength grows with every breath, filling me with confidence and calm in every moment of life.",

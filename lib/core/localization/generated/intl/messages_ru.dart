@@ -1524,7 +1524,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "13.05.1995",
     ),
     "onboardingDreamDescription": MessageLookupByLibrary.simpleMessage(
-      "Опиши сон или надиктуй пару деталей. Запись останется в дневнике, а за толкованием можно обратиться к Ливее.",
+      "Запиши или надиктуй сон. Ливея поможет поразмышлять о том, что тебе приснилось.",
     ),
     "onboardingDreamTitle": MessageLookupByLibrary.simpleMessage(
       "Пока помнишь сон",
@@ -1542,10 +1542,10 @@ class MessageLookup extends MessageLookupByLibrary {
       "Эта страница онбординга недоступна.",
     ),
     "onboardingPage1Description": MessageLookupByLibrary.simpleMessage(
-      "В лунном календаре выбери день для своего плана. Напоминание поможет о нём вспомнить.",
+      "Когда записаться на стрижку? Лунный календарь подскажет дату и напомнит о плане.",
     ),
     "onboardingPage1Title": MessageLookupByLibrary.simpleMessage(
-      "Когда лучше начать?",
+      "Выбери свой день",
     ),
     "onboardingPage2Description": MessageLookupByLibrary.simpleMessage(
       "Натальная карта по дате, времени и месту рождения предлагает взгляд на твои сильные стороны.",
@@ -1572,10 +1572,10 @@ class MessageLookup extends MessageLookupByLibrary {
       "Можно выдохнуть",
     ),
     "onboardingPracticeDescription": MessageLookupByLibrary.simpleMessage(
-      "Попробуй медитацию или телесную практику. Мысль, которая пришла в процессе, можно записать прямо в плеере.",
+      "Попробуй короткую практику. Мысль, которую хочется забрать с собой, сохрани в заметках.",
     ),
     "onboardingPracticeTitle": MessageLookupByLibrary.simpleMessage(
-      "Что хочется запомнить?",
+      "Минута для себя",
     ),
     "onboardingPreviewAffirmation": MessageLookupByLibrary.simpleMessage(
       "Моя внутренняя сила растёт с каждым вдохом, наполняя меня уверенностью и спокойствием в любые моменты жизни.",

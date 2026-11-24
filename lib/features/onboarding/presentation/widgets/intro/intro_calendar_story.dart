@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
@@ -23,150 +25,29 @@ class IntroCalendarStory extends StatelessWidget {
   Widget build(BuildContext context) => IntroStory(
     active: active,
     now: now,
-    duration: const Duration(seconds: 18),
-    builder: (context, time, static, now) {
-      final l = context.l10n;
+    duration: const Duration(seconds: 8),
+    builder: (context, time, isStatic, now) {
       final dates = introUpcomingDates(now);
-      final locale = Localizations.localeOf(context).toLanguageTag();
-      final date = DateFormat.MMMMd(locale).format(dates[2]);
-      final image = LayoutBuilder(
-        builder: (context, bounds) {
-          final height = bounds.maxWidth < 320 ? 132.0 : 190.0;
-          const edgeColors = [
-            Colors.transparent,
-            Colors.white,
-            Colors.white,
-            Colors.transparent,
-          ];
-          return Center(
-            child: ShaderMask(
-              blendMode: BlendMode.dstIn,
-              shaderCallback: (bounds) => const LinearGradient(
-                colors: edgeColors,
-                stops: [0, .12, .88, 1],
-              ).createShader(bounds),
-              child: ShaderMask(
-                blendMode: BlendMode.dstIn,
-                shaderCallback: (bounds) => const LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: edgeColors,
-                  stops: [0, .13, .8, 1],
-                ).createShader(bounds),
-                child: Image.asset(
-                  'assets/images/onboarding/intro_scissors.webp',
-                  width: height * 1.08,
-                  height: height,
-                  fit: BoxFit.cover,
-                  alignment: const Alignment(0, -.38),
-                  excludeFromSemantics: true,
-                ),
-              ),
-            ),
-          );
-        },
-      );
-      final plan = StoryCard(
-        key: const ValueKey('intro-calendar-plan'),
-        title: l.introCalendarSavedTitle,
-        text: '${l.introCalendarSavedText}\n$date',
-        emphasis: true,
-      );
-      final reminder = IntroStoryFocus(
-        child: Column(
-          key: const ValueKey('intro-calendar-reminder'),
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Row(
-              children: [
-                ExcludeSemantics(
-                  child: Icon(
-                    Icons.check_circle_rounded,
-                    color: AppColorsDark.linkGold,
-                    size: 22,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    l.introCalendarReminderChoice,
-                    style: AppTypography.text2SemiBold.copyWith(
-                      color: AppColorsDark.linkGold,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            StoryCard(
-              title: l.introCalendarReminderTitle,
-              text: l.introCalendarReminderEnabled,
-              emphasis: true,
-            ),
-          ],
-        ),
-      );
-      final complete = StoryCard(
-        key: const ValueKey('intro-calendar-complete'),
-        title: static ? l.introCalendarSavedTitle : l.introCalendarCompleted,
-        text: static
-            ? '${l.introCalendarSavedText}\n$date\n\n${l.introCalendarCompletedBody}'
-            : l.introCalendarCompletedBody,
-        emphasis: true,
-      );
+      final settled = isStatic || time >= 1.3;
+      final selected = settled ? 2 : (time < .65 ? 0 : 1);
       return Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          image,
-          const SizedBox(height: 12),
-          if (static)
-            complete
-          else
-            Stack(
-              fit: StackFit.passthrough,
-              children: [
-                StoryReveal(
-                  time: time,
-                  start: .2,
-                  end: 3,
-                  child: StoryCard(
-                    text: l.introCalendarRequest,
-                    emphasis: true,
-                  ),
-                ),
-                StoryReveal(
-                  time: time,
-                  start: 3.2,
-                  end: 6,
-                  child: _CalendarPreview(
-                    dates: dates,
-                    selected: time < 4.1
-                        ? 0
-                        : time < 5
-                        ? 1
-                        : 2,
-                  ),
-                ),
-                StoryReveal(
-                  time: time,
-                  start: 6.3,
-                  end: 8.8,
-                  child: StoryCard(
-                    title: l.introCalendarResult(date),
-                    text: l.introCalendarInsight,
-                    emphasis: true,
-                  ),
-                ),
-                StoryReveal(time: time, start: 9, end: 11.5, child: plan),
-                StoryReveal(
-                  time: time,
-                  start: 11.8,
-                  end: 14.5,
-                  child: reminder,
-                ),
-                StoryReveal(time: time, start: 14.8, child: complete),
-              ],
+          Transform.translate(
+            offset: Offset(0, isStatic ? 0 : -4 * math.sin(time * math.pi / 4)),
+            child: Image.asset(
+              'assets/images/affirmation/motion/subjects/category_moon_whole.png',
+              height: MediaQuery.sizeOf(context).height < 650 ? 92 : 156,
+              fit: BoxFit.contain,
+              excludeFromSemantics: true,
             ),
+          ),
+          const SizedBox(height: 12),
+          _CalendarPreview(
+            dates: dates,
+            selected: selected,
+            time: isStatic ? 8 : time,
+          ),
         ],
       );
     },
@@ -174,9 +55,14 @@ class IntroCalendarStory extends StatelessWidget {
 }
 
 class _CalendarPreview extends StatelessWidget {
-  const _CalendarPreview({required this.dates, required this.selected});
+  const _CalendarPreview({
+    required this.dates,
+    required this.selected,
+    required this.time,
+  });
   final List<DateTime> dates;
   final int selected;
+  final double time;
 
   @override
   Widget build(BuildContext context) {
@@ -191,9 +77,7 @@ class _CalendarPreview extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                context.l10n.introCalendarFrom(
-                  DateFormat.MMMMd(locale).format(dates.first),
-                ),
+                context.l10n.introCalendarSavedTitle,
                 style: AppTypography.text2SemiBold.copyWith(
                   color: AppColorsDark.linkGold,
                 ),
@@ -229,10 +113,31 @@ class _CalendarPreview extends StatelessWidget {
                 },
               ),
               const SizedBox(height: 12),
-              Text(
-                context.l10n.introCalendarCompare,
-                style: AppTypography.text2.copyWith(
-                  color: AppColors.textInverse,
+              StoryReveal(
+                time: time,
+                start: 1.3,
+                child: IntroStoryFocus(
+                  child: Row(
+                    key: const ValueKey('intro-day-result'),
+                    children: [
+                      ExcludeSemantics(
+                        child: Icon(
+                          Icons.notifications_active_outlined,
+                          size: 20,
+                          color: AppColorsDark.linkGold,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          '${DateFormat.MMMMd(locale).format(dates[2])} · ${context.l10n.introCalendarReminderChoice}',
+                          style: AppTypography.text2.copyWith(
+                            color: AppColors.textInverse,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ],

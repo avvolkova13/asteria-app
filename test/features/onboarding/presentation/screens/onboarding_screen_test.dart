@@ -23,16 +23,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-const _storySequence = [
-  'hero',
-  'natal',
-  'personal',
-  'tarot',
-  'daily',
-  'practice',
-  'dream',
-  'guide',
-];
+const _storySequence = ['hero', 'dream', 'practice'];
 int get _pageCount => _storySequence.length;
 int get _lastPage => _pageCount - 1;
 Iterable<int> get _indices => Iterable<int>.generate(_pageCount);
@@ -159,7 +150,7 @@ void main() {
     await tester.pumpWidget(const SizedBox());
   });
 
-  testWidgets('tour starts at the first of the eight advertised stories', (
+  testWidgets('tour starts at the first of three short stories', (
     tester,
   ) async {
     bloc = OnboardingBloc(settings);
@@ -222,7 +213,7 @@ void main() {
         );
         expect(settings.onboardingWrites, isEmpty);
         final duration = _activeStoryDuration(tester);
-        expect(duration.inMilliseconds, greaterThan(1500));
+        expect(duration, const Duration(seconds: 8));
         await _pumpStoryTo(tester, page, duration.inMilliseconds - 1500);
         expect(
           bloc.state.currentPageIndex,
@@ -618,17 +609,10 @@ void main() {
           disableAnimations: false,
           onComplete: () => completions++,
         );
-        final context = tester.element(find.byType(OnboardingScreen));
-        final l = AppLocalizations.of(context);
         final results = <Finder>[
-          find.byKey(const ValueKey('intro-calendar-complete')),
-          find.byKey(const ValueKey('intro-natal-question')),
-          find.text(l.introPairPrompt),
-          find.byKey(const ValueKey('intro-daily-rune')),
-          find.text(l.introMoodPractice),
-          find.byKey(const ValueKey('intro-practice-result')),
+          find.byKey(const ValueKey('intro-day-result')),
           find.byKey(const ValueKey('intro-dream-result')),
-          find.byKey(const ValueKey('intro-guide-result')),
+          find.byKey(const ValueKey('intro-practice-result')),
         ];
         final issues = <String>[];
         for (var page = 0; page < _pageCount; page++) {
@@ -733,7 +717,7 @@ void main() {
           0,
           _activeStoryDuration(tester).inMilliseconds - 1500,
         );
-        final result = find.byKey(const ValueKey('intro-calendar-complete'));
+        final result = find.byKey(const ValueKey('intro-day-result'));
         expect(result, findsOneWidget);
         expect(
           tester.getRect(result).bottom,
@@ -773,7 +757,11 @@ void main() {
     final firstScroll = tester.state<ScrollableState>(
       find.descendant(of: firstContent, matching: find.byType(Scrollable)),
     );
-    expect(firstScroll.position.pixels, greaterThan(0));
+    if (firstScroll.position.maxScrollExtent > 0) {
+      await tester.drag(firstContent, const Offset(0, -200));
+      await tester.pump();
+      expect(firstScroll.position.pixels, greaterThan(0));
+    }
     await tester.tap(_cta(tester));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 650));
@@ -853,63 +841,6 @@ void main() {
     }
   }
 
-  if (const bool.fromEnvironment('ONBOARDING_REVIEW_CAPTURE')) {
-    for (final language in ['ru', 'en']) {
-      for (final width in [390.0, 320.0]) {
-        testWidgets('$language additional stage review at $width', (
-          tester,
-        ) async {
-          bloc = OnboardingBloc(settings);
-          await _pumpOnboarding(
-            tester,
-            bloc,
-            locale: Locale(language),
-            size: Size(width, width == 390 ? 844 : 568),
-            padding: EdgeInsets.only(
-              top: width == 390 ? 59 : 20,
-              bottom: width == 390 ? 34 : 0,
-            ),
-            disableAnimations: false,
-            onComplete: () => completions++,
-          );
-          const stages = <int, List<(int, String)>>{
-            0: [(9500, 'plan'), (12500, 'reminder'), (16500, 'complete')],
-            1: [
-              (6700, 'strength'),
-              (10000, 'pattern'),
-              (13300, 'reflection'),
-              (16500, 'lasting-reflection'),
-            ],
-            2: [
-              (4500, 'first-person'),
-              (7500, 'second-person'),
-              (12500, 'conversation'),
-            ],
-            3: [(6500, 'cards'), (12500, 'advice')],
-            4: [(12500, 'practice')],
-          };
-          for (var page = 0; page < _pageCount; page++) {
-            for (final stage in stages[page] ?? const <(int, String)>[]) {
-              await _pumpStoryTo(tester, page, stage.$1);
-              await _saveReviewScreen(
-                tester,
-                '${language}_${page + 1}_${width.toInt()}_stage_${stage.$2}',
-              );
-              expect(tester.takeException(), isNull);
-            }
-            await tester.tap(_cta(tester));
-            await tester.pump();
-            await tester.pump(const Duration(milliseconds: 650));
-            await tester.pump();
-          }
-          expect(completions, 1);
-          expect(audioCalls, isEmpty);
-          await tester.pumpWidget(const SizedBox());
-        });
-      }
-    }
-  }
-
   testWidgets('automatic navigation waits while app is in background', (
     tester,
   ) async {
@@ -920,7 +851,7 @@ void main() {
       disableAnimations: false,
       onComplete: () => completions++,
     );
-    await tester.pump(const Duration(seconds: 8));
+    await tester.pump(const Duration(seconds: 2));
     tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
     tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
     await tester.pump(const Duration(seconds: 20));

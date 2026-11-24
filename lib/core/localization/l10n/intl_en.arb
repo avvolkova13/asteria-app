@@ -1,7 +1,7 @@
 {
   "@@locale": "en",
-  "onboardingPage1Title": "When is a good day?",
-  "onboardingPage1Description": "Find a day for your plan in the lunar calendar, then set a reminder.",
+  "onboardingPage1Title": "Find your day",
+  "onboardingPage1Description": "Time for a haircut? Pick a date with the lunar calendar and set a reminder.",
   "onboardingPage2Title": "What keeps you steady?",
   "onboardingPage2Description": "Explore your strengths through a natal chart based on when and where you were born.",
   "onboardingPage3Title": "How do you break the silence?",
@@ -1550,10 +1550,10 @@
   "introCalendarReminderEnabled": "Reminder is on",
   "introCalendarCompleted": "Everything is planned",
   "introCalendarCompletedBody": "Your haircut is in the calendar. A reminder is set for the day before.",
-  "onboardingPracticeTitle": "What will you take with you?",
-  "onboardingPracticeDescription": "Try a meditation or a movement practice. If a thought comes to mind, tap the pencil in the player to keep it.",
+  "onboardingPracticeTitle": "A moment for yourself",
+  "onboardingPracticeDescription": "Try a short practice. Keep a thought from it in your notes.",
   "onboardingDreamTitle": "Before the dream fades",
-  "onboardingDreamDescription": "Write down your dream or dictate a few details. Keep it in your journal and ask Liveya for a reading whenever you like.",
+  "onboardingDreamDescription": "Write down your dream or dictate it. Explore what it might mean with Liveya.",
   "onboardingGuideTitle": "What’s on your mind?",
   "onboardingGuideDescription": "Ask Anakra what’s on your mind. Come back to the conversation when you have another question."
 }

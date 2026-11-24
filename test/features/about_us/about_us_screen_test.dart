@@ -1,3 +1,4 @@
+import 'package:asteria_app/features/onboarding/presentation/widgets/intro/onboarding_tour.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_activity_indicator.dart';
 import 'package:asteria_app/app/data/repositories/user/user_repository.dart';
 import 'package:asteria_app/app/providers/user_provider.dart';
@@ -12,6 +13,34 @@ import 'package:provider/provider.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+
+  testWidgets('profile replay opens three stories and returns to About', (
+    tester,
+  ) async {
+    tester.platformDispatcher.accessibilityFeaturesTestValue =
+        const FakeAccessibilityFeatures(disableAnimations: true);
+    addTearDown(tester.platformDispatcher.clearAccessibilityFeaturesTestValue);
+    await _pumpAboutUsScreen(tester, TargetPlatform.iOS);
+    final replay = find.text('Знакомство с Asteria');
+    await tester.tap(replay);
+    await tester.pumpAndSettle();
+    final pages = tester
+        .widget<OnboardingTour>(find.byType(OnboardingTour))
+        .pages;
+    expect(pages.map((page) => page.visualKind.name), [
+      'hero',
+      'dream',
+      'practice',
+    ]);
+    for (var step = 0; step < 2; step++) {
+      await tester.tap(find.text('Далее'));
+      await tester.pumpAndSettle();
+    }
+    await tester.tap(find.text('Начать'));
+    await tester.pumpAndSettle();
+    expect(replay, findsOneWidget);
+    expect(find.byType(OnboardingTour), findsNothing);
+  });
 
   testWidgets('does not show the app metadata block', (tester) async {
     await _pumpAboutUsScreen(tester, TargetPlatform.android);
@@ -430,14 +459,11 @@ Future<void> _pumpAboutUsScreen(
             ...GlobalMaterialLocalizations.delegates,
           ],
           supportedLocales: AppLocaleService.supportedLocales,
-          home: Builder(
-            builder: (context) {
-              return Theme(
-                data: AppThemeLight.instance.getThemeData(context),
-                child: AboutUsScreen(initialDocument: initialDocument),
-              );
-            },
+          builder: (context, child) => Theme(
+            data: AppThemeLight.instance.getThemeData(context),
+            child: child!,
           ),
+          home: AboutUsScreen(initialDocument: initialDocument),
         ),
       ),
     );

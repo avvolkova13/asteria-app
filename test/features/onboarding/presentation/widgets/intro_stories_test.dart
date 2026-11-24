@@ -192,42 +192,23 @@ void main() {
   );
 
   testWidgets(
-    'calendar tells its story without taps and removes the calendar',
+    'calendar preserves real dates and displays the selected reminder',
     (tester) async {
       await host(
         tester,
         IntroCalendarStory(active: true, now: () => DateTime(2026, 11, 30)),
       );
-      await tester.pump(const Duration(milliseconds: 700));
-      expect(
-        find.text('Хочу новую стрижку.\nКогда записаться?'),
-        findsOneWidget,
+      await tester.pump(const Duration(seconds: 2));
+      final days = tester.widgetList<MoonDayPreview>(
+        find.byType(MoonDayPreview),
       );
-      await tester.pump(const Duration(seconds: 3));
-      expect(find.text('Ближайшие дни · с 30 ноября'), findsOneWidget);
-      final days = tester
-          .widgetList<MoonDayPreview>(find.byType(MoonDayPreview))
-          .toList();
       expect(days.first.date, DateTime(2026, 11, 30));
-      expect(days[1].date, DateTime(2026, 12, 1));
       expect(days.map((day) => day.status), containsAll(DayStatus.values));
-      expect(days.first.isSelected, isTrue);
-      await tester.pump(const Duration(milliseconds: 700));
       expect(
-        tester
-            .widgetList<MoonDayPreview>(find.byType(MoonDayPreview))
-            .elementAt(1)
-            .isSelected,
-        isTrue,
+        days.singleWhere((day) => day.isSelected).date,
+        DateTime(2026, 12, 2),
       );
-      final image = tester.widget<Image>(find.byType(Image).first);
-      expect(image.fit, BoxFit.cover);
-      await tester.pump(const Duration(seconds: 3));
-      expect(
-        find.text(AppLocalizations.current.introCalendarResult('2 декабря')),
-        findsOneWidget,
-      );
-      expect(find.text('Ближайшие дни · с 30 ноября'), findsNothing);
+      expect(find.textContaining('2 декабря'), findsOneWidget);
       await tester.pumpWidget(const SizedBox());
     },
   );
@@ -519,27 +500,6 @@ void main() {
     expect(text.top, greaterThanOrEqualTo(flower.bottom));
     await tester.pumpWidget(const SizedBox());
   });
-
-  testWidgets(
-    'approved calendar continues to reminder and completion after selection',
-    (tester) async {
-      await host(
-        tester,
-        IntroCalendarStory(active: true, now: () => DateTime(2026, 11, 18)),
-      );
-      await tester.pump(const Duration(seconds: 12));
-      expect(
-        find.byKey(const ValueKey('intro-calendar-reminder')),
-        findsOneWidget,
-      );
-      await tester.pump(const Duration(seconds: 5));
-      expect(
-        find.byKey(const ValueKey('intro-calendar-complete')),
-        findsOneWidget,
-      );
-      await tester.pumpWidget(const SizedBox());
-    },
-  );
 
   testWidgets('midnight refresh updates a finished calendar without reentry', (
     tester,

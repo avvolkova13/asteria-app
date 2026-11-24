@@ -23,35 +23,35 @@ class IntroJournalStory extends StatelessWidget {
         ? (
             ru ? 'Дневник снов' : 'Dream journal',
             ru
-                ? 'Я шла по берегу. Вдалеке зажёгся маяк.'
-                : 'I was walking along the shore. A lighthouse lit up in the distance.',
+                ? 'На берегу моря мне светил маяк.'
+                : 'A lighthouse lit my way along the shore.',
             ru ? 'Разбор с Ливеей' : 'Exploring the dream with Liveya',
             ru
-                ? 'Маяк может напоминать об опоре. Что помогает тебе найти дорогу сейчас?'
-                : 'A lighthouse might bring guidance to mind. What helps you find your way these days?',
+                ? 'Маяк может быть образом опоры. Кто помогает тебе найти дорогу?'
+                : 'A lighthouse can suggest guidance. Who helps you find your way?',
             'assets/images/sonnik/liveya_character.webp',
           )
         : (
             ru ? 'Утро без спешки' : 'An Unhurried Morning',
             ru
-                ? 'Почувствуй, как стопы касаются пола. Сделай спокойный выдох.'
-                : 'Feel your feet on the floor. Breathe out slowly.',
+                ? 'Опусти плечи. Сделай спокойный выдох.'
+                : 'Let your shoulders drop. Breathe out slowly.',
             ru
                 ? 'Мои заметки · Утро без спешки'
                 : 'My notes · An Unhurried Morning',
             ru
-                ? 'Хочу начинать утро с открытого окна. Телефон подождёт.'
-                : 'Tomorrow I want to open the window first. My phone can wait.',
+                ? 'Завтра первым делом открою окно.'
+                : 'Tomorrow I’ll start by opening the window.',
             'assets/images/home/hand_with_star.webp',
           );
     return IntroStory(
       active: active,
-      duration: const Duration(seconds: 10),
+      duration: const Duration(seconds: 8),
       builder: (context, time, isStatic, _) {
         final reveal = isStatic
             ? 1.0
             : Curves.easeOutCubic.transform(
-                ((time - 3.2) / .8).clamp(0.0, 1.0),
+                ((time - 1.35) / .8).clamp(0.0, 1.0),
               );
         final breath = isStatic ? 0.0 : math.sin(time * math.pi / 5);
         return Column(
@@ -90,7 +90,7 @@ class IntroJournalStory extends StatelessWidget {
                       _EntryText(
                         entry,
                         progress: dream && !isStatic
-                            ? (time / 2).clamp(0, 1)
+                            ? (time / 1.15).clamp(0, 1)
                             : 1,
                       ),
                       if (reveal > 0)
@@ -119,7 +119,7 @@ class IntroJournalStory extends StatelessWidget {
                                     ),
                                     progress: isStatic
                                         ? 1
-                                        : ((time - 3.2) / 2.2).clamp(0, 1),
+                                        : ((time - 1.35) / 1.45).clamp(0, 1),
                                   ),
                                 ],
                               ),

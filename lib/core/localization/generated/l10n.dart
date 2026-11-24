@@ -55,20 +55,20 @@ class AppLocalizations {
     return Localizations.of<AppLocalizations>(context, AppLocalizations);
   }
 
-  /// `When is a good day?`
+  /// `Find your day`
   String get onboardingPage1Title {
     return Intl.message(
-      'When is a good day?',
+      'Find your day',
       name: 'onboardingPage1Title',
       desc: '',
       args: [],
     );
   }
 
-  /// `Find a day for your plan in the lunar calendar, then set a reminder.`
+  /// `Time for a haircut? Pick a date with the lunar calendar and set a reminder.`
   String get onboardingPage1Description {
     return Intl.message(
-      'Find a day for your plan in the lunar calendar, then set a reminder.',
+      'Time for a haircut? Pick a date with the lunar calendar and set a reminder.',
       name: 'onboardingPage1Description',
       desc: '',
       args: [],
@@ -9760,20 +9760,20 @@ class AppLocalizations {
     );
   }
 
-  /// `What will you take with you?`
+  /// `A moment for yourself`
   String get onboardingPracticeTitle {
     return Intl.message(
-      'What will you take with you?',
+      'A moment for yourself',
       name: 'onboardingPracticeTitle',
       desc: '',
       args: [],
     );
   }
 
-  /// `Try a meditation or a movement practice. If a thought comes to mind, tap the pencil in the player to keep it.`
+  /// `Try a short practice. Keep a thought from it in your notes.`
   String get onboardingPracticeDescription {
     return Intl.message(
-      'Try a meditation or a movement practice. If a thought comes to mind, tap the pencil in the player to keep it.',
+      'Try a short practice. Keep a thought from it in your notes.',
       name: 'onboardingPracticeDescription',
       desc: '',
       args: [],
@@ -9790,10 +9790,10 @@ class AppLocalizations {
     );
   }
 
-  /// `Write down your dream or dictate a few details. Keep it in your journal and ask Liveya for a reading whenever you like.`
+  /// `Write down your dream or dictate it. Explore what it might mean with Liveya.`
   String get onboardingDreamDescription {
     return Intl.message(
-      'Write down your dream or dictate a few details. Keep it in your journal and ask Liveya for a reading whenever you like.',
+      'Write down your dream or dictate it. Explore what it might mean with Liveya.',
       name: 'onboardingDreamDescription',
       desc: '',
       args: [],
