@@ -10,6 +10,7 @@ part 'creative_motion.dart';
 part 'lunar_motion.dart';
 part 'pomegranate_motion.dart';
 part 'rose_reflection.dart';
+part 'fig_leaves.dart';
 part 'linked_stones.dart';
 part 'strength_lion.dart';
 part 'strength_sun.dart';
