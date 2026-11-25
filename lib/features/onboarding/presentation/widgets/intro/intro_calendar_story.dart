@@ -13,6 +13,8 @@ import 'package:asteria_app/features/home/presentation/widgets/moon_phase_widget
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import 'package:asteria_app/core/ui_kit/widgets/asteria_action_button.dart';
+
 import 'intro_story.dart';
 
 /// Civil dates, rather than 24-hour offsets, also work across DST boundaries.
@@ -231,6 +233,7 @@ class IntroCalendarStory extends StatelessWidget {
                 time: still ? 12 : time,
                 start: saved ? (still ? -1 : 6.8) : 2.99,
                 child: _DayOutcome(
+                  confirmed: still || time >= 5.4,
                   saved: saved,
                   showAdvice: !saved || still || roomy,
                   compact: compact,
@@ -245,12 +248,13 @@ class IntroCalendarStory extends StatelessWidget {
 
 class _DayOutcome extends StatelessWidget {
   const _DayOutcome({
+    required this.confirmed,
     required this.saved,
     required this.showAdvice,
     required this.compact,
   });
 
-  final bool saved, showAdvice, compact;
+  final bool confirmed, saved, showAdvice, compact;
 
   @override
   Widget build(BuildContext context) {
@@ -271,26 +275,39 @@ class _DayOutcome extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (showAdvice) Text(l.introCalendarInsight, style: detail),
-            if (saved) ...[
-              if (showAdvice) SizedBox(height: compact ? 4 : 8),
-              Row(
-                children: [
-                  const Icon(
-                    Icons.check_rounded,
-                    size: 16,
-                    color: AppColorsDark.linkGold,
+            if (showAdvice) SizedBox(height: compact ? 4 : 8),
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    saved ? l.introCalendarSavedText : l.scenarioCalendarSelectDay,
+                    style: saved
+                        ? AppTypography.text2SemiBold.copyWith(color: AppColorsDark.linkGold)
+                        : detail,
                   ),
-                  const SizedBox(width: 6),
-                  Flexible(
-                    child: Text(
-                      l.introCalendarSavedText,
-                      style: AppTypography.text2SemiBold.copyWith(
-                        color: AppColorsDark.linkGold,
-                      ),
+                ),
+                const SizedBox(width: 10),
+                Semantics(
+                  checked: confirmed,
+                  label: l.scenarioCalendarSelectDay,
+                  child: Container(
+                    key: const ValueKey('intro-day-selection-mark'),
+                    width: 26,
+                    height: 26,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: AppColorsDark.secondary,
+                      gradient: confirmed ? AsteriaActionButton.goldGradient : null,
                     ),
+                    child: confirmed
+                        ? const Icon(Icons.check_rounded, size: 18, color: AppColors.deepPurple)
+                        : null,
                   ),
-                ],
-              ),
+                ),
+              ],
+            ),
+            if (saved) ...[
               if (const CalendarPlanReminders().supported) ...[
                 const SizedBox(height: 4),
                 Row(

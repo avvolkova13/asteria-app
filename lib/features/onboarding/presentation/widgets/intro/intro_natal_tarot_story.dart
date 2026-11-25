@@ -58,7 +58,38 @@ class IntroNatalTarotStory extends StatelessWidget {
             );
       final showSpread = still || time >= 5.8;
       final complete = still || time >= 10.3;
-      final wheelSize = compact ? 128 - 58 * settle : 176 - 86 * settle;
+      final expandedSize = compact ? 128.0 : 176.0;
+      final foldedSize = compact ? 70.0 : 90.0;
+      final wheelSize = expandedSize + (foldedSize - expandedSize) * settle;
+      final textOpacity = still
+          ? 1.0
+          : time < 5.1
+          ? ((5.1 - time) / .22).clamp(0.0, 1.0)
+          : ((time - 5.8) / .24).clamp(0.0, 1.0);
+      final caption = Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(context.l10n.natalChartTitle, style: _section),
+          const SizedBox(height: 5),
+          Text(ru ? reading.ru : reading.en, style: _title),
+          const SizedBox(height: 4),
+          Text(ru ? reading.meaningRu : reading.meaningEn, style: _body),
+        ],
+      );
+      // Measure each endpoint at its actual wrap width. Interpolating those
+      // heights keeps the surface continuous even for long localized captions.
+      Widget captionSlot(double chartSize, double fraction) => ClipRect(
+        child: Align(
+          heightFactor: fraction,
+          child: Container(
+            constraints: BoxConstraints(minHeight: chartSize),
+            alignment: Alignment.centerLeft,
+            padding: EdgeInsets.only(left: chartSize + 10),
+            child: caption,
+          ),
+        ),
+      );
       return Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -69,40 +100,34 @@ class IntroNatalTarotStory extends StatelessWidget {
               animateEntrance: false,
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(8, 12, 14, 12),
-                child: Row(
+                child: Stack(
+                  alignment: Alignment.centerLeft,
                   children: [
-                    _Chart(
-                      size: wheelSize,
-                      index: index,
-                      progress: stroke - index,
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: IntroStoryFocus(
-                        key: ValueKey('intro-aspect-$index'),
-                        enabled: !showSpread,
+                    IntroStoryFocus(
+                      key: ValueKey('intro-aspect-$index'),
+                      enabled: !showSpread,
+                      child: Opacity(
+                        key: const ValueKey('intro-natal-caption-opacity'),
+                        opacity: textOpacity,
                         child: StoryEntrance(
                           time: time,
                           start: .35 + index * 1.7,
                           rise: 4,
                           child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
-                              Text(
-                                context.l10n.natalChartTitle,
-                                style: _section,
-                              ),
-                              const SizedBox(height: 5),
-                              Text(ru ? reading.ru : reading.en, style: _title),
-                              const SizedBox(height: 4),
-                              Text(
-                                ru ? reading.meaningRu : reading.meaningEn,
-                                style: _body,
-                              ),
+                              if (settle < 1)
+                                captionSlot(expandedSize, 1 - settle),
+                              if (settle > 0) captionSlot(foldedSize, settle),
                             ],
                           ),
                         ),
                       ),
+                    ),
+                    _Chart(
+                      size: wheelSize,
+                      index: index,
+                      progress: stroke - index,
                     ),
                   ],
                 ),

@@ -43,7 +43,16 @@ void main() {
         expect(find.byKey(ValueKey(date)), findsOneWidget);
       }
       expect(find.byKey(const ValueKey('intro-day-result')), findsNothing);
+      final mark = find.byKey(const ValueKey('intro-day-selection-mark'));
+      BoxDecoration decoration() => tester.widget<Container>(mark).decoration! as BoxDecoration;
+      expect(decoration().shape, BoxShape.circle);
+      expect(decoration().gradient, isNull);
+      expect(find.byIcon(Icons.check_rounded), findsNothing);
       await tester.pump(const Duration(seconds: 3));
+      expect(find.byIcon(Icons.check_rounded), findsOneWidget);
+      expect(decoration().gradient, isNotNull);
+      expect(find.text('Выбрать этот день'), findsOneWidget);
+      expect(find.byKey(const ValueKey('intro-day-result')), findsNothing);
       expect(find.byKey(const ValueKey('intro-day-advice')), findsOneWidget);
       expect(find.textContaining('новую длину'), findsOneWidget);
       expect(find.byKey(const ValueKey('intro-saved-scissors')), findsNothing);

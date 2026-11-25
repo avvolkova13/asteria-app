@@ -34,6 +34,35 @@ void main() {
     await tester.pumpWidget(const SizedBox());
   });
 
+  testWidgets('caption reappears only after the wheel has settled', (
+    tester,
+  ) async {
+    await fixture.host(tester, const IntroNatalTarotStory(active: true));
+    final caption = _key('intro-natal-caption-opacity');
+    double opacity() => tester.widget<Opacity>(caption).opacity;
+    double wheel() => tester.getSize(_key('intro-chart-wheel')).width;
+    await tester.pump(const Duration(milliseconds: 4850));
+    final expanded = wheel();
+    expect(opacity(), 1);
+    await tester.pump(const Duration(milliseconds: 250));
+    var previous = tester.getSize(caption).height;
+    for (var frame = 0; frame < 42; frame++) {
+      await tester.pump(const Duration(milliseconds: 16));
+      final height = tester.getSize(caption).height;
+      expect((height - previous).abs(), lessThan(9));
+      expect(opacity(), 0);
+      previous = height;
+    }
+    await tester.pump(const Duration(milliseconds: 60));
+    final folded = wheel();
+    expect(folded, lessThan(expanded));
+    expect(opacity(), inExclusiveRange(0, 1));
+    await tester.pump(const Duration(milliseconds: 250));
+    expect(wheel(), folded);
+    expect(opacity(), 1);
+    await tester.pumpWidget(const SizedBox());
+  });
+
   testWidgets(
     'each card turns in order and the insight follows the last turn',
     (tester) async {
