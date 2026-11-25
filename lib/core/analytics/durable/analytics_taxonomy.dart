@@ -21,6 +21,7 @@ abstract final class AnalyticsTaxonomy {
     'horoscope',
     'moon',
     'affirmations',
+    'practices',
     'love_deck',
     'kelt_deck',
     'stars',

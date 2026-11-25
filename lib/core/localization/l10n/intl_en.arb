@@ -170,6 +170,8 @@
   "profileOpenWebsiteError": "Unable to open the website",
   "articleNotFound": "Article not found",
   "affirmationOfDay": "Affirmation of the day",
+  "practiceOfDay": "Practice of the day",
+  "allPractices": "All practices",
   "affirmationRetryLabel": "Reload affirmation",
   "energyFocus": "Focus",
   "energyRisks": "Risks",

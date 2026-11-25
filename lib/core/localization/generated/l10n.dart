@@ -1505,6 +1505,26 @@ class AppLocalizations {
     );
   }
 
+  /// `Practice of the day`
+  String get practiceOfDay {
+    return Intl.message(
+      'Practice of the day',
+      name: 'practiceOfDay',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `All practices`
+  String get allPractices {
+    return Intl.message(
+      'All practices',
+      name: 'allPractices',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Reload affirmation`
   String get affirmationRetryLabel {
     return Intl.message(

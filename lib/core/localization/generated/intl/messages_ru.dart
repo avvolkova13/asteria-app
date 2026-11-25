@@ -254,6 +254,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Пользовательское соглашение",
     ),
     "allAffirmations": MessageLookupByLibrary.simpleMessage("Все аффирмации"),
+    "allPractices": MessageLookupByLibrary.simpleMessage("Все практики"),
     "anakraFreeAndPurchased": m4,
     "anakraGreetingMessage": MessageLookupByLibrary.simpleMessage(
       "Приветствую тебя. Я Анакра — хранительница звёздных знаков и твоего небесного пути. Задай свой вопрос — или выбери, с чего начать.",
@@ -1856,6 +1857,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "policyText": MessageLookupByLibrary.simpleMessage(
       "Политики конфиденциальности",
     ),
+    "practiceOfDay": MessageLookupByLibrary.simpleMessage("Практика дня"),
     "privacySummary": MessageLookupByLibrary.simpleMessage(
       "Политика конфиденциальности объясняет, какие персональные данные обрабатывает Asteria, для каких целей и как они защищаются.",
     ),

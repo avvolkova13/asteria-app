@@ -11,12 +11,11 @@ import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/closed_content_modal.dart';
 import 'package:asteria_app/core/ui_kit/widgets/top_nav_bar.dart';
-import 'package:asteria_app/features/affirmation/affirmation_screen.dart';
-import 'package:asteria_app/features/affirmation/recorded_affirmations.dart';
 import 'package:asteria_app/features/home/presentation/cubit/home_cubit.dart';
 import 'package:asteria_app/features/home/presentation/cubit/home_state.dart';
 import 'package:asteria_app/features/home/presentation/widgets/widgets_index.dart';
 import 'package:asteria_app/features/monetization/presentation/monetization_provider.dart';
+import 'package:asteria_app/features/practices/practice_catalog_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -33,7 +32,7 @@ class _MainScreenState extends State<MainScreen> {
   AnalyticsRouteObserver? _routeObserver;
   bool _analyticsScheduled = false;
   bool _hasTrackedTarotCardView = false;
-  bool _hasTrackedAffirmationCardView = false;
+  bool _hasTrackedPracticeCardView = false;
   bool _hasTrackedRuneCardView = false;
 
   @override
@@ -63,7 +62,7 @@ class _MainScreenState extends State<MainScreen> {
       _analyticsScheduled = false;
       if (!_isVisible) return;
       _trackHomeCardImpressions();
-      _trackAffirmationCardViewOnce();
+      _trackPracticeCardViewOnce();
     });
   }
 
@@ -80,13 +79,13 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
-  void _trackAffirmationCardViewOnce() {
-    if (!_isVisible || _hasTrackedAffirmationCardView) return;
+  void _trackPracticeCardViewOnce() {
+    if (!_isVisible || _hasTrackedPracticeCardView) return;
 
-    _hasTrackedAffirmationCardView = true;
+    _hasTrackedPracticeCardView = true;
     di.get<ProductAnalyticsService>().trackHomeCardView(
-      funnelType: FunnelType.affirmations,
-      entryPointId: 'home_affirmation_card',
+      funnelType: FunnelType.practices,
+      entryPointId: 'home_practice_card',
       position: 0,
     );
   }
@@ -149,8 +148,9 @@ class _MainScreenState extends State<MainScreen> {
               bottom: false,
               child: CustomScrollView(
                 physics: const ClampingScrollPhysics(),
-                scrollBehavior: ScrollConfiguration.of(context)
-                    .copyWith(overscroll: false),
+                scrollBehavior: ScrollConfiguration.of(
+                  context,
+                ).copyWith(overscroll: false),
                 slivers: [
                   SliverLayoutBuilder(
                     builder: (context, constraints) => PinnedHeaderSliver(
@@ -193,8 +193,8 @@ class _MainScreenState extends State<MainScreen> {
                             onTap: () => context.push('/first-session'),
                           ),
                         );
-                        final affirmation = AsteriaEntrance(
-                          child: _buildAffirmationCard(),
+                        final practice = AsteriaEntrance(
+                          child: _buildPracticeCard(),
                         );
                         final symbol = _buildDailySymbolWidget(state);
                         return LayoutBuilder(
@@ -229,7 +229,7 @@ class _MainScreenState extends State<MainScreen> {
                                             flex: 5,
                                             child: Column(
                                               children: [
-                                                affirmation,
+                                                practice,
                                                 const SizedBox(height: 24),
                                                 symbol,
                                               ],
@@ -241,7 +241,7 @@ class _MainScreenState extends State<MainScreen> {
                                         children: [
                                           const MoonPhaseWidget(),
                                           const SizedBox(height: 24),
-                                          affirmation,
+                                          practice,
                                           const SizedBox(height: 24),
                                           symbol,
                                           const SizedBox(height: 24),
@@ -264,47 +264,23 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
-  Widget _buildAffirmationCard() {
+  Widget _buildPracticeCard() {
     void track(String action) =>
         di.get<ProductAnalyticsService>().trackHomeCardClick(
-          funnelType: FunnelType.affirmations,
-          entryPointId: 'home_affirmation_card',
+          funnelType: FunnelType.practices,
+          entryPointId: 'home_practice_card',
           position: 0,
           ctaName: action,
         );
 
     final ru = Localizations.localeOf(context).languageCode == 'ru';
-    return AffirmationOfTheDayWidget(
+    return PracticeOfTheDayWidget(
       key: ValueKey(ru),
-      resolveAudioAsset: () {
-        if (_contentProvider.affirmations.isNotEmpty) {
-          final card = _contentProvider.getTodayAffirmation();
-          final daily = ru ? revisedRussianAffirmation(card) : card;
-          final canPlayDaily =
-              (MonetizationProvider.maybeOf(
-                    context,
-                    listen: false,
-                  )?.effectivePro ??
-                  false) ||
-              freeAffirmationCategoryIds.contains(daily.effectiveCategoryId);
-          if (canPlayDaily) {
-            final recording = lookupRecordedAffirmation(
-              daily.id,
-              catalogText: daily.text,
-              ru: ru,
-            );
-            if (recording != null) return recording.asset;
-          }
-        }
-        return lookupRecordedAffirmation(
-          'asteria-recording:time',
-          ru: ru,
-        )?.asset;
-      },
-      onPlay: () => track('play_affirmation'),
+      session: dailyPracticeSession(ru: ru),
+      onPlay: () => track('play_practice'),
       onOpenCollection: () async {
-        track('open_affirmation');
-        if (mounted) AffirmationRoute.push(context);
+        track('open_practices');
+        if (mounted) context.read<HomeCubit>().changeTab(2);
       },
     );
   }

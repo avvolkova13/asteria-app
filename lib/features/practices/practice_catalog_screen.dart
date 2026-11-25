@@ -101,6 +101,19 @@ class _Practice {
   final (String, String) title, description, setup;
   final List<(int, String, String)> steps;
 
+  PracticePlayerSession session(bool ru) => PracticePlayerSession(
+    id: id,
+    scene: scene,
+    subjectAsset: art,
+    title: _localized(title, ru),
+    category: kind.title(ru),
+    metadata: metadata(ru),
+    audioAsset: ru ? 'assets/audio/$id-ru.m4a' : 'assets/audio/$id-en.mp3',
+    duration: duration(ru),
+    transcript: transcript(ru),
+    previewLabel: ru ? 'Пока без озвучки' : 'Recording unavailable',
+  );
+
   String get art => id == 'unhurried-morning'
       ? _morningArt
       : '$_practiceArtDirectory/$id.webp';
@@ -348,11 +361,9 @@ class _PracticeDetailScreen extends StatelessWidget {
       CupertinoPageRoute(
         builder: (playerContext) {
           final ru = _isRussian(playerContext);
-          final asset = ru
-              ? 'assets/audio/${practice.id}-ru.m4a'
-              : 'assets/audio/${practice.id}-en.mp3';
+          final session = practice.session(ru);
           return AffirmationPlayerScreen(
-            key: ValueKey(asset),
+            key: ValueKey(session.audioAsset),
             showBack: true,
             onOpenNotes: _hasPracticeNotes(playerContext)
                 ? () => _openNotes(playerContext, practice, ru)
@@ -364,18 +375,7 @@ class _PracticeDetailScreen extends StatelessWidget {
                   ),
                 ),
             autoPlay: true,
-            session: PracticePlayerSession(
-              id: practice.id,
-              scene: practice.scene,
-              subjectAsset: practice.art,
-              title: _localized(practice.title, ru),
-              category: practice.kind.title(ru),
-              metadata: practice.metadata(ru),
-              audioAsset: asset,
-              duration: practice.duration(ru),
-              transcript: practice.transcript(ru),
-              previewLabel: ru ? 'Пока без озвучки' : 'Recording unavailable',
-            ),
+            session: session,
           );
         },
       ),
@@ -478,6 +478,10 @@ class _PracticeDetailScreen extends StatelessWidget {
     );
   }
 }
+
+PracticePlayerSession dailyPracticeSession({required bool ru}) => _practices
+    .firstWhere((practice) => practice.id == 'easy-breathing-rhythm')
+    .session(ru);
 
 /// Localized details for a known, bundled practice outside the catalogue.
 ({String title, String description, String metadata, String art})

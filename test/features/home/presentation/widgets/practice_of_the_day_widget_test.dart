@@ -1,8 +1,9 @@
 import 'package:asteria_app/core/localization/localization.dart';
 import 'package:asteria_app/core/routing/app_route.dart';
 import 'package:asteria_app/core/ui_kit/theme/theme.dart';
-import 'package:asteria_app/features/home/presentation/widgets/affirmation_of_the_day_widget.dart';
+import 'package:asteria_app/features/home/presentation/widgets/practice_of_the_day_widget.dart';
 import 'package:asteria_app/features/affirmation/player/player_artwork.dart';
+import 'package:asteria_app/features/practices/practice_catalog_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -14,11 +15,14 @@ void main() {
   final messenger =
       TestWidgetsFlutterBinding.ensureInitialized().defaultBinaryMessenger;
   final calls = <String>[];
+  final loadedAssets = <String>[];
+  final session = dailyPracticeSession(ru: true);
   final native = <String, Object>{};
   setUp(() {
     calls.clear();
+    loadedAssets.clear();
     native.addAll({
-      'duration': 75000,
+      'duration': 180000,
       'position': 0,
       'playing': false,
       'loop': false,
@@ -27,6 +31,8 @@ void main() {
     messenger.setMockMethodCallHandler(channel, (call) async {
       calls.add(call.method);
       switch (call.method) {
+        case 'load':
+          loadedAssets.add(call.arguments['asset'] as String);
         case 'toggle':
           native['playing'] = !(native['playing'] as bool);
         case 'seek':
@@ -47,7 +53,8 @@ void main() {
       late final GoRouter router;
       int starts = 0;
       router = _router(
-        AffirmationOfTheDayWidget(
+        PracticeOfTheDayWidget(
+          session: session,
           onPlay: () => starts++,
           onOpenCollection: () async =>
               router.pushNamed<void>(AffirmationRoute.routeName),
@@ -55,9 +62,10 @@ void main() {
       );
       addTearDown(router.dispose);
       await tester.pumpWidget(_testApp(router));
-      expect(find.text('Аффирмация дня'), findsOneWidget);
+      expect(find.text('Практика дня'), findsOneWidget);
+      expect(find.text('Ровное дыхание'), findsOneWidget);
       expect(calls, isEmpty);
-      final all = find.text('Все аффирмации');
+      final all = find.text('Все практики');
       final play = find.bySemanticsLabel('Воспроизвести');
       final linkTarget = find.ancestor(
         of: all,
@@ -69,10 +77,13 @@ void main() {
         closeTo(tester.getBottomLeft(play).dy, .5),
       );
       PlayerArtwork art() => tester.widget(find.byType(PlayerArtwork));
+      expect(art().subjectAsset, session.subjectAsset);
+      expect(art().duration, const Duration(minutes: 3));
       expect(art().playing, isFalse);
       await tester.tapAt(tester.getCenter(find.byType(PlayerArtwork)));
       await tester.pump();
       expect(calls, containsAllInOrder(['load', 'toggle']));
+      expect(loadedAssets.single, 'assets/audio/easy-breathing-rhythm-ru.m4a');
       expect(art().playing, isTrue);
       expect(starts, 1);
       expect(router.routerDelegate.currentConfiguration.uri.path, '/');
@@ -85,7 +96,7 @@ void main() {
       native['position'] = 2400;
       await tester.pump(const Duration(milliseconds: 150));
       expect(art().position, const Duration(milliseconds: 2400));
-      await tester.tap(find.text('Все аффирмации'));
+      await tester.tap(find.text('Все практики'));
       await tester.pumpAndSettle();
       expect(find.text('collection'), findsOneWidget);
       expect(calls.last, 'close');
@@ -107,7 +118,8 @@ void main() {
       var attempts = 0;
       late final GoRouter router;
       router = _router(
-        AffirmationOfTheDayWidget(
+        PracticeOfTheDayWidget(
+          session: session,
           onOpenCollection: () async {
             if (++attempts == 1) throw StateError('offline');
             await router.pushNamed<void>(AffirmationRoute.routeName);
@@ -116,24 +128,41 @@ void main() {
       );
       addTearDown(router.dispose);
       await tester.pumpWidget(_testApp(router));
-      await tester.tap(find.text('Все аффирмации'));
+      await tester.tap(find.text('Все практики'));
       await tester.pumpAndSettle();
-      expect(
-        find.text('Не удалось загрузить аффирмацию. Проверьте интернет.'),
-        findsOneWidget,
-      );
+      expect(find.text('Ошибка'), findsOneWidget);
       await tester.tap(find.bySemanticsLabel('Воспроизвести'));
       await tester.pump();
       expect(
         tester.widget<PlayerArtwork>(find.byType(PlayerArtwork)).playing,
         isTrue,
       );
-      await tester.tap(find.text('Все аффирмации'));
+      await tester.tap(find.text('Все практики'));
       await tester.pumpAndSettle();
       expect(find.text('collection'), findsOneWidget);
       expect(calls.last, 'close');
     },
   );
+
+  testWidgets('the English card loads the English breathing recording', (
+    tester,
+  ) async {
+    final router = _router(
+      PracticeOfTheDayWidget(
+        session: dailyPracticeSession(ru: false),
+        onOpenCollection: () async {},
+      ),
+    );
+    addTearDown(router.dispose);
+    await tester.pumpWidget(_testApp(router, locale: const Locale('en')));
+    expect(find.text('Practice of the day'), findsOneWidget);
+    expect(find.text('An Easy Breathing Rhythm'), findsOneWidget);
+    expect(find.text('All practices'), findsOneWidget);
+    await tester.tap(find.bySemanticsLabel('Play'));
+    await tester.pump();
+    expect(loadedAssets.single, 'assets/audio/easy-breathing-rhythm-en.mp3');
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
 
   testWidgets(
     'changing tabs releases inline audio and keeps controls accessible at 200%',
@@ -145,7 +174,10 @@ void main() {
           valueListenable: active,
           builder: (_, enabled, child) =>
               TickerMode(enabled: enabled, child: child!),
-          child: AffirmationOfTheDayWidget(onOpenCollection: () async {}),
+          child: PracticeOfTheDayWidget(
+            session: session,
+            onOpenCollection: () async {},
+          ),
         ),
         width: 320,
         scale: 2,
@@ -164,7 +196,7 @@ void main() {
       active.value = true;
       await tester.pumpAndSettle();
       expect(find.bySemanticsLabel('Воспроизвести'), findsOneWidget);
-      expect(find.text('Все аффирмации'), findsOneWidget);
+      expect(find.text('Все практики'), findsOneWidget);
       expect(tester.takeException(), isNull);
     },
   );
@@ -202,12 +234,13 @@ GoRouter _router(Widget child, {double width = 390, double scale = 1}) =>
       ],
     );
 
-Widget _testApp(GoRouter router) => MaterialApp.router(
-  routerConfig: router,
-  locale: const Locale('ru'),
-  localizationsDelegates: const [
-    AppLocalizations.delegate,
-    ...GlobalMaterialLocalizations.delegates,
-  ],
-  supportedLocales: AppLocaleService.supportedLocales,
-);
+Widget _testApp(GoRouter router, {Locale locale = const Locale('ru')}) =>
+    MaterialApp.router(
+      routerConfig: router,
+      locale: locale,
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        ...GlobalMaterialLocalizations.delegates,
+      ],
+      supportedLocales: AppLocaleService.supportedLocales,
+    );

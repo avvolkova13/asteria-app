@@ -262,6 +262,7 @@ abstract final class AppsFlyerEvents {
       'home_compatibility_card' => screen == '/home/personal',
       'home_tarot_card' ||
       'home_affirmation_card' ||
+      'home_practice_card' ||
       'home_rune_card' ||
       'home_pro_promo_card' => screen == '/home',
       _ => false,
@@ -314,6 +315,7 @@ abstract final class AppsFlyerEvents {
         'home_compatibility_card',
         'home_tarot_card',
         'home_affirmation_card',
+        'home_practice_card',
         'home_rune_card',
         'home_pro_promo_card',
         'sonnik',

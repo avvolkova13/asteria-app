@@ -170,6 +170,8 @@
   "profileOpenWebsiteError": "Не удалось открыть сайт",
   "articleNotFound": "Статья не найдена",
   "affirmationOfDay": "Аффирмация дня",
+  "practiceOfDay": "Практика дня",
+  "allPractices": "Все практики",
   "affirmationRetryLabel": "Повторить загрузку аффирмации",
   "energyFocus": "Фокус",
   "energyRisks": "Риски",

@@ -214,6 +214,19 @@ void main() {
     await tester.pumpWidget(const SizedBox.shrink());
   });
 
+  testWidgets('all practices opens the practices tab from Today', (
+    tester,
+  ) async {
+    await mount(tester, initialTab: 0);
+    final link = find.text('Все практики');
+    await tester.ensureVisible(link);
+    await tester.pumpAndSettle();
+    await tester.tap(link);
+    await tester.pump();
+    expect(home.selectedTab, 2);
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
+
   testWidgets('main header stays below the status bar inset', (tester) async {
     tester.view.devicePixelRatio = 1;
     tester.view.padding = const FakeViewPadding(top: 62);
@@ -289,20 +302,20 @@ void main() {
     tester,
   ) async {
     await mount(tester, initialTab: 0);
-    expect(analytics.cards, ['home_tarot_card', 'home_affirmation_card']);
+    expect(analytics.cards, ['home_tarot_card', 'home_practice_card']);
     showTab(2);
     await tester.pump();
     content.loadAffirmation();
     user.signIn();
     await tester.pump();
-    expect(analytics.cards, ['home_tarot_card', 'home_affirmation_card']);
+    expect(analytics.cards, ['home_tarot_card', 'home_practice_card']);
 
     showTab(0);
-    expect(analytics.cards, ['home_tarot_card', 'home_affirmation_card']);
+    expect(analytics.cards, ['home_tarot_card', 'home_practice_card']);
     await tester.pump();
     expect(
       analytics.cards,
-      unorderedEquals(['home_tarot_card', 'home_affirmation_card']),
+      unorderedEquals(['home_tarot_card', 'home_practice_card']),
     );
 
     content.loadAffirmation();
@@ -331,7 +344,7 @@ void main() {
         'home_natal_card',
         'home_compatibility_card',
         'home_tarot_card',
-        'home_affirmation_card',
+        'home_practice_card',
       ]);
       showTab(3);
       await tester.pump();

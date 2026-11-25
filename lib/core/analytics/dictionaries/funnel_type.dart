@@ -11,6 +11,7 @@ enum FunnelType {
   runes('runes'),
   moon('moon'),
   affirmations('affirmations'),
+  practices('practices'),
   subscription('subscription'),
   coins('coins'),
   shop('shop'),

@@ -3,32 +3,32 @@ import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/ui_kit/card_radii.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
+import 'package:asteria_app/features/affirmation/player/affirmation_player_screen.dart';
 import 'package:asteria_app/features/affirmation/player/player_artwork.dart';
 import 'package:asteria_app/features/affirmation/player/player_pebble.dart';
 import 'package:asteria_app/features/affirmation/player/practice_playback_controller.dart';
 import 'package:asteria_app/features/scenarios/scenario_sky.dart';
 import 'package:flutter/material.dart';
 
-class AffirmationOfTheDayWidget extends StatefulWidget {
-  const AffirmationOfTheDayWidget({
+class PracticeOfTheDayWidget extends StatefulWidget {
+  const PracticeOfTheDayWidget({
     super.key,
     required this.onOpenCollection,
     this.onPlay,
-    this.resolveAudioAsset,
+    required this.session,
   });
 
   final Future<void> Function() onOpenCollection;
   final VoidCallback? onPlay;
-  final String? Function()? resolveAudioAsset;
+  final PracticePlayerSession session;
 
   @override
-  State<AffirmationOfTheDayWidget> createState() => _AffirmationOfTheDayState();
+  State<PracticeOfTheDayWidget> createState() => _PracticeOfTheDayState();
 }
 
-class _AffirmationOfTheDayState extends State<AffirmationOfTheDayWidget> {
+class _PracticeOfTheDayState extends State<PracticeOfTheDayWidget> {
   PracticePlaybackController? _player;
   Duration _resumeAt = Duration.zero;
-  String? _audioAsset;
   bool _visible = false;
   bool _opening = false;
   bool _commandPending = false;
@@ -57,13 +57,8 @@ class _AffirmationOfTheDayState extends State<AffirmationOfTheDayWidget> {
     _commandPending = true;
     try {
       final fresh = _player == null;
-      if (fresh) {
-        final asset = widget.resolveAudioAsset?.call();
-        if (_audioAsset != asset) _resumeAt = Duration.zero;
-        _audioAsset = asset;
-      }
       final player = _player ??= (PracticePlaybackController(
-        audioAsset: _audioAsset,
+        audioAsset: widget.session.audioAsset,
       )..addListener(_sync));
       final starting = !player.isPlaying;
       if (fresh && _resumeAt > Duration.zero) await player.seek(_resumeAt);
@@ -95,9 +90,9 @@ class _AffirmationOfTheDayState extends State<AffirmationOfTheDayWidget> {
       await widget.onOpenCollection();
     } catch (_) {
       if (mounted && _visible) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(context.l10n.affirmationLoadError)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(context.l10n.commonError)));
       }
     } finally {
       if (mounted) setState(() => _opening = false);
@@ -132,7 +127,9 @@ class _AffirmationOfTheDayState extends State<AffirmationOfTheDayWidget> {
                           child: PlayerArtwork(
                             position: player?.position ?? _resumeAt,
                             duration:
-                                player?.duration ?? const Duration(seconds: 75),
+                                player?.duration ?? widget.session.duration,
+                            scene: widget.session.scene,
+                            subjectAsset: widget.session.subjectAsset,
                             playing: playing,
                           ),
                         ),
@@ -149,13 +146,20 @@ class _AffirmationOfTheDayState extends State<AffirmationOfTheDayWidget> {
                   children: [
                     IgnorePointer(
                       child: Text(
-                        strings.affirmationOfDay,
+                        strings.practiceOfDay,
                         style: AppTypography.h3.copyWith(
                           color: AppColors.textInverse,
                           shadows: const [
                             Shadow(color: Color(0x88402A55), blurRadius: 5),
                           ],
                         ),
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    IgnorePointer(
+                      child: Text(
+                        widget.session.title,
+                        style: context.textTheme.inverseUrbanistRegular14,
                       ),
                     ),
                     const SizedBox(height: 94),
@@ -197,7 +201,7 @@ class _AffirmationOfTheDayState extends State<AffirmationOfTheDayWidget> {
                                       ),
                                     )
                                   : Text(
-                                      strings.allAffirmations,
+                                      strings.allPractices,
                                       textAlign: TextAlign.end,
                                       style: AppTypography.text1SemiBold
                                           .copyWith(color: linkColor),

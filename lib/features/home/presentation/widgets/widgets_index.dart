@@ -2,7 +2,7 @@
 export 'advertising_block_widget.dart';
 export 'articles_section_widget.dart';
 export 'rune_of_the_day_widget.dart';
-export 'affirmation_of_the_day_widget.dart';
+export 'practice_of_the_day_widget.dart';
 export 'tarot_card_of_the_day_widget.dart';
 export 'compatibility_section_widget.dart';
 export 'energy_of_the_day_widget.dart';

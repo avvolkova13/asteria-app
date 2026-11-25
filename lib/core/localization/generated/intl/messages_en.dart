@@ -258,6 +258,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "agreementText": MessageLookupByLibrary.simpleMessage("Terms of Use"),
     "allAffirmations": MessageLookupByLibrary.simpleMessage("All affirmations"),
+    "allPractices": MessageLookupByLibrary.simpleMessage("All practices"),
     "anakraFreeAndPurchased": m4,
     "anakraGreetingMessage": MessageLookupByLibrary.simpleMessage(
       "Welcome. I\'m Anakra, guardian of the stars and your celestial path. Ask me a question or choose where to begin.",
@@ -1822,6 +1823,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "Show full transcript",
     ),
     "policyText": MessageLookupByLibrary.simpleMessage("Privacy Policy"),
+    "practiceOfDay": MessageLookupByLibrary.simpleMessage(
+      "Practice of the day",
+    ),
     "privacySummary": MessageLookupByLibrary.simpleMessage(
       "How Asteria collects, uses, stores, and protects personal data.",
     ),
