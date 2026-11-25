@@ -1,5 +1,6 @@
 import 'package:asteria_app/app/data/models/anakra_chat/anakra_chat_message_model.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
+import 'package:asteria_app/features/anakra_chat/presentation/anakra_system_message.dart';
 import 'package:asteria_app/features/anakra_chat/presentation/widgets/anakra_glass_surface.dart';
 import 'package:asteria_app/features/anakra_chat/presentation/widgets/anakra_layout.dart';
 import 'package:flutter/material.dart';
@@ -49,7 +50,7 @@ class AnakraChatMessage extends StatelessWidget {
                     10,
                   ),
                   child: Text(
-                    message.text,
+                    message.displayText(context.l10n),
                     style: AppTypography.text1.copyWith(
                       color: AppColors.textInverse,
                     ),

@@ -324,6 +324,38 @@ void main() {
     },
   );
 
+  test(
+    'does not publish content from the previous locale during a reload',
+    () async {
+      final locale = AppLocaleService(platformLocales: const [Locale('ru')]);
+      final pending = Completer<List<TarotCardModel>>();
+      final repository = _FakeContentRepository(tarotLoad: pending)
+        ..tarotReloaded = Completer<void>()
+        ..tarotCards = [_tarotCard(title: 'The Fool')];
+      final provider = _contentProvider(repository, localeService: locale);
+      final observed = <String>[];
+      provider.addListener(() {
+        observed.addAll(provider.tarotCards.map((card) => card.title));
+      });
+      addTearDown(locale.dispose);
+      addTearDown(provider.dispose);
+
+      final initialLoad = provider.loadContent();
+      await Future<void>.delayed(Duration.zero);
+      expect(repository.getTarotCalls, 1);
+      locale.updatePlatformLocales(const [Locale('en', 'US')]);
+      pending.complete([_tarotCard(title: 'Шут')]);
+
+      await initialLoad;
+      await repository.tarotReloaded!.future.timeout(
+        const Duration(seconds: 1),
+      );
+      await Future<void>.delayed(Duration.zero);
+      expect(provider.tarotCards.single.title, 'The Fool');
+      expect(observed, isNot(contains('Шут')));
+    },
+  );
+
   group('purchased natal geometry', () {
     late _FakeBackendApi api;
     late _FakeUserRepository repository;
@@ -1290,7 +1322,7 @@ class _FakeContentRepository implements ContentRepository {
     if (getTarotCalls > 1 && tarotReloaded?.isCompleted == false) {
       tarotReloaded!.complete();
     }
-    if (tarotLoad != null) {
+    if (getTarotCalls == 1 && tarotLoad != null) {
       return tarotLoad!.future;
     }
     if (failAll || failTarot) {

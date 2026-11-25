@@ -40,17 +40,39 @@ abstract final class LocaleFormatters {
     ).formatTimeOfDay(time, alwaysUse24HourFormat: uses24HourFormat(context));
   }
 
-  /// Keeps time labels and pickers consistent. US English always uses AM/PM;
-  /// other locales retain their locale default and system 24-hour override.
+  /// Keeps time labels and pickers consistent with the locale and device clock.
   static bool uses24HourFormat(BuildContext context) {
-    final locale = Localizations.localeOf(context);
-    if (locale.languageCode == 'en' && locale.countryCode == 'US') {
-      return false;
-    }
     final format = MaterialLocalizations.of(context).timeOfDayFormat(
       alwaysUse24HourFormat: MediaQuery.alwaysUse24HourFormatOf(context),
     );
     return hourFormat(of: format) != HourFormat.h;
+  }
+
+  static DateTime startOfWeek(BuildContext context, DateTime date) {
+    final first = MaterialLocalizations.of(context).firstDayOfWeekIndex;
+    final daysSinceStart =
+        (date.weekday - first + DateTime.daysPerWeek) % DateTime.daysPerWeek;
+    return DateTime.utc(date.year, date.month, date.day - daysSinceStart);
+  }
+
+  static String weekDateRange(DateTime start, Locale locale) {
+    final end = start.add(const Duration(days: 6));
+    final tag = _intlLocale(locale);
+    if (start.year != end.year) {
+      final date = DateFormat.yMMMd(tag);
+      return '${date.format(start)} — ${date.format(end)}';
+    }
+    final dayMonth = DateFormat.MMMd(tag);
+    if (start.month != end.month) {
+      return '${dayMonth.format(start)} — ${dayMonth.format(end)}';
+    }
+    if (locale.languageCode == 'ru') {
+      return '${start.day}–${DateFormat.MMMMd(tag).format(end)}';
+    }
+    final dayFirst = dayMonth.pattern?.startsWith('d') ?? false;
+    return dayFirst
+        ? '${start.day}–${dayMonth.format(end)}'
+        : '${dayMonth.format(start)}–${end.day}';
   }
 
   static String _intlLocale(Locale locale) {

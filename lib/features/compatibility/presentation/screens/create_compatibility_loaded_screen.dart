@@ -14,7 +14,7 @@ import 'package:asteria_app/features/compatibility/presentation/widgets/compabil
 import 'package:flutter/material.dart';
 
 class CreateCompatibilityLoadedScreen extends StatefulWidget {
-  const CreateCompatibilityLoadedScreen({Key? key}) : super(key: key);
+  const CreateCompatibilityLoadedScreen({super.key});
 
   @override
   State<CreateCompatibilityLoadedScreen> createState() =>
@@ -52,6 +52,7 @@ class _CreateCompatibilityLoadedScreenState
       padding: const EdgeInsets.fromLTRB(14, 4, 14, 0),
       child: CompabilityResults(
         compatibilityData: compatibility.compatibilityData,
+        sourceLocale: compatibility.locale,
         hisBirthdate: compatibility.firstBirthdate.toShortDate(),
         herBirthdate: compatibility.secondBirthdate.toShortDate(),
         onHistoryPressed: () {

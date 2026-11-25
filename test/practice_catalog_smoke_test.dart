@@ -334,10 +334,13 @@ void main() {
         final id = category == 'meditation'
             ? 'unhurried-morning'
             : 'sadhu-board';
-        final hasAudio = File('assets/audio/$id-$locale.m4a').existsSync();
+        final extension = locale == 'ru' ? 'm4a' : 'mp3';
+        final hasAudio = File(
+          'assets/audio/$id-$locale.$extension',
+        ).existsSync();
         expect(
           find.text(
-            locale == 'ru' ? 'Пока без озвучки' : 'Voice recording coming soon',
+            locale == 'ru' ? 'Пока без озвучки' : 'Recording unavailable',
           ),
           hasAudio ? findsNothing : findsOneWidget,
         );

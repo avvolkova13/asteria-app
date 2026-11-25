@@ -100,7 +100,7 @@ void main() {
       await tester.pump(const Duration(seconds: 2));
       expect(stage('intro-practice-description'), findsOneWidget);
       expect(find.textContaining('Переведи внимание с дел'), findsOneWidget);
-      expect(find.text('4 мин · Сидя · без инвентаря'), findsOneWidget);
+      expect(find.text('10 мин · Сидя · без инвентаря'), findsOneWidget);
       expect(stage('intro-practice-note'), findsNothing);
       await tester.pump(const Duration(seconds: 3));
       expect(find.text('Добавить заметку'), findsOneWidget);

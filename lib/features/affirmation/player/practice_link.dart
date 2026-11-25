@@ -4,6 +4,10 @@ abstract final class PracticeLink {
       'https://asteria-calendar.com/practice/i-have-time/';
   static final Uri _canonical = Uri.parse(url);
 
+  static Uri forLanguage(String languageCode) => languageCode == 'ru'
+      ? _canonical
+      : _canonical.replace(queryParameters: const {'lang': 'en'});
+
   static bool matches(Uri uri) {
     if (uri.userInfo.isNotEmpty || uri.hasPort) return false;
     final String path = uri.path.endsWith('/')

@@ -7,6 +7,16 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
 void main() {
+  test(
+    'English sharing opens the localized web page and still matches app link',
+    () {
+      final english = PracticeLink.forLanguage('en');
+      expect(english.queryParameters['lang'], 'en');
+      expect(PracticeLink.matches(english), isTrue);
+      expect(PracticeLink.forLanguage('ru').toString(), PracticeLink.url);
+    },
+  );
+
   const player = '/affirmation/player';
   final https = Uri.parse(PracticeLink.url);
   final scheme = Uri.parse('asteria://practice/i-have-time');

@@ -13,9 +13,11 @@ void main() {
       hisName: 'Bob',
       herBirthdate: '1990-01-02',
       hisBirthdate: '1991-03-04',
+      localeTag: 'en-GB',
     );
 
     expect(api.arguments, <String>['Alice', 'Bob', '1990-01-02', '1991-03-04']);
+    expect(api.localeTag, 'en-GB');
     expect(result.phrase, 'A strong connection');
     expect(result.percentage, '82%');
     expect(result.generalCompatibility, contains('shared values'));
@@ -24,6 +26,7 @@ void main() {
 
 class _FakeFunctionsApi implements BackendApi {
   List<String>? arguments;
+  String? localeTag;
 
   @override
   Future<Response<dynamic>> calculateCompatibility({
@@ -31,7 +34,9 @@ class _FakeFunctionsApi implements BackendApi {
     required String hisName,
     required String herBirthdate,
     required String hisBirthdate,
+    String? localeTag,
   }) async {
+    this.localeTag = localeTag;
     arguments = <String>[herName, hisName, herBirthdate, hisBirthdate];
     return Response<dynamic>(
       data: <String, dynamic>{

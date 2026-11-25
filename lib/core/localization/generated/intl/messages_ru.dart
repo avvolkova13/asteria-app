@@ -933,9 +933,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "introCalendarSavedText": MessageLookupByLibrary.simpleMessage(
       "Сохранено в «Мои планы»",
     ),
-    "introCalendarSavedTitle": MessageLookupByLibrary.simpleMessage(
-      "Стрижка",
-    ),
+    "introCalendarSavedTitle": MessageLookupByLibrary.simpleMessage("Стрижка"),
     "introDemoLabel": MessageLookupByLibrary.simpleMessage("Пример разбора"),
     "introFavorable": MessageLookupByLibrary.simpleMessage(
       "Благоприятный день",
@@ -1141,7 +1139,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "legalTermsConnector": MessageLookupByLibrary.simpleMessage("и"),
     "licensesDescription": MessageLookupByLibrary.simpleMessage(
-      "Icons by HadiSharifani from Figma Community, licensed under CC BY 4.0.",
+      "Иконки HadiSharifani из Figma Community используются по лицензии CC BY 4.0.",
     ),
     "licensesTitle": MessageLookupByLibrary.simpleMessage(
       "Использованные материалы и лицензии",

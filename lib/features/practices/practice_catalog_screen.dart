@@ -19,6 +19,8 @@ import 'package:flutter/material.dart' show Icons, TextButton;
 import 'package:provider/provider.dart';
 
 part 'practice_catalog_content.dart';
+part 'long_russian_practice_recordings.dart';
+part 'long_english_practice_recordings.dart';
 
 const _morningArt = 'assets/images/home/hand_with_star.webp';
 const _practiceArtDirectory = 'assets/images/practices';
@@ -103,8 +105,39 @@ class _Practice {
       ? _morningArt
       : '$_practiceArtDirectory/$id.webp';
 
+  ({Duration duration, List<(double, String)> transcript})? recording(
+    bool ru,
+  ) => (ru
+      ? _longRussianPracticeRecordings
+      : _longEnglishPracticeRecordings)[id];
+
+  Duration duration(bool ru) =>
+      recording(ru)?.duration ?? Duration(minutes: minutes);
+
+  String durationLabel(bool ru) {
+    final length = duration(ru);
+    final remainder = length.inSeconds % 60;
+    if (!ru) {
+      return remainder == 0
+          ? '${length.inMinutes} min'
+          : '${length.inMinutes} min $remainder sec';
+    }
+    if (remainder == 0) return '${length.inMinutes} мин';
+    return '${length.inMinutes} мин $remainder сек';
+  }
+
+  List<(double, String)> transcript(bool ru) {
+    if (recording(ru) case final recording?) {
+      return recording.transcript;
+    }
+    return [
+      for (final (seconds, russian, english) in steps)
+        (seconds.toDouble(), ru ? russian : english),
+    ];
+  }
+
   String metadata(bool ru) =>
-      [ru ? '$minutes мин' : '$minutes min', _localized(setup, ru)].join(' · ');
+      [durationLabel(ru), _localized(setup, ru)].join(' · ');
 }
 
 String _localized((String, String) value, bool ru) => ru ? value.$1 : value.$2;
@@ -310,40 +343,41 @@ class _PracticeDetailScreen extends StatelessWidget {
   const _PracticeDetailScreen(this.practice);
   final _Practice practice;
 
-  void _openPlayer(BuildContext context, bool ru) {
-    final locale = ru ? 'ru' : 'en';
+  void _openPlayer(BuildContext context) {
     Navigator.of(context).push<void>(
       CupertinoPageRoute(
-        builder: (playerContext) => AffirmationPlayerScreen(
-          showBack: true,
-          onOpenNotes: _hasPracticeNotes(playerContext)
-              ? () => _openNotes(playerContext, practice, ru)
-              : null,
-          onCompleted: () =>
-              Navigator.of(playerContext).pushReplacement<void, void>(
-                CupertinoPageRoute(
-                  builder: (_) => _PracticeCompletionScreen(practice),
+        builder: (playerContext) {
+          final ru = _isRussian(playerContext);
+          final asset = ru
+              ? 'assets/audio/${practice.id}-ru.m4a'
+              : 'assets/audio/${practice.id}-en.mp3';
+          return AffirmationPlayerScreen(
+            key: ValueKey(asset),
+            showBack: true,
+            onOpenNotes: _hasPracticeNotes(playerContext)
+                ? () => _openNotes(playerContext, practice, ru)
+                : null,
+            onCompleted: () =>
+                Navigator.of(playerContext).pushReplacement<void, void>(
+                  CupertinoPageRoute(
+                    builder: (_) => _PracticeCompletionScreen(practice),
+                  ),
                 ),
-              ),
-          autoPlay: true,
-          session: PracticePlayerSession(
-            id: practice.id,
-            scene: practice.scene,
-            subjectAsset: practice.art,
-            title: _localized(practice.title, ru),
-            category: practice.kind.title(ru),
-            metadata: practice.metadata(ru),
-            audioAsset: 'assets/audio/${practice.id}-$locale.m4a',
-            duration: Duration(minutes: practice.minutes),
-            transcript: [
-              for (final (seconds, russian, english) in practice.steps)
-                (seconds.toDouble(), ru ? russian : english),
-            ],
-            previewLabel: ru
-                ? 'Пока без озвучки'
-                : 'Voice recording coming soon',
-          ),
-        ),
+            autoPlay: true,
+            session: PracticePlayerSession(
+              id: practice.id,
+              scene: practice.scene,
+              subjectAsset: practice.art,
+              title: _localized(practice.title, ru),
+              category: practice.kind.title(ru),
+              metadata: practice.metadata(ru),
+              audioAsset: asset,
+              duration: practice.duration(ru),
+              transcript: practice.transcript(ru),
+              previewLabel: ru ? 'Пока без озвучки' : 'Recording unavailable',
+            ),
+          );
+        },
       ),
     );
   }
@@ -409,7 +443,7 @@ class _PracticeDetailScreen extends StatelessWidget {
             AuthGradientButton(
               key: const ValueKey('open-practice-player'),
               text: ru ? 'Начать практику' : 'Start practice',
-              onPressed: () => _openPlayer(context, ru),
+              onPressed: () => _openPlayer(context),
             ),
           ],
         ),
@@ -434,10 +468,10 @@ class _PracticeDetailScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 10),
-          for (final step in practice.steps)
+          for (final (_, russian, english) in practice.steps)
             Padding(
               padding: const EdgeInsets.only(bottom: 12),
-              child: Text(ru ? step.$2 : step.$3, style: bodyStyle),
+              child: Text(ru ? russian : english, style: bodyStyle),
             ),
         ],
       ),

@@ -53,8 +53,8 @@ void main() {
     (
       locale: const Locale('en', 'US'),
       system24h: true,
-      picker24h: false,
-      label: '5:05 PM',
+      picker24h: true,
+      label: '17:05',
     ),
     (
       locale: const Locale('ru'),

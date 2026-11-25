@@ -28,9 +28,7 @@ void main() {
     expect(date.toIsoDate(), '2026-08-07');
   });
 
-  testWidgets('en-US always uses AM/PM including midnight and noon', (
-    tester,
-  ) async {
+  testWidgets('en-US respects the system clock preference', (tester) async {
     Future<String> renderTime({
       required bool use24Hour,
       required TimeOfDay time,
@@ -72,7 +70,9 @@ void main() {
       }.entries) {
         expect(
           await renderTime(use24Hour: use24Hour, time: entry.key),
-          entry.value,
+          use24Hour
+              ? '${entry.key.hour.toString().padLeft(2, '0')}:${entry.key.minute.toString().padLeft(2, '0')}'
+              : entry.value,
         );
       }
     }

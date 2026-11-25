@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/saved_result_language_notice.dart';
 import 'package:asteria_app/core/ui_kit/widgets/pearl_metric_row.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
@@ -21,6 +22,7 @@ class CompabilityResults extends StatelessWidget {
   final CompatibilityData compatibilityData;
   final String hisBirthdate;
   final String herBirthdate;
+  final String? sourceLocale;
   final VoidCallback onHistoryPressed;
   final VoidCallback? onNewPairPressed;
   final bool highlightConflicts;
@@ -30,6 +32,7 @@ class CompabilityResults extends StatelessWidget {
     required this.hisBirthdate,
     required this.herBirthdate,
     required this.onHistoryPressed,
+    this.sourceLocale,
     this.onNewPairPressed,
     this.highlightConflicts = false,
   });
@@ -58,6 +61,9 @@ class CompabilityResults extends StatelessWidget {
               secondDate: secondDate,
               percentage: _percentage(compatibilityData.percentage)?.round(),
             ),
+            if (savedResultLanguageNotice(context, sourceLocale)
+                case final notice?)
+              notice,
             if (highlightConflicts &&
                 compatibilityData.conflicts.trim().isNotEmpty) ...[
               const SizedBox(height: 16),

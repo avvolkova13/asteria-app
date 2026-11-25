@@ -5,6 +5,7 @@ import 'package:asteria_app/app/data/models/sonnik/sonnik_model.dart';
 
 import '../widgets/dream_journal_layout.dart';
 
+import 'package:asteria_app/core/localization/locale_formatters.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_action_button.dart';
 import 'package:provider/provider.dart';
 import 'package:asteria_app/app/providers/user_provider.dart';
@@ -360,9 +361,12 @@ class _DreamJournalScreenState extends State<DreamJournalScreen> {
                                           const SizedBox(height: 6),
                                           Text(
                                             [
-                                              DateFormat.Hm(
-                                                locale,
-                                              ).format(entry.recordedAt),
+                                              LocaleFormatters.timeOfDay(
+                                                context,
+                                                TimeOfDay.fromDateTime(
+                                                  entry.recordedAt,
+                                                ),
+                                              ),
                                               if (entry.historyOnly)
                                                 ru
                                                     ? 'Расшифровка Ливеи'

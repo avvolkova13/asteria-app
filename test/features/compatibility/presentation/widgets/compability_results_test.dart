@@ -7,6 +7,37 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets(
+    'labels the language of original compatibility text without changing it',
+    (tester) async {
+      await tester.pumpWidget(_resultApp(const Locale('en', 'US'), 'ru-RU'));
+      await tester.pumpAndSettle();
+      expect(
+        find.text('Showing the original result in Russian.'),
+        findsOneWidget,
+      );
+      expect(
+        find.text(_compatibilityData.generalCompatibility),
+        findsOneWidget,
+      );
+
+      await tester.pumpWidget(_resultApp(const Locale('ru'), 'en-GB'));
+      await tester.pumpAndSettle();
+      expect(
+        find.text('Показан оригинал на английском языке.'),
+        findsOneWidget,
+      );
+
+      await tester.pumpWidget(_resultApp(const Locale('ru'), 'ru-RU'));
+      await tester.pumpAndSettle();
+      expect(find.text('Показан оригинал на английском языке.'), findsNothing);
+      expect(
+        find.text('Showing the original result in Russian.'),
+        findsNothing,
+      );
+    },
+  );
+
   for (final scale in [1.0, 2.0]) {
     testWidgets(
       'zodiac portraits and percentage do not overlap at scale $scale',
@@ -74,6 +105,31 @@ void main() {
     );
   }
 }
+
+Widget _resultApp(Locale locale, String sourceLocale) => MaterialApp(
+  locale: locale,
+  localizationsDelegates: const [
+    AppLocalizations.delegate,
+    ...GlobalMaterialLocalizations.delegates,
+  ],
+  supportedLocales: AppLocaleService.supportedLocales,
+  home: Builder(
+    builder: (context) => Theme(
+      data: AppThemeDark.instance.getThemeData(context),
+      child: Scaffold(
+        body: SingleChildScrollView(
+          child: CompabilityResults(
+            compatibilityData: _compatibilityData,
+            hisBirthdate: '13-05-1995',
+            herBirthdate: '22-05-1994',
+            sourceLocale: sourceLocale,
+            onHistoryPressed: () {},
+          ),
+        ),
+      ),
+    ),
+  ),
+);
 
 const _compatibilityData = CompatibilityData(
   generalCompatibility: 'Общее описание совместимости.',

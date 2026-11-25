@@ -153,6 +153,7 @@ class BackendApi {
     required String hisName,
     required String herBirthdate,
     required String hisBirthdate,
+    String? localeTag,
   }) {
     final url = '${_asteriaBackendUrl}api/v1/compatibility/calculate';
     return _dio.post<dynamic>(
@@ -163,7 +164,12 @@ class BackendApi {
         'her_birthdate': herBirthdate,
         'his_birthdate': hisBirthdate,
       },
-      options: Options(headers: _localizedHeaders),
+      options: Options(
+        headers: {
+          ..._localizedHeaders,
+          if (localeTag != null) 'Accept-Language': localeTag,
+        },
+      ),
     );
   }
 

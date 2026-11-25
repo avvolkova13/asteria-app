@@ -134,6 +134,7 @@ class _PairEntryState extends State<_PairEntry> {
     _open(
       (_) => CompabilityResults(
         compatibilityData: pair.compatibilityData,
+        sourceLocale: pair.locale,
         hisBirthdate: pair.firstBirthdate.toShortDate(),
         herBirthdate: pair.secondBirthdate.toShortDate(),
         highlightConflicts: true,

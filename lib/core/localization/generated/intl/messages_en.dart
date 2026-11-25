@@ -923,9 +923,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "introCalendarSavedText": MessageLookupByLibrary.simpleMessage(
       "Saved to My plans",
     ),
-    "introCalendarSavedTitle": MessageLookupByLibrary.simpleMessage(
-      "Haircut",
-    ),
+    "introCalendarSavedTitle": MessageLookupByLibrary.simpleMessage("Haircut"),
     "introDemoLabel": MessageLookupByLibrary.simpleMessage("Example reading"),
     "introFavorable": MessageLookupByLibrary.simpleMessage("Favorable day"),
     "introFavorableTip": MessageLookupByLibrary.simpleMessage(

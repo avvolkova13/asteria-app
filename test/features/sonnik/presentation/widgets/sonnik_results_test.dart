@@ -31,6 +31,50 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets(
+    'keeps the original dream text and labels its language only on mismatch',
+    (tester) async {
+      await tester.pumpWidget(
+        _testApp(
+          SonnikResults(sonnik: _sonnik, onDecodeAgainPressed: () {}),
+          locale: const Locale('en', 'GB'),
+        ),
+      );
+      expect(
+        find.text('Showing the original result in Russian.'),
+        findsOneWidget,
+      );
+      expect(find.text(_sonnik.interpretation), findsOneWidget);
+
+      final english = _sonnik.copyWith(
+        locale: 'en_US',
+        title: 'A dream about the sea',
+        interpretation: 'The sea suggests strong feelings and movement.',
+      );
+      await tester.pumpWidget(
+        _testApp(SonnikResults(sonnik: english, onDecodeAgainPressed: () {})),
+      );
+      expect(
+        find.text('Показан оригинал на английском языке.'),
+        findsOneWidget,
+      );
+      expect(find.text(english.interpretation), findsOneWidget);
+
+      await tester.pumpWidget(
+        _testApp(
+          SonnikResults(sonnik: english, onDecodeAgainPressed: () {}),
+          locale: const Locale('en', 'GB'),
+        ),
+      );
+      expect(find.text('Показан оригинал на английском языке.'), findsNothing);
+      expect(
+        find.text('Showing the original result in Russian.'),
+        findsNothing,
+      );
+      expect(find.text(english.interpretation), findsOneWidget);
+    },
+  );
+
   testWidgets('formats quota badge as total attempts remaining label', (
     tester,
   ) async {
@@ -42,9 +86,9 @@ void main() {
   });
 }
 
-Widget _testApp(Widget child) {
+Widget _testApp(Widget child, {Locale locale = const Locale('ru')}) {
   return MaterialApp(
-    locale: const Locale('ru'),
+    locale: locale,
     localizationsDelegates: const [
       AppLocalizations.delegate,
       ...GlobalMaterialLocalizations.delegates,

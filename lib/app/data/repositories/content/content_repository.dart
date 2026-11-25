@@ -138,7 +138,7 @@ class ContentRepositoryImpl implements ContentRepository {
 
   @override
   Future<void> refreshContentVersions() async {
-    await _contentVersionService.refresh();
+    await _contentVersionService.refresh(localeTag: _localeService.languageTag);
   }
 
   void _showApiErrorSnackBar(String message) {
@@ -150,50 +150,91 @@ class ContentRepositoryImpl implements ContentRepository {
     }
   }
 
-  String _localizedKey(String key) => _localeService.isRussian
-      ? key
-      : '${key}_${_localeService.contentLanguage}';
-  String get _tarotCardsKey => _localizedKey('tarot_cards');
-  String get _runeOfDayKey => _localizedKey('runes');
-  String get _articlesKey => _localizedKey('articles');
-  String get _affirmationsKey => _localizedKey('affirmations');
-  String get _energyOfDayKey => _localizedKey('energy_of_day');
-  String get _energyOfDayLastDateKey =>
-      _localizedKey('energy_of_day_last_date');
+  String _localizedKey(String key, [String? localeTag]) {
+    final locale = localeTag ?? _localeService.languageTag;
+    return locale == 'ru' ? key : '${key}_$locale';
+  }
 
   Box<Map> get _box => _contentBox ?? HiveService.contentBox;
 
+  static const _displayFields = <String, List<String>>{
+    'affirmation': ['text'],
+    'articles': ['title', 'category', 'intro', 'text', 'conclusion'],
+    'energy_of_day': ['focus', 'risk', 'phrase'],
+    'rune_of_day': [
+      'title',
+      'card_of_day_description',
+      'general_description',
+      'past_deck',
+      'present_deck',
+      'future_deck',
+      'keywords',
+      'definitions',
+    ],
+    'tarot_cards': [
+      'title',
+      'keywords',
+      'card_of_day_description',
+      'general_description',
+      'short_description',
+      'text_in_decks',
+      'kelt_deck',
+      'kelt_deck_impact',
+      'love_deck',
+    ],
+  };
+
+  static final _cyrillic = RegExp(r'[А-Яа-яЁё]');
+  static final _latin = RegExp(r'[A-Za-z]');
+
+  bool _looksRussian(Object? value) {
+    if (value is Iterable) return value.any(_looksRussian);
+    if (value is! String) return false;
+    return _cyrillic.allMatches(value).length > _latin.allMatches(value).length;
+  }
+
   Future<List<Map<String, dynamic>>> _getLocalizedCollection(
     String collection,
+    String localeTag,
   ) async {
     final response = await _backendApi.getContentCollection(collection);
     final data = response.data;
     if (data is! List) {
       throw const FormatException('Invalid localized content response');
     }
-    return data.map((item) => Map<String, dynamic>.from(item as Map)).toList();
+    final isRussian = localeTag == 'ru';
+    final documents = <Map<String, dynamic>>[];
+    for (final item in data) {
+      final resolved = _localizedContentResolver.resolveDocument(
+        Map<String, dynamic>.from(item as Map),
+        localeTag,
+        allowRussianFallback: isRussian,
+      );
+      if (!isRussian &&
+          _displayFields[collection]!.any(
+            (field) => _looksRussian(resolved[field]),
+          )) {
+        continue;
+      }
+      documents.add(resolved);
+    }
+    return documents;
   }
 
   @override
   Future<List<TarotCardModel>> getTarotCards() async {
+    final locale = _localeService.languageTag;
     try {
-      if (_box.get(_tarotCardsKey) != null &&
-          !_contentVersionService.isStale('tarot_cards')) {
-        return await getTarotCardsFromCache();
+      if (_box.get(_localizedKey('tarot_cards', locale)) != null &&
+          !_contentVersionService.isStale('tarot_cards', localeTag: locale)) {
+        return await getTarotCardsFromCache(localeTag: locale);
       }
-      final tarotData = await _getLocalizedCollection('tarot_cards');
+      final tarotData = await _getLocalizedCollection('tarot_cards', locale);
 
       debugPrint('[DEBUG] Карты таро c backend: ${tarotData.length}');
 
       List<TarotCardModel> tarotCards = tarotData
-          .map(
-            (e) => TarotCardModel.fromJson(
-              _localizedContentResolver.resolveDocument(
-                e,
-                _localeService.languageTag,
-              ),
-            ),
-          )
+          .map(TarotCardModel.fromJson)
           .toList();
       // TODO: Remove this after testing
       // tarotCards = tarotCards.where((card) => card.sort == 0).toList();
@@ -202,13 +243,16 @@ class ContentRepositoryImpl implements ContentRepository {
         throw Exception('Карты таро не найдены');
       }
 
-      await saveTarotCardsToCache(tarotCards);
-      await _contentVersionService.markCurrent('tarot_cards');
+      await saveTarotCardsToCache(tarotCards, localeTag: locale);
+      await _contentVersionService.markCurrent(
+        'tarot_cards',
+        localeTag: locale,
+      );
 
       return tarotCards..sort((a, b) => a.sort.compareTo(b.sort));
     } catch (e) {
       debugPrint('Ошибка получения карты таро: $e');
-      final cached = await getTarotCardsFromCache();
+      final cached = await getTarotCardsFromCache(localeTag: locale);
       if (cached.isNotEmpty) return cached;
       throw Exception('Не удалось получить карту таро: $e');
     }
@@ -253,9 +297,11 @@ class ContentRepositoryImpl implements ContentRepository {
   }
 
   @override
-  Future<List<TarotCardModel>> getTarotCardsFromCache() async {
+  Future<List<TarotCardModel>> getTarotCardsFromCache({
+    String? localeTag,
+  }) async {
     final cards = _getFromCache<TarotCardModel>(
-      key: _tarotCardsKey,
+      key: _localizedKey('tarot_cards', localeTag),
       dataKey: 'cards',
       fromJson: TarotCardModel.fromJson,
       debugName: 'Карты таро',
@@ -264,9 +310,12 @@ class ContentRepositoryImpl implements ContentRepository {
   }
 
   @override
-  Future<void> saveTarotCardsToCache(List<TarotCardModel> tarotCards) async {
+  Future<void> saveTarotCardsToCache(
+    List<TarotCardModel> tarotCards, {
+    String? localeTag,
+  }) async {
     await _saveToCache(
-      key: _tarotCardsKey,
+      key: _localizedKey('tarot_cards', localeTag),
       dataKey: 'cards',
       items: tarotCards,
       toJson: (card) => card.toJson(),
@@ -276,38 +325,38 @@ class ContentRepositoryImpl implements ContentRepository {
 
   @override
   Future<List<RuneOfDayModel>> getRunes() async {
+    final locale = _localeService.languageTag;
     try {
-      if (_box.get(_runeOfDayKey) != null &&
-          !_contentVersionService.isStale('rune_of_day')) {
-        return await getRunesFromCache();
+      if (_box.get(_localizedKey('runes', locale)) != null &&
+          !_contentVersionService.isStale('rune_of_day', localeTag: locale)) {
+        return await getRunesFromCache(localeTag: locale);
       }
-      final runesData = await _getLocalizedCollection('rune_of_day');
+      final runesData = await _getLocalizedCollection('rune_of_day', locale);
       debugPrint('[DEBUG] Руны c backend: ${runesData.length}');
       List<RuneOfDayModel> runes = runesData
-          .map(
-            (e) => RuneOfDayModel.fromJson(
-              _localizedContentResolver.resolveDocument(
-                e,
-                _localeService.languageTag,
-              ),
-            ),
-          )
+          .map(RuneOfDayModel.fromJson)
           .toList();
-      await saveRunesToCache(runes);
-      await _contentVersionService.markCurrent('rune_of_day');
+      if (runes.isEmpty) {
+        throw const FormatException('No runes for the selected locale');
+      }
+      await saveRunesToCache(runes, localeTag: locale);
+      await _contentVersionService.markCurrent(
+        'rune_of_day',
+        localeTag: locale,
+      );
       return runes;
     } catch (e) {
       debugPrint('Ошибка получения рун: $e');
-      final cached = await getRunesFromCache();
+      final cached = await getRunesFromCache(localeTag: locale);
       if (cached.isNotEmpty) return cached;
       throw Exception('Не удалось получить руны: $e');
     }
   }
 
   @override
-  Future<List<RuneOfDayModel>> getRunesFromCache() async {
+  Future<List<RuneOfDayModel>> getRunesFromCache({String? localeTag}) async {
     return _getFromCache<RuneOfDayModel>(
-      key: _runeOfDayKey,
+      key: _localizedKey('runes', localeTag),
       dataKey: 'runes',
       fromJson: RuneOfDayModel.fromJson,
       debugName: 'Руны',
@@ -315,9 +364,12 @@ class ContentRepositoryImpl implements ContentRepository {
   }
 
   @override
-  Future<void> saveRunesToCache(List<RuneOfDayModel> runes) async {
+  Future<void> saveRunesToCache(
+    List<RuneOfDayModel> runes, {
+    String? localeTag,
+  }) async {
     await _saveToCache(
-      key: _runeOfDayKey,
+      key: _localizedKey('runes', localeTag),
       dataKey: 'runes',
       items: runes,
       toJson: (rune) => rune.toJson(),
@@ -327,45 +379,39 @@ class ContentRepositoryImpl implements ContentRepository {
 
   @override
   Future<List<ArticleModel>> getArticles() async {
+    final locale = _localeService.languageTag;
     try {
-      if (_box.get(_articlesKey) != null &&
-          !_contentVersionService.isStale('articles')) {
-        return await getArticlesFromCache();
+      if (_box.get(_localizedKey('articles', locale)) != null &&
+          !_contentVersionService.isStale('articles', localeTag: locale)) {
+        return await getArticlesFromCache(localeTag: locale);
       }
-      final articlesData = await _getLocalizedCollection('articles');
+      final articlesData = await _getLocalizedCollection('articles', locale);
       debugPrint('[DEBUG] Статьи c backend: ${articlesData.length}');
 
       List<ArticleModel> articles = articlesData
-          .map(
-            (e) => ArticleModel.fromJson(
-              _localizedContentResolver.resolveDocument(
-                e,
-                _localeService.languageTag,
-              ),
-            ),
-          )
+          .map(ArticleModel.fromJson)
           .toList();
 
       if (articles.isEmpty) {
         throw Exception('Статьи не найдены');
       }
 
-      await saveArticlesToCache(articles);
-      await _contentVersionService.markCurrent('articles');
+      await saveArticlesToCache(articles, localeTag: locale);
+      await _contentVersionService.markCurrent('articles', localeTag: locale);
 
       return articles;
     } catch (e) {
       debugPrint('Ошибка получения статей: $e');
-      final cached = await getArticlesFromCache();
+      final cached = await getArticlesFromCache(localeTag: locale);
       if (cached.isNotEmpty) return cached;
       throw Exception('Не удалось получить статьи: $e');
     }
   }
 
   @override
-  Future<List<ArticleModel>> getArticlesFromCache() async {
+  Future<List<ArticleModel>> getArticlesFromCache({String? localeTag}) async {
     return _getFromCache<ArticleModel>(
-      key: _articlesKey,
+      key: _localizedKey('articles', localeTag),
       dataKey: 'articles',
       fromJson: ArticleModel.fromJson,
       debugName: 'Статьи',
@@ -373,9 +419,12 @@ class ContentRepositoryImpl implements ContentRepository {
   }
 
   @override
-  Future<void> saveArticlesToCache(List<ArticleModel> articles) async {
+  Future<void> saveArticlesToCache(
+    List<ArticleModel> articles, {
+    String? localeTag,
+  }) async {
     await _saveToCache(
-      key: _articlesKey,
+      key: _localizedKey('articles', localeTag),
       dataKey: 'articles',
       items: articles,
       toJson: (article) => article.toJson(),
@@ -385,45 +434,47 @@ class ContentRepositoryImpl implements ContentRepository {
 
   @override
   Future<List<AffirmationModel>> getAffirmations() async {
+    final locale = _localeService.languageTag;
     try {
-      if (_box.get(_affirmationsKey) != null &&
-          !_contentVersionService.isStale('affirmation')) {
-        return await getAffirmationsFromCache();
+      if (_box.get(_localizedKey('affirmations', locale)) != null &&
+          !_contentVersionService.isStale('affirmation', localeTag: locale)) {
+        return await getAffirmationsFromCache(localeTag: locale);
       }
-      final affirmationsData = await _getLocalizedCollection('affirmation');
+      final affirmationsData = await _getLocalizedCollection(
+        'affirmation',
+        locale,
+      );
       debugPrint('[DEBUG] Аффирмации c backend: ${affirmationsData.length}');
 
       List<AffirmationModel> affirmations = affirmationsData
-          .map(
-            (e) => AffirmationModel.fromJson(
-              _localizedContentResolver.resolveDocument(
-                e,
-                _localeService.languageTag,
-              ),
-            ),
-          )
+          .map(AffirmationModel.fromJson)
           .toList();
 
       if (affirmations.isEmpty) {
         throw Exception('Аффирмации не найдены');
       }
 
-      await saveAffirmationsToCache(affirmations);
-      await _contentVersionService.markCurrent('affirmation');
+      await saveAffirmationsToCache(affirmations, localeTag: locale);
+      await _contentVersionService.markCurrent(
+        'affirmation',
+        localeTag: locale,
+      );
 
       return affirmations..sort((a, b) => a.sort.compareTo(b.sort));
     } catch (e) {
       debugPrint('Ошибка получения аффирмаций: $e');
-      final cached = await getAffirmationsFromCache();
+      final cached = await getAffirmationsFromCache(localeTag: locale);
       if (cached.isNotEmpty) return cached;
       throw Exception('Не удалось получить аффирмации: $e');
     }
   }
 
   @override
-  Future<List<AffirmationModel>> getAffirmationsFromCache() async {
+  Future<List<AffirmationModel>> getAffirmationsFromCache({
+    String? localeTag,
+  }) async {
     final affirmations = _getFromCache<AffirmationModel>(
-      key: _affirmationsKey,
+      key: _localizedKey('affirmations', localeTag),
       dataKey: 'affirmations',
       fromJson: AffirmationModel.fromJson,
       debugName: 'Аффирмации',
@@ -433,10 +484,11 @@ class ContentRepositoryImpl implements ContentRepository {
 
   @override
   Future<void> saveAffirmationsToCache(
-    List<AffirmationModel> affirmations,
-  ) async {
+    List<AffirmationModel> affirmations, {
+    String? localeTag,
+  }) async {
     await _saveToCache(
-      key: _affirmationsKey,
+      key: _localizedKey('affirmations', localeTag),
       dataKey: 'affirmations',
       items: affirmations,
       toJson: (affirmation) => affirmation.toJson(),
@@ -717,41 +769,40 @@ class ContentRepositoryImpl implements ContentRepository {
 
   @override
   Future<List<EnergyOfDayModel>> getEnergyOfDay() async {
+    final locale = _localeService.languageTag;
     try {
-      final energyData = await _getLocalizedCollection('energy_of_day');
+      final energyData = await _getLocalizedCollection('energy_of_day', locale);
       debugPrint('[DEBUG] Энергии дня c backend: ${energyData.length}');
 
       List<EnergyOfDayModel> energyOfDay = energyData
-          .map(
-            (e) => EnergyOfDayModel.fromJson(
-              _localizedContentResolver.resolveDocument(
-                e,
-                _localeService.languageTag,
-              ),
-            ),
-          )
+          .map(EnergyOfDayModel.fromJson)
           .toList();
 
       if (energyOfDay.isEmpty) {
         throw Exception('Энергии дня не найдены');
       }
 
-      await saveEnergyOfDayToCache(energyOfDay);
-      await _contentVersionService.markCurrent('energy_of_day');
+      await saveEnergyOfDayToCache(energyOfDay, localeTag: locale);
+      await _contentVersionService.markCurrent(
+        'energy_of_day',
+        localeTag: locale,
+      );
 
       return energyOfDay..sort((a, b) => a.date.compareTo(b.date));
     } catch (e) {
       debugPrint('Ошибка получения энергии дня: $e');
-      final cached = await getEnergyOfDayFromCache();
+      final cached = await getEnergyOfDayFromCache(localeTag: locale);
       if (cached.isNotEmpty) return cached;
       throw Exception('Не удалось получить энергию дня: $e');
     }
   }
 
   @override
-  Future<List<EnergyOfDayModel>> getEnergyOfDayFromCache() async {
+  Future<List<EnergyOfDayModel>> getEnergyOfDayFromCache({
+    String? localeTag,
+  }) async {
     return _getFromCache<EnergyOfDayModel>(
-      key: _energyOfDayKey,
+      key: _localizedKey('energy_of_day', localeTag),
       dataKey: 'energies',
       fromJson: EnergyOfDayModel.fromJson,
       debugName: 'Энергии дня',
@@ -760,8 +811,10 @@ class ContentRepositoryImpl implements ContentRepository {
 
   @override
   Future<void> saveEnergyOfDayToCache(
-    List<EnergyOfDayModel> energyOfDay,
-  ) async {
+    List<EnergyOfDayModel> energyOfDay, {
+    String? localeTag,
+  }) async {
+    final locale = localeTag ?? _localeService.languageTag;
     try {
       if (energyOfDay.isEmpty) {
         debugPrint('[WARNING] Список энергий дня пуст, нечего сохранять');
@@ -778,7 +831,7 @@ class ContentRepositoryImpl implements ContentRepository {
 
       // Сохраняем энергии дня
       await _saveToCache(
-        key: _energyOfDayKey,
+        key: _localizedKey('energy_of_day', locale),
         dataKey: 'energies',
         items: energyOfDay,
         toJson: (energy) => energy.toJson(),
@@ -787,7 +840,7 @@ class ContentRepositoryImpl implements ContentRepository {
 
       // Сохраняем самую позднюю дату
       if (latestDate != null) {
-        await _box.put(_energyOfDayLastDateKey, {
+        await _box.put(_localizedKey('energy_of_day_last_date', locale), {
           'date': latestDate.toIso8601String(),
         });
         debugPrint(
@@ -802,11 +855,14 @@ class ContentRepositoryImpl implements ContentRepository {
 
   @override
   Future<bool> shouldReloadEnergyOfDay() async {
+    final locale = _localeService.languageTag;
     try {
-      if (_contentVersionService.isStale('energy_of_day')) {
+      if (_contentVersionService.isStale('energy_of_day', localeTag: locale)) {
         return true;
       }
-      final cachedData = _box.get(_energyOfDayLastDateKey);
+      final cachedData = _box.get(
+        _localizedKey('energy_of_day_last_date', locale),
+      );
       if (cachedData == null || cachedData['date'] == null) {
         debugPrint(
           '[DEBUG] Дата последней энергии дня не найдена, требуется загрузка',

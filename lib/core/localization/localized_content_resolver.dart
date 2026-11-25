@@ -12,8 +12,9 @@ class LocalizedContentResolver {
 
   Map<String, dynamic> resolveDocument(
     Map<String, dynamic> document,
-    String localeTag,
-  ) {
+    String localeTag, {
+    bool allowRussianFallback = true,
+  }) {
     final resolved = Map<String, dynamic>.from(document);
     final rawI18n = document['i18n'];
     if (rawI18n is! Map) return resolved;
@@ -22,7 +23,7 @@ class LocalizedContentResolver {
     for (final entry in i18n.entries) {
       if (entry.value is! Map) continue;
       final translations = Map<String, dynamic>.from(entry.value as Map);
-      final selection = _select(translations, localeTag);
+      final selection = _select(translations, localeTag, allowRussianFallback);
       if (selection == null) continue;
       resolved[entry.key] = selection.value;
       if (selection.locale == 'ru' && !_isRussian(localeTag)) {
@@ -44,6 +45,7 @@ class LocalizedContentResolver {
   _LocalizedSelection? _select(
     Map<String, dynamic> translations,
     String localeTag,
+    bool allowRussianFallback,
   ) {
     final normalized = localeTag.replaceAll('_', '-');
     final exactCandidates = <String>{
@@ -61,7 +63,7 @@ class LocalizedContentResolver {
     if (_hasValue(translations[baseLanguage])) {
       return _LocalizedSelection(baseLanguage, translations[baseLanguage]);
     }
-    if (_hasValue(translations['ru'])) {
+    if (allowRussianFallback && _hasValue(translations['ru'])) {
       return _LocalizedSelection('ru', translations['ru']);
     }
     return null;

@@ -138,12 +138,14 @@ class ContentProvider extends ChangeNotifier with WidgetsBindingObserver {
   int _wheelRevision = 0;
 
   late String _lastLocaleTag;
+  int _contentLocaleRevision = 0;
   String? _lastLocationFingerprint;
 
   void _onLocaleChanged() {
     final nextLocaleTag = _localeService.languageTag;
     if (nextLocaleTag == _lastLocaleTag) return;
     _lastLocaleTag = nextLocaleTag;
+    final revision = ++_contentLocaleRevision;
     _tarotCards = [];
     _runes = [];
     _articles = [];
@@ -161,7 +163,7 @@ class ContentProvider extends ChangeNotifier with WidgetsBindingObserver {
     unawaited(
       Future<void>(() async {
         if (activeLoad != null) await activeLoad;
-        await loadContent();
+        if (revision == _contentLocaleRevision) await loadContent();
       }),
     );
   }
@@ -442,23 +444,28 @@ class ContentProvider extends ChangeNotifier with WidgetsBindingObserver {
   }
 
   Future<void> _performContentLoad() async {
+    final revision = _contentLocaleRevision;
     _isLoadingContent = true;
     notifyListeners();
 
     try {
       await _contentRepository.refreshContentVersions();
+      if (revision != _contentLocaleRevision) return;
       await Future.wait([
         _loadContentList<TarotCardModel>(
+          revision: revision,
           debugName: 'карт таро',
           load: _contentRepository.getTarotCards,
           apply: (items) => _tarotCards = items,
         ),
         _loadContentList<RuneOfDayModel>(
+          revision: revision,
           debugName: 'рун',
           load: _contentRepository.getRunes,
           apply: (items) => _runes = items,
         ),
         _loadContentList<ArticleModel>(
+          revision: revision,
           debugName: 'статей',
           load: _contentRepository.getArticles,
           apply: (items) => _articles = _horoscopesEnabled
@@ -476,12 +483,13 @@ class ContentProvider extends ChangeNotifier with WidgetsBindingObserver {
                     .toList(),
         ),
         _loadContentList<AffirmationModel>(
+          revision: revision,
           debugName: 'аффирмаций',
           load: _contentRepository.getAffirmations,
           apply: (items) => _affirmations = items,
         ),
       ]);
-      await _loadEnergyOfDay();
+      if (revision == _contentLocaleRevision) await _loadEnergyOfDay(revision);
     } finally {
       _isLoadingContent = false;
       notifyListeners();
@@ -489,12 +497,14 @@ class ContentProvider extends ChangeNotifier with WidgetsBindingObserver {
   }
 
   Future<void> _loadContentList<T>({
+    required int revision,
     required String debugName,
     required Future<List<T>> Function() load,
     required void Function(List<T>) apply,
   }) async {
     try {
       final items = await load();
+      if (revision != _contentLocaleRevision) return;
       if (items.isEmpty) {
         debugPrint(
           '[WARNING] Загружен пустой список $debugName, текущие данные сохранены',
@@ -509,33 +519,30 @@ class ContentProvider extends ChangeNotifier with WidgetsBindingObserver {
     }
   }
 
-  Future<void> _loadEnergyOfDay() async {
+  Future<void> _loadEnergyOfDay(int revision) async {
+    List<EnergyOfDayModel> items;
     try {
-      // Проверяем, нужно ли перезагрузить данные
       final shouldReload = await _contentRepository.shouldReloadEnergyOfDay();
-
-      if (shouldReload) {
-        debugPrint('[DEBUG] Загрузка энергии дня из backend');
-        _energyOfDay = await _contentRepository.getEnergyOfDay();
-      } else {
-        debugPrint('[DEBUG] Загрузка энергии дня из кэша');
-        _energyOfDay = await _contentRepository.getEnergyOfDayFromCache();
-
-        // Если кэш пуст, загружаем из backend
-        if (_energyOfDay.isEmpty) {
-          debugPrint('[DEBUG] Кэш пуст, загрузка из backend');
-          _energyOfDay = await _contentRepository.getEnergyOfDay();
-        }
+      if (revision != _contentLocaleRevision) return;
+      items = shouldReload
+          ? await _contentRepository.getEnergyOfDay()
+          : await _contentRepository.getEnergyOfDayFromCache();
+      if (items.isEmpty &&
+          !shouldReload &&
+          revision == _contentLocaleRevision) {
+        items = await _contentRepository.getEnergyOfDay();
       }
     } catch (e) {
       debugPrint('[ERROR] Ошибка загрузки энергии дня: $e');
-      // Пытаемся загрузить из кэша в случае ошибки
+      if (revision != _contentLocaleRevision) return;
       try {
-        _energyOfDay = await _contentRepository.getEnergyOfDayFromCache();
+        items = await _contentRepository.getEnergyOfDayFromCache();
       } catch (cacheError) {
         debugPrint('[ERROR] Ошибка загрузки энергии дня из кэша: $cacheError');
+        return;
       }
     }
+    if (revision == _contentLocaleRevision) _energyOfDay = items;
   }
 
   // Общие функции для работы с элементами дня

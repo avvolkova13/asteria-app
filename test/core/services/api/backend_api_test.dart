@@ -166,6 +166,34 @@ void main() {
     });
   });
 
+  test(
+    'compatibility uses the captured request locale over the later UI locale',
+    () async {
+      final adapter = _RecordingAdapter();
+      final localeService = AppLocaleService(
+        platformLocales: const [Locale('ru')],
+      );
+      addTearDown(localeService.dispose);
+      final api = BackendApi.forTesting(
+        dio: Dio()..httpClientAdapter = adapter,
+        asteriaBackendUrl: 'https://backend.example.com',
+        asteriaApiKey: 'test-api-key',
+        localeService: localeService,
+      );
+
+      await api.calculateCompatibility(
+        herName: 'Alice',
+        hisName: 'Bob',
+        herBirthdate: '1990-01-02',
+        hisBirthdate: '1991-03-04',
+        localeTag: 'en-GB',
+      );
+
+      expect(adapter.requests.single.headers['Accept-Language'], 'en-GB');
+      expect(adapter.requests.single.data, isNot(contains('locale')));
+    },
+  );
+
   test('getContentCollection sends effective Accept-Language', () async {
     final adapter = _RecordingAdapter();
     final dio = Dio()..httpClientAdapter = adapter;

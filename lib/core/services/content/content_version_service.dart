@@ -19,48 +19,51 @@ class ContentVersionService {
   final Box<Map>? _contentBox;
   final Duration _refreshTimeout;
   final AppLocaleService? _localeService;
-  Map<String, int>? _remoteVersions;
+  final _remoteVersionsByLocale = <String, Map<String, int>>{};
 
   Box<Map> get _box => _contentBox ?? HiveService.contentBox;
-  String get _localVersionsKey =>
-      _localeService == null || _localeService.isRussian
+  String get _currentLocale => _localeService?.languageTag ?? 'ru';
+  String _localVersionsKey(String localeTag) => localeTag == 'ru'
       ? _localVersionsKeyBase
-      : '${_localVersionsKeyBase}_${_localeService.contentLanguage}';
+      : '${_localVersionsKeyBase}_$localeTag';
 
   static const _localVersionsKeyBase = 'content_collection_versions';
 
-  Future<bool> refresh() async {
+  Future<bool> refresh({String? localeTag}) async {
+    final locale = localeTag ?? _currentLocale;
     try {
       final response = await _api.getContentVersions().timeout(_refreshTimeout);
       final raw = Map<String, dynamic>.from(response.data as Map);
-      _remoteVersions = raw.map(
+      _remoteVersionsByLocale[locale] = raw.map(
         (key, value) => MapEntry(key, (value as num).toInt()),
       );
       return true;
     } catch (error) {
-      _remoteVersions = null;
+      _remoteVersionsByLocale.remove(locale);
       debugPrint('[ContentVersions] Не удалось получить версии: $error');
       return false;
     }
   }
 
-  bool isStale(String collection) {
-    final remoteVersion = _remoteVersions?[collection];
+  bool isStale(String collection, {String? localeTag}) {
+    final locale = localeTag ?? _currentLocale;
+    final remoteVersion = _remoteVersionsByLocale[locale]?[collection];
     if (remoteVersion == null) {
       return false;
     }
-    final stored = _box.get(_localVersionsKey);
+    final stored = _box.get(_localVersionsKey(locale));
     final localVersion = (stored?[collection] as num?)?.toInt() ?? 0;
     return localVersion < remoteVersion;
   }
 
-  Future<void> markCurrent(String collection) async {
-    final remoteVersion = _remoteVersions?[collection];
+  Future<void> markCurrent(String collection, {String? localeTag}) async {
+    final locale = localeTag ?? _currentLocale;
+    final remoteVersion = _remoteVersionsByLocale[locale]?[collection];
     if (remoteVersion == null) {
       return;
     }
-    final stored = _box.get(_localVersionsKey);
-    await _box.put(_localVersionsKey, {
+    final stored = _box.get(_localVersionsKey(locale));
+    await _box.put(_localVersionsKey(locale), {
       if (stored != null) ...stored,
       collection: remoteVersion,
     });

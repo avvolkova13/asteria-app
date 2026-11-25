@@ -99,7 +99,58 @@ void main() {
     });
 
     testWidgets(
-      'a late collection appears while the user remains on the same screen',
+      'built-in English recordings are available before the server responds',
+      (tester) async {
+        final content = _DelayedContent();
+        final account = _Account();
+        di.registerSingleton<ContentProvider>(content);
+        di.registerSingleton<UserProvider>(account);
+        addTearDown(() {
+          di.unregister<ContentProvider>();
+          di.unregister<UserProvider>();
+          content.dispose();
+          account.dispose();
+        });
+        await tester.pumpWidget(
+          MaterialApp(
+            supportedLocales: AppLocaleService.supportedLocales,
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              ...GlobalMaterialLocalizations.delegates,
+            ],
+            home: Builder(
+              builder: (context) => Theme(
+                data: AppThemeDark.instance.getThemeData(context),
+                child: const AffirmationScreen(),
+              ),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+        expect(content.loadAttempts, 1);
+        final stack = find.byKey(const ValueKey('affirmation_card_stack_love'));
+        final initialIds = tester
+            .widget<AffirmationCardStack>(stack)
+            .affirmations
+            .map((card) => card.id)
+            .toList();
+        expect(initialIds, hasLength(12));
+        expect(find.text('Try again'), findsNothing);
+
+        content.deliver(_affirmation(id: 'available', text: 'Ready to play'));
+        await tester.pumpAndSettle();
+        expect(
+          tester
+              .widget<AffirmationCardStack>(stack)
+              .affirmations
+              .map((card) => card.id),
+          ['available', ...initialIds],
+        );
+      },
+    );
+
+    testWidgets(
+      'a late collection joins the voiced cards in the same category',
       (tester) async {
         final content = _DelayedContent();
         final account = _Account();
@@ -128,13 +179,34 @@ void main() {
           ),
         );
         await tester.pumpAndSettle();
-        expect(find.byType(AffirmationCardStack), findsNothing);
+        final stack = find.byKey(const ValueKey('affirmation_card_stack_love'));
+        expect(stack, findsOneWidget);
+        final initialIds = tester
+            .widget<AffirmationCardStack>(stack)
+            .affirmations
+            .map((card) => card.id)
+            .toList();
+        expect(initialIds, hasLength(12));
+        expect(
+          initialIds,
+          containsAll([
+            'asteria-recording:choose-yourself',
+            'asteria-recording:be-kinder',
+          ]),
+        );
+
         content.deliver(
           _affirmation(id: 'delivered', text: 'Текст из коллекции'),
         );
         await tester.pumpAndSettle();
         expect(find.byType(AffirmationCardStack), findsOneWidget);
-        expect(find.text('Текст из коллекции'), findsWidgets);
+        expect(
+          tester
+              .widget<AffirmationCardStack>(stack)
+              .affirmations
+              .map((card) => card.id),
+          ['delivered', ...initialIds],
+        );
       },
     );
 
@@ -421,8 +493,9 @@ void main() {
                   body: ListenableBuilder(
                     listenable: Listenable.merge([deck, reduced]),
                     builder: (context, _) => MediaQuery(
-                      data: MediaQuery.of(context)
-                          .copyWith(disableAnimations: reduced.value),
+                      data: MediaQuery.of(
+                        context,
+                      ).copyWith(disableAnimations: reduced.value),
                       child: SizedBox(
                         width: 358,
                         child: AffirmationCardStack(affirmations: deck.value),
@@ -667,6 +740,19 @@ class _FakeProductAnalyticsService implements ProductAnalyticsService {
 
 class _DelayedContent extends ChangeNotifier implements ContentProvider {
   final _cards = <AffirmationModel>[];
+  int loadAttempts = 0;
+
+  @override
+  List<AffirmationModel> get affirmations => _cards;
+
+  @override
+  bool get isLoadingContent => false;
+
+  @override
+  Future<void> loadContent() async {
+    loadAttempts++;
+  }
+
   void deliver(AffirmationModel item) {
     _cards.add(item);
     notifyListeners();

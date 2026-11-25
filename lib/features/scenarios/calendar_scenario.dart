@@ -11,6 +11,7 @@ import 'package:asteria_app/core/di/di.dart';
 import 'package:asteria_app/core/services/hive/hive_service.dart';
 import 'package:asteria_app/core/location/current_location_resolver.dart';
 import 'package:asteria_app/core/location/widgets/current_location_controls.dart';
+import 'package:asteria_app/core/localization/locale_formatters.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/features/auth/presentation/widgets/auth_flow_widgets.dart';
 import 'package:asteria_app/features/home/presentation/cubit/moon_screen_state.dart';
@@ -283,16 +284,16 @@ class _DaySelectionState extends State<_DaySelection> {
       .where((item) => calendarDay(item.date) == day)
       .firstOrNull;
 
-  DateTime get _weekStart =>
-      _focused.subtract(Duration(days: _focused.weekday - DateTime.monday));
-
   VoidCallback? _movePeriod(int delta) {
     final week = _mode == PlansCalendarMode.week;
     final next = _focused.add(Duration(days: delta * (week ? 7 : 1)));
-    if (next.isAfter(DateTime.utc(2050, 12, 31)) ||
-        next
-            .add(Duration(days: week ? 6 - (_focused.weekday - 1) : 0))
-            .isBefore(_today)) {
+    final last = week
+        ? LocaleFormatters.startOfWeek(
+            context,
+            next,
+          ).add(const Duration(days: 6))
+        : next;
+    if (next.isAfter(DateTime.utc(2050, 12, 31)) || last.isBefore(_today)) {
       return null;
     }
     return () => _showMonth(next);
@@ -302,11 +303,12 @@ class _DaySelectionState extends State<_DaySelection> {
   Widget build(BuildContext context) {
     final week = _mode == PlansCalendarMode.week;
     final dayView = _mode == PlansCalendarMode.day;
-    final locale = Localizations.localeOf(context).toLanguageTag();
+    final locale = Localizations.localeOf(context);
+    final weekStart = LocaleFormatters.startOfWeek(context, _focused);
     final exposedMonths = week
         ? {
-            _monthOf(_weekStart),
-            _monthOf(_weekStart.add(const Duration(days: 6))),
+            _monthOf(weekStart),
+            _monthOf(weekStart.add(const Duration(days: 6))),
           }
         : {_monthOf(_focused)};
     final statuses = <DateTime, DayStatus>{};
@@ -360,7 +362,9 @@ class _DaySelectionState extends State<_DaySelection> {
                     ),
                     Expanded(
                       child: Text(
-                        DateFormat.MMMMd(locale).format(_focused),
+                        DateFormat.MMMMd(
+                          locale.toLanguageTag(),
+                        ).format(_focused),
                         textAlign: TextAlign.center,
                         style: AppTypography.navTitle,
                       ),
@@ -386,7 +390,7 @@ class _DaySelectionState extends State<_DaySelection> {
                   onPlanMonth: _showMonth,
                   week: week,
                   periodTitle: week
-                      ? '${DateFormat.MMMd(locale).format(_weekStart)} — ${DateFormat.MMMd(locale).format(_weekStart.add(const Duration(days: 6)))}'
+                      ? LocaleFormatters.weekDateRange(weekStart, locale)
                       : null,
                   onPrevious: week ? _movePeriod(-1) : null,
                   onNext: week ? _movePeriod(1) : null,

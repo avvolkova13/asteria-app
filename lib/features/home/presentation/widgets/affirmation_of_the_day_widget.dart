@@ -14,10 +14,12 @@ class AffirmationOfTheDayWidget extends StatefulWidget {
     super.key,
     required this.onOpenCollection,
     this.onPlay,
+    this.resolveAudioAsset,
   });
 
   final Future<void> Function() onOpenCollection;
   final VoidCallback? onPlay;
+  final String? Function()? resolveAudioAsset;
 
   @override
   State<AffirmationOfTheDayWidget> createState() => _AffirmationOfTheDayState();
@@ -26,6 +28,7 @@ class AffirmationOfTheDayWidget extends StatefulWidget {
 class _AffirmationOfTheDayState extends State<AffirmationOfTheDayWidget> {
   PracticePlaybackController? _player;
   Duration _resumeAt = Duration.zero;
+  String? _audioAsset;
   bool _visible = false;
   bool _opening = false;
   bool _commandPending = false;
@@ -52,11 +55,17 @@ class _AffirmationOfTheDayState extends State<AffirmationOfTheDayWidget> {
   Future<void> _toggle() async {
     if (_commandPending || !_visible) return;
     _commandPending = true;
-    final fresh = _player == null;
-    final player = _player ??= (PracticePlaybackController()
-      ..addListener(_sync));
-    final starting = !player.isPlaying;
     try {
+      final fresh = _player == null;
+      if (fresh) {
+        final asset = widget.resolveAudioAsset?.call();
+        if (_audioAsset != asset) _resumeAt = Duration.zero;
+        _audioAsset = asset;
+      }
+      final player = _player ??= (PracticePlaybackController(
+        audioAsset: _audioAsset,
+      )..addListener(_sync));
+      final starting = !player.isPlaying;
       if (fresh && _resumeAt > Duration.zero) await player.seek(_resumeAt);
       await player.toggle();
       if (identical(_player, player) && starting && player.isPlaying) {
@@ -190,9 +199,8 @@ class _AffirmationOfTheDayState extends State<AffirmationOfTheDayWidget> {
                                   : Text(
                                       strings.allAffirmations,
                                       textAlign: TextAlign.end,
-                                      style: AppTypography.text1SemiBold.copyWith(
-                                        color: linkColor,
-                                      ),
+                                      style: AppTypography.text1SemiBold
+                                          .copyWith(color: linkColor),
                                     ),
                             ),
                           ),

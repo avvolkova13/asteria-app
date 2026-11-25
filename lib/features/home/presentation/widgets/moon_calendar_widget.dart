@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/localization/locale_formatters.dart';
 import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
@@ -121,12 +122,10 @@ class MoonCalendarWidget extends StatelessWidget {
     final monthLabel = DateFormat('LLLL y', localeTag).format(state.focusedDay);
     final title =
         periodTitle ?? (monthLabel[0].toUpperCase() + monthLabel.substring(1));
-    final weekStart = plansOnly
-        ? StartingDayOfWeek.values[(MaterialLocalizations.of(context)
-                      .firstDayOfWeekIndex +
-                  6) %
-              7]
-        : StartingDayOfWeek.monday;
+    final firstWeekday = MaterialLocalizations.of(context).firstDayOfWeekIndex;
+    final weekStart =
+        StartingDayOfWeek.values[(firstWeekday + DateTime.daysPerWeek - 1) %
+            DateTime.daysPerWeek];
     final plansByDay = <DateTime, List<CalendarPlan>>{};
     for (final plan in savedPlans) {
       if (plansOnly || week || _isSameMonth(state.focusedDay, plan.day)) {
@@ -380,13 +379,8 @@ class MoonCalendarWidget extends StatelessWidget {
       state.focusedDay.year,
       state.focusedDay.month,
     );
-    final firstWeekday = plansOnly
-        ? MaterialLocalizations.of(context).firstDayOfWeekIndex
-        : 1;
     final anchor = week ? calendarDay(state.focusedDay) : focusedMonth;
-    final firstDisplayedDay = anchor.subtract(
-      Duration(days: (anchor.weekday % 7 - firstWeekday + 7) % 7),
-    );
+    final firstDisplayedDay = LocaleFormatters.startOfWeek(context, anchor);
     final displayedDayCount = (week ? 1 : 6) * DateTime.daysPerWeek;
     return LayoutBuilder(
       builder: (context, constraints) {

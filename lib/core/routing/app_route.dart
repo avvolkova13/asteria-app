@@ -15,6 +15,7 @@ import 'package:asteria_app/features/auth/presentation/cubit/email_auth_cubit.da
 import 'package:asteria_app/features/auth/domain/models/auth_identity.dart';
 import 'package:asteria_app/core/services/auth/auth_session_service.dart';
 import 'package:asteria_app/core/localization/legal_asset_resolver.dart';
+import 'package:asteria_app/core/localization/generated/l10n.dart';
 import 'package:asteria_app/features/compatibility/presentation/screens/create_compatibility_screen.dart';
 import 'package:asteria_app/features/compatibility/presentation/screens/create_compatibility_initial_screen.dart';
 import 'package:asteria_app/features/compatibility/presentation/screens/create_compatibility_requests_left_screen.dart';
@@ -43,7 +44,6 @@ import 'package:asteria_app/features/article/presentation/article_screen.dart';
 import 'package:asteria_app/features/balance/presentation/screens/balance_screen.dart';
 import 'package:asteria_app/features/balance/presentation/screens/balance_history_screen.dart';
 import 'package:asteria_app/features/affirmation/affirmation_screen.dart';
-import 'package:asteria_app/features/affirmation/player/affirmation_player_screen.dart';
 import 'package:asteria_app/features/payments/presentation/screens/payments_screen.dart';
 import 'package:asteria_app/features/payments/presentation/cubit/arc_pay_checkout_cubit.dart';
 import 'package:asteria_app/features/coins_paywall/presentation/screens/coins_paywall_screen.dart';

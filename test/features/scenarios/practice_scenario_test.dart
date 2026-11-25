@@ -1,3 +1,7 @@
+import 'dart:io';
+
+import 'package:hive/hive.dart';
+import 'package:asteria_app/features/affirmation/player/affirmation_player_screen.dart';
 import 'package:asteria_app/core/localization/localization.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/features/scenarios/practice_scenario.dart';
@@ -6,6 +10,17 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  late Directory playerData;
+  setUpAll(() async {
+    playerData = await Directory.systemTemp.createTemp('scenario-player');
+    Hive.init(playerData.path);
+    await Hive.openBox<bool>('affirmation_player_favorites');
+  });
+  tearDownAll(() async {
+    await Hive.close();
+    await playerData.delete(recursive: true);
+  });
+
   Future<void> start(
     WidgetTester tester,
     List<ScenarioPractice> recordings,
@@ -14,6 +29,22 @@ void main() {
     await tester.tap(find.text('Start'));
     await tester.pumpAndSettle();
   }
+
+  testWidgets('onboarding practice provides the bundled recording in English', (
+    tester,
+  ) async {
+    await start(tester, availablePracticeRecordings);
+    await tester.ensureVisible(find.text('Find calm'));
+    await tester.tap(find.text('Find calm'));
+    await tester.pumpAndSettle();
+    final player = tester.widget<AffirmationPlayerScreen>(
+      find.byType(AffirmationPlayerScreen),
+    );
+    expect(player.autoPlay, isTrue);
+    expect(player.session?.audioAsset, 'assets/audio/affirmation-time-en.mp3');
+    expect(player.session?.duration, const Duration(minutes: 3, seconds: 30));
+    expect(player.session?.title, 'I Have Time');
+  });
 
   testWidgets(
     'each mood opens the available recording directly and back restores the mood choices',
@@ -155,8 +186,13 @@ Widget _app(List<ScenarioPractice> recordings) => MaterialApp(
     AppLocalizations.delegate,
     ...GlobalMaterialLocalizations.delegates,
   ],
-  builder: (c, child) =>
-      Theme(data: AppThemeDark.instance.getThemeData(c), child: child!),
+  builder: (c, child) => Theme(
+    data: AppThemeDark.instance.getThemeData(c),
+    child: MediaQuery(
+      data: MediaQuery.of(c).copyWith(disableAnimations: true),
+      child: child!,
+    ),
+  ),
   home: Scaffold(
     body: Builder(
       builder: (c) => Center(

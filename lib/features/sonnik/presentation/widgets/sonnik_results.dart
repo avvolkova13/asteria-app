@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/saved_result_language_notice.dart';
 import 'package:asteria_app/core/ui_kit/widgets/responsive_heading.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/app/data/models/sonnik/sonnik_model.dart';
@@ -25,6 +26,9 @@ class SonnikResults extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: AsteriaEntrance.sections([
+            if (savedResultLanguageNotice(context, sonnik.locale)
+                case final notice?)
+              notice,
             ResponsiveHeading(
               sonnik.title,
               style: context.textTheme.inversePlayfairSemiBold24.copyWith(

@@ -77,11 +77,13 @@ class AffirmationPlayerScreen extends StatefulWidget {
     this.onCompleted,
     this.onOpenNotes,
     this.session,
+    this.showClassicActions = false,
   });
 
   final bool showBack;
   final bool autoPlay;
   final PracticePlayerSession? session;
+  final bool showClassicActions;
 
   /// Called once after playback finishes naturally, never after a seek or loop.
   final VoidCallback? onCompleted;
@@ -106,7 +108,8 @@ class _AffirmationPlayerScreenState extends State<AffirmationPlayerScreen> {
         audioAsset: widget.session?.audioAsset,
         previewDuration: widget.session?.duration,
       );
-  String get _favoriteKey => widget.session?.id ?? _defaultFavoriteKey;
+  bool get _showsClassicActions =>
+      widget.session == null || widget.showClassicActions;
   List<(double, String)> get _transcript =>
       widget.session?.transcript ?? _defaultTranscript;
   Timer? _noticeTimer;
@@ -132,7 +135,7 @@ class _AffirmationPlayerScreenState extends State<AffirmationPlayerScreen> {
     _wasPlaying = _player.isPlaying;
     _artworkStarted |= _wasPlaying;
     _player.addListener(_onPlaybackChanged);
-    if (widget.session == null) _readFavorite();
+    if (_showsClassicActions) _readFavorite();
     _perform(() async {
       await _player.initialize();
       if (mounted &&
@@ -170,7 +173,7 @@ class _AffirmationPlayerScreenState extends State<AffirmationPlayerScreen> {
       if (!mounted) return;
       setState(() {
         _favorites = box;
-        _favorite = box.get(_favoriteKey, defaultValue: false) ?? false;
+        _favorite = box.get(_defaultFavoriteKey, defaultValue: false) ?? false;
       });
     } catch (_) {
       // Opening the player works even when local preferences are unavailable.
@@ -242,8 +245,9 @@ class _AffirmationPlayerScreenState extends State<AffirmationPlayerScreen> {
       final box =
           _favorites ??
           await Hive.openBox<bool>('affirmation_player_favorites');
-      final next = !(box.get(_favoriteKey, defaultValue: false) ?? false);
-      await box.put(_favoriteKey, next);
+      final next =
+          !(box.get(_defaultFavoriteKey, defaultValue: false) ?? false);
+      await box.put(_defaultFavoriteKey, next);
       if (!mounted) return;
       setState(() {
         _favorites = box;
@@ -275,7 +279,9 @@ class _AffirmationPlayerScreenState extends State<AffirmationPlayerScreen> {
       final box = buttonContext.findRenderObject() as RenderBox;
       await SharePlus.instance.share(
         ShareParams(
-          uri: Uri.parse(PracticeLink.url),
+          uri: PracticeLink.forLanguage(
+            Localizations.localeOf(context).languageCode,
+          ),
           subject: '$_recordingTitle · Asteria',
           sharePositionOrigin: box.localToGlobal(Offset.zero) & box.size,
         ),
@@ -422,7 +428,7 @@ class _AffirmationPlayerScreenState extends State<AffirmationPlayerScreen> {
                 showBack: widget.showBack,
                 compact: compact,
                 onExit: () => Navigator.of(context).maybePop(),
-                trailingActions: widget.session == null
+                trailingActions: _showsClassicActions
                     ? Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [

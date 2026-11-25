@@ -57,7 +57,11 @@ class ProfilePaymentRoute extends AppRoute {
           return AsteriaPage(
             key: state.pageKey,
             name: state.name,
-            child: Scaffold(body: Center(child: Text('Profile Payment'))),
+            child: Scaffold(
+              body: Center(
+                child: Text(AppLocalizations.of(context).paymentTitle),
+              ),
+            ),
           );
         },
       );

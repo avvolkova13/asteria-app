@@ -390,6 +390,46 @@ void main() {
   });
 
   test(
+    'retries a failed request in its original language after switch',
+    () async {
+      await AppLocalizations.load(const Locale('ru'));
+      final user = UserProvider(userRepository: _FakeUserRepository())
+        ..applyServerUserSnapshot(UserModel.empty().copyWith(id: 'user-1'));
+      final access = _FailingMonetizationProvider(user);
+      final pending = _RecordingPendingStore();
+      final locale = AppLocaleService(platformLocales: const [Locale('ru')]);
+      final provider = AnakraChatProvider(
+        chatService: AnakraChatService(_FakeBackendApi()),
+        userProvider: user,
+        monetizationProvider: access,
+        pendingFeatureExecutionStore: pending,
+        localeService: locale,
+      );
+      addTearDown(provider.dispose);
+      addTearDown(access.dispose);
+      addTearDown(user.dispose);
+
+      await provider.sendMessage('Will it work?');
+      expect(provider.messages, hasLength(2));
+      locale.updatePlatformLocales(const [Locale('en', 'GB')]);
+      await AppLocalizations.load(const Locale('en', 'GB'));
+      await provider.sendMessage('Will it work?');
+      await provider.sendMessage('Will it work?');
+      expect(pending.payloadKeys, hasLength(3));
+      expect(pending.payloadKeys.toSet(), hasLength(1));
+      expect(
+        access.payloads.map((payload) => payload['conversation_history']),
+        everyElement(isEmpty),
+      );
+      expect(provider.messages, hasLength(2));
+      expect(
+        access.payloads.map((payload) => payload['locale']),
+        everyElement('ru'),
+      );
+    },
+  );
+
+  test(
     'reuses the same pending command after a transient Anakra failure',
     () async {
       await AppLocalizations.load(const Locale('ru'));
@@ -487,6 +527,8 @@ class _FailingMonetizationProvider extends MonetizationProvider {
   _FailingMonetizationProvider(UserProvider userProvider)
     : super(api: _FakeMonetizationApi(), userProvider: userProvider);
 
+  final payloads = <Map<String, dynamic>>[];
+
   @override
   Future<bool> canMakeRequestFresh(String feature) async => true;
   @override
@@ -502,6 +544,7 @@ class _FailingMonetizationProvider extends MonetizationProvider {
     required Map<String, dynamic> payload,
     String? idempotencyKey,
   }) async {
+    payloads.add(payload);
     throw Exception('network lost after commit');
   }
 }

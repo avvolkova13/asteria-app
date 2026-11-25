@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:asteria_app/core/localization/locale_formatters.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
@@ -44,15 +45,6 @@ class _CalendarPlansViewState extends State<CalendarPlansView> {
       .where((plan) => calendarDateKey(plan.day) == calendarDateKey(day))
       .toList();
 
-  DateTime _weekStart(DateTime day) {
-    final first = MaterialLocalizations.of(context).firstDayOfWeekIndex;
-    return DateTime.utc(
-      day.year,
-      day.month,
-      day.day - (day.weekday % 7 - first + 7) % 7,
-    );
-  }
-
   DateTime _bounded(DateTime date) {
     final first = DateTime.utc(2000);
     final last = DateTime.utc(2050, 12, 31);
@@ -91,15 +83,10 @@ class _CalendarPlansViewState extends State<CalendarPlansView> {
     if (_mode == PlansCalendarMode.month) {
       return DateFormat.yMMMM(_locale).format(_selected);
     }
-    final first = _weekStart(_selected);
-    final last = first.add(const Duration(days: 6));
-    if (first.year == last.year && first.month == last.month) {
-      if (Localizations.localeOf(context).languageCode == 'en') {
-        return '${DateFormat.MMMd(_locale).format(first)}–${last.day}';
-      }
-      return '${first.day}–${DateFormat.MMMMd(_locale).format(last)}';
-    }
-    return '${DateFormat.MMMd(_locale).format(first)} — ${DateFormat.yMMMd(_locale).format(last)}';
+    return LocaleFormatters.weekDateRange(
+      LocaleFormatters.startOfWeek(context, _selected),
+      Localizations.localeOf(context),
+    );
   }
 
   String _capitalized(String value) =>
@@ -185,7 +172,7 @@ class _CalendarPlansViewState extends State<CalendarPlansView> {
       padding: const EdgeInsets.symmetric(vertical: 12),
       minimumSize: const Size(44, 44),
     );
-    final weekStart = _weekStart(_selected);
+    final weekStart = LocaleFormatters.startOfWeek(context, _selected);
     final days = _mode == PlansCalendarMode.week
         ? List.generate(7, (i) => weekStart.add(Duration(days: i)))
         : [_selected];

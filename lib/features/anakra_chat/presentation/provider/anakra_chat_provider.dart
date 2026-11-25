@@ -8,6 +8,7 @@ import 'package:asteria_app/core/extensions/datetime_extensions.dart';
 import 'package:asteria_app/core/localization/app_locale_service.dart';
 import 'package:asteria_app/core/localization/generated/l10n.dart';
 import 'package:asteria_app/features/anakra_chat/data/services/anakra_chat_service.dart';
+import 'package:asteria_app/features/anakra_chat/presentation/anakra_system_message.dart';
 import 'package:asteria_app/features/monetization/data/pending_feature_execution_store.dart';
 import 'package:asteria_app/features/monetization/presentation/monetization_provider.dart';
 import 'package:asteria_app/features/scenarios/free_attempt.dart';
@@ -184,6 +185,10 @@ class AnakraChatProvider extends ChangeNotifier {
       throw Exception('Пользователь не авторизован');
     }
     final commandMessages = _messagesForCommandKey(text.trim());
+    final retryLocale = commandMessages.length < _messages.length
+        ? _messages[commandMessages.length].locale
+        : null;
+    final requestedLocale = retryLocale ?? _localeService.languageTag;
     final payloadKey = _stablePayloadKey('anakra', {
       'text': text.trim(),
       'history': commandMessages
@@ -196,6 +201,7 @@ class AnakraChatProvider extends ChangeNotifier {
       userId: userId,
       featureKey: 'request_quota_command',
       payloadKey: payloadKey,
+      result: {'locale': requestedLocale},
     );
     if (stale()) return AnakraSendOutcome.stale;
     if (freeRequestIsCurrent != null) {
@@ -206,6 +212,9 @@ class AnakraChatProvider extends ChangeNotifier {
         throw Exception('no_requests');
       }
     }
+    // A retry must send the same locale with its original idempotency key.
+    final requestLocale =
+        pending.result?['locale'] as String? ?? requestedLocale;
     final conversationHistory = commandMessages
         .map(
           (m) => {'role': m.isUser ? 'user' : 'assistant', 'content': m.text},
@@ -216,16 +225,18 @@ class AnakraChatProvider extends ChangeNotifier {
       text: text.trim(),
       isUser: true,
       timestamp: DateTime.now(),
-      locale: _localeService.languageTag,
+      locale: requestLocale,
     );
 
-    _messages.add(userMessage);
+    _messages
+      ..removeRange(commandMessages.length, _messages.length)
+      ..add(userMessage);
     _isLoadingAnakra = true;
     notifyListeners();
 
     final userName = user?.name;
     final zodiac = user?.personalInfo?.birthDate?.birthDate.getZodiacSignName(
-      languageCode: _localeService.contentLanguage,
+      languageCode: requestLocale.split('-').first,
     );
 
     try {
@@ -236,7 +247,7 @@ class AnakraChatProvider extends ChangeNotifier {
           'conversation_history': conversationHistory,
           'user_name': userName,
           'zodiac': zodiac,
-          'locale': _localeService.languageTag,
+          'locale': requestLocale,
         },
         idempotencyKey: pending.idempotencyKey,
       );
@@ -297,15 +308,15 @@ class AnakraChatProvider extends ChangeNotifier {
 
   List<AnakraChatMessageModel> _messagesForCommandKey(String text) {
     final messages = List<AnakraChatMessageModel>.of(_messages);
-    if (messages.length < 2) return messages;
-    final last = messages.last;
-    final previous = messages[messages.length - 2];
-    if (!last.isUser &&
-        last.text == AppLocalizations.current.anakraServerError &&
-        previous.isUser &&
-        previous.text.trim() == text) {
-      messages.removeLast();
-      messages.removeLast();
+    while (messages.length >= 2) {
+      final last = messages.last;
+      final previous = messages[messages.length - 2];
+      if (last.systemKind != AnakraSystemMessage.serverError ||
+          !previous.isUser ||
+          previous.text.trim() != text) {
+        break;
+      }
+      messages.removeRange(messages.length - 2, messages.length);
     }
     return messages;
   }

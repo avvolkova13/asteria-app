@@ -11,6 +11,8 @@ import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/ui_kit/widgets/closed_content_modal.dart';
 import 'package:asteria_app/core/ui_kit/widgets/top_nav_bar.dart';
+import 'package:asteria_app/features/affirmation/affirmation_screen.dart';
+import 'package:asteria_app/features/affirmation/recorded_affirmations.dart';
 import 'package:asteria_app/features/home/presentation/cubit/home_cubit.dart';
 import 'package:asteria_app/features/home/presentation/cubit/home_state.dart';
 import 'package:asteria_app/features/home/presentation/widgets/widgets_index.dart';
@@ -147,9 +149,8 @@ class _MainScreenState extends State<MainScreen> {
               bottom: false,
               child: CustomScrollView(
                 physics: const ClampingScrollPhysics(),
-                scrollBehavior: ScrollConfiguration.of(
-                  context,
-                ).copyWith(overscroll: false),
+                scrollBehavior: ScrollConfiguration.of(context)
+                    .copyWith(overscroll: false),
                 slivers: [
                   SliverLayoutBuilder(
                     builder: (context, constraints) => PinnedHeaderSliver(
@@ -272,23 +273,36 @@ class _MainScreenState extends State<MainScreen> {
           ctaName: action,
         );
 
+    final ru = Localizations.localeOf(context).languageCode == 'ru';
     return AffirmationOfTheDayWidget(
-      onPlay: () => track('play_affirmation'),
-      onOpenCollection: () async {
-        if (_contentProvider.affirmations.isEmpty) {
-          await _contentProvider.loadContent();
-          if (!mounted ||
-              !(ModalRoute.isCurrentOf(context) ?? true) ||
-              !TickerMode.valuesOf(context).enabled) {
-            return;
-          }
-          if (_contentProvider.affirmations.isEmpty) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(context.l10n.affirmationLoadError)),
+      key: ValueKey(ru),
+      resolveAudioAsset: () {
+        if (_contentProvider.affirmations.isNotEmpty) {
+          final card = _contentProvider.getTodayAffirmation();
+          final daily = ru ? revisedRussianAffirmation(card) : card;
+          final canPlayDaily =
+              (MonetizationProvider.maybeOf(
+                    context,
+                    listen: false,
+                  )?.effectivePro ??
+                  false) ||
+              freeAffirmationCategoryIds.contains(daily.effectiveCategoryId);
+          if (canPlayDaily) {
+            final recording = lookupRecordedAffirmation(
+              daily.id,
+              catalogText: daily.text,
+              ru: ru,
             );
-            return;
+            if (recording != null) return recording.asset;
           }
         }
+        return lookupRecordedAffirmation(
+          'asteria-recording:time',
+          ru: ru,
+        )?.asset;
+      },
+      onPlay: () => track('play_affirmation'),
+      onOpenCollection: () async {
         track('open_affirmation');
         if (mounted) AffirmationRoute.push(context);
       },

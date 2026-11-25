@@ -1,3 +1,4 @@
+import 'package:asteria_app/features/home/presentation/models/day_status.dart';
 import 'package:asteria_app/features/home/presentation/widgets/moon_calendar_widget.dart';
 import 'package:asteria_app/features/home/presentation/widgets/day_status_icon.dart';
 import 'package:asteria_app/core/localization/localization.dart';
@@ -25,6 +26,7 @@ Future<void> host(
   List<CalendarPlan> plans = const [],
   DateTime? today,
   String locale = 'ru',
+  String? region,
   double scale = 1,
   bool reducedMotion = true,
   Size size = const Size(390, 844),
@@ -37,7 +39,7 @@ Future<void> host(
   addTearDown(tester.view.resetDevicePixelRatio);
   await tester.pumpWidget(
     MaterialApp(
-      locale: Locale(locale),
+      locale: Locale(locale, region),
       supportedLocales: AppLocaleService.supportedLocales,
       localizationsDelegates: const [
         AppLocalizations.delegate,
@@ -97,6 +99,24 @@ void main() {
     );
     expect(card.hitTestable(), findsOneWidget);
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('British English uses a Monday-first day–month week label', (
+    tester,
+  ) async {
+    await host(tester, locale: 'en', region: 'GB');
+
+    await tap(tester, find.text('Week'));
+
+    expect(find.text('16–22 Nov'), findsOneWidget);
+    expect(
+      tester
+          .widget<TableCalendar<DayStatus>>(
+            find.byType(TableCalendar<DayStatus>),
+          )
+          .startingDayOfWeek,
+      StartingDayOfWeek.monday,
+    );
   });
 
   testWidgets('compact English calendar keeps weekday and month words intact', (

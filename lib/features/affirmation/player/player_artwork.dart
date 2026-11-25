@@ -8,6 +8,10 @@ import 'package:flutter/scheduler.dart';
 
 import 'affirmation_motion_artwork.dart';
 import 'body_motion_artwork.dart';
+import 'compass_motion.dart';
+import 'cover_motion_artwork.dart';
+import 'door_motion.dart';
+import 'plate_motion.dart';
 import 'player_subject_motion.dart';
 
 const playerArtDirectory = 'assets/images/affirmation';
@@ -392,6 +396,16 @@ class _PracticeSceneArtwork extends StatelessWidget {
                             motion: subject,
                             phase: phase,
                           ),
+                          null
+                              when art != null &&
+                                  art.startsWith(
+                                    '$playerArtDirectory/cover-',
+                                  ) =>
+                            _CoverForeground(
+                              cover: art,
+                              phase: phase,
+                              seconds: seconds,
+                            ),
                           null when art != null => Image.asset(
                             art,
                             fit: BoxFit.contain,
@@ -448,6 +462,231 @@ class _LayeredAtmosphere extends CustomPainter {
       oldDelegate.phase != phase ||
       oldDelegate.scene != scene ||
       oldDelegate.shader != shader;
+}
+
+class _CoverForeground extends StatelessWidget {
+  const _CoverForeground({
+    required this.cover,
+    required this.phase,
+    required this.seconds,
+  });
+
+  final String cover;
+  final double phase, seconds;
+
+  @override
+  Widget build(BuildContext context) {
+    final filename = cover.split('/').last;
+    final subject = '$playerArtDirectory/motion/subjects/$filename';
+    if (filename == 'cover-5UgabJFV5M2TiptnhZMm.webp') {
+      return DoorMotionArtwork(asset: subject, seconds: seconds);
+    }
+    if (filename == 'cover-EG8DuZL1V6idVvW0jp4B.webp') {
+      return _CraneGiftArtwork(asset: subject, seconds: seconds);
+    }
+    if (filename == 'cover-9Mvd1yeBUDmiLPRdJ1mv.webp') {
+      return _RotatingRibbonArtwork(asset: subject, seconds: seconds);
+    }
+    if (filename == 'cover-aivVFq7TD00qsfLg4VzX.webp') {
+      return PlateMotionArtwork(asset: subject, seconds: seconds);
+    }
+    if (filename == 'cover-choose-yourself.webp') {
+      return CompassMotionArtwork(asset: subject, seconds: seconds);
+    }
+    if (filename == 'cover-km6gqT17HfO35Q4t0WQo.webp') {
+      return CustomPaint(painter: _LunarRipple(phase));
+    }
+    final id = filename.substring(
+      'cover-'.length,
+      filename.length - '.webp'.length,
+    );
+    final scene = coverMotions[id];
+    return scene == null
+        ? Image.asset(subject, fit: BoxFit.contain)
+        : CoverMotionArtwork(asset: subject, scene: scene, seconds: seconds);
+  }
+}
+
+class _CraneGiftArtwork extends StatelessWidget {
+  const _CraneGiftArtwork({required this.asset, required this.seconds});
+
+  final String asset;
+  final double seconds;
+
+  @override
+  Widget build(BuildContext context) {
+    final image = Image.asset(asset, fit: BoxFit.contain);
+    const hinge = Alignment(2 * 283 / 350 - 1, 2 * 124 / 350 - 1);
+    final angle = .065 * math.sin(2 * math.pi * seconds / 16);
+
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        Transform.rotate(
+          alignment: hinge,
+          angle: angle,
+          child: ClipPath(
+            clipper: const _CraneGiftClipper(gift: true),
+            child: image,
+          ),
+        ),
+        ClipPath(clipper: const _CraneGiftClipper(gift: false), child: image),
+      ],
+    );
+  }
+}
+
+class _CraneGiftClipper extends CustomClipper<Path> {
+  const _CraneGiftClipper({required this.gift});
+
+  final bool gift;
+
+  @override
+  Path getClip(Size size) {
+    // The cut splits the rope where it leaves the beak. Both layers keep
+    // their source registration as the gift rotates around that same point.
+    final suspended =
+        (Path()
+              ..moveTo(274, 124)
+              ..lineTo(291, 124)
+              ..lineTo(299, 149)
+              ..lineTo(336, 152)
+              ..lineTo(336, 248)
+              ..lineTo(236, 248)
+              ..lineTo(236, 164)
+              ..lineTo(272, 161)
+              ..close())
+            .transform(
+              Matrix4.diagonal3Values(
+                size.width / 350,
+                size.height / 350,
+                1,
+              ).storage,
+            );
+    return gift
+        ? suspended
+        : Path.combine(
+            PathOperation.difference,
+            Path()..addRect(Offset.zero & size),
+            suspended,
+          );
+  }
+
+  @override
+  bool shouldReclip(_CraneGiftClipper oldClipper) => oldClipper.gift != gift;
+}
+
+class _RotatingRibbonArtwork extends StatelessWidget {
+  const _RotatingRibbonArtwork({required this.asset, required this.seconds});
+
+  final String asset;
+  final double seconds;
+
+  @override
+  Widget build(BuildContext context) {
+    final image = Image.asset(asset, fit: BoxFit.contain);
+    const center = Alignment(2 * 177 / 350 - 1, 2 * 180 / 350 - 1);
+    final angle = 2 * math.pi * (seconds % 36) / 36;
+
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        FractionalTranslation(
+          translation: const Offset(0, -46 / 350),
+          child: ClipPath(
+            clipper: const _RibbonStoneClipper(stone: true),
+            child: image,
+          ),
+        ),
+        Transform.rotate(
+          alignment: center,
+          angle: angle,
+          child: ClipPath(
+            clipper: const _RibbonStoneClipper(stone: false),
+            child: image,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _RibbonStoneClipper extends CustomClipper<Path> {
+  const _RibbonStoneClipper({required this.stone});
+
+  final bool stone;
+
+  @override
+  Path getClip(Size size) {
+    final pebble =
+        (Path()
+              ..moveTo(141, 258)
+              ..cubicTo(136, 253, 138, 239, 153, 232)
+              ..cubicTo(174, 221, 207, 225, 215, 241)
+              ..cubicTo(225, 262, 205, 273, 181, 271)
+              ..cubicTo(166, 272, 153, 265, 141, 258)
+              ..close())
+            .transform(
+              Matrix4.diagonal3Values(
+                size.width / 350,
+                size.height / 350,
+                1,
+              ).storage,
+            );
+    return stone
+        ? pebble
+        : Path.combine(
+            PathOperation.difference,
+            Path()..addRect(Offset.zero & size),
+            pebble,
+          );
+  }
+
+  @override
+  bool shouldReclip(_RibbonStoneClipper oldClipper) =>
+      oldClipper.stone != stone;
+}
+
+class _LunarRipple extends CustomPainter {
+  const _LunarRipple(this.phase);
+
+  final double phase;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = Offset(size.width * .5, size.height * .53);
+    final paint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round;
+
+    for (var ring = 0; ring < 5; ring++) {
+      final travel = (phase / (2 * math.pi) + ring / 5 + .12) % 1;
+      final radius = size.width * (.035 + .43 * travel);
+      final opacity = math.pow(math.sin(math.pi * travel), 1.4).toDouble();
+      final oval = Rect.fromCenter(
+        center: center.translate(0, radius * .095),
+        width: radius * 2,
+        height: radius * .52,
+      );
+      paint
+        ..color = const Color(0xFFDAABE8).withValues(alpha: .22 * opacity)
+        ..strokeWidth = 3
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 2.5);
+      canvas.drawOval(oval, paint);
+      paint
+        ..color = const Color(0xFFECC4F3).withValues(alpha: .52 * opacity)
+        ..strokeWidth = 1.05
+        ..maskFilter = null;
+      canvas.drawOval(oval, paint);
+      paint
+        ..color = const Color(0xFFFFDBF5).withValues(alpha: .38 * opacity)
+        ..strokeWidth = 1.8;
+      canvas.drawArc(oval, .54, 2.03, false, paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(_LunarRipple oldDelegate) => phase != oldDelegate.phase;
 }
 
 class _SceneAtmosphere extends CustomPainter {

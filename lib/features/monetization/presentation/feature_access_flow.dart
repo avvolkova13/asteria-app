@@ -73,10 +73,11 @@ Future<PurchaseModalOutcome?> showFeaturePurchaseModal({
       }
       try {
         final action = purchase.onAccessPurchase;
-        if (action == null)
+        if (action == null) {
           throw StateError(
             'PRO execution requires an explicit access contract',
           );
+        }
         await action(true, const Uuid().v4());
         await provider.refresh();
         if (context.mounted &&

@@ -185,9 +185,8 @@ class _DreamFormState extends State<_DreamForm> {
     if (text.isEmpty) return null;
     if (interpretation == null && text == _savedEntry?.text) return _savedEntry;
     try {
-      final saved = await DreamJournal(
-        owner,
-      ).save(text, entry: _savedEntry, interpretation: interpretation);
+      final saved = await DreamJournal(owner)
+          .save(text, entry: _savedEntry, interpretation: interpretation);
       if (!_current) return null;
       setState(() => _savedEntry = saved);
       return saved;

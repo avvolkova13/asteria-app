@@ -30,20 +30,21 @@ void main() {
   tearDown(() async => di.reset());
 
   for (final use24Hour in [false, true]) {
-    testWidgets('US birth time uses AM/PM with system 24h=$use24Hour', (
-      tester,
-    ) async {
-      await _pumpChart(
-        tester,
-        320,
-        'Planet description.',
-        locale: const Locale('en', 'US'),
-        use24Hour: use24Hour,
-      );
-      expect(find.text('2:58 PM'), findsOneWidget);
-      expect(find.text('14:58'), findsNothing);
-      expect(tester.takeException(), isNull);
-    });
+    testWidgets(
+      'US birth time follows the system clock setting: 24h=$use24Hour',
+      (tester) async {
+        await _pumpChart(
+          tester,
+          320,
+          'Planet description.',
+          locale: const Locale('en', 'US'),
+          use24Hour: use24Hour,
+        );
+        expect(find.text(use24Hour ? '14:58' : '2:58 PM'), findsOneWidget);
+        expect(find.text(use24Hour ? '2:58 PM' : '14:58'), findsNothing);
+        expect(tester.takeException(), isNull);
+      },
+    );
   }
 
   for (final exact in [true, false]) {

@@ -18,6 +18,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:table_calendar/table_calendar.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -29,6 +30,24 @@ void main() {
         rootBundle.load('assets/fonts/onest/Onest-VariableFont_wght.ttf'),
       );
     await fonts.load();
+  });
+
+  testWidgets('lunar calendar starts on Sunday in US English', (tester) async {
+    final cubit = _TestMoonScreenCubit();
+    addTearDown(cubit.close);
+    await tester.pumpWidget(
+      _calendarApp(cubit, locale: const Locale('en', 'US')),
+    );
+    await tester.pumpAndSettle();
+
+    expect(
+      tester
+          .widget<TableCalendar<DayStatus>>(
+            find.byType(TableCalendar<DayStatus>),
+          )
+          .startingDayOfWeek,
+      StartingDayOfWeek.sunday,
+    );
   });
 
   for (final viewportHeight in [740.0, 900.0]) {
@@ -383,12 +402,13 @@ void main() {
 Widget _calendarApp(
   MoonScreenCubit cubit, {
   double textScale = 0.5,
+  Locale locale = const Locale('ru'),
   List<CalendarPlan> plans = const [],
 }) {
   return BlocProvider<MoonScreenCubit>.value(
     value: cubit,
     child: MaterialApp(
-      locale: const Locale('ru'),
+      locale: locale,
       localizationsDelegates: const [
         AppLocalizations.delegate,
         ...GlobalMaterialLocalizations.delegates,

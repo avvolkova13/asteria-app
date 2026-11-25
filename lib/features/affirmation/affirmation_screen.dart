@@ -13,6 +13,7 @@ import 'package:asteria_app/core/analytics/product_analytics_service.dart';
 import 'package:asteria_app/core/di/di.dart';
 import 'package:asteria_app/core/routing/app_route.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
+import 'package:asteria_app/features/affirmation/recorded_affirmations.dart';
 import 'package:asteria_app/features/affirmation/widgets/affirmation_category_widget.dart';
 import 'package:asteria_app/features/affirmation/widgets/affirmation_card_widget.dart';
 import 'package:asteria_app/features/monetization/presentation/monetization_provider.dart';
@@ -29,12 +30,32 @@ class AffirmationScreen extends StatefulWidget {
 }
 
 class _AffirmationScreenState extends State<AffirmationScreen> {
+  bool _loadingCollection = false;
+
   @override
   void initState() {
     super.initState();
     di.get<ProductAnalyticsService>().trackAffirmationsStart(
       entrySurface: EntrySurface.home,
     );
+    final content = di.get<ContentProvider>();
+    if (content.affirmations.isEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted && content.affirmations.isEmpty) _loadCollection(content);
+      });
+    }
+  }
+
+  Future<void> _loadCollection(ContentProvider content) async {
+    if (_loadingCollection) return;
+    _loadingCollection = true;
+    try {
+      await content.loadContent();
+    } catch (error) {
+      debugPrint('Could not load the affirmation collection: $error');
+    } finally {
+      _loadingCollection = false;
+    }
   }
 
   @override
@@ -71,6 +92,8 @@ class _AffirmationScreenState extends State<AffirmationScreen> {
                           MonetizationProvider.maybeOf(context)?.effectivePro ??
                           false;
 
+                      final isRussian =
+                          Localizations.localeOf(context).languageCode == 'ru';
                       return Center(
                         child: ConstrainedBox(
                           constraints: const BoxConstraints(maxWidth: 1080),
@@ -82,8 +105,21 @@ class _AffirmationScreenState extends State<AffirmationScreen> {
                                     'affirmation_category_$category',
                                   ),
                                   category: category,
-                                  affirmations: contentProvider
-                                      .getAffirmationsByCategory(category),
+                                  affirmations: isRussian
+                                      ? mergeRecordedAffirmations(
+                                          category,
+                                          contentProvider
+                                              .getAffirmationsByCategory(
+                                                category,
+                                              ),
+                                        )
+                                      : mergeEnglishRecordedAffirmations(
+                                          category,
+                                          contentProvider
+                                              .getAffirmationsByCategory(
+                                                category,
+                                              ),
+                                        ),
                                   showAffirmations:
                                       hasSubscription ||
                                       freeAffirmationCategoryIds.contains(

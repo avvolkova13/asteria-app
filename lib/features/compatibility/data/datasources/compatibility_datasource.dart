@@ -10,6 +10,7 @@ abstract class CompatibilityDataSource {
     required String hisName,
     required String herBirthdate,
     required String hisBirthdate,
+    String? localeTag,
   });
 }
 
@@ -24,6 +25,7 @@ class CompatibilityDataSourceImpl implements CompatibilityDataSource {
     required String hisName,
     required String herBirthdate,
     required String hisBirthdate,
+    String? localeTag,
   }) async {
     try {
       final response = await _api.calculateCompatibility(
@@ -31,6 +33,7 @@ class CompatibilityDataSourceImpl implements CompatibilityDataSource {
         hisName: hisName,
         herBirthdate: herBirthdate,
         hisBirthdate: hisBirthdate,
+        localeTag: localeTag,
       );
 
       if (response.statusCode == 200) {

@@ -1,7 +1,8 @@
 import 'package:asteria_app/features/scenarios/scenario_sky.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_entrance.dart';
 import 'package:asteria_app/core/extensions/build_context_extensions.dart';
-import 'package:asteria_app/features/affirmation/player/affirmation_player_screen.dart';
+import 'package:asteria_app/features/affirmation/recorded_affirmations.dart';
+import 'package:asteria_app/features/affirmation/selected_affirmation_player.dart';
 import 'package:asteria_app/features/affirmation/player/practice_link.dart';
 import 'package:flutter/cupertino.dart';
 
@@ -52,7 +53,7 @@ const availablePracticeRecordings = [
     id: PracticeLink.url,
     mood: PracticeMood.slowDown,
     title: 'У меня есть время',
-    duration: Duration(seconds: 75),
+    duration: Duration(minutes: 3, seconds: 30),
     open: _openBundledPractice,
   ),
 ];
@@ -60,18 +61,25 @@ const availablePracticeRecordings = [
 Future<void> _openBundledPractice(BuildContext context) =>
     Navigator.of(context).push<void>(
       CupertinoPageRoute(
-        builder: (playerContext) => ScenarioSkyScope(
-          child: AffirmationPlayerScreen(
-            showBack: true,
-            autoPlay: true,
-            onCompleted: () =>
-                Navigator.of(playerContext).pushReplacement<void, void>(
-                  CupertinoPageRoute(
-                    builder: (_) => const PracticeReflectionScreen(),
+        builder: (playerContext) {
+          final ru = Localizations.localeOf(playerContext).languageCode == 'ru';
+          final recording = ru
+              ? longAffirmationRecordings['time']!
+              : englishAffirmationRecordings['time']!;
+          return ScenarioSkyScope(
+            child: RecordedAffirmationPlayer(
+              recording: recording,
+              autoPlay: true,
+              showClassicActions: true,
+              onCompleted: () =>
+                  Navigator.of(playerContext).pushReplacement<void, void>(
+                    CupertinoPageRoute(
+                      builder: (_) => const PracticeReflectionScreen(),
+                    ),
                   ),
-                ),
-          ),
-        ),
+            ),
+          );
+        },
       ),
     );
 

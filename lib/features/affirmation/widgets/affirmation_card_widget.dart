@@ -6,6 +6,28 @@ import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 import 'package:asteria_app/core/ui_kit/widgets/swipe_card_stack.dart';
 import 'package:flutter/material.dart';
 
+import '../recorded_affirmations.dart';
+
+const _retainedAnimatedCovers = <String, String>{
+  '4Oqyi5XVAE6lcgztYPCc': 'category_love_3.webp',
+  '0ZoFG4NOsJ5ZcWjLWENa': 'category_love.webp',
+  'clOn1wi579NncTK6zQcx': 'category_love_2.webp',
+  '6Wq3QE9b71isEs6n10VM': 'category_izobilie.webp',
+  'gqxeHlN3OPe0zgeUpkj1': 'category_izobilie_3.webp',
+  'SwwkOrdN7FCyYRSbtv31': 'category_izobilie_2.webp',
+  'kfsCnHI5VZA1jZaVbLlP': 'category_power_2.webp',
+  'oFfesgxjjpNATYDEFpA1': 'category_power.webp',
+  'ynCib47iBHwh1c4c3XD6': 'category_power_3.webp',
+  'RdnNFq16LxLl6CJneTi3': 'category_creative.webp',
+  'PT9zmZm7MQ15BNH70Py0': 'category_creative_3.webp',
+  'start-small': 'category_creative_2.webp',
+  '8wjAp573SioASSZ4HbBK': 'category_moon_2.webp',
+  'ZCqfkPBvBekF3D8JxnSm': 'category_moon_3.webp',
+  'wnSJaH9iMyYMjpVPE4GD': 'category_moon.webp',
+  'VAaa7qezGmsNk9FbQVY2': 'category_calm_3.webp',
+  'yM3PS6uaWE9k9ygdNZCA': 'category_calm_2.webp',
+};
+
 class AffirmationCardWidget extends StatelessWidget {
   final AffirmationModel affirmation;
   final int imageIndex;
@@ -26,7 +48,21 @@ class AffirmationCardWidget extends StatelessWidget {
     this.showOpenIndicator = true,
   });
 
-  static String artworkFor(String categoryId, int imageIndex) {
+  static String artworkFor(
+    String categoryId,
+    int imageIndex, {
+    String? affirmationId,
+  }) {
+    const libraryPrefix = 'asteria-recording:';
+    final coverId = affirmationId?.startsWith(libraryPrefix) == true
+        ? affirmationId!.substring(libraryPrefix.length)
+        : affirmationId;
+    if (coverId != null && longAffirmationRecordings.containsKey(coverId)) {
+      final filename =
+          _retainedAnimatedCovers[coverId] ?? 'cover-$coverId.webp';
+      return 'assets/images/affirmation/$filename';
+    }
+
     final imageName = switch (categoryId) {
       'abundance' => 'izobilie',
       'strength' => 'power',
@@ -51,6 +87,7 @@ class AffirmationCardWidget extends StatelessWidget {
   String get imageAssetPath => artworkFor(
     affirmation.effectiveCategoryId,
     deck == null ? imageIndex : coverIndex(imageIndex, deck!.length),
+    affirmationId: affirmation.id,
   );
 
   @override
@@ -72,9 +109,21 @@ class AffirmationCardWidget extends StatelessWidget {
               for (final card in deck ?? [affirmation])
                 Text(
                   card.text,
-                  style: context.textTheme.inverseUrbanistRegular16.copyWith(
-                    height: 1.3,
-                  ),
+                  style:
+                      lookupRecordedAffirmation(
+                            card.id,
+                            catalogText: card.text,
+                            ru:
+                                Localizations.localeOf(context).languageCode ==
+                                'ru',
+                          )?.title ==
+                          card.text
+                      ? context.textTheme.inversePlayfairRegular18.copyWith(
+                          height: 1.25,
+                        )
+                      : context.textTheme.inverseUrbanistRegular16.copyWith(
+                          height: 1.3,
+                        ),
                   textAlign: TextAlign.start,
                 ),
             ],
@@ -158,7 +207,9 @@ class PracticeCardArtwork extends StatelessWidget {
   Widget build(BuildContext context) => LayoutBuilder(
     builder: (context, constraints) {
       final height = constraints.maxHeight;
-      final width = height * _portraitAspectRatio;
+      final width = asset.startsWith('assets/images/affirmation/cover-')
+          ? height
+          : height * _portraitAspectRatio;
       Widget portrait() =>
           Image.asset(asset, fit: BoxFit.contain, excludeFromSemantics: true);
 

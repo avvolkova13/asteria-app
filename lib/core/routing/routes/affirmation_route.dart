@@ -40,7 +40,7 @@ class AffirmationPlayerRoute extends AppRoute {
             AffirmationSelection selection => SelectedAffirmationPlayer(
               selection: selection,
             ),
-            _ => const AffirmationPlayerScreen(),
+            _ => const DefaultAffirmationPlayer(),
           },
         ),
       );

@@ -13,7 +13,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:asteria_app/core/ui_kit/theme/theme.dart';
 
-Widget app(Widget child) => MaterialApp(
+Widget app(Widget child, {Locale? locale}) => MaterialApp(
+  locale: locale,
   localizationsDelegates: const [
     AppLocalizations.delegate,
     ...GlobalMaterialLocalizations.delegates,
@@ -28,6 +29,48 @@ Widget app(Widget child) => MaterialApp(
 );
 
 void main() {
+  testWidgets('legacy system texts follow locale, chat text stays original', (
+    tester,
+  ) async {
+    final ru = await AppLocalizations.load(const Locale('ru'));
+    final russianWelcome = ru.anakraWelcomeMessage;
+    final russianError = ru.anakraServerError;
+    final en = await AppLocalizations.load(const Locale('en'));
+    final englishWelcome = en.anakraWelcomeMessage;
+    final englishError = en.anakraServerError;
+    final time = DateTime(2026);
+    final child = Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        for (final text in [russianWelcome, russianError])
+          AnakraChatMessage(
+            message: AnakraChatMessageModel(
+              text: text,
+              isUser: false,
+              timestamp: time,
+            ),
+          ),
+        AnakraChatMessage(
+          message: AnakraChatMessageModel(
+            text: russianError,
+            isUser: true,
+            timestamp: time,
+          ),
+        ),
+      ],
+    );
+    await tester.pumpWidget(app(child, locale: const Locale('en')));
+    await tester.pumpAndSettle();
+    expect(find.text(englishWelcome), findsOneWidget);
+    expect(find.text(englishError), findsOneWidget);
+    expect(find.text(russianError), findsOneWidget);
+    await tester.pumpWidget(app(child, locale: const Locale('ru')));
+    await tester.pumpAndSettle();
+    expect(find.text(russianWelcome), findsOneWidget);
+    expect(find.text(russianError), findsNWidgets(2));
+    expect(find.text(englishError), findsNothing);
+  });
+
   test('bubble tails keep their side as messages grow', () {
     for (final height in [52.0, 240.0]) {
       final size = Size(280, height);

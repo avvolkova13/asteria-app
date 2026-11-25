@@ -58,6 +58,7 @@ Future<void> mountDreams(
   required bool ru,
   required double width,
   double scale = 1,
+  bool system24Hour = false,
 }) async {
   await di.reset();
   final analytics = _Analytics();
@@ -82,7 +83,7 @@ Future<void> mountDreams(
         ChangeNotifierProvider<MonetizationProvider>.value(value: access),
       ],
       child: MaterialApp(
-        locale: Locale(ru ? 'ru' : 'en'),
+        locale: ru ? const Locale('ru') : const Locale('en', 'US'),
         supportedLocales: AppLocaleService.supportedLocales,
         localizationsDelegates: const [
           AppLocalizations.delegate,
@@ -93,6 +94,7 @@ Future<void> mountDreams(
           child: MediaQuery(
             data: MediaQuery.of(context).copyWith(
               disableAnimations: true,
+              alwaysUse24HourFormat: system24Hour,
               textScaler: TextScaler.linear(scale),
             ),
             child: child!,
@@ -171,6 +173,34 @@ void main() {
       );
     },
   );
+
+  for (final (ru, system24Hour, expected) in [
+    (false, false, '5:05 PM'),
+    (false, true, '17:05'),
+    (true, false, '17:05'),
+  ]) {
+    testWidgets(
+      'journal timestamps follow locale and system clock: $ru/$system24Hour',
+      (tester) async {
+        final user = DreamTestUser();
+        addTearDown(user.dispose);
+        await Hive.box<Map>('dream_journal_v1').put('${user.id}/clock', {
+          'text': 'A quiet lighthouse',
+          'at': DateTime(2026, 11, 16, 17, 5).millisecondsSinceEpoch,
+        });
+        await mountDreams(
+          tester,
+          user,
+          ru: ru,
+          width: 390,
+          system24Hour: system24Hour,
+        );
+
+        expect(find.text('A quiet lighthouse'), findsOneWidget);
+        expect(find.text(expected), findsOneWidget);
+      },
+    );
+  }
 
   for (final ru in [true, false]) {
     testWidgets(
