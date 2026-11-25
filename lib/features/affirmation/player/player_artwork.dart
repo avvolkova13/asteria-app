@@ -478,6 +478,9 @@ class _CoverForeground extends StatelessWidget {
   Widget build(BuildContext context) {
     final filename = cover.split('/').last;
     final subject = '$playerArtDirectory/motion/subjects/$filename';
+    if (filename == 'cover-d09HZSKvdtMrmJ9TrsbZ.webp') {
+      return _BellArtwork(asset: subject, seconds: seconds);
+    }
     if (filename == 'cover-5UgabJFV5M2TiptnhZMm.webp') {
       return DoorMotionArtwork(asset: subject, seconds: seconds);
     }
@@ -505,6 +508,83 @@ class _CoverForeground extends StatelessWidget {
         ? Image.asset(subject, fit: BoxFit.contain)
         : CoverMotionArtwork(asset: subject, scene: scene, seconds: seconds);
   }
+}
+
+// Registered to the 350 × 350 transparent cover. The paper overlaps the
+// bell at its right edge; extend its face underneath the swinging brass.
+class _BellArtwork extends StatelessWidget {
+  const _BellArtwork({required this.asset, required this.seconds});
+
+  final String asset;
+  final double seconds;
+
+  @override
+  Widget build(BuildContext context) {
+    final phase = seconds * 2 * math.pi / 4.8;
+    Widget plate() => Image.asset(asset, excludeFromSemantics: true);
+    return FittedBox(
+      child: SizedBox.square(
+        dimension: 350,
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            ClipPath(
+              clipper: const _BellClip(paperUnderBell: true),
+              child: Transform.translate(
+                offset: const Offset(-38, 0),
+                child: plate(),
+              ),
+            ),
+            ClipPath(clipper: const _BellClip(inverse: true), child: plate()),
+            Transform.rotate(
+              alignment: const Alignment(125 / 175 - 1, 95 / 175 - 1),
+              angle: .115 * math.sin(phase),
+              child: ClipPath(clipper: const _BellClip(), child: plate()),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _BellClip extends CustomClipper<Path> {
+  const _BellClip({this.inverse = false, this.paperUnderBell = false});
+  final bool inverse;
+  final bool paperUnderBell;
+
+  @override
+  Path getClip(Size size) {
+    final bell = Path()
+      ..moveTo(32, 67)
+      ..lineTo(166, 67)
+      ..lineTo(167, 195)
+      ..cubicTo(169, 224, 179, 254, 196, 275)
+      ..lineTo(200, 280)
+      ..lineTo(201, 298)
+      ..lineTo(32, 298)
+      ..close();
+    if (inverse)
+      return Path.combine(
+        PathOperation.difference,
+        Path()..addRect(Offset.zero & size),
+        bell,
+      );
+    if (paperUnderBell) {
+      final paper = Path()
+        ..moveTo(177, 165)
+        ..lineTo(228, 168)
+        ..lineTo(211, 280)
+        ..lineTo(150, 274)
+        ..close();
+      return Path.combine(PathOperation.intersect, paper, bell);
+    }
+    return bell;
+  }
+
+  @override
+  bool shouldReclip(_BellClip old) =>
+      inverse != old.inverse || paperUnderBell != old.paperUnderBell;
 }
 
 class _CraneGiftArtwork extends StatelessWidget {

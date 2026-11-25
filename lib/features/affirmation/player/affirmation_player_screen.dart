@@ -122,7 +122,6 @@ class _AffirmationPlayerScreenState extends State<AffirmationPlayerScreen> {
   bool _audioUnavailable = false;
   bool _silentFallback = false;
   bool _wasPlaying = false;
-  bool _artworkStarted = false;
   bool _seeking = false;
   bool _completionReported = false;
   double? _seekPreview;
@@ -133,7 +132,6 @@ class _AffirmationPlayerScreenState extends State<AffirmationPlayerScreen> {
     super.initState();
     _scroll.addListener(_updateReadingProgress);
     _wasPlaying = _player.isPlaying;
-    _artworkStarted |= _wasPlaying;
     _player.addListener(_onPlaybackChanged);
     if (_showsClassicActions) _readFavorite();
     _perform(() async {
@@ -157,7 +155,6 @@ class _AffirmationPlayerScreenState extends State<AffirmationPlayerScreen> {
         !_seeking &&
         _seekPreview == null;
     _wasPlaying = _player.isPlaying;
-    _artworkStarted |= _wasPlaying;
     if (!finished || _completionReported || widget.onCompleted == null) return;
     _completionReported = true;
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -378,7 +375,7 @@ class _AffirmationPlayerScreenState extends State<AffirmationPlayerScreen> {
         duration: _player.duration,
         playing: _player.isPlaying,
         looping: _player.isLooping,
-        previewMotion: widget.session != null && !_artworkStarted,
+        previewMotion: widget.session != null,
         showBackground: backgroundOnly || !largeText,
         showSubject: !backgroundOnly,
       ).withEntrance(),
