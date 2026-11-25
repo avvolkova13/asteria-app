@@ -92,6 +92,7 @@ class _CoverMotionArtworkState extends State<CoverMotionArtwork> {
           texture.image,
           _layers,
           widget.scene.effects,
+          widget.scene.tiltDegrees,
           (widget.seconds % widget.scene.period) * _tau / widget.scene.period,
           MediaQuery.disableAnimationsOf(context),
         ),
@@ -121,6 +122,7 @@ class _CoverPainter extends CustomPainter {
     this.texture,
     this.layers,
     this.effects,
+    this.tiltDegrees,
     this.phase,
     this.reduced,
   );
@@ -128,6 +130,7 @@ class _CoverPainter extends CustomPainter {
   final ui.Image texture;
   final _CoverLayers layers;
   final List<CoverEffect> effects;
+  final double tiltDegrees;
   final double phase;
   final bool reduced;
 
@@ -149,6 +152,14 @@ class _CoverPainter extends CustomPainter {
         (size.height - _diameter * factor) / 2,
       )
       ..scale(factor);
+
+    if (!reduced && tiltDegrees != 0) {
+      final center = _source.center;
+      canvas
+        ..translate(center.dx, center.dy)
+        ..rotate(tiltDegrees * math.pi / 180 * math.sin(phase))
+        ..translate(-center.dx, -center.dy);
+    }
 
     if (layers.moving.isEmpty || phase == 0 || reduced) {
       canvas.drawImageRect(texture, bitmap, destination, paint);
@@ -386,6 +397,7 @@ class _CoverPainter extends CustomPainter {
       oldDelegate.texture != texture ||
       oldDelegate.layers != layers ||
       oldDelegate.effects != effects ||
+      oldDelegate.tiltDegrees != tiltDegrees ||
       oldDelegate.phase != phase ||
       oldDelegate.reduced != reduced;
 }

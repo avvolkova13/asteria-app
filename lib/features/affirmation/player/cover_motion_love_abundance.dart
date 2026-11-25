@@ -150,18 +150,19 @@ const loveAbundanceMotions = <String, CoverScene>{
     ],
   ),
   'fxI8f3BFIHA2L13zsdRP': CoverScene(
-    period: 21,
+    period: 4.8,
+    tiltDegrees: 3,
     parts: [
       CoverPart(
         shape: CoverShape.polygon([
-          Offset(171, 293),
-          Offset(180, 291),
+          Offset(174, 292),
+          Offset(181, 292),
           Offset(192, 304),
           Offset(187, 309),
           Offset(171, 307),
         ]),
-        pivot: Offset(175, 293),
-        degrees: 5,
+        pivot: Offset(177, 292),
+        degrees: -17,
       ),
     ],
     effects: [

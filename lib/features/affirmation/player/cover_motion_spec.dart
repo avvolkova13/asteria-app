@@ -17,11 +17,13 @@ enum CoverEffectKind {
 class CoverScene {
   const CoverScene({
     required this.period,
+    this.tiltDegrees = 0,
     this.parts = const [],
     this.effects = const [],
   });
 
   final double period;
+  final double tiltDegrees;
   final List<CoverPart> parts;
   final List<CoverEffect> effects;
 }
