@@ -76,7 +76,7 @@ const loveAbundanceMotions = <String, CoverScene>{
   ),
   // Pivot at the wick, leaving the curved wax lip on the stationary layer.
   'azOXLrtk8gjq01xr5oox': CoverScene(
-    period: 12,
+    period: 2.8,
     parts: [
       CoverPart(
         shape: CoverShape.polygon([
@@ -88,8 +88,8 @@ const loveAbundanceMotions = <String, CoverScene>{
           Offset(169, 67),
         ]),
         pivot: Offset(177, 66),
-        degrees: 4,
-        scale: .035,
+        degrees: 13,
+        scale: .085,
       ),
     ],
     effects: [
