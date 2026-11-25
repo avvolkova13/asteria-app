@@ -41,7 +41,7 @@ const strengthCreativityMotions = <String, CoverScene>{
   ),
   // The brass lid pivots on the original hinge, leaving the base in place.
   'Uy6niGFiHzHBHFQWORlQ': CoverScene(
-    period: 24,
+    period: 4.8,
     parts: [
       CoverPart(
         shape: CoverShape.polygon([
@@ -55,8 +55,9 @@ const strengthCreativityMotions = <String, CoverScene>{
           Offset(120, 215),
           Offset(50, 164),
         ]),
-        pivot: Offset(257, 236),
-        degrees: -5,
+        pivot: Offset(249, 233),
+        degrees: -14,
+        phase: .9,
         travel: CoverTravel.ease,
       ),
     ],
