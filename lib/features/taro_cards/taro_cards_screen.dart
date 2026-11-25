@@ -431,25 +431,25 @@ class _TaroCardsContentState extends State<_TaroCardsContent> {
                         return TarotCardOfTheDayWidget(
                           tarotCard: tarotCard,
                           isLoading: false,
-                          isOpened: _contentProvider.isTodayTarotCardOpened(),
+                          isOpened: _contentProvider.isTarotRevealedOn(DailyTarotScreen.tarot),
                           showMoreButton: false,
                           isDarkLayout: true,
                           margin: EdgeInsets.zero,
                           onRefresh: handleRefresh,
                           onCardTap: () =>
-                              _contentProvider.setTodayTarotCardOpened(),
+                              _contentProvider.revealTarotOn(DailyTarotScreen.tarot),
                         );
                       } catch (e) {
                         return TarotCardOfTheDayWidget(
                           tarotCard: widget.tarotCard,
                           isLoading: false,
-                          isOpened: _contentProvider.isTodayTarotCardOpened(),
+                          isOpened: _contentProvider.isTarotRevealedOn(DailyTarotScreen.tarot),
                           showMoreButton: false,
                           isDarkLayout: true,
                           margin: EdgeInsets.zero,
                           onRefresh: handleRefresh,
                           onCardTap: () =>
-                              _contentProvider.setTodayTarotCardOpened(),
+                              _contentProvider.revealTarotOn(DailyTarotScreen.tarot),
                         );
                       }
                     },

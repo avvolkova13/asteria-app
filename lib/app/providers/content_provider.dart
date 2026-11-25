@@ -61,6 +61,8 @@ typedef _NatalGeometryKey = ({
   double longitude,
 });
 
+enum DailyTarotScreen { home, tarot, pair }
+
 class ContentProvider extends ChangeNotifier with WidgetsBindingObserver {
   final DateTime Function() _now;
   final bool _horoscopesEnabled;
@@ -216,7 +218,6 @@ class ContentProvider extends ChangeNotifier with WidgetsBindingObserver {
   String? _lastCachedUserId;
   String? _openedTarotDay;
   String? _openedRuneDay;
-  bool _isDailySymbolTarotOpenedInSession = false;
   bool _isDailySymbolRuneOpenedInSession = false;
   final Set<int> _openedTarotDeckPositions = <int>{};
   final Set<int> _openedRuneDeckPositions = <int>{};
@@ -309,7 +310,6 @@ class ContentProvider extends ChangeNotifier with WidgetsBindingObserver {
 
   void _clearTarotOpenState() {
     _openedTarotDay = null;
-    _isDailySymbolTarotOpenedInSession = false;
     _openedTarotDeckPositions.clear();
   }
 
@@ -748,13 +748,30 @@ class ContentProvider extends ChangeNotifier with WidgetsBindingObserver {
     }
   }
 
-  bool isDailySymbolTarotOpened() {
-    return _isDailySymbolTarotOpenedInSession;
+  String _revealKey(DailyTarotScreen screen) =>
+      'daily-tarot/${screen.name}/${_userProvider.currentUser?.id ?? ""}';
+
+  bool isTarotRevealedOn(DailyTarotScreen screen) {
+    final saved = Hive.box<Map>(HiveBoxNames.appSettings).get(_revealKey(screen));
+    return saved != null &&
+        saved['date'] == formatDateKey(_now()) &&
+        saved['cardId'] == _cachedTodayTarotCard?.id;
   }
 
-  void setDailySymbolTarotOpened() {
-    _isDailySymbolTarotOpenedInSession = true;
+  Future<void> revealTarotOn(DailyTarotScreen screen) async {
+    final card = getTodayTarotCard();
+    if (isTarotRevealedOn(screen)) return;
+    final write = Hive.box<Map>(HiveBoxNames.appSettings).put(
+      _revealKey(screen), {'date': formatDateKey(_now()), 'cardId': card.id},
+    );
     notifyListeners();
+    await Future.wait([write, setTodayTarotCardOpened()]);
+  }
+
+  bool isDailySymbolTarotOpened() => isTarotRevealedOn(DailyTarotScreen.home);
+
+  void setDailySymbolTarotOpened() {
+    revealTarotOn(DailyTarotScreen.home);
   }
 
   static const int _layoutLeftIndex = 0;
@@ -1158,7 +1175,6 @@ class ContentProvider extends ChangeNotifier with WidgetsBindingObserver {
       });
     }
     _openedTarotDay = null;
-    _isDailySymbolTarotOpenedInSession = false;
     debugPrint('[DEBUG] Обновлена карта таро дня: ${newCard.title}');
     notifyListeners();
   }

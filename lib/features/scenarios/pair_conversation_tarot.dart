@@ -24,10 +24,7 @@ class _PairConversationTarotState extends State<PairConversationTarot> {
 
   Future<void> _openCard() async {
     try {
-      await _content.setTodayTarotCardOpened();
-      if (_content.isTodayTarotCardOpened()) {
-        _content.setDailySymbolTarotOpened();
-      }
+      await _content.revealTarotOn(DailyTarotScreen.pair);
     } catch (_) {
       if (!mounted) return;
       ScaffoldMessenger.of(
@@ -57,7 +54,7 @@ class _PairConversationTarotState extends State<PairConversationTarot> {
             }
 
             final card = _content.getTodayTarotCard();
-            final opened = _content.isTodayTarotCardOpened();
+            final opened = _content.isTarotRevealedOn(DailyTarotScreen.pair);
             final prompt = pairTarotQuestions[card.imageName];
             return Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,

@@ -6,6 +6,7 @@ import 'package:asteria_app/features/affirmation/selected_affirmation_player.dar
 import 'package:asteria_app/features/affirmation/player/practice_link.dart';
 import 'package:flutter/cupertino.dart';
 
+import '../practices/practice_catalog_screen.dart';
 import 'scenario_ui.dart';
 import 'scenario_completion.dart';
 
@@ -48,15 +49,36 @@ class ScenarioPractice {
   bool available(BuildContext c) => isAvailable?.call(c) ?? true;
 }
 
-const availablePracticeRecordings = [
-  ScenarioPractice(
+final availablePracticeRecordings = List<ScenarioPractice>.unmodifiable([
+  const ScenarioPractice(
     id: PracticeLink.url,
     mood: PracticeMood.slowDown,
     title: 'У меня есть время',
     duration: Duration(minutes: 3, seconds: 30),
     open: _openBundledPractice,
   ),
-];
+  for (final (mood, id) in const [
+    (PracticeMood.slowDown, 'easy-breathing-rhythm'),
+    (PracticeMood.slowDown, 'gentle-exhale'),
+    (PracticeMood.focus, 'unhurried-morning'),
+    (PracticeMood.focus, 'feel-the-difference'),
+    (PracticeMood.focus, 'cloud-hands'),
+    (PracticeMood.unwind, 'workday-is-over'),
+    (PracticeMood.unwind, 'shake-off-the-day'),
+    (PracticeMood.unwind, 'time-for-sleep'),
+  ])
+    ScenarioPractice(
+      id: id,
+      mood: mood,
+      title: practiceTitleById(id, true)!,
+      duration: catalogPracticeSession(id, ru: true).duration,
+      open: (context) => openCatalogPracticePlayer(
+        context,
+        id,
+        completion: (_) => const PracticeReflectionScreen(),
+      ),
+    ),
+]);
 
 Future<void> _openBundledPractice(BuildContext context) =>
     Navigator.of(context).push<void>(
@@ -85,9 +107,12 @@ Future<void> _openBundledPractice(BuildContext context) =>
 
 Future<void> openPracticeScenario(
   BuildContext context, {
-  List<ScenarioPractice> recordings = availablePracticeRecordings,
+  List<ScenarioPractice>? recordings,
 }) => Navigator.of(context).push<void>(
-  CupertinoPageRoute(builder: (_) => _PracticeMoods(recordings: recordings)),
+  CupertinoPageRoute(
+    builder: (_) =>
+        _PracticeMoods(recordings: recordings ?? availablePracticeRecordings),
+  ),
 );
 
 class _PracticeMoods extends StatefulWidget {

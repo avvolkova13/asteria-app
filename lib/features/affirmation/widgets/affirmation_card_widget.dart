@@ -1,3 +1,5 @@
+import 'dart:ui' as ui;
+
 import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/app/data/models/affirmation/affirmation_model.dart';
 import 'package:asteria_app/core/ui_kit/card_radii.dart';
@@ -194,65 +196,81 @@ class PracticeDeckCard extends StatelessWidget {
   }
 }
 
-/// Portrait artwork keeps its full height. Extend its outer color into the
-/// card margins so the frame can be wider than the source.
+/// Fill the card from the original scene, keeping the foreground in the frame.
 class PracticeCardArtwork extends StatelessWidget {
   const PracticeCardArtwork({super.key, required this.asset});
   final String asset;
 
-  // The bundled category portraits are 450 × 675.
-  static const double _portraitAspectRatio = 2 / 3;
-
   @override
-  Widget build(BuildContext context) => LayoutBuilder(
-    builder: (context, constraints) {
-      final height = constraints.maxHeight;
-      final width = asset.startsWith('assets/images/affirmation/cover-')
-          ? height
-          : height * _portraitAspectRatio;
-      Widget portrait() =>
-          Image.asset(asset, fit: BoxFit.contain, excludeFromSemantics: true);
+  Widget build(BuildContext context) {
+    // The path is a landscape composition with the shoes in its lower third.
+    if (asset.endsWith('cover-vhbT71sWOrtPb09BCGJf.webp')) {
+      return LayoutBuilder(
+        builder: (context, bounds) {
+          if (bounds.maxWidth > bounds.maxHeight * 2.15) {
+            return _fullArtwork();
+          }
+          return SizedBox.expand(
+            child: Image.asset(
+              asset,
+              fit: BoxFit.cover,
+              alignment: const Alignment(0, .65),
+              excludeFromSemantics: true,
+            ),
+          );
+        },
+      );
+    }
+    return _fullArtwork();
+  }
 
-      if (constraints.maxWidth <= width) return portrait();
-
-      Widget margin(Alignment side) => Expanded(
-        child: FittedBox(
-          fit: BoxFit.fill,
-          child: SizedBox(
-            width: 1,
-            height: height,
-            child: ClipRect(
-              child: OverflowBox(
-                alignment: side,
-                minWidth: width,
-                maxWidth: width,
-                minHeight: height,
-                maxHeight: height,
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: AssetImage(asset),
-                      fit: BoxFit.contain,
-                    ),
-                  ),
-                  child: const SizedBox.expand(),
+  Widget _fullArtwork() {
+    final square = asset.startsWith('assets/images/affirmation/cover-');
+    return ClipRect(
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          ImageFiltered(
+            imageFilter: ui.ImageFilter.blur(
+              sigmaX: 18,
+              sigmaY: 18,
+              tileMode: TileMode.clamp,
+            ),
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage(asset),
+                  fit: BoxFit.cover,
                 ),
               ),
             ),
           ),
-        ),
-      );
-
-      return Row(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          margin(Alignment.centerLeft),
-          SizedBox(width: width, child: portrait()),
-          margin(Alignment.centerRight),
+          Center(
+            child: AspectRatio(
+              aspectRatio: square ? 1 : 2 / 3,
+              child: ShaderMask(
+                blendMode: BlendMode.dstIn,
+                shaderCallback: const LinearGradient(
+                  colors: [
+                    Colors.transparent,
+                    Colors.white,
+                    Colors.white,
+                    Colors.transparent,
+                  ],
+                  stops: [0, .12, .88, 1],
+                ).createShader,
+                child: Image.asset(
+                  asset,
+                  fit: BoxFit.contain,
+                  excludeFromSemantics: true,
+                ),
+              ),
+            ),
+          ),
         ],
-      );
-    },
-  );
+      ),
+    );
+  }
 }
 
 class _SwipeHandHint extends StatelessWidget {

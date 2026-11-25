@@ -46,6 +46,57 @@ void main() {
     expect(player.session?.title, 'I Have Time');
   });
 
+  for (final ru in [true, false]) {
+    testWidgets('each mood plays its localized catalog and returns ($ru)', (
+      tester,
+    ) async {
+      await tester.pumpWidget(_app(availablePracticeRecordings, ru: ru));
+      await tester.tap(find.text('Start'));
+      await tester.pumpAndSettle();
+      final shelves = {
+        (ru ? 'Успокоиться' : 'Find calm'): [
+          'time',
+          'easy-breathing-rhythm',
+          'gentle-exhale',
+        ],
+        (ru ? 'Собраться с мыслями' : 'Gather my thoughts'): [
+          'unhurried-morning',
+          'feel-the-difference',
+          'cloud-hands',
+        ],
+        (ru ? 'Отдохнуть' : 'Unwind'): [
+          'workday-is-over',
+          'shake-off-the-day',
+          'time-for-sleep',
+        ],
+      };
+      for (final shelf in shelves.entries) {
+        for (final id in shelf.value) {
+          await tester.ensureVisible(find.text(shelf.key));
+          await tester.tap(find.text(shelf.key));
+          await tester.pumpAndSettle();
+          final player = tester.widget<AffirmationPlayerScreen>(
+            find.byType(AffirmationPlayerScreen),
+          );
+          final session = player.session!;
+          final audio = id == 'time'
+              ? 'assets/audio/affirmation-time${ru ? '' : '-en'}.mp3'
+              : 'assets/audio/$id-${ru ? 'ru.m4a' : 'en.mp3'}';
+          expect(session.audioAsset, audio);
+          expect(File(audio).existsSync(), isTrue);
+          expect(player.autoPlay, isTrue);
+          if (id == 'time-for-sleep') {
+            player.onCompleted!();
+            await tester.pumpAndSettle();
+            expect(find.byType(PracticeReflectionScreen), findsOneWidget);
+          }
+          await tester.tap(find.byTooltip(ru ? 'Назад' : 'Back'));
+          await tester.pumpAndSettle();
+        }
+      }
+    });
+  }
+
   testWidgets(
     'each mood opens the available recording directly and back restores the mood choices',
     (tester) async {
@@ -179,28 +230,29 @@ ScenarioPractice _fixture(
   },
 );
 
-Widget _app(List<ScenarioPractice> recordings) => MaterialApp(
-  locale: const Locale('en'),
-  supportedLocales: AppLocaleService.supportedLocales,
-  localizationsDelegates: const [
-    AppLocalizations.delegate,
-    ...GlobalMaterialLocalizations.delegates,
-  ],
-  builder: (c, child) => Theme(
-    data: AppThemeDark.instance.getThemeData(c),
-    child: MediaQuery(
-      data: MediaQuery.of(c).copyWith(disableAnimations: true),
-      child: child!,
-    ),
-  ),
-  home: Scaffold(
-    body: Builder(
-      builder: (c) => Center(
-        child: TextButton(
-          child: const Text('Start'),
-          onPressed: () => openPracticeScenario(c, recordings: recordings),
+Widget _app(List<ScenarioPractice> recordings, {bool ru = false}) =>
+    MaterialApp(
+      locale: Locale(ru ? 'ru' : 'en'),
+      supportedLocales: AppLocaleService.supportedLocales,
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        ...GlobalMaterialLocalizations.delegates,
+      ],
+      builder: (c, child) => Theme(
+        data: AppThemeDark.instance.getThemeData(c),
+        child: MediaQuery(
+          data: MediaQuery.of(c).copyWith(disableAnimations: true),
+          child: child!,
         ),
       ),
-    ),
-  ),
-);
+      home: Scaffold(
+        body: Builder(
+          builder: (c) => Center(
+            child: TextButton(
+              child: const Text('Start'),
+              onPressed: () => openPracticeScenario(c, recordings: recordings),
+            ),
+          ),
+        ),
+      ),
+    );

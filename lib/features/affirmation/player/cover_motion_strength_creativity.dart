@@ -161,20 +161,30 @@ const strengthCreativityMotions = <String, CoverScene>{
     ],
   ),
   '2zZzl9CweTucZB8sNvcP': CoverScene(
-    period: 23,
+    period: 4.8,
     effects: [
       CoverEffect(
-        CoverEffectKind.glint,
-        at: Offset(142, 183),
-        to: Offset(198, 206),
-        size: 27,
-        strength: .25,
-        color: Color(0xffffd2ab),
+        CoverEffectKind.steam,
+        at: Offset(265, 204),
+        to: Offset(253, 129),
+        size: 44,
+        strength: .95,
+        color: Color(0xffffeadb),
+      ),
+      CoverEffect(
+        CoverEffectKind.steam,
+        at: Offset(277, 204),
+        to: Offset(281, 146),
+        size: 37,
+        strength: .75,
+        color: Color(0xffffe3ce),
+        phase: 1.4,
       ),
     ],
   ),
   'RRgftUVHncxKmSVdWWvw': CoverScene(
-    period: 18,
+    period: 4.8,
+    tiltDegrees: 4,
     effects: [
       CoverEffect(
         CoverEffectKind.wave,
@@ -187,26 +197,30 @@ const strengthCreativityMotions = <String, CoverScene>{
   ),
   // A slender stream follows the neck instead of rocking the glass.
   'take-a-pause': CoverScene(
-    period: 22,
+    period: 1.2,
     effects: [
       CoverEffect(
-        CoverEffectKind.flow,
-        at: Offset(143, 163),
-        to: Offset(142, 232),
-        size: 2.8,
-        strength: .68,
-        color: Color(0xffefb662),
+        CoverEffectKind.sand,
+        at: Offset(174, 158),
+        to: Offset(174.5, 232),
+        color: Color(0xffffce85),
       ),
     ],
   ),
   'tncBUKrnILVRSvOOMhbC': CoverScene(
-    period: 22,
+    period: 5.6,
     effects: [
       CoverEffect(
+        CoverEffectKind.flowerSketch,
+        at: Offset(148, 226),
+        strength: .82,
+        color: Color(0xff61424f),
+      ),
+      CoverEffect(
         CoverEffectKind.glow,
-        at: Offset(252, 108),
+        at: Offset(244, 87),
         size: 40,
-        strength: .42,
+        strength: .84,
         color: Color(0xffffc995),
       ),
       CoverEffect(
@@ -222,7 +236,7 @@ const strengthCreativityMotions = <String, CoverScene>{
   ),
   // The removable top block lifts a little between the stationary supports.
   'mfLqiNf0SiuFxys9mIFc': CoverScene(
-    period: 24,
+    period: 4.8,
     parts: [
       CoverPart(
         shape: CoverShape.polygon([
@@ -242,33 +256,34 @@ const strengthCreativityMotions = <String, CoverScene>{
           Offset(90, 204),
         ]),
         pivot: Offset(174, 184),
-        shift: Offset(0, -12),
+        shift: Offset(0, -23),
         travel: CoverTravel.ease,
       ),
     ],
   ),
   'Ey0QKmkIfVmuNWjqhKKy': CoverScene(
-    period: 17,
+    period: 3.9,
     effects: [
       CoverEffect(
-        CoverEffectKind.sound,
-        at: Offset(216, 193),
-        to: Offset(278, 167),
-        size: 29,
-        strength: .56,
-        color: Color(0xffefaf9c),
+        CoverEffectKind.shellEcho,
+        at: Offset(192, 181),
+        to: Offset(282, 158),
+        size: 123,
+        strength: .9,
+        color: Color(0xffffdac8),
       ),
     ],
   ),
   '3EdRmElus4VdoFmQ7a31': CoverScene(
-    period: 25,
+    period: 4.8,
+    tiltDegrees: 4.5,
     effects: [
       CoverEffect(
         CoverEffectKind.glint,
-        at: Offset(157, 146),
-        to: Offset(193, 175),
+        at: Offset(166, 148),
+        to: Offset(195, 179),
         size: 11,
-        strength: .54,
+        strength: .92,
         color: Color(0xffffd497),
       ),
       CoverEffect(
@@ -303,7 +318,9 @@ const strengthCreativityMotions = <String, CoverScene>{
     ],
   ),
   'lN1JUJGz9ngbLpS2eMgV': CoverScene(
-    period: 20,
+    period: 5.2,
+    tiltDegrees: 4,
+    tiltPivot: Offset(289, 266),
     effects: [
       CoverEffect(
         CoverEffectKind.glint,
@@ -324,9 +341,9 @@ const strengthCreativityMotions = <String, CoverScene>{
       ),
     ],
   ),
-  // The loose casting moves aside to show the mold underneath.
+  // The loose casting leans toward its impression and returns.
   '3qnA0Pc1xSUyJ4FieLzR': CoverScene(
-    period: 25,
+    period: 4.8,
     parts: [
       CoverPart(
         shape: CoverShape.polygon([
@@ -348,14 +365,26 @@ const strengthCreativityMotions = <String, CoverScene>{
           Offset(219, 213),
         ]),
         pivot: Offset(266, 281),
-        shift: Offset(8, -4),
-        degrees: 2,
+        shift: Offset(-14, -3),
+        degrees: -5,
         travel: CoverTravel.ease,
       ),
     ],
   ),
   'yApNZRoNizeuxJnQx3aJ': CoverScene(
-    period: 20,
+    period: 5.2,
+    parts: [
+      CoverPart(
+        shape: CoverShape.polygon([
+          Offset(90, 12),
+          Offset(249, 12),
+          Offset(249, 194),
+          Offset(90, 194),
+        ]),
+        pivot: Offset(173, 194),
+        horizontalShear: .075,
+      ),
+    ],
     effects: [
       CoverEffect(
         CoverEffectKind.glint,

@@ -92,7 +92,10 @@ class _CoverMotionArtworkState extends State<CoverMotionArtwork> {
           texture.image,
           _layers,
           widget.scene.effects,
+          widget.scene.hingedCase,
+          widget.scene.deformation,
           widget.scene.tiltDegrees,
+          widget.scene.tiltPivot,
           (widget.seconds % widget.scene.period) * _tau / widget.scene.period,
           MediaQuery.disableAnimationsOf(context),
         ),
@@ -108,6 +111,7 @@ class _CoverLayers {
       ] {
     var remainder = Path()..addRect(_source);
     for (final layer in moving) {
+      if (layer.part.fixedClip) continue;
       remainder = Path.combine(PathOperation.difference, remainder, layer.clip);
     }
     stationary = remainder;
@@ -122,7 +126,10 @@ class _CoverPainter extends CustomPainter {
     this.texture,
     this.layers,
     this.effects,
+    this.hingedCase,
+    this.deformation,
     this.tiltDegrees,
+    this.tiltPivot,
     this.phase,
     this.reduced,
   );
@@ -130,7 +137,10 @@ class _CoverPainter extends CustomPainter {
   final ui.Image texture;
   final _CoverLayers layers;
   final List<CoverEffect> effects;
+  final bool hingedCase;
+  final CoverDeformation? deformation;
   final double tiltDegrees;
+  final Offset? tiltPivot;
   final double phase;
   final bool reduced;
 
@@ -154,14 +164,18 @@ class _CoverPainter extends CustomPainter {
       ..scale(factor);
 
     if (!reduced && tiltDegrees != 0) {
-      final center = _source.center;
+      final center = tiltPivot ?? _source.center;
       canvas
         ..translate(center.dx, center.dy)
         ..rotate(tiltDegrees * math.pi / 180 * math.sin(phase))
         ..translate(-center.dx, -center.dy);
     }
 
-    if (layers.moving.isEmpty || phase == 0 || reduced) {
+    if (deformation != null && !reduced) {
+      _drawDeformedTexture(canvas, destination);
+    } else if (hingedCase && !reduced && phase != 0) {
+      _drawHingedCase(canvas, bitmap, destination, paint);
+    } else if (layers.moving.isEmpty || phase == 0 || reduced) {
       canvas.drawImageRect(texture, bitmap, destination, paint);
     } else {
       canvas
@@ -181,8 +195,9 @@ class _CoverPainter extends CustomPainter {
         final rotation = part.travel == CoverTravel.spin
             ? phase
             : part.degrees * math.pi / 180 * oscillation;
+        canvas.save();
+        if (part.fixedClip) canvas.clipPath(layer.clip);
         canvas
-          ..save()
           ..translate(
             part.pivot.dx + part.shift.dx * oscillation,
             part.pivot.dy + part.shift.dy * oscillation,
@@ -193,8 +208,9 @@ class _CoverPainter extends CustomPainter {
             1 + part.scale * oscillation,
             1 + (part.scale + part.verticalScale) * oscillation,
           )
-          ..translate(-part.pivot.dx, -part.pivot.dy)
-          ..clipPath(layer.clip)
+          ..translate(-part.pivot.dx, -part.pivot.dy);
+        if (!part.fixedClip) canvas.clipPath(layer.clip);
+        canvas
           ..drawImageRect(texture, bitmap, destination, paint)
           ..restore();
       }
@@ -208,11 +224,172 @@ class _CoverPainter extends CustomPainter {
     canvas.restore();
   }
 
+  // Trace the upper brass lip, including the scalloped clasp attached to it.
+  static final _caseLid = Path()
+    ..moveTo(42, 123)
+    ..lineTo(308, 123)
+    ..lineTo(308, 210)
+    ..quadraticBezierTo(299, 223, 280, 223)
+    ..lineTo(202, 223)
+    ..quadraticBezierTo(198, 230, 185, 230)
+    ..quadraticBezierTo(180, 237, 175, 231)
+    ..quadraticBezierTo(161, 230, 158, 223)
+    ..lineTo(74, 223)
+    ..quadraticBezierTo(57, 223, 43, 213)
+    ..close();
+
+  static final _caseBase = Path.combine(
+    PathOperation.difference,
+    Path()..addRect(_source),
+    _caseLid,
+  );
+
+  void _drawHingedCase(
+    Canvas canvas,
+    Rect bitmap,
+    Rect destination,
+    Paint paint,
+  ) {
+    final opening = (.5 - .5 * math.cos(phase));
+    final lift = 32 * opening;
+    // The velvet lining bridges the raised front lip and the stationary base.
+    final lining = Path()
+      ..moveTo(54, 213)
+      ..quadraticBezierTo(56, 195 - lift * .52, 68, 208 - lift)
+      ..quadraticBezierTo(175, 197 - lift, 284, 208 - lift)
+      ..quadraticBezierTo(297, 199 - lift * .52, 298, 213)
+      ..lineTo(295, 228)
+      ..quadraticBezierTo(175, 240, 55, 228)
+      ..close();
+    canvas.drawPath(
+      lining,
+      Paint()
+        ..shader = const LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [Color(0xff311527), Color(0xff140c16), Color(0xff663347)],
+        ).createShader(Rect.fromLTRB(54, 212 - lift, 298, 230)),
+    );
+    // Continue the lower rim behind the clasp when the clasp lifts away.
+    canvas.save();
+    canvas.clipRect(const Rect.fromLTRB(153, 223, 205, 238));
+    canvas.translate(60, 0);
+    canvas.drawImageRect(texture, bitmap, destination, paint);
+    canvas.restore();
+    canvas.save();
+    canvas.clipPath(_caseBase);
+    canvas.drawImageRect(texture, bitmap, destination, paint);
+    canvas.restore();
+    canvas.save();
+    canvas.translate(175, 221 - lift);
+    canvas.scale(1 - .018 * opening, 1 - .14 * opening);
+    canvas.translate(-175, -221);
+    canvas.clipPath(_caseLid);
+    canvas.drawImageRect(texture, bitmap, destination, paint);
+    canvas.restore();
+  }
+
+  Offset _canopyPoint(double x, double y) {
+    final drop = ((y - 58) / 246).clamp(0.0, 1.0);
+    final side = (x - 180).abs();
+    // The cushion widens towards its base. Keep its seam and the rear
+    // panel still, with a gradual transition into the free side folds.
+    final cushionWidth = 50 + ((y - 213) * .75).clamp(0.0, 62.0);
+    final freeEdge = ((side - cushionWidth) / 23).clamp(0.0, 1.0);
+    final protection = ((y - 178) / 38).clamp(0.0, 1.0);
+    final weight = drop * (1 - protection * (1 - freeEdge));
+    final wave = math.sin(phase - 2.4 * drop + (x - 180) / 130);
+    return Offset(x + 12 * weight * wave, y - 3 * weight * wave * wave);
+  }
+
+  void _drawDeformedTexture(Canvas canvas, Rect destination) {
+    const divisions = 28;
+    final positions = <Offset>[];
+    final coordinates = <Offset>[];
+    final stride = divisions + 1;
+    final indices = <int>[];
+    final travel = math.sin(phase);
+    for (var row = 0; row <= divisions; row++) {
+      for (var column = 0; column <= divisions; column++) {
+        final u = column / divisions;
+        final v = row / divisions;
+        final x = destination.left + u * destination.width;
+        final y = destination.top + v * destination.height;
+        if (deformation == CoverDeformation.canopy) {
+          positions.add(_canopyPoint(x, y));
+        } else {
+          final dx = (x - 173) / 117;
+          final dy = (y - 173) / 91;
+          final weight = (1 - dx * dx - dy * dy).clamp(0.0, 1.0);
+          final depth = ((y - 125) / 80).clamp(0.0, 1.0);
+          positions.add(Offset(x + (26 * depth - 11) * weight * travel, y));
+        }
+        coordinates.add(Offset(u * texture.width, v * texture.height));
+        if (column < divisions && row < divisions) {
+          final i = row * stride + column;
+          indices.addAll([
+            i,
+            i + 1,
+            i + stride,
+            i + 1,
+            i + stride + 1,
+            i + stride,
+          ]);
+        }
+      }
+    }
+    final mesh = ui.Vertices(
+      ui.VertexMode.triangles,
+      positions,
+      textureCoordinates: coordinates,
+      indices: indices,
+    );
+    final shader = ui.ImageShader(
+      texture,
+      TileMode.clamp,
+      TileMode.clamp,
+      Matrix4.identity().storage,
+      filterQuality: FilterQuality.medium,
+    );
+    canvas.drawVertices(mesh, BlendMode.srcOver, Paint()..shader = shader);
+    mesh.dispose();
+    shader.dispose();
+  }
+
   static Rect fittedTextureRect(int width, int height) {
     final sourceSize = Size(width.toDouble(), height.toDouble());
     final fitted = applyBoxFit(BoxFit.contain, sourceSize, _source.size);
     return Alignment.center.inscribe(fitted.destination, _source);
   }
+
+  // Pencil contours relative to the flower centre in the transparent artwork.
+  static final _petalContours = [
+    Path()
+      ..moveTo(0, 0)
+      ..cubicTo(-20, -5, -39, -20, -39, -38)
+      ..quadraticBezierTo(-17, -40, 0, 0),
+    Path()
+      ..moveTo(0, 0)
+      ..quadraticBezierTo(-25, -26, -7, -47)
+      ..quadraticBezierTo(17, -38, 0, 0),
+    Path()
+      ..moveTo(0, 0)
+      ..quadraticBezierTo(9, -39, 40, -43)
+      ..quadraticBezierTo(46, -18, 0, 0),
+  ].map((path) => path.computeMetrics().first).toList();
+
+  // Follow the lip of the original shell from its central whorl outwards.
+  static final _shellRidge =
+      (Path()
+            ..moveTo(0, 0)
+            ..cubicTo(3, -6, 12, 3, 5, 10)
+            ..cubicTo(-4, 20, -22, 10, -19, -4)
+            ..cubicTo(-14, -29, 17, -22, 21, 1)
+            ..cubicTo(27, 39, -18, 48, -37, 20)
+            ..cubicTo(-61, -18, -27, -55, 10, -41)
+            ..cubicTo(69, -23, 78, 46, 37, 71))
+          .computeMetrics()
+          .first;
 
   static void _drawEffect(Canvas canvas, CoverEffect effect, double t) {
     final progress = (t / _tau) % 1;
@@ -223,6 +400,18 @@ class _CoverPainter extends CustomPainter {
     final opacity = effect.strength;
 
     switch (effect.kind) {
+      case CoverEffectKind.shellLustre:
+        final distance = _shellRidge.length * progress;
+        final tangent = _shellRidge.getTangentForOffset(distance)!;
+        final spot = position + tangent.position;
+        final shine = math.sin(math.pi * progress) * opacity;
+        canvas.save();
+        canvas.translate(spot.dx, spot.dy);
+        canvas.rotate(tangent.angle);
+        canvas.scale(1.45, .55);
+        _halo(canvas, Offset.zero, radius, color, shine * .72);
+        _halo(canvas, Offset.zero, radius * .5, color, shine * .6);
+        canvas.restore();
       case CoverEffectKind.glow:
       case CoverEffectKind.windowLight:
         _halo(
@@ -248,6 +437,51 @@ class _CoverPainter extends CustomPainter {
         final spot = Offset.lerp(position, finish, progress)!;
         _halo(canvas, spot, radius * .53, color, .36 * opacity * active);
         _halo(canvas, spot, radius * .13, color, .59 * opacity * active);
+      case CoverEffectKind.kettleSteam:
+        final end = effect.to!;
+        for (var strand = 0; strand < 3; strand++) {
+          final left = Path();
+          final right = <Offset>[];
+          for (var step = 0; step <= 36; step++) {
+            final height = step / 36;
+            final center = Offset.lerp(position, end, height)!;
+            final wave = _tau * height * 1.4 - t + strand * .85;
+            final drift =
+                radius * height * (math.sin(wave) + .35 * math.sin(2 * wave));
+            final x = center.dx + drift + 7 * math.sin(math.pi * height);
+            final width = 1.5 + radius * height * (.48 + .26 * math.cos(wave));
+            if (step == 0) {
+              left.moveTo(x - width, center.dy);
+            } else {
+              left.lineTo(x - width, center.dy);
+            }
+            right.add(Offset(x + width, center.dy));
+          }
+          for (final point in right.reversed) {
+            left.lineTo(point.dx, point.dy);
+          }
+          left.close();
+          final density = opacity * (strand == 0 ? .68 : .32);
+          canvas.drawPath(
+            left,
+            Paint()
+              ..shader = ui.Gradient.linear(
+                position,
+                end,
+                [
+                  color.withValues(alpha: density * .55),
+                  color.withValues(alpha: density),
+                  color.withValues(alpha: density * .55),
+                  color.withValues(alpha: 0),
+                ],
+                const [0, .16, .60, 1],
+              )
+              ..maskFilter = MaskFilter.blur(
+                BlurStyle.normal,
+                strand == 0 ? 1.8 : 3.8,
+              ),
+          );
+        }
       case CoverEffectKind.steam:
         final tip =
             effect.to ?? position.translate(radius * .18, -radius * 1.5);
@@ -319,6 +553,55 @@ class _CoverPainter extends CustomPainter {
               ),
           );
         }
+      case CoverEffectKind.sand:
+        final peak = effect.to!;
+        final grainPaint = Paint();
+        // Staggered grains accelerate out of the neck and disperse at the pile.
+        for (var grain = 0; grain < 28; grain++) {
+          final fall = (progress * 2 + grain / 28) % 1;
+          final distance = fall * (.35 + .65 * fall);
+          final spread = math.sin(grain * 2.4) * (0.35 + 1.25 * distance);
+          final point = Offset.lerp(position, peak, distance)!;
+          grainPaint.color = (grain.isEven ? color : const Color(0xffbb783e))
+              .withValues(alpha: .88 * math.min(1, fall * 18));
+          canvas.drawOval(
+            Rect.fromCenter(
+              center: point.translate(spread, 0),
+              width: 1.5,
+              height: 1.4 + 1.6 * distance,
+            ),
+            grainPaint,
+          );
+        }
+        for (var grain = 0; grain < 8; grain++) {
+          final slide = (progress + grain / 8) % 1;
+          final run = slide * (grain.isEven ? 12 : -12);
+          grainPaint.color = color.withValues(alpha: .85 * (1 - slide));
+          canvas.drawCircle(
+            peak.translate(run, run.abs() * .57),
+            .95,
+            grainPaint,
+          );
+        }
+      case CoverEffectKind.flowerSketch:
+        final pencil = Paint()
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 1.45
+          ..strokeCap = StrokeCap.round
+          ..color = color.withValues(
+            alpha: opacity * (1 - ((progress - .74) / .26).clamp(0.0, 1.0)),
+          );
+        canvas.save();
+        canvas.translate(position.dx, position.dy);
+        for (var i = 0; i < _petalContours.length; i++) {
+          final stroke = _petalContours[i];
+          final fraction = (progress * 4.6 - i).clamp(0.0, 1.0);
+          canvas.drawPath(
+            stroke.extractPath(0, fraction * stroke.length),
+            pencil,
+          );
+        }
+        canvas.restore();
       case CoverEffectKind.flow:
         final finish = effect.to ?? position.translate(0, radius);
         final direction = finish - position;
@@ -334,6 +617,37 @@ class _CoverPainter extends CustomPainter {
             Paint()..color = color.withValues(alpha: .52 * opacity * fade),
           );
         }
+      case CoverEffectKind.shellEcho:
+        final axis = effect.to! - position;
+        canvas.save();
+        canvas.translate(position.dx, position.dy);
+        const sweep = 2.2;
+        final start = axis.direction - sweep / 2;
+        for (var ring = 0; ring < 4; ring++) {
+          final travel = (progress + ring / 4) % 1;
+          final bounds = Rect.fromCircle(
+            center: Offset.zero,
+            radius: radius * (.34 + .66 * travel),
+          );
+          final light = color.withValues(
+            alpha: opacity * math.sin(math.pi * travel),
+          );
+          final clear = color.withValues(alpha: 0);
+          final paint = Paint()
+            ..shader = ui.Gradient.sweep(
+              Offset.zero,
+              [clear, light, light, clear],
+              const [0, .28, .7, 1],
+              TileMode.clamp,
+              0,
+              sweep,
+              Matrix4.rotationZ(start).storage,
+            )
+            ..strokeWidth = 1.6
+            ..style = PaintingStyle.stroke;
+          canvas.drawArc(bounds, start, sweep, false, paint);
+        }
+        canvas.restore();
       case CoverEffectKind.sound:
         final finish = effect.to ?? position.translate(radius, 0);
         final direction = math.atan2(
@@ -401,7 +715,10 @@ class _CoverPainter extends CustomPainter {
       oldDelegate.texture != texture ||
       oldDelegate.layers != layers ||
       oldDelegate.effects != effects ||
+      oldDelegate.hingedCase != hingedCase ||
+      oldDelegate.deformation != deformation ||
       oldDelegate.tiltDegrees != tiltDegrees ||
+      oldDelegate.tiltPivot != tiltPivot ||
       oldDelegate.phase != phase ||
       oldDelegate.reduced != reduced;
 }

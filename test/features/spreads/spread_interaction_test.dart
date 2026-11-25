@@ -1,5 +1,8 @@
 import 'dart:ui' show SemanticsAction;
 import 'dart:async';
+import 'dart:typed_data';
+import 'package:hive/hive.dart';
+import 'package:asteria_app/core/services/hive/hive_service.dart';
 import 'package:asteria_app/core/ui_kit/widgets/card_turn.dart';
 import 'package:asteria_app/features/love_deck/love_deck_screen.dart';
 import 'package:asteria_app/features/monetization/data/feature_execution_api.dart';
@@ -303,6 +306,8 @@ void main() {
   });
 
   group('saved spread interaction', () {
+    setUpAll(() => Hive.openBox<Map>(HiveBoxNames.appSettings, bytes: Uint8List(0)));
+    tearDownAll(Hive.close);
     late UserProvider userProvider;
     late ContentProvider contentProvider;
     late List<TarotCardModel> cards;
@@ -375,6 +380,8 @@ void main() {
         await tester.tap(tarot);
         await tester.pumpAndSettle();
         expect(contentProvider.isTodayTarotCardOpened(), isTrue);
+        expect(contentProvider.isTarotRevealedOn(DailyTarotScreen.tarot), isFalse);
+        expect(contentProvider.isDailySymbolTarotOpened(), isFalse);
         expect(find.text('Вопрос для вас двоих'), findsOneWidget);
         expect(userProvider.currentUser!.loveDeck, isNull);
         await tester.binding.handlePopRoute();

@@ -352,35 +352,41 @@ class _PracticeDeckArtwork extends StatelessWidget {
   }
 }
 
+Future<void> openCatalogPracticePlayer(
+  BuildContext context,
+  String id, {
+  WidgetBuilder? completion,
+}) {
+  final practice = _practices.firstWhere((item) => item.id == id);
+  return Navigator.of(context).push<void>(
+    CupertinoPageRoute(
+      builder: (playerContext) {
+        final ru = _isRussian(playerContext);
+        final session = practice.session(ru);
+        return AffirmationPlayerScreen(
+          key: ValueKey(session.audioAsset),
+          showBack: true,
+          onOpenNotes: _hasPracticeNotes(playerContext)
+              ? () => _openNotes(playerContext, practice, ru)
+              : null,
+          onCompleted: () =>
+              Navigator.of(playerContext).pushReplacement<void, void>(
+                CupertinoPageRoute(
+                  builder:
+                      completion ?? (_) => _PracticeCompletionScreen(practice),
+                ),
+              ),
+          autoPlay: true,
+          session: session,
+        );
+      },
+    ),
+  );
+}
+
 class _PracticeDetailScreen extends StatelessWidget {
   const _PracticeDetailScreen(this.practice);
   final _Practice practice;
-
-  void _openPlayer(BuildContext context) {
-    Navigator.of(context).push<void>(
-      CupertinoPageRoute(
-        builder: (playerContext) {
-          final ru = _isRussian(playerContext);
-          final session = practice.session(ru);
-          return AffirmationPlayerScreen(
-            key: ValueKey(session.audioAsset),
-            showBack: true,
-            onOpenNotes: _hasPracticeNotes(playerContext)
-                ? () => _openNotes(playerContext, practice, ru)
-                : null,
-            onCompleted: () =>
-                Navigator.of(playerContext).pushReplacement<void, void>(
-                  CupertinoPageRoute(
-                    builder: (_) => _PracticeCompletionScreen(practice),
-                  ),
-                ),
-            autoPlay: true,
-            session: session,
-          );
-        },
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -443,7 +449,7 @@ class _PracticeDetailScreen extends StatelessWidget {
             AuthGradientButton(
               key: const ValueKey('open-practice-player'),
               text: ru ? 'Начать практику' : 'Start practice',
-              onPressed: () => _openPlayer(context),
+              onPressed: () => openCatalogPracticePlayer(context, practice.id),
             ),
           ],
         ),
@@ -479,9 +485,11 @@ class _PracticeDetailScreen extends StatelessWidget {
   }
 }
 
-PracticePlayerSession dailyPracticeSession({required bool ru}) => _practices
-    .firstWhere((practice) => practice.id == 'easy-breathing-rhythm')
-    .session(ru);
+PracticePlayerSession catalogPracticeSession(String id, {required bool ru}) =>
+    _practices.firstWhere((entry) => entry.id == id).session(ru);
+
+PracticePlayerSession dailyPracticeSession({required bool ru}) =>
+    catalogPracticeSession('easy-breathing-rhythm', ru: ru);
 
 /// Localized details for a known, bundled practice outside the catalogue.
 ({String title, String description, String metadata, String art})

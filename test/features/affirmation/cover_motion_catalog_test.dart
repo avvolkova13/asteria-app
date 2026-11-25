@@ -14,6 +14,7 @@ const _specialized = {
   '9Mvd1yeBUDmiLPRdJ1mv', // Ribbon
   'EG8DuZL1V6idVvW0jp4B', // Crane
   'aivVFq7TD00qsfLg4VzX', // Plate
+  'Xe0Urlp7kqRChzBxz5Ym', // Writing pencil
   'choose-yourself', // Compass
 };
 
@@ -31,7 +32,7 @@ void main() {
           asset.substring(prefix.length, asset.length - '.webp'.length),
     };
     expect(subjects, unorderedEquals({..._specialized, ...coverMotions.keys}));
-    expect(coverMotions, hasLength(42));
+    expect(coverMotions, hasLength(41));
   });
 
   testWidgets(

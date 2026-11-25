@@ -66,7 +66,7 @@ void main() {
     expect(question, findsOneWidget);
     expect(find.text(_card.cardOfDayDescription), findsOneWidget);
     expect(content.reveals, 1);
-    expect(content.symbolOpened, isTrue);
+    expect(content.isTarotRevealedOn(DailyTarotScreen.home), isFalse);
     await tester.pumpWidget(const SizedBox.shrink());
     await tester.pumpWidget(app);
     await tester.pumpAndSettle();
@@ -94,22 +94,19 @@ const _card = TarotCardModel(
 
 class _Content extends Fake with ChangeNotifier implements ContentProvider {
   int reveals = 0;
-  bool symbolOpened = false;
+  final opened = {DailyTarotScreen.tarot};
   @override
   List<TarotCardModel> get tarotCards => const [_card];
   @override
   TarotCardModel getTodayTarotCard() => _card;
   @override
-  bool isTodayTarotCardOpened() => reveals > 0;
+  bool isTarotRevealedOn(DailyTarotScreen screen) => opened.contains(screen);
   @override
-  Future<void> setTodayTarotCardOpened() async {
+  Future<void> revealTarotOn(DailyTarotScreen screen) async {
+    opened.add(screen);
     reveals++;
     notifyListeners();
   }
 
-  @override
-  void setDailySymbolTarotOpened() {
-    symbolOpened = true;
-    notifyListeners();
-  }
+
 }

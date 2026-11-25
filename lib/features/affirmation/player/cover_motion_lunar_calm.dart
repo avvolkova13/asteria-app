@@ -5,7 +5,7 @@ import 'cover_motion_spec.dart';
 const lunarCalmMotions = <String, CoverScene>{
   // Луна на краю окна — the small crescent drifts inside the fixed stone arch.
   'VjpyuyP2LiSbPotxcPjW': CoverScene(
-    period: 28,
+    period: 5.6,
     parts: [
       CoverPart(
         shape: CoverShape.polygon([
@@ -15,29 +15,31 @@ const lunarCalmMotions = <String, CoverScene>{
           Offset(123, 213),
         ]),
         pivot: Offset(174, 160),
-        shift: Offset(2, -6),
-        degrees: .8,
+        shift: Offset(6, -13),
+        degrees: 4,
       ),
     ],
   ),
 
   // Свет на исходе дня — soft caustics travel through separate prism facets.
   'JkdxrsDTLLC3PcvxkmJs': CoverScene(
-    period: 24,
+    period: 6,
+    tiltDegrees: 3.5,
+    tiltPivot: Offset(175, 270),
     effects: [
       CoverEffect(
         CoverEffectKind.glint,
         at: Offset(121, 126),
         to: Offset(187, 152),
         size: 18,
-        strength: .55,
+        strength: .9,
         color: Color(0xffffc18a),
       ),
       CoverEffect(
         CoverEffectKind.glow,
         at: Offset(220, 273),
         size: 23,
-        strength: .32,
+        strength: .62,
         color: Color(0xffffa77e),
         phase: 1.8,
       ),
@@ -46,7 +48,7 @@ const lunarCalmMotions = <String, CoverScene>{
 
   // Намерение на новолуние — the boat rocks under the anchored eclipse.
   'en49nDLEdETuFD2AE4kA': CoverScene(
-    period: 22,
+    period: 6,
     parts: [
       CoverPart(
         shape: CoverShape.polygon([
@@ -56,8 +58,8 @@ const lunarCalmMotions = <String, CoverScene>{
           Offset(89, 314),
         ]),
         pivot: Offset(175, 285),
-        shift: Offset(5, -2),
-        degrees: 3,
+        shift: Offset(8, -5),
+        degrees: 5,
       ),
     ],
     effects: [
@@ -74,23 +76,31 @@ const lunarCalmMotions = <String, CoverScene>{
 
   // Луна по дороге домой — separate movement in the sky and in the warm window.
   'AHICl7F381lItjTdo0JX': CoverScene(
-    period: 30,
+    period: 7,
     parts: [
       CoverPart(
         shape: CoverShape.oval(Rect.fromLTRB(199, 14, 260, 76)),
         pivot: Offset(229, 45),
-        shift: Offset(-7, -4),
+        shift: Offset(-9, -5),
         degrees: .4,
         travel: CoverTravel.ease,
       ),
     ],
     effects: [
       CoverEffect(
+        CoverEffectKind.steam,
+        at: Offset(224, 90),
+        to: Offset(210, 62),
+        size: 14,
+        strength: .85,
+        color: Color(0xffeacde0),
+      ),
+      CoverEffect(
         CoverEffectKind.windowLight,
-        at: Offset(152, 169),
-        to: Offset(151, 177),
-        size: 10,
-        strength: .52,
+        at: Offset(130, 191),
+        to: Offset(130, 194),
+        size: 24,
+        strength: .86,
         color: Color(0xffffbd76),
       ),
     ],
@@ -98,7 +108,44 @@ const lunarCalmMotions = <String, CoverScene>{
 
   // То, что осталось от сна — a sheen runs along the feather, starting at its quill.
   'gkgBQSSVsX8KG74xHDHx': CoverScene(
-    period: 23,
+    period: 6,
+    tiltDegrees: 1.2,
+    tiltPivot: Offset(175, 250),
+    parts: [
+      // Shear above the cushion so the quill keeps its point of contact.
+      CoverPart(
+        shape: CoverShape.polygon([
+          Offset(10, 55),
+          Offset(315, 55),
+          Offset(315, 180),
+          Offset(10, 180),
+        ]),
+        pivot: Offset(175, 180),
+        horizontalShear: .085,
+        verticalScale: .04,
+      ),
+      CoverPart(
+        shape: CoverShape.polygon([
+          Offset(12, 261),
+          Offset(54, 261),
+          Offset(62, 300),
+          Offset(12, 300),
+        ]),
+        pivot: Offset(44, 261),
+        horizontalShear: .12,
+      ),
+      CoverPart(
+        shape: CoverShape.polygon([
+          Offset(302, 261),
+          Offset(340, 261),
+          Offset(340, 300),
+          Offset(294, 300),
+        ]),
+        pivot: Offset(309, 261),
+        horizontalShear: .11,
+        phase: .3,
+      ),
+    ],
     effects: [
       CoverEffect(
         CoverEffectKind.glint,
@@ -113,131 +160,123 @@ const lunarCalmMotions = <String, CoverScene>{
 
   // Окно в тихий вечер — light drifts behind the panes, with the sill anchored.
   'Q2hvhy5ACR3qTUWRqXiN': CoverScene(
-    period: 31,
+    period: 6,
+    parts: [
+      // The upper sprig bends above the rail inside the right pane.
+      CoverPart(
+        shape: CoverShape.polygon([
+          Offset(184, 136),
+          Offset(226, 136),
+          Offset(234, 185),
+          Offset(174, 185),
+        ]),
+        pivot: Offset(200, 185),
+        horizontalShear: .14,
+        fixedClip: true,
+      ),
+    ],
     effects: [
       CoverEffect(
         CoverEffectKind.windowLight,
         at: Offset(122, 135),
         to: Offset(136, 220),
-        size: 22,
-        strength: .38,
+        size: 35,
+        strength: .92,
         color: Color(0xffe9c9ff),
       ),
       CoverEffect(
         CoverEffectKind.glow,
         at: Offset(194, 125),
-        size: 23,
-        strength: .24,
+        size: 31,
+        strength: .65,
         color: Color(0xffffc1a6),
         phase: 2.3,
       ),
     ],
   ),
 
-  // Последний свет дня — the horizon lights briefly and slowly softens again.
+  // Последний свет дня — a candle lantern swings from the top of its handle.
   'end-the-day': CoverScene(
-    period: 32,
+    period: 6,
+    tiltDegrees: 4,
+    tiltPivot: Offset(175, 27),
     effects: [
       CoverEffect(
-        CoverEffectKind.glow,
-        at: Offset(168, 162),
-        size: 40,
-        strength: .45,
-        color: Color(0xffffad6e),
+        CoverEffectKind.flicker,
+        at: Offset(175, 216),
+        size: 23,
+        strength: .95,
+        color: Color(0xffffb959),
       ),
       CoverEffect(
-        CoverEffectKind.glint,
-        at: Offset(95, 180),
-        to: Offset(188, 163),
-        size: 10,
-        strength: .33,
-        color: Color(0xffffd6aa),
-        phase: 1.5,
+        CoverEffectKind.windowLight,
+        at: Offset(172, 216),
+        to: Offset(177, 211),
+        size: 40,
+        strength: .78,
+        color: Color(0xffffbc75),
       ),
     ],
   ),
 
-  // Подальше от шума — brass catches light along the join of the velvet case.
-  'u6CbAmMlH0wBWDV7IPit': CoverScene(
-    period: 24,
-    effects: [
-      CoverEffect(
-        CoverEffectKind.glint,
-        at: Offset(91, 217),
-        to: Offset(177, 219),
-        size: 11,
-        strength: .56,
-        color: Color(0xffffbf6b),
-      ),
-    ],
-  ),
+  // Подальше от шума — lift the velvet lid about its rear hinge.
+  'u6CbAmMlH0wBWDV7IPit': CoverScene(period: 6, hingedCase: true),
 
   // Тепло в ладонях — warmth travels through the two pieces of amber.
   'jm8SxlyHPrcWnxeDzapR': CoverScene(
-    period: 20,
+    period: 6,
+    tiltDegrees: 3.2,
+    tiltPivot: Offset(175, 298),
     effects: [
       CoverEffect(
         CoverEffectKind.glow,
-        at: Offset(147, 206),
-        size: 25,
-        strength: .57,
+        at: Offset(133, 216),
+        to: Offset(175, 183),
+        size: 27,
+        strength: .93,
         color: Color(0xffffbd68),
       ),
       CoverEffect(
         CoverEffectKind.glow,
-        at: Offset(206, 224),
-        size: 17,
-        strength: .53,
+        at: Offset(196, 233),
+        to: Offset(223, 214),
+        size: 20,
+        strength: .88,
         color: Color(0xffffd18b),
-        phase: 2.1,
+        phase: 3.14,
       ),
     ],
   ),
 
   // Пока греется чайник — steam emerges directly from the spout.
   'lbf64Djr0E6Ea3KLBqRa': CoverScene(
-    period: 19,
+    period: 4,
     effects: [
       CoverEffect(
-        CoverEffectKind.steam,
-        at: Offset(287, 175),
-        to: Offset(276, 83),
-        size: 22,
-        strength: .54,
-        color: Color(0xffffddd9),
-      ),
-    ],
-  ),
-
-  // Мысли на бумаге — light follows the pencil and its gold ferrule.
-  'Xe0Urlp7kqRChzBxz5Ym': CoverScene(
-    period: 24,
-    effects: [
-      CoverEffect(
-        CoverEffectKind.glint,
-        at: Offset(165, 184),
-        to: Offset(271, 151),
-        size: 10,
-        strength: .49,
-        color: Color(0xffffd2a1),
+        CoverEffectKind.kettleSteam,
+        at: Offset(284, 173),
+        to: Offset(296, 39),
+        size: 19,
+        strength: .95,
+        color: Color(0xffffeee4),
       ),
     ],
   ),
 
   // Вечер между страниц — only the free end of the ribbon can move.
   'RMU7rfxrXT8WgXvcb4l7': CoverScene(
-    period: 23,
+    period: 4.8,
     parts: [
       CoverPart(
         shape: CoverShape.polygon([
-          Offset(209, 264),
-          Offset(239, 264),
-          Offset(266, 303),
-          Offset(220, 303),
+          Offset(211, 267),
+          Offset(250, 267),
+          Offset(273, 304),
+          Offset(213, 304),
         ]),
-        pivot: Offset(225, 264),
-        shift: Offset.zero,
-        degrees: 1.8,
+        pivot: Offset(228, 267),
+        horizontalShear: .45,
+        verticalScale: .055,
       ),
     ],
     effects: [
@@ -251,31 +290,56 @@ const lunarCalmMotions = <String, CoverScene>{
     ],
   ),
 
-  // Прогулка в своём ритме — a soft reflection alternates over the suede toes.
+  // Прогулка в своём ритме — each heel rolls over its own planted toe.
   'vhbT71sWOrtPb09BCGJf': CoverScene(
-    period: 26,
-    effects: [
-      CoverEffect(
-        CoverEffectKind.glow,
-        at: Offset(84, 230),
-        size: 24,
-        strength: .26,
-        color: Color(0xffefb99c),
+    period: 4.8,
+    parts: [
+      CoverPart(
+        shape: CoverShape.polygon([
+          Offset(30, 140),
+          Offset(212, 140),
+          Offset(212, 197),
+          Offset(202, 204),
+          Offset(184, 216),
+          Offset(172, 223),
+          Offset(159, 237),
+          Offset(147, 252),
+          Offset(139, 269),
+          Offset(134, 280),
+          Offset(30, 280),
+        ]),
+        pivot: Offset(82, 255),
+        degrees: 4,
+        shift: Offset(3, 1),
+        travel: CoverTravel.ease,
       ),
-      CoverEffect(
-        CoverEffectKind.glow,
-        at: Offset(192, 263),
-        size: 24,
-        strength: .28,
-        color: Color(0xffffc5aa),
-        phase: 2.8,
+      CoverPart(
+        shape: CoverShape.polygon([
+          Offset(212, 140),
+          Offset(310, 140),
+          Offset(310, 322),
+          Offset(134, 322),
+          Offset(134, 280),
+          Offset(139, 269),
+          Offset(147, 252),
+          Offset(159, 237),
+          Offset(172, 223),
+          Offset(184, 216),
+          Offset(202, 204),
+          Offset(212, 197),
+        ]),
+        pivot: Offset(168, 281),
+        degrees: -4,
+        shift: Offset(-2, -1),
+        travel: CoverTravel.ease,
       ),
     ],
   ),
 
-  // Взгляд вдаль — reflection crosses the still glass above the horizon.
+  // Взгляд вдаль — the hills slide at different depths inside the glass.
   '5kgmKpVpsoFUO6RRiO4n': CoverScene(
-    period: 28,
+    period: 8,
+    deformation: CoverDeformation.horizon,
     effects: [
       CoverEffect(
         CoverEffectKind.glint,
@@ -296,55 +360,45 @@ const lunarCalmMotions = <String, CoverScene>{
     ],
   ),
 
-  // Тихий край дня — the cloud drifts in the sky, within its available margin.
+  // The moon hangs from its top ring; the star trails on a second joint.
   'yliaOclUECyQlRnFec77': CoverScene(
-    period: 36,
+    period: 5.6,
+    tiltPivot: Offset(175, 24),
+    tiltDegrees: 5,
     parts: [
       CoverPart(
         shape: CoverShape.polygon([
-          Offset(0, 94),
-          Offset(350, 94),
-          Offset(350, 253),
-          Offset(0, 253),
+          Offset(138, 258),
+          Offset(212, 258),
+          Offset(212, 331),
+          Offset(138, 331),
         ]),
-        pivot: Offset(175, 169),
-        shift: Offset(8, -2),
-        degrees: 0,
-        travel: CoverTravel.ease,
-      ),
-    ],
-    effects: [
-      CoverEffect(
-        CoverEffectKind.glow,
-        at: Offset(202, 168),
-        size: 33,
-        strength: .28,
-        color: Color(0xffffbb87),
+        pivot: Offset(175, 258),
+        degrees: 7,
+        phase: -.65,
       ),
     ],
   ),
 
   // В своём темпе — the shell gently rocks around its grounded lower point.
   'own-pace': CoverScene(
-    period: 26,
-    parts: [
-      CoverPart(
-        shape: CoverShape.polygon([
-          Offset(51, 73),
-          Offset(310, 73),
-          Offset(310, 291),
-          Offset(51, 291),
-        ]),
-        pivot: Offset(174, 278),
-        shift: Offset.zero,
-        degrees: 2.5,
+    period: 7.2,
+    tiltPivot: Offset(151, 278),
+    tiltDegrees: 5,
+    effects: [
+      CoverEffect(
+        CoverEffectKind.shellLustre,
+        at: Offset(174, 190),
+        color: Color(0xffffe3cb),
+        size: 14,
       ),
     ],
   ),
 
-  // Место для отдыха — a soft light travels on separate folds of sheer fabric.
+  // Место для отдыха — a breeze runs from the suspension ring down both curtains.
   'allow-rest': CoverScene(
-    period: 34,
+    period: 7.6,
+    deformation: CoverDeformation.canopy,
     effects: [
       CoverEffect(
         CoverEffectKind.windowLight,

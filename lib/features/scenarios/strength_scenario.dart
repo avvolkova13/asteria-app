@@ -294,7 +294,7 @@ class _GuidanceConversationState extends State<_GuidanceConversation>
     _tryToday = null;
     _flip.value = 0;
     if (_locked) return;
-    if (saved != null || _content.isTodayTarotCardOpened()) {
+    if (saved != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted && !_accountChanged) _reveal(restore: true);
       });
@@ -332,7 +332,7 @@ class _GuidanceConversationState extends State<_GuidanceConversation>
         return;
       }
       final isRestoring =
-          restore || saved != null || _content.isTodayTarotCardOpened();
+          restore || saved != null;
       final today = saved == null
           ? _content.getTodayTarotCard()
           : _content.tarotCards.firstWhere((card) => card.id == saved.cardId);
@@ -343,7 +343,6 @@ class _GuidanceConversationState extends State<_GuidanceConversation>
         if (!mounted || _accountChanged) return;
         await _store.save(widget.situation, today.id, drawnDay);
         if (!mounted || _accountChanged) return;
-        _content.setDailySymbolTarotOpened();
       }
       setState(() => _card = today);
       final reduced = MediaQuery.disableAnimationsOf(context);

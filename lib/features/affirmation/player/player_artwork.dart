@@ -11,6 +11,7 @@ import 'body_motion_artwork.dart';
 import 'compass_motion.dart';
 import 'cover_motion_artwork.dart';
 import 'door_motion.dart';
+import 'paper_writing_motion.dart';
 import 'plate_motion.dart';
 import 'player_subject_motion.dart';
 
@@ -335,8 +336,19 @@ class _PracticeSceneArtwork extends StatelessWidget {
       PlayerSubjectMotion.shaking => math.max(1, (duration / 10).round()),
       _ => sceneCycles,
     };
+    final driftingMoonSky =
+        art == '$playerArtDirectory/cover-VjpyuyP2LiSbPotxcPjW.webp' ||
+        art == '$playerArtDirectory/cover-JkdxrsDTLLC3PcvxkmJs.webp' ||
+        art == '$playerArtDirectory/cover-en49nDLEdETuFD2AE4kA.webp' ||
+        art == '$playerArtDirectory/cover-AHICl7F381lItjTdo0JX.webp' ||
+        art == '$playerArtDirectory/cover-gkgBQSSVsX8KG74xHDHx.webp' ||
+        art == '$playerArtDirectory/cover-Q2hvhy5ACR3qTUWRqXiN.webp';
     final skyCycles = switch ((motion, scene)) {
       (PlayerSubjectMotion.shaking, _) => math.max(1, (duration / 40).round()),
+      (_, PracticeScene.moon) when driftingMoonSky => math.max(
+        1,
+        (duration / 12).round(),
+      ),
       (_, PracticeScene.moon) => math.max(1, (duration / 30).round()),
       _ => math.max(1, (sceneCycles / 2).round()),
     };
@@ -358,7 +370,9 @@ class _PracticeSceneArtwork extends StatelessWidget {
                   if (showBackground && scene == PracticeScene.moon)
                     Transform.translate(
                       offset: Offset(
-                        -bounds.maxWidth * .045 * math.sin(backgroundPhase),
+                        -bounds.maxWidth *
+                            (driftingMoonSky ? .083 : .045) *
+                            math.sin(backgroundPhase),
                         bounds.maxHeight *
                             .012 *
                             math.sin(backgroundPhase - .5),
@@ -508,6 +522,9 @@ class _CoverForeground extends StatelessWidget {
     if (filename == 'cover-aivVFq7TD00qsfLg4VzX.webp') {
       return PlateMotionArtwork(asset: subject, seconds: seconds);
     }
+    if (filename == 'cover-Xe0Urlp7kqRChzBxz5Ym.webp') {
+      return PaperWritingArtwork(asset: subject, seconds: seconds);
+    }
     if (filename == 'cover-choose-yourself.webp') {
       return CompassMotionArtwork(asset: subject, seconds: seconds);
     }
@@ -580,8 +597,7 @@ class _BellClip extends CustomClipper<Path> {
   }
 
   @override
-  bool shouldReclip(_BellClip old) =>
-      inverse != old.inverse;
+  bool shouldReclip(_BellClip old) => inverse != old.inverse;
 }
 
 class _CraneGiftArtwork extends StatelessWidget {

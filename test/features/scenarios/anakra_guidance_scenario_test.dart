@@ -159,7 +159,7 @@ void main() {
       expect(content.reveals, 1);
       content.gate!.complete();
       await tester.pumpAndSettle();
-      expect(content.shownOnHome, isTrue);
+      expect(content.shownOnHome, isFalse);
       expect(find.text(card.title), findsOneWidget);
       expect(find.textContaining(card.cardOfDayDescription), findsOneWidget);
       expect(
@@ -226,10 +226,13 @@ void main() {
   );
 
   testWidgets(
-    'an already opened Home card is available without another reveal',
+    'an already opened Home card still needs a local flip',
     (tester) async {
       content.opened = true;
       await start(tester);
+      expect(find.text(card.title), findsNothing);
+      await tester.tap(find.text('Draw a card'));
+      await tester.pumpAndSettle();
       expect(find.text(card.title), findsOneWidget);
       expect(find.text('Draw a card'), findsNothing);
       expect(content.reveals, 0);
