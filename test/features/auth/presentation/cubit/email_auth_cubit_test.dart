@@ -35,6 +35,65 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets('router refresh preserves the active email challenge', (
+    tester,
+  ) async {
+    final users = _FakeUserRepository();
+    final session = _FakeAuthSessionService();
+    final cubit = EmailAuthCubit(
+      repository: _FakeEmailAuthRepository(),
+      sessionService: session,
+      userRepository: users,
+      userProvider: UserProvider(userRepository: users),
+    );
+    addTearDown(cubit.close);
+    final router = GoRouter(
+      initialLocation: AuthRoutes.emailCodeRouteName,
+      routes: [
+        GoRoute(
+          path: AuthRoutes.loginRouteName,
+          builder: (context, _) => TextButton(
+            onPressed: () => AuthEmailCodeRoute.push(context, cubit: cubit),
+            child: const Text('Enter code'),
+          ),
+        ),
+        AuthEmailCodeRoute(),
+        GoRoute(
+          name: AuthRoutes.personalInfoRouteName,
+          path: AuthRoutes.personalInfoRouteName,
+          builder: (_, state) => Text((state.extra as AuthIdentity).email),
+        ),
+      ],
+    );
+    addTearDown(router.dispose);
+    await tester.pumpWidget(
+      MaterialApp.router(
+        routerConfig: router,
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          ...GlobalMaterialLocalizations.delegates,
+        ],
+        supportedLocales: AppLocaleService.supportedLocales,
+        builder: (context, child) => Theme(
+          data: AppThemeDark.instance.getThemeData(context),
+          child: child!,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await cubit.requestCode('current@example.com');
+    await tester.tap(find.text('Enter code'));
+    await tester.pumpAndSettle();
+    router.refresh();
+    await tester.pumpAndSettle();
+    expect(find.byType(EmailCodeScreen), findsOneWidget);
+    await cubit.verifyCode('123456');
+    await tester.pumpAndSettle();
+    expect(find.byType(EmailCodeScreen), findsNothing);
+    expect(find.text('current@example.com'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
   for (final document in LegalDocumentType.values) {
     testWidgets(
       'unauthenticated consent opens $document and returns to login',

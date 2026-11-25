@@ -8,7 +8,7 @@ void main() {
       'lib/core/routing/routes/auth_routes.dart',
     ).readAsStringSync();
     expect(authRoutes, contains('EmailLoginScreen(isRoot: true)'));
-    expect(authRoutes, contains('expectedUid: arguments.expectedUid'));
+    expect(authRoutes, contains('expectedUid: expectedUid'));
 
     final emailLogin = File(
       'lib/features/auth/presentation/screens/email_login_screen.dart',

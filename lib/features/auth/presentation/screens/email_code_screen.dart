@@ -108,7 +108,7 @@ class _EmailCodeScreenState extends State<EmailCodeScreen> {
                                 : HomeRoute.routeName,
                           );
                         } else {
-                          AuthPersonalInfoRoute.pushReplacement(
+                          AuthPersonalInfoRoute.go(
                             context,
                             identity: state.identity,
                           );

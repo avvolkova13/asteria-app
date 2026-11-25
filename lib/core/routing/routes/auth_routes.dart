@@ -129,37 +129,13 @@ class _EmailRouteArguments {
   });
 }
 
-class _EmailCodeRouteArguments {
-  final EmailAuthCubit cubit;
-  final bool deleteAfterVerification;
-  final String? expectedUid;
-
-  const _EmailCodeRouteArguments({
-    required this.cubit,
-    required this.deleteAfterVerification,
-    this.expectedUid,
-  });
-}
-
 class AuthEmailCodeRoute extends AppRoute {
+  // A restored URL cannot resume an in-memory verification challenge.
   AuthEmailCodeRoute()
     : super(
         name: AuthRoutes.emailCodeRouteName,
         path: AuthRoutes.emailCodeRouteName,
-        pageBuilder: (context, state) {
-          final arguments = state.extra as _EmailCodeRouteArguments;
-          return AsteriaPage(
-            key: state.pageKey,
-            name: state.name,
-            child: BlocProvider<EmailAuthCubit>.value(
-              value: arguments.cubit,
-              child: EmailCodeScreen(
-                deleteAfterVerification: arguments.deleteAfterVerification,
-                expectedUid: arguments.expectedUid,
-              ),
-            ),
-          );
-        },
+        redirect: (_, __) => AuthRoutes.loginRouteName,
       );
 
   static void push(
@@ -167,12 +143,18 @@ class AuthEmailCodeRoute extends AppRoute {
     required EmailAuthCubit cubit,
     bool deleteAfterVerification = false,
     String? expectedUid,
-  }) => context.pushNamed(
-    AuthRoutes.emailCodeRouteName,
-    extra: _EmailCodeRouteArguments(
-      cubit: cubit,
-      deleteAfterVerification: deleteAfterVerification,
-      expectedUid: expectedUid,
-    ),
-  );
+  }) {
+    Navigator.of(context).push<void>(
+      CupertinoPageRoute<void>(
+        settings: const RouteSettings(name: AuthRoutes.emailCodeRouteName),
+        builder: (_) => BlocProvider<EmailAuthCubit>.value(
+          value: cubit,
+          child: EmailCodeScreen(
+            deleteAfterVerification: deleteAfterVerification,
+            expectedUid: expectedUid,
+          ),
+        ),
+      ),
+    );
+  }
 }
