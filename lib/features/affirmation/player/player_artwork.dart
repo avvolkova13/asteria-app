@@ -478,6 +478,9 @@ class _CoverForeground extends StatelessWidget {
   Widget build(BuildContext context) {
     final filename = cover.split('/').last;
     final subject = '$playerArtDirectory/motion/subjects/$filename';
+    if (filename == 'cover-itqgt8x2gCPskF3Dv19h.webp') {
+      return AbacusArtwork(asset: subject, seconds: seconds);
+    }
     if (filename == 'cover-KvjWWJfzOtGBXzi0VCzv.webp') {
       return FigLeavesArtwork(asset: subject, seconds: seconds);
     }
