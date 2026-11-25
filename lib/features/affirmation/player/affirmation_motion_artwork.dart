@@ -13,6 +13,7 @@ part 'rose_reflection.dart';
 part 'abacus.dart';
 part 'fig_leaves.dart';
 part 'linked_stones.dart';
+part 'weighted_ribbon.dart';
 part 'strength_lion.dart';
 part 'strength_sun.dart';
 
