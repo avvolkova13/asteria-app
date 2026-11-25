@@ -478,6 +478,9 @@ class _CoverForeground extends StatelessWidget {
   Widget build(BuildContext context) {
     final filename = cover.split('/').last;
     final subject = '$playerArtDirectory/motion/subjects/$filename';
+    if (filename == 'cover-i5x8b2lu1nOvj0VPF8zi.webp') {
+      return LinkedStonesArtwork(asset: subject, seconds: seconds);
+    }
     if (filename == 'cover-be-kinder.webp') {
       return RoseReflectionArtwork(asset: subject, seconds: seconds);
     }

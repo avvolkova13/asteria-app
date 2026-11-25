@@ -8,6 +8,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 const _assetFolder = 'assets/images/affirmation/motion/subjects';
 const _specialized = {
+  'i5x8b2lu1nOvj0VPF8zi', // Linked stones
   'be-kinder', // Rose in the mirror
   '5UgabJFV5M2TiptnhZMm', // Door
   '9Mvd1yeBUDmiLPRdJ1mv', // Ribbon
@@ -30,7 +31,7 @@ void main() {
           asset.substring(prefix.length, asset.length - '.webp'.length),
     };
     expect(subjects, unorderedEquals({..._specialized, ...coverMotions.keys}));
-    expect(coverMotions, hasLength(43));
+    expect(coverMotions, hasLength(42));
   });
 
   testWidgets(

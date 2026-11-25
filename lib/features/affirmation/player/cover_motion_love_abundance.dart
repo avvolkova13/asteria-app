@@ -32,20 +32,6 @@ const loveAbundanceMotions = <String, CoverScene>{
       ),
     ],
   ),
-  // A narrow reflection follows the thread while the knots stay attached.
-  'i5x8b2lu1nOvj0VPF8zi': CoverScene(
-    period: 18,
-    effects: [
-      CoverEffect(
-        CoverEffectKind.glint,
-        at: Offset(151, 237),
-        to: Offset(191, 238),
-        size: 14,
-        strength: .62,
-        color: Color(0xffffc7a6),
-      ),
-    ],
-  ),
   'jW65YJ6XjzSvfnTJowcT': CoverScene(
     period: 22,
     effects: [
