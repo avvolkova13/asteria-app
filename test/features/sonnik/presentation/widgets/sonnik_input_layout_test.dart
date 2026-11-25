@@ -18,6 +18,7 @@ import 'package:asteria_app/core/analytics/product_analytics_service.dart';
 import 'package:asteria_app/core/di/di.dart';
 import 'package:asteria_app/core/localization/localization.dart';
 import 'package:asteria_app/core/services/global_loader_service.dart';
+import 'package:asteria_app/core/ui_kit/app_colors/app_colors.dart';
 import 'package:asteria_app/core/ui_kit/theme/theme.dart';
 import 'package:asteria_app/features/monetization/presentation/monetization_provider.dart';
 import 'package:asteria_app/features/sonnik/presentation/screens/create_sonnik_initial_screen.dart';
@@ -138,6 +139,18 @@ void main() {
         expect(
           find.byType(SonnikQuotaBadge),
           pro ? findsNothing : findsOneWidget,
+        );
+        final interpret = tester.widget<TextButton>(
+          find.widgetWithText(TextButton, l10n.dreamDecode),
+        );
+        expect(interpret.onPressed, isNull);
+        expect(
+          interpret.style?.foregroundColor?.resolve({WidgetState.disabled}),
+          AppColorsDark.linkGold.withValues(alpha: .72),
+        );
+        expect(
+          interpret.style?.foregroundColor?.resolve({}),
+          AppColorsDark.linkGold,
         );
         await tester.enterText(find.byType(TextField), 'Мне приснилось море');
         tester.view.viewInsets = const FakeViewPadding(bottom: 300);

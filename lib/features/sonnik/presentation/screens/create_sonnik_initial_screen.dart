@@ -185,8 +185,9 @@ class _DreamFormState extends State<_DreamForm> {
     if (text.isEmpty) return null;
     if (interpretation == null && text == _savedEntry?.text) return _savedEntry;
     try {
-      final saved = await DreamJournal(owner)
-          .save(text, entry: _savedEntry, interpretation: interpretation);
+      final saved = await DreamJournal(
+        owner,
+      ).save(text, entry: _savedEntry, interpretation: interpretation);
       if (!_current) return null;
       setState(() => _savedEntry = saved);
       return saved;
@@ -559,6 +560,11 @@ class _DreamFormState extends State<_DreamForm> {
                     const SizedBox(height: 8),
                     Center(
                       child: LotusButtons.text(
+                        style: TextButton.styleFrom(
+                          foregroundColor: AppColorsDark.linkGold,
+                          disabledForegroundColor: AppColorsDark.linkGold
+                              .withValues(alpha: .72),
+                        ),
                         onPressed: signedIn && hasText && canSubmit
                             ? _onCreateSonnikTap
                             : null,
