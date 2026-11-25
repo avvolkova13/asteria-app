@@ -915,7 +915,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "introCalendarFrom": m24,
     "introCalendarInsight": MessageLookupByLibrary.simpleMessage(
-      "Благоприятное время для новой стрижки.",
+      "Подходящий день, чтобы освежить форму стрижки или попробовать новую длину.",
     ),
     "introCalendarReminderChoice": MessageLookupByLibrary.simpleMessage(
       "За день до события",
@@ -931,9 +931,11 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "introCalendarResult": m25,
     "introCalendarSavedText": MessageLookupByLibrary.simpleMessage(
-      "Добавлено в мои планы",
+      "Сохранено в «Мои планы»",
     ),
-    "introCalendarSavedTitle": MessageLookupByLibrary.simpleMessage("Стрижка"),
+    "introCalendarSavedTitle": MessageLookupByLibrary.simpleMessage(
+      "Стрижка",
+    ),
     "introDemoLabel": MessageLookupByLibrary.simpleMessage("Пример разбора"),
     "introFavorable": MessageLookupByLibrary.simpleMessage(
       "Благоприятный день",
@@ -1526,6 +1528,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "onboardingDreamDescription": MessageLookupByLibrary.simpleMessage(
       "Проснулась, а от сна остался только один образ. Почему запомнился именно он?",
     ),
+    "onboardingDreamDescriptionCompact": MessageLookupByLibrary.simpleMessage(
+      "Почему мне запомнился именно маяк?",
+    ),
     "onboardingDreamTitle": MessageLookupByLibrary.simpleMessage(
       "Пока сон не растаял",
     ),
@@ -1548,7 +1553,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "На что опереться?",
     ),
     "onboardingPage1Description": MessageLookupByLibrary.simpleMessage(
-      "Хочется сменить образ. Посмотрим, какой день для этого предлагает лунный календарь.",
+      "Сверимся с лунным календарём.",
     ),
     "onboardingPage1Title": MessageLookupByLibrary.simpleMessage(
       "Когда записаться на стрижку?",
@@ -1578,7 +1583,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Можно выдохнуть",
     ),
     "onboardingPracticeDescription": MessageLookupByLibrary.simpleMessage(
-      "Рабочий день позади, а мысли всё ещё на работе. Что поможет переключиться?",
+      "Как переключиться после работы?",
     ),
     "onboardingPracticeTitle": MessageLookupByLibrary.simpleMessage(
       "Минута для себя",

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:asteria_app/app/data/models/lunar_calendar/lunar_recommendation_models.dart';
 import 'package:asteria_app/app/data/models/lunar_calendar/personalized_lunar_month_model.dart';
 import 'package:asteria_app/app/data/models/moon_phase/moon_phase_model.dart';
@@ -13,7 +15,9 @@ import 'package:asteria_app/features/compatibility/domain/repositories/compatibi
 import 'package:asteria_app/features/home/presentation/cubit/moon_screen_cubit.dart';
 import 'package:asteria_app/features/home/presentation/models/day_status.dart';
 import 'package:asteria_app/features/home/presentation/widgets/sphere_selection_widget.dart';
+import 'package:asteria_app/features/home/presentation/widgets/moon_calendar_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/services.dart';
 import 'package:asteria_app/core/analytics/analytics_facade.dart';
@@ -117,6 +121,153 @@ void main() {
       await tester.pumpWidget(const SizedBox());
     },
   );
+
+  testWidgets('arrows and a swipe navigate while earlier months are loading', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final repository = _PendingMonths();
+    final cubit = _createCubitWithRepository(repository);
+    addTearDown(cubit.close);
+    final august = cubit.loadMonth(DateTime(2026, 8));
+    repository.finish(DateTime(2026, 8));
+    await august;
+    await tester.pumpWidget(
+      BlocProvider<MoonScreenCubit>.value(
+        value: cubit,
+        child: MaterialApp(
+          locale: const Locale('ru'),
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            ...GlobalMaterialLocalizations.delegates,
+          ],
+          supportedLocales: AppLocaleService.supportedLocales,
+          home: Builder(
+            builder: (context) => Theme(
+              data: AppThemeLight.instance.getThemeData(context),
+              child: const Scaffold(body: MoonCalendarWidget()),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final next = find.byTooltip('Следующий месяц');
+    await tester.tap(next);
+    await tester.pump();
+    expect(find.textContaining('Сентябрь 2026'), findsOneWidget);
+    await tester.pump(const Duration(milliseconds: 64));
+    await tester.tap(next);
+    await tester.pumpAndSettle();
+    expect(find.textContaining('Октябрь 2026'), findsOneWidget);
+
+    await tester.fling(find.text('15'), const Offset(-280, 0), 1400);
+    await tester.pumpAndSettle();
+    expect(find.textContaining('Ноябрь 2026'), findsOneWidget);
+    await tester.tap(find.text('19'));
+    await tester.pump();
+    repository.finish(DateTime(2026, 11));
+    repository.finish(DateTime(2026, 10));
+    repository.finish(DateTime(2026, 9));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('Ноябрь 2026'), findsOneWidget);
+    expect(cubit.state.selectedDate?.day, 19);
+    expect(tester.takeException(), isNull);
+  });
+
+  test(
+    'late responses preserve the selected day and its sphere data',
+    () async {
+      final repository = _PendingMonths();
+      final cubit = _createCubitWithRepository(repository);
+      addTearDown(cubit.close);
+      final september = cubit.loadMonth(DateTime(2026, 9));
+      final october = cubit.loadMonth(DateTime(2026, 10));
+      final picked = DateTime(2026, 10, 21);
+      cubit.selectDate(picked);
+      repository.finish(picked);
+      await october;
+      repository.finish(DateTime(2026, 9));
+      await september;
+
+      cubit.selectSphere(Sphere.garden);
+      expect(cubit.state.selectedDate, picked);
+      expect(cubit.state.selectedPersonalizedDayData?.date, picked);
+      expect(cubit.state.selectedDayStatus, DayStatus.favorable);
+    },
+  );
+
+  test('a failed month stays visible for day selection and retry', () async {
+    final repository = _PendingMonths();
+    final cubit = _createCubitWithRepository(repository);
+    addTearDown(cubit.close);
+    final picked = DateTime(2026, 9, 19);
+    final load = cubit.loadMonth(DateTime(2026, 9));
+    repository.requests[DateTime(2026, 9)]!.completeError(
+      StateError('offline'),
+    );
+    await load;
+    expect(cubit.state.focusedDay.month, 9);
+    expect(cubit.state.error, isNotNull);
+    cubit.selectDate(picked);
+
+    final retry = cubit.loadMonth(cubit.state.focusedDay, forceRefresh: true);
+    repository.finish(picked);
+    await retry;
+    expect(cubit.state.selectedDate, picked);
+    expect(cubit.state.selectedPersonalizedDayData?.date, picked);
+    expect(cubit.state.error, isNull);
+  });
+
+  for (final changeDuringLoad in [true, false]) {
+    test(
+      'changing city ${changeDuringLoad ? 'during' : 'after'} a request excludes the previous city',
+      () async {
+        final user = UserProvider(userRepository: _FakeUserRepository());
+        addTearDown(user.dispose);
+        final repository = _PendingMonths();
+        final cubit = _createCubitWithRepository(repository, user: user);
+        addTearDown(cubit.close);
+        final date = DateTime(2026, 9, 19);
+        final load = cubit.loadMonth(date);
+        cubit.selectDate(date);
+        void changeCity() => user.applyServerUserSnapshot(
+          user.currentUser!.copyWith(
+            currentLocation: _saratov.copyWith(
+              location: 'Москва',
+              latitude: 55.75,
+              longitude: 37.62,
+            ),
+          ),
+        );
+
+        if (changeDuringLoad) changeCity();
+        repository.finish(date);
+        await load;
+        if (changeDuringLoad) {
+          expect(cubit.state.selectedPersonalizedDayData, isNull);
+        } else {
+          expect(cubit.state.selectedPersonalizedDayData?.date, date);
+          changeCity();
+        }
+        cubit.selectSphere(Sphere.garden);
+        expect(cubit.state.selectedPersonalizedDayData, isNull);
+        expect(cubit.state.dayStatuses, isEmpty);
+        cubit.selectDate(date);
+        expect(cubit.state.selectedPersonalizedDayData, isNull);
+
+        final refresh = cubit.loadMonth(date, forceRefresh: true);
+        repository.finish(date);
+        await refresh;
+        expect(cubit.state.selectedPersonalizedDayData?.date, date);
+        expect(cubit.state.selectedDayStatus, DayStatus.favorable);
+      },
+    );
+  }
 
   test('starts in phase mode without a selected sphere', () async {
     final cubit = _createCubit(_month());
@@ -227,12 +378,14 @@ MoonScreenCubit _createCubit(PersonalizedLunarMonthModel month) {
 }
 
 MoonScreenCubit _createCubitWithRepository(
-  PersonalizedLunarCalendarRepository repository,
-) {
-  final userProvider = UserProvider(userRepository: _FakeUserRepository())
-    ..applyServerUserSnapshot(
-      UserModel.empty().copyWith(currentLocation: _saratov),
-    );
+  PersonalizedLunarCalendarRepository repository, {
+  UserProvider? user,
+}) {
+  final userProvider =
+      (user ?? UserProvider(userRepository: _FakeUserRepository()))
+        ..applyServerUserSnapshot(
+          UserModel.empty().copyWith(currentLocation: _saratov),
+        );
   final contentProvider = ContentProvider(
     contentRepository: _FakeContentRepository(),
     personalizedLunarCalendarRepository: repository,
@@ -264,6 +417,26 @@ class _FakePersonalizedRepository
     required CurrentLocationModel location,
   }) async {
     return this.month;
+  }
+}
+
+class _PendingMonths implements PersonalizedLunarCalendarRepository {
+  final requests = <DateTime, Completer<PersonalizedLunarMonthModel>>{};
+
+  @override
+  Future<PersonalizedLunarMonthModel> loadMonth({
+    required DateTime month,
+    required CurrentLocationModel location,
+  }) {
+    final request = Completer<PersonalizedLunarMonthModel>();
+    requests[month] = request;
+    return request.future;
+  }
+
+  void finish(DateTime day) {
+    requests[DateTime(day.year, day.month)]!.complete(
+      _month(year: day.year, month: day.month, days: [_day(day)]),
+    );
   }
 }
 

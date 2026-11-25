@@ -26,6 +26,7 @@ import 'package:asteria_app/features/home/presentation/models/day_status_advice.
 import 'package:asteria_app/features/home/presentation/widgets/home_section_heading.dart';
 import 'package:asteria_app/features/home/presentation/widgets/day_status_icon.dart';
 import 'package:asteria_app/features/home/presentation/widgets/home_glass_surface.dart';
+import 'package:asteria_app/features/home/presentation/widgets/moon_design_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -75,7 +76,7 @@ class MoonPhaseWidget extends StatefulWidget {
 
 class _MoonPhaseWidgetState extends State<MoonPhaseWidget> {
   static const _minSwipeVelocity = 100.0;
-  static const _dayStripWidth = 418.0;
+  static const _dayStripWidth = 550.0;
   static const _dayTileWidth = 58.0;
   static const _dayTileHeight = 114.0;
   static const _dayTileGap = 16.0;
@@ -511,39 +512,53 @@ class _MoonPhaseWidgetState extends State<MoonPhaseWidget> {
     final duration = MediaQuery.disableAnimationsOf(context)
         ? Duration.zero
         : const Duration(milliseconds: 410);
-    return Center(
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: _dayStripWidth),
-        child: SizedBox(
-          height: _dayTileHeight,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: _dayStripWidth),
           child: LayoutBuilder(
             builder: (context, bounds) {
-              const stride = _dayTileWidth + _dayTileGap;
-              return TweenAnimationBuilder<double>(
-                tween: Tween(end: day.toDouble()),
-                duration: duration,
-                curve: Curves.easeInOutCubic,
-                builder: (context, position, _) {
-                  final halfCount =
-                      (bounds.maxWidth + _dayTileWidth) / (2 * stride);
-                  return Stack(
-                    children: [
-                      for (
-                        var i = (position - halfCount).ceil();
-                        i <= (position + halfCount).floor();
-                        i++
-                      )
-                        Positioned(
-                          key: ValueKey(i),
-                          left:
-                              (bounds.maxWidth - _dayTileWidth) / 2 +
-                              (i - position) * stride,
-                          top: 0,
-                          child: tileForOffset(i - day),
-                        ),
-                    ],
-                  );
-                },
+              // Keep an odd number of whole days, centered on the selection.
+              const minimumGap = 5.0;
+              final capacity =
+                  ((bounds.maxWidth + minimumGap) /
+                          (_dayTileWidth + minimumGap))
+                      .floor()
+                      .clamp(1, 7);
+              final count = capacity.isOdd ? capacity : capacity - 1;
+              final gap = count == 1
+                  ? 0.0
+                  : ((bounds.maxWidth - count * _dayTileWidth) / (count - 1))
+                        .clamp(minimumGap, _dayTileGap);
+              final stride = _dayTileWidth + gap;
+              final half = count ~/ 2;
+              return Center(
+                heightFactor: 1,
+                child: SizedBox(
+                  width: count * _dayTileWidth + (count - 1) * gap,
+                  height: _dayTileHeight,
+                  child: TweenAnimationBuilder<double>(
+                    tween: Tween(end: day.toDouble()),
+                    duration: duration,
+                    curve: Curves.easeInOutCubic,
+                    builder: (context, position, _) => Stack(
+                      children: [
+                        for (
+                          var i = position.floor() - half;
+                          i <= position.ceil() + half;
+                          i++
+                        )
+                          Positioned(
+                            key: ValueKey(i),
+                            left: (half + i - position) * stride,
+                            top: 0,
+                            child: tileForOffset(i - day),
+                          ),
+                      ],
+                    ),
+                  ),
+                ),
               );
             },
           ),
@@ -783,20 +798,25 @@ class MoonDayPreview extends StatelessWidget {
     super.key,
     required this.date,
     this.phaseImagePath,
+    this.markers,
+    this.markerLabel,
     required this.status,
     required this.isSelected,
   });
 
   final DateTime date;
-  final String? phaseImagePath;
+  final String? phaseImagePath, markerLabel;
+  final Widget? markers;
   final DayStatus status;
   final bool isSelected;
 
   @override
   Widget build(BuildContext context) => Semantics(
     selected: isSelected,
-    label:
-        '${DateFormat.yMMMMEEEEd(Localizations.localeOf(context).toLanguageTag()).format(date)}, ${status.title(context).replaceAll('\n', ' ')}',
+    label: [
+      '${DateFormat.yMMMMEEEEd(Localizations.localeOf(context).toLanguageTag()).format(date)}, ${status.title(context).replaceAll('\n', ' ')}',
+      ?markerLabel,
+    ].join(', '),
     child: ExcludeSemantics(
       child: IgnorePointer(
         child: MediaQuery(
@@ -810,6 +830,7 @@ class MoonDayPreview extends StatelessWidget {
           child: _MoonDayTile(
             date: date,
             phaseImagePath: phaseImagePath,
+            markers: markers,
             hasPrimaryPhase: false,
             status: status,
             isSelected: isSelected,
@@ -825,6 +846,7 @@ class _MoonDayTile extends StatelessWidget {
   const _MoonDayTile({
     required this.date,
     this.phaseImagePath,
+    this.markers,
     required this.hasPrimaryPhase,
     required this.status,
     required this.isSelected,
@@ -833,6 +855,7 @@ class _MoonDayTile extends StatelessWidget {
 
   final DateTime date;
   final String? phaseImagePath;
+  final Widget? markers;
   final bool hasPrimaryPhase;
   final DayStatus? status;
   final bool isSelected;
@@ -843,7 +866,9 @@ class _MoonDayTile extends StatelessWidget {
     final textColor = isSelected
         ? AppColors.textPrimary
         : AppColors.textInverse;
-    final weekdayOpacity = isSelected ? 0.8 : 0.5;
+    final compact = phaseImagePath == null;
+    final short = compact && MediaQuery.sizeOf(context).height < 740;
+    final weekdayOpacity = compact ? .86 : (isSelected ? .8 : .5);
     final locale = Localizations.localeOf(context);
     final weekday = Text(
       _formatWeekday(date, locale),
@@ -881,67 +906,80 @@ class _MoonDayTile extends StatelessWidget {
                   : const Duration(milliseconds: 310),
               curve: Curves.easeInOut,
               width: _MoonPhaseWidgetState._dayTileWidth,
-              height: phaseImagePath == null
-                  ? 102
+              height: compact
+                  ? (short ? 59 : 78)
                   : _MoonPhaseWidgetState._dayTileHeight,
               padding: EdgeInsets.symmetric(
                 horizontal: 7,
-                vertical: phaseImagePath == null ? 10 : 6,
+                vertical: short ? 3 : (compact ? 8 : 6),
               ),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(
-                  phaseImagePath == null ? 14 : 29,
-                ),
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: isSelected
-                      ? const [
-                          Color(0xFFFFD59F),
-                          Color(0xFFF3B76A),
-                          Color(0xFFDB8E4F),
-                        ]
-                      : const [
-                          Color(0xFF41354F),
-                          Color(0xFF241B30),
-                          Color(0xFF171120),
-                        ],
-                  stops: const [0, .40, 1],
-                ),
-                border: Border.all(
-                  color: isSelected
-                      ? const Color(0xFFFFDDB0)
-                      : const Color(0xFF5A4967),
-                  width: .8,
-                ),
-              ),
+              decoration: compact
+                  ? CardLensDecoration(
+                      borderRadius: BorderRadius.circular(
+                        AsteriaCardRadii.tile,
+                      ),
+                      gradient: isSelected
+                          ? MoonDesignTokens.selectedDayGradient(1)
+                          : CardLensDecoration.buttonFill(
+                              AppColorsDark.cardBackground,
+                            ),
+                    )
+                  : BoxDecoration(
+                      borderRadius: BorderRadius.circular(29),
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: isSelected
+                            ? const [
+                                Color(0xFFFFD59F),
+                                Color(0xFFF3B76A),
+                                Color(0xFFDB8E4F),
+                              ]
+                            : const [
+                                Color(0xFF41354F),
+                                Color(0xFF241B30),
+                                Color(0xFF171120),
+                              ],
+                        stops: const [0, .40, 1],
+                      ),
+                      border: Border.all(
+                        color: isSelected
+                            ? const Color(0xFFFFDDB0)
+                            : const Color(0xFF5A4967),
+                        width: .8,
+                      ),
+                    ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  SizedBox(
-                    height: 14,
-                    child: Center(
-                      child: status != null
-                          ? DayStatusIcon(
-                              status: status!,
-                              size: 14,
-                              excludeFromSemantics: true,
-                            )
-                          : hasPrimaryPhase
-                          ? Container(
-                              width: 5,
-                              height: 5,
-                              decoration: BoxDecoration(
-                                color: isSelected
-                                    ? AppColors.textPrimary
-                                    : _MoonPhaseWidgetState._accentOrangeLight,
-                                shape: BoxShape.circle,
-                              ),
-                            )
-                          : null,
+                  if (markers != null)
+                    markers!
+                  else
+                    SizedBox(
+                      height: 14,
+                      child: Center(
+                        child: status != null
+                            ? DayStatusIcon(
+                                status: status!,
+                                size: 14,
+                                excludeFromSemantics: true,
+                              )
+                            : hasPrimaryPhase
+                            ? Container(
+                                width: 5,
+                                height: 5,
+                                decoration: BoxDecoration(
+                                  color: isSelected
+                                      ? AppColors.textPrimary
+                                      : _MoonPhaseWidgetState
+                                            ._accentOrangeLight,
+                                  shape: BoxShape.circle,
+                                ),
+                              )
+                            : null,
+                      ),
                     ),
-                  ),
                   SizedBox(
                     height: 14,
                     child: Center(
@@ -950,30 +988,13 @@ class _MoonDayTile extends StatelessWidget {
                           : weekday,
                     ),
                   ),
-                  if (phaseImagePath == null)
-                    Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          '${date.day}',
-                          style: AppTypography.text2SemiBold.copyWith(
-                            color: textColor,
-                            fontSize: 20,
-                            height: 1.1,
-                          ),
-                        ),
-                        const SizedBox(height: 3),
-                        Text(
-                          DateFormat.MMM(
-                            locale.toLanguageTag(),
-                          ).format(date).replaceAll('.', ''),
-                          style: AppTypography.text2.copyWith(
-                            color: textColor.withValues(alpha: .8),
-                            fontSize: 10,
-                            height: 1.1,
-                          ),
-                        ),
-                      ],
+                  if (compact)
+                    Text(
+                      '${date.day}',
+                      style: AppTypography.h3.copyWith(
+                        color: textColor,
+                        height: 1,
+                      ),
                     )
                   else
                     SizedBox(

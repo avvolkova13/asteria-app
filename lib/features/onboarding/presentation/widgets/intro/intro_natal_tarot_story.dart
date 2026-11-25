@@ -4,6 +4,7 @@ import 'package:asteria_app/app/data/models/user/user_model.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/core/ui_kit/widgets/card_turn.dart';
 import 'package:asteria_app/core/ui_kit/widgets/tarot_card_frame.dart';
+import 'package:asteria_app/features/home/presentation/widgets/home_glass_surface.dart';
 import 'package:asteria_app/features/natal_card/widgets/natal_wheel.dart';
 import 'package:flutter/material.dart';
 
@@ -31,8 +32,8 @@ const _readings = [
     to: 'moon',
     ru: 'Солнце и Луна',
     en: 'Sun and Moon',
-    meaningRu: 'Чтобы попробовать новое, могу опереться на знакомое ремесло.',
-    meaningEn: 'A familiar craft gives me the confidence to try something new.',
+    meaningRu: 'Рисовать я уже умею. С этого и начну своё дело.',
+    meaningEn: 'I already know how to draw. That’s where I can start.',
   ),
 ];
 
@@ -47,114 +48,127 @@ class IntroNatalTarotStory extends StatelessWidget {
     builder: (context, time, still, _) {
       final ru = Localizations.localeOf(context).languageCode == 'ru';
       final compact = MediaQuery.sizeOf(context).height < 650;
-      if (!still && time < 5.8) {
-        final stroke = ((time - .35) / 1.7).clamp(0.0, 2.9999);
-        final index = stroke.floor();
-        final reading = _readings[index];
-        final appear = (time / .4).clamp(0.0, 1.0);
-        final leave = ((5.8 - time) / .35).clamp(0.0, 1.0);
-        final wheel = _Chart(
-          size: compact ? 146 : 248,
-          index: index,
-          progress: (stroke - index).clamp(0.0, 1.0),
-        );
-        final alignment = compact ? TextAlign.start : TextAlign.center;
-        final interpretation = IntroStoryFocus(
-          key: ValueKey('intro-aspect-$index'),
-          child: Padding(
-            padding: const EdgeInsets.only(bottom: 8),
-            child: Column(
-              crossAxisAlignment: compact
-                  ? CrossAxisAlignment.start
-                  : CrossAxisAlignment.center,
-              children: [
-                Text(
-                  ru ? reading.ru : reading.en,
-                  style: _title,
-                  textAlign: alignment,
-                ),
-                const SizedBox(height: 3),
-                Text(
-                  ru ? reading.meaningRu : reading.meaningEn,
-                  style: _body,
-                  textAlign: alignment,
-                ),
-              ],
-            ),
-          ),
-        );
-        return Opacity(
-          opacity: appear * leave,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text(context.l10n.natalChartTitle, style: _section),
-              const SizedBox(height: 6),
-              if (compact)
-                Row(
-                  children: [
-                    Flexible(child: wheel),
-                    const SizedBox(width: 12),
-                    Expanded(child: interpretation),
-                  ],
-                )
-              else ...[
-                Center(child: wheel),
-                const SizedBox(height: 6),
-                interpretation,
-              ],
-            ],
-          ),
-        );
-      }
+      final stroke = still ? 3.0 : ((time - .35) / 1.7).clamp(0.0, 3.0);
+      final index = math.min(stroke.floor(), _readings.length - 1);
+      final reading = _readings[index];
+      final settle = still
+          ? 1.0
+          : Curves.easeInOutCubic.transform(
+              ((time - 5.1) / .7).clamp(0.0, 1.0),
+            );
+      final showSpread = still || time >= 5.8;
       final complete = still || time >= 10.3;
+      final wheelSize = compact ? 128 - 58 * settle : 176 - 86 * settle;
       return Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          if (still) ...[
-            Row(
-              children: [
-                const _Chart(size: 64, index: 2, progress: 1),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    ru
-                        ? 'Натальная карта: опора в знакомом ремесле'
-                        : 'Birth chart: a familiar craft is my strength',
-                    style: _body,
-                  ),
+          StoryEntrance(
+            time: time,
+            start: .17,
+            child: HomeGlassSurface(
+              animateEntrance: false,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(8, 12, 14, 12),
+                child: Row(
+                  children: [
+                    _Chart(
+                      size: wheelSize,
+                      index: index,
+                      progress: stroke - index,
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: IntroStoryFocus(
+                        key: ValueKey('intro-aspect-$index'),
+                        enabled: !showSpread,
+                        child: StoryEntrance(
+                          time: time,
+                          start: .35 + index * 1.7,
+                          rise: 4,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                context.l10n.natalChartTitle,
+                                style: _section,
+                              ),
+                              const SizedBox(height: 5),
+                              Text(ru ? reading.ru : reading.en, style: _title),
+                              const SizedBox(height: 4),
+                              Text(
+                                ru ? reading.meaningRu : reading.meaningEn,
+                                style: _body,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
+            ),
+          ),
+          if (showSpread) ...[
+            const SizedBox(height: 14),
+            StoryEntrance(
+              time: time,
+              start: 5.8,
+              child: Text(
+                ru ? 'Расклад Таро' : 'Tarot spread',
+                style: _section,
+              ),
             ),
             const SizedBox(height: 10),
+            IntroStoryFocus(
+              key: const ValueKey('intro-spread'),
+              enabled: !complete,
+              child: StoryEntrance(
+                time: time,
+                start: 5.82,
+                rise: 4,
+                child: _Spread(
+                  time: time,
+                  still: still,
+                  ru: ru,
+                  compact: compact,
+                ),
+              ),
+            ),
           ],
-          Text(ru ? 'Расклад Таро' : 'Tarot spread', style: _section),
-          const SizedBox(height: 14),
-          IntroStoryFocus(
-            key: const ValueKey('intro-spread'),
-            enabled: !complete,
-            child: _Spread(time: time, still: still, ru: ru, compact: compact),
-          ),
           if (complete)
             IntroStoryFocus(
               child: Padding(
-                key: const ValueKey('intro-natal-tarot-result'),
-                padding: EdgeInsets.only(top: compact ? 10 : 18, bottom: 5),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      ru ? 'Мой первый шаг' : 'My first step',
-                      style: _section,
+                padding: const EdgeInsets.only(top: 12),
+                child: StoryReveal(
+                  time: time,
+                  start: still ? -1 : 10.3,
+                  child: HomeGlassSurface(
+                    key: const ValueKey('intro-natal-tarot-result'),
+                    animateEntrance: false,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            ru ? 'Мой первый шаг' : 'My first step',
+                            style: _section,
+                          ),
+                          const SizedBox(height: 5),
+                          Text(
+                            ru
+                                ? 'Нарисую эскиз и покажу его будущему клиенту. Спрошу, что он хотел бы изменить.'
+                                : 'I’ll draw a sketch and show it to a potential client. I’ll ask what they’d change.',
+                            style: _body,
+                          ),
+                        ],
+                      ),
                     ),
-                    const SizedBox(height: 4),
-                    Text(
-                      ru
-                          ? 'Я умею рисовать. Покажу один эскиз будущему клиенту и узнаю, что ему откликнется.'
-                          : 'I know how to draw. I’ll show a sketch to a potential client and see what resonates.',
-                      style: _body,
-                    ),
-                  ],
+                  ),
                 ),
               ),
             ),
@@ -279,10 +293,22 @@ class _Spread extends StatelessWidget {
     final deal = still
         ? 1.0
         : Curves.easeOutCubic.transform(((time - 5.8) / .8).clamp(0.0, 1.0));
+    final turns = List.generate(
+      3,
+      (i) => still
+          ? 1.0
+          : ((time - 6.9 - i * 1.15) /
+                    (CardTurn.duration.inMilliseconds / 1000))
+                .clamp(0.0, 1.0),
+    );
+    // Match the eased face change used by CardTurn itself, including semantics.
+    final faceUp = turns
+        .map((turn) => Curves.easeInOutCubic.transform(turn) >= .5)
+        .toList();
     return LayoutBuilder(
       builder: (context, bounds) {
         final width = math.min(
-          compact ? 82.0 : 108.0,
+          compact ? 78.0 : 100.0,
           (bounds.maxWidth - 20) / 3,
         );
         return Row(
@@ -301,7 +327,7 @@ class _Spread extends StatelessWidget {
                         angle: (i - 1) * .12 * (1 - deal),
                         child: Semantics(
                           image: true,
-                          label: time >= 7.32 + i * 1.15 || still
+                          label: faceUp[i]
                               ? names[i]
                               : (ru ? 'Рубашка карты' : 'Card back'),
                           child: SizedBox(
@@ -309,12 +335,7 @@ class _Spread extends StatelessWidget {
                             width: width,
                             height: width * 1.5,
                             child: CardTurn(
-                              progress: still
-                                  ? 1
-                                  : ((time - 6.9 - i * 1.15) / .85).clamp(
-                                      0.0,
-                                      1.0,
-                                    ),
+                              progress: turns[i],
                               back: _face(
                                 'assets/images/home/daily_symbol_tarot_back.webp',
                                 'back',
@@ -330,14 +351,24 @@ class _Spread extends StatelessWidget {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 8),
-                    Text(
-                      roles[i],
-                      style: AppTypography.text2.copyWith(
-                        color: AppColors.textInverse,
+                    if (faceUp[i]) ...[
+                      const SizedBox(height: 6),
+                      StoryEntrance(
+                        time: time,
+                        start:
+                            6.9 +
+                            i * 1.15 +
+                            CardTurn.duration.inMilliseconds / 2000,
+                        rise: 4,
+                        child: Text(
+                          roles[i],
+                          style: AppTypography.text2.copyWith(
+                            color: AppColors.textInverse,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
                       ),
-                      textAlign: TextAlign.center,
-                    ),
+                    ],
                   ],
                 ),
               ),

@@ -111,59 +111,63 @@ class _TarotLayoutState extends State<TarotLayout> {
             final availableWidth = constraints.maxWidth.isFinite
                 ? constraints.maxWidth
                 : _layoutWidth;
-            final scale = availableWidth < _layoutWidth
-                ? availableWidth / _layoutWidth
-                : 1.0;
+            final scale = (availableWidth / _layoutWidth)
+                .clamp(0.0, 1.35)
+                .toDouble();
+            final layoutWidth = _layoutWidth * scale;
             final cardWidth = _cardWidth * scale;
             final cardHeight = _cardHeight * scale;
             final layoutHeight = _layoutHeight * scale;
             final centerCardTop = _centerCardTop * scale;
 
-            return SizedBox(
-              width: availableWidth,
-              height: layoutHeight,
-              child: Stack(
-                children: [
-                  Positioned(
-                    left: 0,
-                    top: 0,
-                    child: _buildCard(
-                      context,
-                      0,
-                      cardIds[0],
-                      userProvider,
-                      contentProvider,
-                      cardWidth,
-                      cardHeight,
+            return Center(
+              heightFactor: 1,
+              child: SizedBox(
+                width: layoutWidth,
+                height: layoutHeight,
+                child: Stack(
+                  children: [
+                    Positioned(
+                      left: 0,
+                      top: 0,
+                      child: _buildCard(
+                        context,
+                        0,
+                        cardIds[0],
+                        userProvider,
+                        contentProvider,
+                        cardWidth,
+                        cardHeight,
+                      ),
                     ),
-                  ),
-                  Positioned(
-                    left: (availableWidth - cardWidth) / 2,
-                    top: centerCardTop,
-                    child: _buildCard(
-                      context,
-                      1,
-                      cardIds[1],
-                      userProvider,
-                      contentProvider,
-                      cardWidth,
-                      cardHeight,
+                    Positioned(
+                      left: (layoutWidth - cardWidth) / 2,
+                      top: centerCardTop,
+                      child: _buildCard(
+                        context,
+                        1,
+                        cardIds[1],
+                        userProvider,
+                        contentProvider,
+                        cardWidth,
+                        cardHeight,
+                      ),
                     ),
-                  ),
-                  Positioned(
-                    right: 0,
-                    top: 0,
-                    child: _buildCard(
-                      context,
-                      2,
-                      cardIds[2],
-                      userProvider,
-                      contentProvider,
-                      cardWidth,
-                      cardHeight,
+                    Positioned(
+                      right: 0,
+                      top: 0,
+                      child: _buildCard(
+                        context,
+                        2,
+                        cardIds[2],
+                        userProvider,
+                        contentProvider,
+                        cardWidth,
+                        cardHeight,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             );
           },

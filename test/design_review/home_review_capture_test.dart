@@ -300,9 +300,10 @@ void main() {
             }
             natural.dispose();
           }
-          if (checkedWeekdays < 5) {
+          final expectedDays = variant.startsWith('320') ? 3 : 5;
+          if (checkedWeekdays < expectedDays) {
             issues.add(
-              'Expected at least five real weekday labels, got $checkedWeekdays',
+              'Expected at least $expectedDays real weekday labels, got $checkedWeekdays',
             );
           }
         }

@@ -23,105 +23,111 @@ class PracticesScreen extends StatelessWidget {
       color: AppColors.textPrimary,
       child: SafeArea(
         bottom: false,
-        child: ListView(
-          padding: const EdgeInsets.only(bottom: 16),
-          children: [
-            const HomeAccountBar(
-              showAccountActions: false,
-              backgroundColor: AppColors.textPrimary,
-            ).withEntrance(),
-            const SizedBox(height: 26),
-            AsteriaEntrance(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Wrap(
-                  alignment: WrapAlignment.spaceBetween,
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  spacing: 12,
-                  children: [
-                    HomeSectionHeading(context.l10n.navPractices),
-                    const NotesJournalLink(),
-                  ],
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 880),
+            child: ListView(
+              padding: const EdgeInsets.only(bottom: 16),
+              children: [
+                const HomeAccountBar(
+                  showAccountActions: false,
+                  backgroundColor: AppColors.textPrimary,
+                ).withEntrance(),
+                const SizedBox(height: 26),
+                AsteriaEntrance(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Wrap(
+                      alignment: WrapAlignment.spaceBetween,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      spacing: 12,
+                      children: [
+                        HomeSectionHeading(context.l10n.navPractices),
+                        const NotesJournalLink(),
+                      ],
+                    ),
+                  ),
                 ),
-              ),
-            ),
-            const SizedBox(height: 16),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  LayoutBuilder(
-                    builder: (context, constraints) {
-                      final twoColumns =
-                          constraints.maxWidth >= 340 &&
-                          MediaQuery.textScalerOf(context).scale(16) <= 20;
-                      const meditation = PracticeCategory.meditation;
-                      final affirmationsCard = HubEntryCard(
-                        compact: true,
-                        alignAction: twoColumns,
-                        fitCompactTitle: true,
-                        title: context.l10n.affirmationsTitle,
-                        description: ru
-                            ? 'Короткие фразы, к которым хочется возвращаться.'
-                            : 'Short phrases worth coming back to.',
+                const SizedBox(height: 16),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      LayoutBuilder(
+                        builder: (context, constraints) {
+                          final twoColumns =
+                              constraints.maxWidth >= 340 &&
+                              MediaQuery.textScalerOf(context).scale(16) <= 20;
+                          const meditation = PracticeCategory.meditation;
+                          final affirmationsCard = HubEntryCard(
+                            compact: true,
+                            alignAction: twoColumns,
+                            fitCompactTitle: true,
+                            title: context.l10n.affirmationsTitle,
+                            description: ru
+                                ? 'Короткие фразы, к которым хочется возвращаться.'
+                                : 'Short phrases worth coming back to.',
+                            action: openLabel,
+                            art: 'assets/images/scenarios/lotus.webp',
+                            onTap: () => AffirmationRoute.push(context),
+                          );
+                          final meditationCard = HubEntryCard(
+                            compact: true,
+                            alignAction: twoColumns,
+                            fitCompactTitle: true,
+                            title: meditation.title(ru),
+                            description: meditation.description(ru),
+                            action: openLabel,
+                            art: meditation.art,
+                            onTap: () =>
+                                openPracticeCatalog(context, meditation),
+                          );
+                          if (!twoColumns) {
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                affirmationsCard,
+                                const SizedBox(height: 14),
+                                meditationCard,
+                              ],
+                            );
+                          }
+                          return IntrinsicHeight(
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                Expanded(child: affirmationsCard),
+                                const SizedBox(width: 14),
+                                Expanded(child: meditationCard),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                      const SizedBox(height: 14),
+                      HubEntryCard(
+                        title: PracticeCategory.body.title(ru),
+                        description: PracticeCategory.body.description(ru),
                         action: openLabel,
-                        art: 'assets/images/scenarios/lotus.webp',
-                        onTap: () => AffirmationRoute.push(context),
-                      );
-                      final meditationCard = HubEntryCard(
-                        compact: true,
-                        alignAction: twoColumns,
-                        fitCompactTitle: true,
-                        title: meditation.title(ru),
-                        description: meditation.description(ru),
-                        action: openLabel,
-                        art: meditation.art,
-                        onTap: () => openPracticeCatalog(context, meditation),
-                      );
-                      if (!twoColumns) {
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            affirmationsCard,
-                            const SizedBox(height: 14),
-                            meditationCard,
-                          ],
-                        );
-                      }
-                      return IntrinsicHeight(
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            Expanded(child: affirmationsCard),
-                            const SizedBox(width: 14),
-                            Expanded(child: meditationCard),
-                          ],
-                        ),
-                      );
-                    },
+                        art: PracticeCategory.body.art,
+                        onTap: () =>
+                            openPracticeCatalog(context, PracticeCategory.body),
+                      ),
+                      const SizedBox(height: 24),
+                      const PracticeToolEntries(),
+                    ],
                   ),
-                  const SizedBox(height: 14),
-                  HubEntryCard(
-                    title: PracticeCategory.body.title(ru),
-                    description: PracticeCategory.body.description(ru),
-                    action: openLabel,
-                    art: PracticeCategory.body.art,
-                    onTap: () =>
-                        openPracticeCatalog(context, PracticeCategory.body),
-                  ),
-                  const SizedBox(height: 24),
-                  const PracticeToolEntries(),
-                ],
-              ),
+                ),
+                const SizedBox(height: 32),
+                ListenableBuilder(
+                  listenable: content,
+                  builder: (context, _) => ArticlesSectionWidget(),
+                ),
+                const SizedBox(height: 16),
+              ],
             ),
-            const SizedBox(height: 32),
-            ListenableBuilder(
-              listenable: content,
-              builder: (context, _) => ArticlesSectionWidget(),
-            ),
-            const SizedBox(height: 16),
-          ],
+          ),
         ),
       ),
     );

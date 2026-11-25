@@ -358,6 +358,33 @@ void main() {
     );
   }
 
+  testWidgets('shows only whole day tiles at phone and tablet widths', (
+    tester,
+  ) async {
+    await _pumpMoonPhaseWidget(tester, moonPhase: _moonPhase(15));
+    for (final size in [
+      const Size(320, 568),
+      const Size(390, 844),
+      const Size(1032, 1376),
+      const Size(1376, 1032),
+    ]) {
+      tester.view.physicalSize = size;
+      await tester.pumpAndSettle();
+      final tiles = find.byWidgetPredicate(
+        (widget) => widget is Positioned && widget.key is ValueKey<int>,
+      );
+      expect(tiles.evaluate().length, greaterThanOrEqualTo(3));
+      final strip = tester.getRect(
+        find.ancestor(of: tiles.first, matching: find.byType(Stack)).first,
+      );
+      for (final element in tiles.evaluate()) {
+        final tile = tester.getRect(find.byWidget(element.widget));
+        expect(tile.left, greaterThanOrEqualTo(strip.left - 0.01));
+        expect(tile.right, lessThanOrEqualTo(strip.right + 0.01));
+      }
+    }
+  });
+
   testWidgets('shows the full location note on one line on compact phones', (
     tester,
   ) async {

@@ -332,7 +332,7 @@ void main() {
       expect(coordinator.state.phase, ApplePurchasePhase.waiting);
       expect(native.purchases, 1);
       updates.add(receipt());
-      await Future<void>.delayed(const Duration(milliseconds: 20));
+      await native.firstFinish.future.timeout(const Duration(seconds: 5));
       expect(api.reconciled, 1);
       expect(native.finishes, ['exact']);
       expect(coordinator.nativeBusy, isTrue);
@@ -708,6 +708,7 @@ class FakeNative implements AppleTransactions {
   String? failStage;
   int purchases = 0;
   final finishes = <String>[];
+  final firstFinish = Completer<void>();
   @override
   Future<List<AppleReceipt>> currentEntitlements() async {
     if (failStage == 'snapshot') throw StateError('snapshot');
@@ -735,6 +736,7 @@ class FakeNative implements AppleTransactions {
   @override
   Future<AppleFinishOutcome> finish(String id) async {
     finishes.add(id);
+    if (!firstFinish.isCompleted) firstFinish.complete();
     if (failFinish) throw StateError('finish');
     return finishOutcome;
   }

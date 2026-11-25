@@ -67,7 +67,17 @@ class ProfileFlowBackground extends StatelessWidget {
               ),
             ),
           ),
-          child,
+          Align(
+            alignment: Alignment.topCenter,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 740),
+              child: SizedBox(
+                width: double.infinity,
+                height: double.infinity,
+                child: child,
+              ),
+            ),
+          ),
         ],
       ),
     );

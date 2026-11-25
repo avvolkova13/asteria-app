@@ -40,10 +40,11 @@ class CreateSonnikRoute extends AppRoute {
 }
 
 final class CreateSonnikInitialRouteParams {
-  const CreateSonnikInitialRouteParams({required this.initialEntry, required this.ownerId});
+  const CreateSonnikInitialRouteParams({required this.initialEntry, required this.ownerId, this.autoInterpret = false});
 
   final DreamEntry initialEntry;
   final String ownerId;
+  final bool autoInterpret;
 }
 
 class CreateSonnikInitialRoute extends AppRoute {
@@ -64,6 +65,7 @@ class CreateSonnikInitialRoute extends AppRoute {
               child: CreateSonnikInitialScreen(
                 initialEntry: params?.initialEntry,
                 entryOwnerId: params?.ownerId,
+                autoInterpret: params?.autoInterpret ?? false,
               ),
             );
           },

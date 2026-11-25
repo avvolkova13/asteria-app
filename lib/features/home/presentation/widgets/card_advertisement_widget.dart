@@ -155,7 +155,8 @@ class CardAdvertisementWidget extends StatelessWidget {
         final artWidth = (cardWidth * .29).clamp(64.0, 120.0);
         final scale = MediaQuery.textScalerOf(context).scale(1);
         final minimumHeight =
-            cardWidth / 1.598 + (scale - 1).clamp(0.0, .35) * 320;
+            (cardWidth / 1.598).clamp(0.0, 240.0) +
+            (scale - 1).clamp(0.0, .35) * 320;
         final roomyCopy = cardWidth < 310 || scale > 1.25;
         final body = Text(
           description,

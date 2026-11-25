@@ -596,6 +596,57 @@ void main() {
 
   for (final language in ['ru', 'en']) {
     for (final width in [390.0, 320.0]) {
+      testWidgets('$language calendar fits without scrolling at $width', (
+        tester,
+      ) async {
+        bloc = OnboardingBloc(settings);
+        await _pumpOnboarding(
+          tester,
+          bloc,
+          locale: Locale(language),
+          size: Size(width, width == 390 ? 844 : 568),
+          padding: EdgeInsets.only(
+            top: width == 390 ? 59 : 20,
+            bottom: width == 390 ? 34 : 0,
+          ),
+          disableAnimations: false,
+          onComplete: () => completions++,
+        );
+        final content = find.byKey(const ValueKey('onboarding-content-0'));
+        final viewport = tester.getRect(content);
+        final title = AppLocalizations.of(
+          tester.element(content),
+        ).onboardingPage1Title;
+        for (final (time, key) in [
+          (4800, 'intro-day-advice'),
+          (9000, 'intro-calendar-reminder'),
+        ]) {
+          await _pumpStoryTo(tester, 0, time);
+          final region = find.descendant(
+            of: content,
+            matching: find.byType(Scrollable),
+          );
+          final scroll = tester.state<ScrollableState>(region).position;
+          expect(scroll.maxScrollExtent, closeTo(0, .5));
+          expect(scroll.pixels, closeTo(0, .5));
+          expect(
+            tester.getRect(find.text(title)).top,
+            greaterThanOrEqualTo(viewport.top),
+          );
+          final gap =
+              viewport.bottom -
+              tester.getRect(find.byKey(ValueKey(key))).bottom;
+          expect(gap, greaterThanOrEqualTo(0));
+          if (width == 390 && key == 'intro-calendar-reminder') {
+            expect(
+              gap,
+              lessThan(90),
+              reason: 'The result should fill the calendar scene.',
+            );
+          }
+        }
+        await tester.pumpWidget(const SizedBox());
+      }, variant: TargetPlatformVariant.only(TargetPlatform.iOS));
       testWidgets('$language autoplay results fit the visible scene at $width', (
         tester,
       ) async {
@@ -628,16 +679,39 @@ void main() {
               (1600, 'intro-aspect-0'),
               (3400, 'intro-aspect-1'),
               (5100, 'intro-aspect-2'),
+              (7000, 'intro-chart-wheel'),
               for (var i = 0; i < 3; i++) (7000, 'intro-spread-turn-$i'),
             ],
-            2 => [(4600, 'intro-dream-transcript')],
-            _ => const <(int, String)>[],
+            2 => [
+              (4600, 'intro-dream-transcript'),
+              (7200, 'intro-dream-reading'),
+            ],
+            _ => [
+              (5700, 'intro-practice-description'),
+              (9150, 'intro-practice-note'),
+            ],
           };
           final viewport = tester.getRect(
             find.byKey(ValueKey('onboarding-content-$page')),
           );
           for (final (time, key) in moments) {
             await _pumpStoryTo(tester, page, time);
+            if (page == 3) {
+              final content = find.byKey(ValueKey('onboarding-content-$page'));
+              final scroll = tester
+                  .state<ScrollableState>(
+                    find.descendant(
+                      of: content,
+                      matching: find.byType(Scrollable),
+                    ),
+                  )
+                  .position;
+              expect(
+                scroll.maxScrollExtent,
+                closeTo(0, .5),
+                reason: 'practice at $time ms, $width, $language',
+              );
+            }
             final rect = tester.getRect(find.byKey(ValueKey(key)));
             if (rect.top < viewport.top - .5 ||
                 rect.bottom > viewport.bottom + .5) {
@@ -649,6 +723,38 @@ void main() {
             page,
             _activeStoryDuration(tester).inMilliseconds - 1500,
           );
+          if (page == 2 || page == 3) {
+            final content = find.byKey(ValueKey('onboarding-content-$page'));
+            final scroll = tester
+                .state<ScrollableState>(
+                  find.descendant(
+                    of: content,
+                    matching: find.byType(Scrollable),
+                  ),
+                )
+                .position;
+            expect(
+              scroll.maxScrollExtent,
+              closeTo(0, .5),
+              reason: 'scene $page at $width in $language: viewport $viewport',
+            );
+            expect(scroll.pixels, closeTo(0, .5));
+            if (page == 2) {
+              final wish = tester.getRect(
+                find.byKey(const ValueKey('intro-dream-wish')),
+              );
+              expect(wish.bottom, lessThanOrEqualTo(viewport.bottom));
+              final nextTop = tester
+                  .getTopLeft(find.byType(IntroNextButton))
+                  .dy;
+              expect(
+                nextTop - wish.bottom,
+                inInclusiveRange(4.0, 36.0),
+                reason:
+                    'The message should finish just above Next at $width in $language.',
+              );
+            }
+          }
           final result = results[page];
           expect(result, findsOneWidget);
           final bounds = tester.getRect(result);
@@ -842,25 +948,31 @@ void main() {
                 (650, 'start'),
                 (2800, 'date'),
                 (4000, 'selection'),
-                (5400, 'result'),
+                (5600, 'saved'),
+                (8200, 'result'),
               ],
               [
                 (650, 'start'),
                 (2800, 'chart'),
                 (7000, 'deal'),
+                (8000, 'first_face'),
                 (12200, 'result'),
               ],
               [
                 (650, 'start'),
                 (1600, 'dictation'),
                 (4600, 'saved'),
-                (8750, 'result'),
+                (6400, 'reading'),
+                (10300, 'result'),
+                (11900, 'wish'),
               ],
               [
                 (650, 'start'),
-                (3600, 'body'),
-                (6400, 'meditation'),
-                (8750, 'result'),
+                (2200, 'body'),
+                (5700, 'meditation'),
+                (9100, 'note'),
+                (10600, 'writing'),
+                (14000, 'result'),
               ],
             ];
             for (final phase in moments[page]) {

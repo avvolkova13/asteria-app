@@ -430,8 +430,14 @@ void main() {
     await tester.tap(find.text('Купить'));
     await tester.pumpAndSettle();
 
-    expect(find.text('Купить 10 запросов за 55'), findsOneWidget);
-    expect(find.text('Купить Покупка 10 запросов за 55'), findsNothing);
+    expect(
+      find.bySemanticsLabel('Купить 10 запросов за 55 звёзд'),
+      findsOneWidget,
+    );
+    expect(
+      find.textContaining('Купить Покупка', findRichText: true),
+      findsNothing,
+    );
   });
 }
 

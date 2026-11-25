@@ -17,6 +17,9 @@ import 'package:asteria_app/features/sonnik/presentation/screens/create_sonnik_h
 import 'package:asteria_app/features/sonnik/presentation/provider/sonnik_provider.dart';
 import 'package:asteria_app/features/monetization/presentation/monetization_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:hive/hive.dart';
+import 'package:asteria_app/core/analytics/product_analytics_service.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -40,7 +43,11 @@ Future<GoRouter> show(
   final account = _Account(user);
   final wallet = _Wallet();
   di.registerSingleton<ContentProvider>(_Content(loaded));
-  di.registerSingleton<AnalyticsFacade>(_Analytics());
+  final analytics = _Analytics();
+  di.registerSingleton<AnalyticsFacade>(analytics);
+  di.registerSingleton<ProductAnalyticsService>(
+    ProductAnalyticsService(analytics),
+  );
   di.registerSingleton<SonnikProvider>(SonnikProvider());
   addTearDown(() async {
     await di.reset();
@@ -58,11 +65,6 @@ Future<GoRouter> show(
         path: '/balance-target',
         name: BalanceRoute.routeName,
         builder: (_, _) => const Scaffold(body: Text('Balance destination')),
-      ),
-      GoRoute(
-        path: '/dream-target',
-        name: SonnikRoutes.createSonnikLoadedRouteName,
-        builder: (_, _) => const Scaffold(body: Text('Dream destination')),
       ),
     ],
   );
@@ -97,6 +99,8 @@ Future<GoRouter> show(
 }
 
 void main() {
+  setUpAll(() => Hive.openBox<Map>('dream_journal_v1', bytes: Uint8List(0)));
+  tearDownAll(Hive.close);
   for (final language in ['ru', 'en']) {
     for (final loaded in [false, true]) {
       testWidgets(
@@ -163,11 +167,15 @@ void main() {
     await show(
       tester,
       const CreateSonnikHistoryScreen(),
-      user: UserModel.empty().copyWith(sonnikHistory: [dream]),
+      user: UserModel.empty().copyWith(
+        id: 'journal-owner',
+        sonnikHistory: [dream],
+      ),
     );
     activate(tester, RegExp('Змея во сне'));
     await tester.pumpAndSettle();
-    expect(find.text('Dream destination'), findsOneWidget);
+    expect(find.text('Meaning'), findsOneWidget);
+    expect(find.text('Дневник снов'), findsOneWidget);
     expect(di.get<SonnikProvider>().selectedSonnik?.id, 'dream');
     expect(tester.takeException(), isNull);
     handle.dispose();

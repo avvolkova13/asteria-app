@@ -1,316 +1,79 @@
-import 'package:asteria_app/features/sonnik/data/dream_journal.dart';
-import 'package:asteria_app/features/sonnik/presentation/screens/dream_entry_screen.dart';
-import 'package:asteria_app/features/sonnik/presentation/screens/dream_journal_screen.dart';
-import 'package:asteria_app/core/ui_kit/widgets/asteria_action_button.dart';
-import 'package:asteria_app/app/data/models/sonnik/sonnik_model.dart';
-import 'package:asteria_app/app/providers/content_provider.dart';
 import 'package:asteria_app/app/providers/user_provider.dart';
-import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/features/monetization/presentation/monetization_provider.dart';
-import 'package:asteria_app/features/sonnik/presentation/widgets/sonnik_layout.dart';
-import 'package:flutter/cupertino.dart' show CupertinoPageRoute;
-import 'package:flutter/material.dart';
+import 'package:asteria_app/features/sonnik/presentation/screens/create_sonnik_initial_screen.dart';
+import 'package:asteria_app/features/sonnik/presentation/widgets/dream_journal_layout.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
 
 import 'free_attempt.dart';
-import 'scenario_text_field.dart';
-import 'scenario_ui.dart';
 
 class FreeDreamScenario extends StatelessWidget {
   const FreeDreamScenario({super.key, required this.onOpenRunes});
 
   final VoidCallback onOpenRunes;
 
-  @override
-  Widget build(BuildContext context) {
-    final uid = context.select<UserProvider, String?>((p) => p.currentUser?.id);
-    return _DreamPage(key: ValueKey(uid), uid: uid, onOpenRunes: onOpenRunes);
-  }
-}
-
-class _DreamPage extends StatefulWidget {
-  const _DreamPage({super.key, required this.uid, required this.onOpenRunes});
-
-  final String? uid;
-  final VoidCallback onOpenRunes;
-
-  @override
-  State<_DreamPage> createState() => _DreamPageState();
-}
-
-class _DreamPageState extends State<_DreamPage> {
-  final _draft = TextEditingController();
-  bool _checking = true;
-  bool _checkFailed = false;
-  bool _submitting = false;
-  bool _calculationFailed = false;
-  bool _saving = false;
-  bool _saveFailed = false;
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) _refresh();
-    });
-  }
-
-  @override
-  void dispose() {
-    _draft.dispose();
-    super.dispose();
-  }
-
-  bool _available(MonetizationProvider access) =>
-      widget.uid != null &&
-      access.isCurrentUser(widget.uid!) &&
-      canUseScenarioRequest(access, 'sonnik');
-
-  Future<bool> _refresh() async {
+  Future<bool> _checkAccess(BuildContext context) async {
+    final users = context.read<UserProvider>();
+    final owner = users.currentUser?.id;
     final access = context.read<MonetizationProvider>();
-    setState(() {
-      _checking = true;
-      _checkFailed = false;
-    });
+    var offline = false;
     try {
       await access.refreshForAccess();
-      return mounted && _available(access);
     } catch (_) {
-      if (mounted) setState(() => _checkFailed = true);
-      return false;
-    } finally {
-      if (mounted) setState(() => _checking = false);
+      offline = true;
     }
-  }
+    if (!context.mounted ||
+        users.currentUser?.id != owner ||
+        ModalRoute.isCurrentOf(context) != true) {
+      return false;
+    }
+    if (!offline &&
+        owner != null &&
+        access.isCurrentUser(owner) &&
+        canUseScenarioRequest(access, 'sonnik')) {
+      return true;
+    }
 
-  void _openResult(SonnikModel item) {
-    final owner = widget.uid;
-    Navigator.of(context).push(
-      CupertinoPageRoute<void>(
-        builder: (context) {
-          final currentUid = context.watch<UserProvider>().currentUser?.id;
-          if (owner == null || owner != currentUid) {
-            return ScenarioPage(
-              title: context.l10n.dreamDictionaryTitle,
-              child: Text(
-                context.l10n.dreamNoData,
-                style: context.textTheme.inverseUrbanistRegular16,
-              ),
-            );
-          }
-          return ScenarioPage(
-            title: item.title,
-            child: SonnikGlassPanel(
-              child: SelectableText(
-                item.interpretation,
-                style: context.textTheme.inverseUrbanistRegular16.copyWith(
-                  height: 1.42,
-                ),
-              ),
+    final ru = Localizations.localeOf(context).languageCode == 'ru';
+    final showRunes = await showCupertinoDialog<bool>(
+      context: context,
+      builder: (dialog) => dreamJournalDialog(
+        CupertinoAlertDialog(
+          title: Text(
+            offline
+                ? (ru ? 'Не удалось проверить доступ' : 'Couldn’t check access')
+                : (ru
+                      ? 'Бесплатное толкование сейчас недоступно'
+                      : 'Free interpretation is unavailable'),
+          ),
+          content: Text(
+            ru
+                ? 'Можно сохранить сон в дневнике или выбрать расклад на трёх рунах.'
+                : 'You can save your dream in the journal or explore a three-rune reading.',
+          ),
+          actions: [
+            CupertinoDialogAction(
+              isDefaultAction: true,
+              onPressed: () => Navigator.pop(dialog, false),
+              child: Text(ru ? 'Вернуться к сну' : 'Back to my dream'),
             ),
-          );
-        },
+            CupertinoDialogAction(
+              onPressed: () => Navigator.pop(dialog, true),
+              child: Text(ru ? 'Открыть три руны' : 'Open three runes'),
+            ),
+          ],
+        ),
       ),
     );
-  }
-
-  Future<void> _save() async {
-    final owner = widget.uid;
-    final user = context.read<UserProvider>();
-    final text = _draft.text.trim();
-    if (_saving ||
-        _submitting ||
-        owner == null ||
-        owner.isEmpty ||
-        owner != user.currentUser?.id ||
-        text.isEmpty) {
-      return;
+    if (showRunes == true &&
+        context.mounted &&
+        users.currentUser?.id == owner) {
+      onOpenRunes();
     }
-    setState(() {
-      _saving = true;
-      _saveFailed = false;
-    });
-    FocusManager.instance.primaryFocus?.unfocus();
-    late final DreamEntry entry;
-    try {
-      entry = await DreamJournal(owner).save(text);
-    } catch (_) {
-      if (mounted) setState(() => _saveFailed = true);
-      return;
-    } finally {
-      if (mounted) setState(() => _saving = false);
-    }
-    if (!mounted || user.currentUser?.id != owner) return;
-    _draft.clear();
-    if (ModalRoute.isCurrentOf(context) == false) return;
-    final chosen = await openDreamEntry(
-      context,
-      user,
-      owner: owner,
-      entry: entry,
-    );
-    if (chosen != null && mounted && user.currentUser?.id == owner) {
-      await _submit(chosen.text);
-    }
-  }
-
-  Future<void> _submit([String? savedText]) async {
-    final dream = savedText ?? _draft.text.trim();
-    if (_saving || _submitting || dream.isEmpty) return;
-    setState(() {
-      _submitting = true;
-      _calculationFailed = false;
-    });
-    FocusManager.instance.primaryFocus?.unfocus();
-    try {
-      if (!await _refresh() ||
-          !mounted ||
-          ModalRoute.of(context)?.isCurrent != true) {
-        return;
-      }
-      final item = await context.read<ContentProvider>().createSonnik(dream);
-      if (!mounted || ModalRoute.of(context)?.isCurrent != true) return;
-      _draft.clear();
-      _openResult(item);
-    } catch (_) {
-      if (mounted) setState(() => _calculationFailed = true);
-    } finally {
-      if (mounted) setState(() => _submitting = false);
-    }
+    return false;
   }
 
   @override
-  Widget build(BuildContext context) {
-    final ru = Localizations.localeOf(context).languageCode == 'ru';
-    final access = context.watch<MonetizationProvider>();
-    final history =
-        context.watch<UserProvider>().currentUser?.sonnikHistory ??
-        const <SonnikModel>[];
-    final usesPro =
-        widget.uid != null &&
-        access.isCurrentUser(widget.uid!) &&
-        access.effectivePro;
-    final available = !_checking && !_checkFailed && _available(access);
-    final textStyle = context.textTheme.inverseUrbanistRegular16;
-    return ScenarioPage(
-      title: context.l10n.dreamDictionaryTitle,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        spacing: 12,
-        children: [
-          if (_submitting || _checking)
-            Semantics(
-              liveRegion: true,
-              child: Text(
-                _submitting
-                    ? (ru
-                          ? 'Готовим толкование…'
-                          : 'Preparing your interpretation…')
-                    : (ru
-                          ? 'Проверяем доступ к толкованию…'
-                          : 'Checking interpretation access…'),
-                style: textStyle,
-              ),
-            )
-          else if (available) ...[
-            if (!usesPro)
-              Text(
-                ru
-                    ? 'Бесплатных толкований осталось: ${access.requestQuota('sonnik').freeRemaining}'
-                    : 'Free interpretations left: ${access.requestQuota('sonnik').freeRemaining}',
-                style: textStyle,
-              ),
-          ] else ...[
-            Text(
-              _checkFailed
-                  ? (ru
-                        ? 'Не удалось проверить доступ к толкованию.'
-                        : 'Couldn’t check interpretation access.')
-                  : usesPro
-                  ? (ru
-                        ? 'Толкование сейчас недоступно.'
-                        : 'Interpretation is currently unavailable.')
-                  : (ru
-                        ? 'Сейчас новое бесплатное толкование недоступно.'
-                        : 'A new free interpretation is currently unavailable.'),
-              style: textStyle,
-            ),
-            if (_checkFailed)
-              TextButton(onPressed: _refresh, child: Text(context.l10n.retry)),
-          ],
-          if (!_checking &&
-              !_submitting &&
-              (available || widget.uid?.isNotEmpty == true)) ...[
-            AbsorbPointer(
-              absorbing: _saving,
-              child: ScenarioTextField(
-                controller: _draft,
-                label: ru ? 'Что вам приснилось?' : 'What did you dream about?',
-                hint: ru
-                    ? 'Какая деталь сна вам запомнилась?'
-                    : 'Which detail do you remember?',
-                minLines: 3,
-                onChanged: (_) => setState(() {}),
-              ),
-            ),
-            if (_saveFailed)
-              Text(
-                ru
-                    ? 'Не удалось сохранить сон. Попробуйте ещё раз.'
-                    : 'Could not save your dream. Please try again.',
-                style: textStyle,
-              ),
-            if (_calculationFailed && available)
-              Text(context.l10n.dreamCalculationError, style: textStyle),
-            if (available)
-              AsteriaActionButton(
-                width: double.infinity,
-                text: context.l10n.dreamDecode,
-                onPressed: _saving || _draft.text.trim().isEmpty
-                    ? null
-                    : () => _submit(),
-              ),
-            if (widget.uid?.isNotEmpty == true)
-              if (!available)
-                AsteriaActionButton(
-                  width: double.infinity,
-                  isLoading: _saving,
-                  text: ru ? 'Сохранить сон' : 'Save dream',
-                  onPressed: _saving || _draft.text.trim().isEmpty
-                      ? null
-                      : _save,
-                )
-              else if (_draft.text.trim().isNotEmpty)
-                TextButton.icon(
-                  onPressed: _saving ? null : _save,
-                  icon: const Icon(Icons.bookmark_add_outlined),
-                  label: Text(ru ? 'Сохранить сон' : 'Save dream'),
-                ),
-            IgnorePointer(
-              ignoring: _saving,
-              child: const Center(child: DreamJournalLink()),
-            ),
-          ],
-          if (!_checking &&
-              !_submitting &&
-              (_calculationFailed || (!available && history.isEmpty)))
-            ScenarioTile(
-              title: ru ? 'Открыть три руны' : 'Open three runes',
-              subtitle: ru
-                  ? 'Рассмотрите свою ситуацию с помощью трёх рун.'
-                  : 'Explore your situation with a free three-rune reading.',
-              onTap: widget.onOpenRunes,
-            ),
-          if (history.isNotEmpty && !_submitting) ...[
-            Text(
-              context.l10n.dreamHistoryTitle,
-              style: context.textTheme.inversePlayfairSemiBold20,
-            ),
-            for (final entry in history.reversed)
-              ScenarioTile(title: entry.title, onTap: () => _openResult(entry)),
-          ],
-        ],
-      ),
-    );
-  }
+  Widget build(BuildContext context) =>
+      CreateSonnikInitialScreen(checkScenarioAccess: _checkAccess);
 }

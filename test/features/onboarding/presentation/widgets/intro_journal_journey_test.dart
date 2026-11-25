@@ -1,3 +1,4 @@
+import 'package:asteria_app/features/affirmation/player/body_motion_artwork.dart';
 import 'package:asteria_app/features/onboarding/presentation/widgets/intro/intro_journal_story.dart';
 import 'package:asteria_app/features/onboarding/presentation/widgets/intro/intro_lighthouse.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +10,7 @@ Finder stage(String name) => find.byKey(ValueKey(name));
 
 void main() {
   testWidgets(
-    'dictation becomes a saved entry and a reading while the light sweeps',
+    'the saved dream leads to a reading and then a personal decision',
     (tester) async {
       await fixture.host(tester, const IntroJournalStory.dream(active: true));
       final painting = find.byWidgetPredicate(
@@ -29,13 +30,39 @@ void main() {
       expect(stage('intro-dream-saved'), findsOneWidget);
       expect(stage('intro-dream-result'), findsNothing);
       await tester.pump(const Duration(seconds: 2));
+      expect(stage('intro-dream-reading'), findsOneWidget);
+      expect(stage('intro-dream-result'), findsNothing);
+      await tester.pump(const Duration(seconds: 3));
       expect(stage('intro-dream-result'), findsOneWidget);
+      expect(stage('intro-dream-transcript'), findsNothing);
+      expect(find.textContaining('на чай'), findsOneWidget);
+      expect(stage('intro-dream-wish'), findsNothing);
+      await tester.pump(const Duration(seconds: 2));
+      expect(stage('intro-dream-wish'), findsOneWidget);
+      expect(stage('intro-dream-reading'), findsNothing);
+      expect(stage('intro-dream-saved'), findsOneWidget);
       await tester.pumpWidget(const SizedBox());
     },
   );
 
+  testWidgets('reduced motion opens on the complete dream story', (
+    tester,
+  ) async {
+    await fixture.host(
+      tester,
+      const IntroJournalStory.dream(active: true),
+      reduced: true,
+    );
+    expect(stage('intro-dream-saved'), findsOneWidget);
+    expect(stage('intro-dream-reading'), findsOneWidget);
+    expect(stage('intro-dream-result'), findsOneWidget);
+    expect(find.textContaining('на чай'), findsOneWidget);
+    expect(stage('intro-dream-wish'), findsOneWidget);
+    await tester.pumpWidget(const SizedBox());
+  });
+
   testWidgets(
-    'practice catalogue pages turn, then the meditation gains a note',
+    'three covers lead to the real practice description and a saved note',
     (tester) async {
       await fixture.host(
         tester,
@@ -46,19 +73,63 @@ void main() {
         find.descendant(of: scene, matching: find.byType(GestureDetector)),
         findsNothing,
       );
-      expect(stage('intro-practice-selected-0'), findsOneWidget);
-      expect(find.text('Сейчас можно никуда не спешить.'), findsOneWidget);
-      expect(
-        tester.getSize(stage('intro-practice-cover-0')).height,
-        greaterThan(200),
+      for (var i = 0; i < 3; i++) {
+        expect(stage('intro-practice-cover-$i'), findsOneWidget);
+      }
+      final centers = List.generate(
+        3,
+        (i) => tester.getCenter(stage('intro-practice-cover-$i')).dx,
       );
-      await tester.pump(const Duration(milliseconds: 3400));
+      expect(centers.toSet().length, 3);
+      final coffee = find.descendant(
+        of: stage('intro-practice-cover-2'),
+        matching: find.byType(BodyMotionArtwork),
+      );
+      final startingPhase = tester.widget<BodyMotionArtwork>(coffee).phase;
+      expect(stage('intro-practice-selected-0'), findsOneWidget);
+      expect(stage('intro-practice-description'), findsNothing);
+      await tester.pump(const Duration(milliseconds: 2300));
       expect(stage('intro-practice-selected-1'), findsOneWidget);
-      expect(stage('intro-practice-selected-0'), findsNothing);
-      await tester.pump(const Duration(seconds: 3));
+      expect(
+        tester.widget<BodyMotionArtwork>(coffee).phase,
+        greaterThan(startingPhase),
+      );
+      await tester.pump(const Duration(milliseconds: 1700));
       expect(stage('intro-practice-selected-2'), findsOneWidget);
-      expect(stage('intro-practice-result'), findsNothing);
+      expect(stage('intro-practice-description'), findsNothing);
       await tester.pump(const Duration(seconds: 2));
+      expect(stage('intro-practice-description'), findsOneWidget);
+      expect(find.textContaining('Переведи внимание с дел'), findsOneWidget);
+      expect(find.text('4 мин · Сидя · без инвентаря'), findsOneWidget);
+      expect(stage('intro-practice-note'), findsNothing);
+      await tester.pump(const Duration(seconds: 3));
+      expect(find.text('Добавить заметку'), findsOneWidget);
+      expect(stage('intro-practice-result'), findsNothing);
+      await tester.pump(const Duration(seconds: 4));
+      expect(stage('intro-practice-result'), findsOneWidget);
+      expect(find.textContaining('«Мои заметки»'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+      await tester.pumpWidget(const SizedBox());
+    },
+  );
+
+  testWidgets(
+    'reduced motion shows all covers, the guide and the note together',
+    (tester) async {
+      await fixture.host(
+        tester,
+        const IntroJournalStory.practice(active: true),
+        reduced: true,
+        textScale: 2,
+      );
+      final coffee = find.byType(BodyMotionArtwork);
+      final phase = tester.widget<BodyMotionArtwork>(coffee).phase;
+      await tester.pump(const Duration(seconds: 2));
+      expect(tester.widget<BodyMotionArtwork>(coffee).phase, phase);
+      expect(stage('intro-practice-cover-0'), findsOneWidget);
+      expect(stage('intro-practice-cover-1'), findsOneWidget);
+      expect(stage('intro-practice-cover-2'), findsOneWidget);
+      expect(stage('intro-practice-description'), findsOneWidget);
       expect(stage('intro-practice-result'), findsOneWidget);
       expect(tester.takeException(), isNull);
       await tester.pumpWidget(const SizedBox());

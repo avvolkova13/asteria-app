@@ -387,6 +387,18 @@ class _PracticeDetailScreen extends StatelessWidget {
   }
 }
 
+/// Localized details for a known, bundled practice outside the catalogue.
+({String title, String description, String metadata, String art})
+practicePreview(String id, {required bool ru}) {
+  final entry = _practices.firstWhere((practice) => practice.id == id);
+  return (
+    title: _localized(entry.title, ru),
+    description: _localized(entry.description, ru),
+    metadata: entry.metadata(ru),
+    art: entry.art,
+  );
+}
+
 String? practiceTitleById(String id, bool ru) {
   final practice = _practices.where((item) => item.id == id).firstOrNull;
   return practice == null ? null : _localized(practice.title, ru);

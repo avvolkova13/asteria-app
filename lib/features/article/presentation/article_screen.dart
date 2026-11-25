@@ -127,19 +127,26 @@ class _ArticleScreenState extends State<ArticleScreen> {
               delegate: const _ArticleTopBarDelegate(),
             ),
             SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 22),
-                    _ArticleHero(article: article).withEntrance(),
-                    const SizedBox(height: 16),
-                    _ArticleContentCard(article: article).withEntrance(),
-                    SizedBox(key: _articleEndKey, height: 24),
-                    ArticlesSectionWidget(excludeArticleId: article.id),
-                    SizedBox(height: MediaQuery.paddingOf(context).bottom + 24),
-                  ],
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 720),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 22),
+                        _ArticleHero(article: article).withEntrance(),
+                        const SizedBox(height: 16),
+                        _ArticleContentCard(article: article).withEntrance(),
+                        SizedBox(key: _articleEndKey, height: 24),
+                        ArticlesSectionWidget(excludeArticleId: article.id),
+                        SizedBox(
+                          height: MediaQuery.paddingOf(context).bottom + 24,
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -197,8 +204,9 @@ class _ArticleTopBar extends StatelessWidget {
                       Semantics(
                         button: true,
                         enabled: true,
-                        label: MaterialLocalizations.of(context)
-                            .backButtonTooltip,
+                        label: MaterialLocalizations.of(
+                          context,
+                        ).backButtonTooltip,
                         onTap: LotusFeedback.action(
                           () => Navigator.of(context).pop(),
                         ),

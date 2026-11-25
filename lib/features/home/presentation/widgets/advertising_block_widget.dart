@@ -4,21 +4,16 @@ import 'package:asteria_app/core/ui_kit/widgets/asteria_action_button.dart';
 import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/ui_kit/card_radii.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
+import 'package:asteria_app/features/sonnik/presentation/widgets/sonnik_layout.dart';
 import 'package:flutter/material.dart';
 
 class AdvertisingBlockWidget extends StatelessWidget {
   static const _backgroundAsset = 'assets/images/home/advertising_card_bg.webp';
-  static const _liveyaAsset = 'assets/images/home/advertising_card_liveya.webp';
   // Figma dark Surface/card for the dream banner (node 4379:8613).
   static const _cardBackground = Color(0xFF151028);
   static const _descriptionColor = AppColorsDark.textSecondary;
-  const AdvertisingBlockWidget({super.key, this.horizontalMargin = 16})
-    : capture = false;
-
-  const AdvertisingBlockWidget.capture({super.key, this.horizontalMargin = 16})
-    : capture = true;
+  const AdvertisingBlockWidget({super.key, this.horizontalMargin = 16});
   final double horizontalMargin;
-  final bool capture;
 
   @override
   Widget build(BuildContext context) {
@@ -30,14 +25,12 @@ class AdvertisingBlockWidget extends StatelessWidget {
           final scale = MediaQuery.textScalerOf(context);
           final sideBySide = constraints.maxWidth >= scale.scale(306);
           final portraitWidth = (constraints.maxWidth * .24).clamp(58.0, 100.0);
-          final primary = capture
-              ? const DreamCaptureButton()
-              : AsteriaActionButton(
-                  text: context.l10n.dreamDecode,
-                  gold: true,
-                  width: double.infinity,
-                  onPressed: () => CreateSonnikInitialRoute.push(context),
-                );
+          final primary = AsteriaActionButton(
+            text: context.l10n.adDecode,
+            gold: true,
+            width: double.infinity,
+            onPressed: () => CreateSonnikInitialRoute.push(context),
+          );
           return ClipRRect(
             borderRadius: BorderRadius.circular(AsteriaCardRadii.card),
             child: DecoratedBox(
@@ -88,12 +81,8 @@ class AdvertisingBlockWidget extends StatelessWidget {
                               ),
                             ),
                             const SizedBox(width: 8),
-                            Image.asset(
-                              _liveyaAsset,
-                              width: portraitWidth,
-                              height: sideBySide ? portraitWidth * 1.3 : 64,
-                              fit: BoxFit.contain,
-                              excludeFromSemantics: true,
+                            SonnikLiveyaAvatar(
+                              size: sideBySide ? portraitWidth : 64,
                             ),
                           ],
                         ),

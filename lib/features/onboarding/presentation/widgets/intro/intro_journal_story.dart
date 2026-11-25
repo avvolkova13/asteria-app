@@ -16,7 +16,7 @@ class IntroJournalStory extends StatelessWidget {
   @override
   Widget build(BuildContext context) => IntroStory(
     active: active,
-    duration: const Duration(seconds: 11),
+    duration: Duration(seconds: dream ? 15 : 16),
     builder: (context, time, still, _) => dream
         ? IntroDreamJournalScene(time: time, still: still)
         : IntroPracticeShelf(time: time, still: still),

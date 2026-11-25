@@ -1,7 +1,8 @@
 import 'dart:async';
 import 'package:asteria_app/app/data/models/sonnik/sonnik_model.dart';
 import 'package:asteria_app/features/sonnik/presentation/provider/sonnik_provider.dart';
-import 'package:asteria_app/features/sonnik/presentation/screens/dream_entry_screen.dart';
+import 'package:asteria_app/features/sonnik/presentation/screens/create_sonnik_loaded_screen.dart';
+import 'package:flutter/cupertino.dart' show CupertinoAlertDialog;
 import 'package:asteria_app/features/home/presentation/widgets/advertising_block_widget.dart';
 import 'package:asteria_app/core/routing/app_route.dart';
 import 'package:asteria_app/core/ui_kit/widgets/dictation_button.dart';
@@ -72,14 +73,8 @@ void main() {
           routes: [
             GoRoute(
               path: '/',
-              builder: (_, __) => const Scaffold(
-                body: Column(
-                  children: [
-                    AdvertisingBlockWidget.capture(),
-                    AdvertisingBlockWidget(),
-                  ],
-                ),
-              ),
+              builder: (_, __) =>
+                  const Scaffold(body: AdvertisingBlockWidget()),
             ),
             CreateSonnikInitialRoute(),
             GoRoute(
@@ -123,11 +118,6 @@ void main() {
         final l10n = AppLocalizations.current;
         await tester.tap(find.text(l10n.adDecode));
         await tester.pumpAndSettle();
-        expect(find.byType(DreamEntryScreen), findsOneWidget);
-        Navigator.of(tester.element(find.byType(DreamEntryScreen))).pop();
-        await tester.pumpAndSettle();
-        await tester.tap(find.text(l10n.dreamDecode));
-        await tester.pumpAndSettle();
         expect(find.byType(CreateSonnikInitialScreen), findsOneWidget);
         expect(find.byType(DreamJournalScreen), findsNothing);
         expect(find.byType(DictationButton), findsOneWidget);
@@ -163,50 +153,80 @@ void main() {
           'Мне приснилось море',
         );
         if (!pro) {
+          monetization.allowed = false;
           tester.view.resetViewInsets();
           await tester.pumpAndSettle();
-          final journal = find.text('Открыть дневник снов');
-          final save = find.textContaining('Сохранить на');
+          final save = find.text('Сохранить и выйти');
           await tester.ensureVisible(save);
           await tester.tap(save);
           await tester.pumpAndSettle();
-          expect(find.textContaining('Сохранено в'), findsOneWidget);
+          expect(find.byType(CreateSonnikInitialScreen), findsNothing);
           final records = await DreamJournal('test-user').read();
           expect(records.single.text, 'Мне приснилось море');
+          expect(content.requests, isEmpty);
           expect(await DreamJournal('another-user').read(), isEmpty);
-          await tester.enterText(
-            find.byType(TextField),
-            'Черновик для другого сна',
-          );
+
+          await tester.tap(find.text('Дневник снов'));
           await tester.pumpAndSettle();
-          await tester.ensureVisible(journal);
-          await tester.tap(journal);
-          await tester.pumpAndSettle();
-          await tester.ensureVisible(find.text('Мне приснилось море'));
+          final openJournal = tester.state(find.byType(DreamJournalScreen));
           await tester.tap(find.text('Мне приснилось море'));
           await tester.pumpAndSettle();
-          await tester.tap(find.text('Изменить'));
-          await tester.pumpAndSettle();
+          expect(find.byType(CreateSonnikInitialScreen), findsOneWidget);
+          monetization.allowed = true;
           await tester.enterText(find.byType(TextField), 'Море и маяк');
+          await tester.ensureVisible(find.byType(SonnikGradientButton));
+          await tester.tap(find.byType(SonnikGradientButton));
           await tester.pumpAndSettle();
-          await tester.tap(find.text('Сохранить изменения'));
+          expect(find.byType(CreateSonnikLoadedScreen), findsOneWidget);
+          expect(find.text('meaning'), findsOneWidget);
+          expect(content.requests, ['Море и маяк']);
+          final interpreted = (await DreamJournal('test-user').read()).single;
+          expect(interpreted.id, records.single.id);
+          expect(interpreted.currentInterpretation?.id, 'generated');
+          await tester.tap(find.byTooltip('Назад'));
+          await tester.pumpAndSettle();
+          expect(find.text('Открыть расшифровку'), findsOneWidget);
+          await tester.ensureVisible(find.text('Открыть расшифровку'));
+          await tester.tap(find.text('Открыть расшифровку'));
+          await tester.pumpAndSettle();
+          expect(content.requests, hasLength(1));
+          await tester.ensureVisible(find.text('Дневник снов'));
+          await tester.tap(find.text('Дневник снов'));
           await tester.pumpAndSettle();
           expect(
-            (await DreamJournal('test-user').read()).single.id,
-            records.single.id,
+            tester.state(find.byType(DreamJournalScreen)),
+            same(openJournal),
           );
-          await tester.ensureVisible(find.text('Расшифровать сон'));
-          await tester.tap(find.text('Расшифровать сон'));
+          await tester.tap(find.text('Море и маяк'));
           await tester.pumpAndSettle();
-          expect(content.requests, ['Море и маяк']);
-          expect(find.text('Interpretation result'), findsOneWidget);
-          router.pop();
+          await tester.enterText(
+            find.byType(TextField),
+            'Сон с другой концовкой',
+          );
+          await tester.pumpAndSettle();
+          await tester.tap(find.byTooltip('Назад'));
+          await tester.pumpAndSettle();
+          expect(find.byType(CupertinoAlertDialog), findsOneWidget);
+          await tester.tap(find.text('Продолжить редактирование'));
           await tester.pumpAndSettle();
           expect(
             tester.widget<TextField>(find.byType(TextField)).controller!.text,
-            'Черновик для другого сна',
+            'Сон с другой концовкой',
           );
-          expect(await DreamJournal('test-user').read(), hasLength(1));
+          await tester.tap(find.byTooltip('Назад'));
+          await tester.pumpAndSettle();
+          await tester.tap(
+            find.descendant(
+              of: find.byType(CupertinoAlertDialog),
+              matching: save,
+            ),
+          );
+          await tester.pumpAndSettle();
+          expect(find.byType(DreamJournalScreen), findsOneWidget);
+          expect(
+            (await DreamJournal('test-user').read()).single.text,
+            'Сон с другой концовкой',
+          );
         } else {
           tester.view.resetViewInsets();
           final params = CreateSonnikInitialRouteParams(
@@ -216,6 +236,7 @@ void main() {
               recordedAt: DateTime(2026),
             ),
             ownerId: user.id,
+            autoInterpret: true,
           );
           monetization.allowed = false;
           router.pushNamed(

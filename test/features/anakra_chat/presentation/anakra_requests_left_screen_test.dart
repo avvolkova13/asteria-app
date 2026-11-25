@@ -76,7 +76,10 @@ void main() {
     addTearDown(flow.dispose);
     await tester.pumpWidget(flow.app());
     await _openRequestPurchase(tester);
-    expect(find.text('Купить 10 запросов за 55'), findsOneWidget);
+    expect(
+      find.bySemanticsLabel('Купить 10 запросов за 55 звёзд'),
+      findsOneWidget,
+    );
     await tester.tap(
       find.descendant(
         of: find.byType(SharedPurchaseModal),
@@ -125,7 +128,10 @@ void main() {
       flow.router.pop();
       await tester.pumpAndSettle();
       expect(flow.provider.requestsLeft('anakra'), 0);
-      expect(find.text('Купить 10 запросов за 55'), findsOneWidget);
+      expect(
+        find.bySemanticsLabel('Купить 10 запросов за 55 звёзд'),
+        findsOneWidget,
+      );
       await tester.tap(
         find.descendant(
           of: find.byType(SharedPurchaseModal),

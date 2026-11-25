@@ -15,7 +15,6 @@ const _contentEndpoints = <String>[
   'affirmation',
   'energy_of_day',
   'shop_items',
-  'lunar_calendar',
 ];
 final _cyrillic = RegExp(r'[А-Яа-яЁё]');
 
@@ -94,6 +93,24 @@ void main() {
     },
     timeout: const Timeout(Duration(minutes: 4)),
   );
+
+  testWidgets('personalized lunar month follows Accept-Language', (_) async {
+    for (final locale in const ['en-US', 'en-CA', 'en-GB', 'en-AU', 'ru-RU']) {
+      final response = await dio.post<Map<String, dynamic>>(
+        'api/v1/lunar_calendar/month',
+        data: const {'year': 2026, 'month': 11, 'lat': 52.37, 'lon': 4.90},
+        options: Options(headers: {'Accept-Language': locale}),
+      );
+      expect(response.statusCode, 200, reason: locale);
+      final days = response.data!['days'];
+      expect(days, hasLength(30), reason: locale);
+      expect(
+        _cyrillic.hasMatch(jsonEncode(days)),
+        locale == 'ru-RU',
+        reason: locale,
+      );
+    }
+  }, timeout: const Timeout(Duration(minutes: 4)));
 
   testWidgets(
     'compatibility result follows Accept-Language',

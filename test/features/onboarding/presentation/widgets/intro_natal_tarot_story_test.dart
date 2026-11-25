@@ -19,10 +19,16 @@ void main() {
       expect(_key('intro-spread'), findsNothing);
     }
     await tester.pump(const Duration(milliseconds: 2100));
-    expect(_key('intro-chart-wheel'), findsNothing);
+    expect(_key('intro-chart-wheel'), findsOneWidget);
+    expect(
+      tester.getBottomLeft(_key('intro-chart-wheel')).dy,
+      lessThan(tester.getTopLeft(_key('intro-spread')).dy),
+    );
+    const roles = ['Замысел', 'Ресурс', 'Первый шаг'];
     for (var i = 0; i < 3; i++) {
       expect(_key('intro-spread-back-$i'), findsOneWidget);
       expect(_key('intro-spread-front-$i'), findsNothing);
+      expect(find.text(roles[i]), findsNothing);
     }
     expect(_key('intro-natal-tarot-result'), findsNothing);
     await tester.pumpWidget(const SizedBox());
@@ -36,7 +42,12 @@ void main() {
       for (var i = 0; i < 3; i++) {
         if (i > 0) await tester.pump(const Duration(milliseconds: 1150));
         expect(_key('intro-spread-front-$i'), findsOneWidget);
-        if (i < 2) expect(_key('intro-spread-back-${i + 1}'), findsOneWidget);
+        const roles = ['Замысел', 'Ресурс', 'Первый шаг'];
+        expect(find.text(roles[i]), findsOneWidget);
+        if (i < 2) {
+          expect(_key('intro-spread-back-${i + 1}'), findsOneWidget);
+          expect(find.text(roles[i + 1]), findsNothing);
+        }
         expect(_key('intro-natal-tarot-result'), findsNothing);
       }
       await tester.pump(const Duration(milliseconds: 600));

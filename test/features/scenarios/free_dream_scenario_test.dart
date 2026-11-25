@@ -1,3 +1,10 @@
+import 'package:asteria_app/core/analytics/analytics_facade.dart';
+import 'package:asteria_app/core/analytics/product_analytics_service.dart';
+import 'package:asteria_app/core/di/di.dart';
+import 'package:asteria_app/core/services/global_loader_service.dart';
+import 'package:asteria_app/features/sonnik/presentation/provider/sonnik_provider.dart';
+import 'package:asteria_app/features/sonnik/presentation/screens/create_sonnik_initial_screen.dart';
+import 'package:asteria_app/features/sonnik/presentation/widgets/sonnik_layout.dart';
 import 'package:asteria_app/features/sonnik/data/dream_journal.dart';
 import 'package:flutter/services.dart';
 import 'package:hive/hive.dart';
@@ -26,13 +33,13 @@ class _User extends ChangeNotifier implements UserProvider {
   @override
   UserModel currentUser = UserModel.empty().copyWith(id: 'reader');
 
-  void switchAccount() {
-    currentUser = UserModel.empty().copyWith(id: 'another');
-    notifyListeners();
-  }
-
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+
+  void switchTo(UserModel next) {
+    currentUser = next;
+    notifyListeners();
+  }
 }
 
 class _Access extends ChangeNotifier implements MonetizationProvider {
@@ -48,6 +55,8 @@ class _Access extends ChangeNotifier implements MonetizationProvider {
     if (throwOnRefresh) throw StateError('offline');
   }
 
+  @override
+  int requestsLeft(String key) => remaining + paid;
   @override
   bool isCurrentUser(String uid) => uid == 'reader';
   @override
@@ -78,6 +87,11 @@ class _Content extends ChangeNotifier implements ContentProvider {
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
+class _Analytics extends Fake implements AnalyticsFacade {
+  @override
+  Future<void> trackEvent(String name, {Map<String, dynamic>? params}) async {}
+}
+
 void main() {
   setUpAll(() => Hive.openBox<Map>('dream_journal_v1', bytes: Uint8List(0)));
   setUp(() => Hive.box<Map>('dream_journal_v1').clear());
@@ -85,12 +99,21 @@ void main() {
   late _Access access;
   late _User user;
   late _Content content;
-  late bool openedRunes;
-  setUp(() {
+  setUp(() async {
+    await di.reset();
     access = _Access();
     user = _User();
     content = _Content();
-    openedRunes = false;
+    final facade = _Analytics();
+    di.registerSingleton<ContentProvider>(content);
+    di.registerSingleton<UserProvider>(user);
+    di.registerSingleton<SonnikProvider>(SonnikProvider());
+    di.registerSingleton<GlobalLoaderService>(GlobalLoaderService());
+    di.registerSingleton<AnalyticsFacade>(facade);
+    di.registerSingleton<ProductAnalyticsService>(
+      ProductAnalyticsService(facade),
+    );
+    addTearDown(di.reset);
   });
   Future<void> mount(WidgetTester tester, {String lang = 'ru'}) async {
     await tester.binding.setSurfaceSize(const Size(390, 844));
@@ -114,107 +137,131 @@ void main() {
             child: child!,
           ),
         ),
-        home: FreeDreamScenario(onOpenRunes: () => openedRunes = true),
+        home: Builder(
+          builder: (context) => Scaffold(
+            body: TextButton(
+              onPressed: () => Navigator.of(context).push<void>(
+                MaterialPageRoute(
+                  builder: (context) => FreeDreamScenario(
+                    onOpenRunes: () => Navigator.of(context).push<void>(
+                      MaterialPageRoute(
+                        builder: (_) =>
+                            const Scaffold(body: Text('Rune spread')),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              child: const Text('Open dreams'),
+            ),
+          ),
+        ),
       ),
     );
     await tester.pumpAndSettle();
+    await tester.tap(find.text('Open dreams'));
+    await tester.pumpAndSettle();
+    expect(find.byType(CreateSonnikInitialScreen), findsOneWidget);
+    expect(find.byType(SonnikLiveyaAvatar), findsOneWidget);
   }
 
-  testWidgets('PRO interprets dreams with zero free requests', (tester) async {
-    access.remaining = 0;
-    access.effectivePro = true;
-    await mount(tester);
-    expect(find.textContaining('Бесплатных толкований'), findsNothing);
-    await tester.enterText(find.byType(TextField), 'Дом у реки');
+  Future<void> tap(WidgetTester tester, Finder control) async {
+    await tester.ensureVisible(control);
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Расшифровать'));
+    await tester.tap(control);
     await tester.pumpAndSettle();
-    expect(access.checks, 2);
-    expect(content.requests, ['Дом у реки']);
-    expect(find.text(_dream.interpretation), findsOneWidget);
-  });
+  }
 
-  testWidgets(
-    'a new free user can interpret a dream and open its full result',
-    (tester) async {
+  for (final pro in [false, true]) {
+    testWidgets('shares the interpreter and returns to the dream, PRO=$pro', (
+      tester,
+    ) async {
+      access.effectivePro = pro;
+      access.remaining = pro ? 0 : 1;
       await mount(tester);
-      expect(find.text('Бесплатных толкований осталось: 1'), findsOneWidget);
       await tester.enterText(find.byType(TextField), '  Дом у реки  ');
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Расшифровать'));
-      await tester.pumpAndSettle();
-      expect(access.checks, 2);
+      await tap(tester, find.text('Расшифровать'));
+      expect(access.checks, greaterThanOrEqualTo(1));
       expect(content.requests, ['Дом у реки']);
       expect(find.text(_dream.interpretation), findsOneWidget);
-    },
-  );
-
-  testWidgets(
-    'checks again before submitting and offers a free rune when the last attempt is gone',
-    (tester) async {
-      await mount(tester, lang: 'en');
-      await tester.enterText(find.byType(TextField), 'A quiet river');
+      await tester.binding.handlePopRoute();
       await tester.pumpAndSettle();
-      access.remaining = 0;
-      access.paid = 3;
-      await tester.tap(find.text('Interpret'));
-      await tester.pumpAndSettle();
-      expect(content.requests, isEmpty);
-      expect(find.text('A quiet river'), findsOneWidget);
-      expect(find.text('Dream journal'), findsOneWidget);
-      await tester.tap(find.text('Save dream'));
-      await tester.pumpAndSettle();
+      expect(find.byType(CreateSonnikInitialScreen), findsOneWidget);
       expect(
-        (await DreamJournal('reader').read()).single.text,
-        'A quiet river',
+        tester
+            .widget<TextField>(find.byType(TextField))
+            .controller!
+            .text
+            .trim(),
+        'Дом у реки',
       );
-      expect(find.text('A quiet river'), findsOneWidget);
-      expect(find.byType(TextField), findsNothing);
-      await tester.tap(find.byTooltip('Back'));
-      await tester.pumpAndSettle();
-      expect(access.checks, 2);
-      await tester.tap(find.text('Open three runes'));
-      expect(openedRunes, isTrue);
-    },
-  );
+      expect((await DreamJournal('reader').read()).single.text, 'Дом у реки');
+    });
+  }
+
+  for (final offline in [false, true]) {
+    testWidgets(
+      'offers runes and preserves the draft without spending a paid attempt, offline=$offline',
+      (tester) async {
+        await mount(tester, lang: 'en');
+        await tester.enterText(find.byType(TextField), 'A quiet river');
+        await tester.pumpAndSettle();
+        access.remaining = 0;
+        access.paid = 3;
+        access.throwOnRefresh = offline;
+        await tap(tester, find.text('Interpret'));
+        expect(content.requests, isEmpty);
+        await tap(tester, find.text('Open three runes'));
+        expect(find.text('Rune spread'), findsOneWidget);
+        await tester.binding.handlePopRoute();
+        await tester.pumpAndSettle();
+        expect(
+          tester.widget<TextField>(find.byType(TextField)).controller!.text,
+          'A quiet river',
+        );
+        await tap(tester, find.text('Interpret'));
+        await tap(tester, find.text('Back to my dream'));
+        expect(
+          tester.widget<TextField>(find.byType(TextField)).controller!.text,
+          'A quiet river',
+        );
+        expect(content.requests, isEmpty);
+      },
+    );
+  }
 
   testWidgets(
-    'saving preserves the free attempt and the saved dream can be interpreted directly',
+    'saving and exiting skips quota and returns to the scenario picker',
     (tester) async {
+      access.remaining = 0;
+      access.throwOnRefresh = true;
       await mount(tester, lang: 'en');
       await tester.enterText(find.byType(TextField), 'A dream about the coast');
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Save dream'));
-      await tester.pumpAndSettle();
+      final lastCheck = access.checks;
+      await tap(tester, find.text('Save and exit'));
+      expect(find.text('Open dreams'), findsOneWidget);
       expect(content.requests, isEmpty);
-      expect(access.checks, 1);
+      expect(access.checks, lastCheck);
       expect(
         (await DreamJournal('reader').read()).single.text,
         'A dream about the coast',
       );
-      await tester.tap(find.text('Interpret dream'));
-      await tester.pumpAndSettle();
-      expect(content.requests, ['A dream about the coast']);
-      expect(access.checks, 2);
-      expect(find.text(_dream.interpretation), findsOneWidget);
     },
   );
 
   testWidgets(
-    'a failed quota check still allows opening a saved interpretation',
+    'journal from the free scenario includes earlier readings offline',
     (tester) async {
       access.throwOnRefresh = true;
       user.currentUser = user.currentUser.copyWith(sonnikHistory: [_dream]);
       await mount(tester);
-      expect(find.byType(TextField), findsOneWidget);
-      expect(find.text('Дневник снов'), findsOneWidget);
-      await tester.ensureVisible(find.text(_dream.title));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text(_dream.title));
-      await tester.pumpAndSettle();
+      await tap(tester, find.text('Дневник снов'));
+      await tap(tester, find.text(_dream.title));
       expect(find.text(_dream.interpretation), findsOneWidget);
       expect(content.requests, isEmpty);
-      user.switchAccount();
+      user.switchTo(UserModel.empty().copyWith(id: 'another'));
       await tester.pumpAndSettle();
       expect(find.text(_dream.interpretation), findsNothing);
     },

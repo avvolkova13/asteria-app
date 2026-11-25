@@ -905,7 +905,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "introCalendarFrom": m24,
     "introCalendarInsight": MessageLookupByLibrary.simpleMessage(
-      "A favorable time for a new haircut.",
+      "A good day to freshen up your cut or try a new length.",
     ),
     "introCalendarReminderChoice": MessageLookupByLibrary.simpleMessage(
       "One day before",
@@ -921,9 +921,11 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "introCalendarResult": m25,
     "introCalendarSavedText": MessageLookupByLibrary.simpleMessage(
-      "Added to my plans",
+      "Saved to My plans",
     ),
-    "introCalendarSavedTitle": MessageLookupByLibrary.simpleMessage("Haircut"),
+    "introCalendarSavedTitle": MessageLookupByLibrary.simpleMessage(
+      "Haircut",
+    ),
     "introDemoLabel": MessageLookupByLibrary.simpleMessage("Example reading"),
     "introFavorable": MessageLookupByLibrary.simpleMessage("Favorable day"),
     "introFavorableTip": MessageLookupByLibrary.simpleMessage(
@@ -1502,6 +1504,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "onboardingDreamDescription": MessageLookupByLibrary.simpleMessage(
       "I woke up with just one image from my dream. Why did that part stay with me?",
     ),
+    "onboardingDreamDescriptionCompact": MessageLookupByLibrary.simpleMessage(
+      "Why do I still remember the lighthouse?",
+    ),
     "onboardingDreamTitle": MessageLookupByLibrary.simpleMessage(
       "Before the dream fades",
     ),
@@ -1524,7 +1529,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "What can I build on?",
     ),
     "onboardingPage1Description": MessageLookupByLibrary.simpleMessage(
-      "Time for a new look. Which date does the lunar calendar suggest?",
+      "Let’s check the lunar calendar.",
     ),
     "onboardingPage1Title": MessageLookupByLibrary.simpleMessage(
       "When should I get a haircut?",
@@ -1554,7 +1559,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "A moment to breathe",
     ),
     "onboardingPracticeDescription": MessageLookupByLibrary.simpleMessage(
-      "The workday is over, but my mind is still at work. What would help me unwind?",
+      "How can I unwind after work?",
     ),
     "onboardingPracticeTitle": MessageLookupByLibrary.simpleMessage(
       "A moment for yourself",

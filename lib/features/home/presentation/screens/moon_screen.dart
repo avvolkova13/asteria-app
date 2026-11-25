@@ -97,7 +97,13 @@ class _MoonScreenState extends State<MoonScreen> {
 
   void _maybeTrackMonthLoad(MoonScreenState state) {
     final activeMonth = di.get<ContentProvider>().activeLunarMonth;
-    if (activeMonth == null) return;
+    if (state.isLoading ||
+        state.error != null ||
+        activeMonth == null ||
+        activeMonth.year != state.focusedDay.year ||
+        activeMonth.month != state.focusedDay.month) {
+      return;
+    }
     final monthKey =
         '${state.focusedDay.year}-${state.focusedDay.month}:${activeMonth.timezone}';
     if (_lastTrackedMonthLoadKey == monthKey) return;
@@ -172,44 +178,9 @@ class _MoonScreenState extends State<MoonScreen> {
                           controller: _scrollController,
                           slivers: [
                             SliverToBoxAdapter(
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    const SizedBox(height: 26),
-                                    HomeSectionHeading(
-                                      context.l10n.lunarCalendarTitle,
-                                    ).withEntrance(),
-                                    const SizedBox(height: 16),
-                                    AsteriaEntrance(
-                                      replayKey: (
-                                        state.selectedDate,
-                                        state.selectedSphere,
-                                        state.selectedPersonalizedDayData !=
-                                            null,
-                                      ),
-                                      child: _MoonScreenAdvice(state: state),
-                                    ),
-                                    const SizedBox(height: 24),
-                                    _CalendarWithPlans(state: state),
-                                    const SizedBox(height: 24),
-                                    const SphereSelectionWidget(),
-                                    const SizedBox(height: 16),
-                                    if (recommendation != null) ...[
-                                      const SizedBox(height: 16),
-                                      LunarRecommendationsWidget(
-                                        key: ValueKey(state.selectedSphere),
-                                        recommendation: recommendation,
-                                      ),
-                                    ],
-                                    const SizedBox(height: 32),
-                                    const CalendarPlanningEntry(),
-                                    const SizedBox(height: 24),
-                                  ],
-                                ),
+                              child: _MoonCalendarContent(
+                                state: state,
+                                recommendation: recommendation,
                               ),
                             ),
                           ],
@@ -244,6 +215,96 @@ class _MoonScreenState extends State<MoonScreen> {
   }
 }
 
+class _MoonCalendarContent extends StatelessWidget {
+  const _MoonCalendarContent({
+    required this.state,
+    required this.recommendation,
+  });
+
+  final MoonScreenState state;
+  final SphereRecommendationModel? recommendation;
+
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (context, constraints) {
+      final roomy = constraints.maxWidth >= 600;
+      final split = constraints.maxWidth >= 1050;
+      final advice = AsteriaEntrance(
+        replayKey: (
+          state.selectedDate,
+          state.selectedSphere,
+          state.selectedPersonalizedDayData != null,
+        ),
+        child: _MoonScreenAdvice(state: state, roomy: roomy),
+      );
+      final calendar = _CalendarWithPlans(state: state);
+      final details = Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SphereSelectionWidget(),
+          const SizedBox(height: 16),
+          if (recommendation case final value?) ...[
+            const SizedBox(height: 16),
+            LunarRecommendationsWidget(
+              key: ValueKey(state.selectedSphere),
+              recommendation: value,
+            ),
+          ],
+          const SizedBox(height: 32),
+          const CalendarPlanningEntry(),
+        ],
+      );
+      return Center(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(maxWidth: split ? 1120 : 680),
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(
+              roomy ? 24 : 16,
+              26,
+              roomy ? 24 : 16,
+              24,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                HomeSectionHeading(context.l10n.lunarCalendarTitle)
+                    .withEntrance(),
+                SizedBox(height: roomy ? 24 : 16),
+                if (split)
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(flex: 6, child: calendar),
+                      const SizedBox(width: 28),
+                      Expanded(
+                        flex: 4,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            advice,
+                            const SizedBox(height: 24),
+                            details,
+                          ],
+                        ),
+                      ),
+                    ],
+                  )
+                else ...[
+                  advice,
+                  const SizedBox(height: 24),
+                  calendar,
+                  const SizedBox(height: 24),
+                  details,
+                ],
+              ],
+            ),
+          ),
+        ),
+      );
+    },
+  );
+}
+
 class _CalendarWithPlans extends StatelessWidget {
   const _CalendarWithPlans({required this.state});
 
@@ -266,9 +327,8 @@ class _CalendarWithPlans extends StatelessWidget {
         children: [
           MoonCalendarWidget(savedPlans: plans).withEntrance(),
           const SizedBox(height: 12),
-          CalendarStatusesWidget(
-            visible: state.selectedSphere != null,
-          ).withEntrance(),
+          CalendarStatusesWidget(visible: state.selectedSphere != null)
+              .withEntrance(),
           for (final plan in selectedPlans)
             Padding(
               padding: const EdgeInsets.only(top: 8),
@@ -288,7 +348,8 @@ class _CalendarWithPlans extends StatelessWidget {
 }
 
 class _MoonScreenAdvice extends StatelessWidget {
-  const _MoonScreenAdvice({required this.state});
+  final bool roomy;
+  const _MoonScreenAdvice({required this.state, required this.roomy});
 
   final MoonScreenState state;
 
@@ -322,7 +383,7 @@ class _MoonScreenAdvice extends StatelessWidget {
           key: const ValueKey('calendar-day-context'),
           tint: MoonDesignTokens.calendarSurface,
           child: Padding(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(roomy ? 20 : 16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -331,8 +392,8 @@ class _MoonScreenAdvice extends StatelessWidget {
                     if (phaseImageDay case final imageDay?) ...[
                       Image.asset(
                         MoonPhaseDayImage.resolve(imageDay),
-                        width: 56,
-                        height: 56,
+                        width: roomy ? 66 : 56,
+                        height: roomy ? 66 : 56,
                         fit: BoxFit.contain,
                         excludeFromSemantics: true,
                       ),
@@ -347,6 +408,7 @@ class _MoonScreenAdvice extends StatelessWidget {
                             style: context.textTheme.playfairMedium20.copyWith(
                               color: AppColors.textInverse,
                               height: 1.15,
+                              fontSize: roomy ? 24 : null,
                             ),
                           ),
                           if (lunar != null) ...[
@@ -371,6 +433,7 @@ class _MoonScreenAdvice extends StatelessWidget {
                   style: AppTypography.text1.copyWith(
                     color: AppColors.textInverse,
                     height: 1.35,
+                    fontSize: roomy ? 18 : null,
                   ),
                 ),
               ],

@@ -337,6 +337,23 @@ void main() {
     expect(highlightAnimation.curve, Curves.easeOutCubic);
   });
 
+  testWidgets('tapping the next month in the grid selects that date', (
+    tester,
+  ) async {
+    _setCalendarViewport(tester);
+    final cubit = _TestMoonScreenCubit();
+    addTearDown(cubit.close);
+    cubit.replaceState(MoonScreenState(focusedDay: DateTime(2026, 8, 25)));
+    await tester.pumpWidget(_calendarApp(cubit));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('1').last);
+    await tester.pumpAndSettle();
+    expect(find.textContaining('Сентябрь 2026'), findsOneWidget);
+    expect(cubit.requestedMonths, [DateTime.utc(2026, 9)]);
+    expect(cubit.state.selectedDate, DateTime.utc(2026, 9, 1));
+  });
+
   testWidgets('changes month when the visible next chevron is tapped', (
     tester,
   ) async {

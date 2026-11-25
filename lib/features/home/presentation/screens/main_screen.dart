@@ -174,43 +174,82 @@ class _MainScreenState extends State<MainScreen> {
                     child: ListenableBuilder(
                       listenable: _contentProvider,
                       builder: (context, child) {
-                        return Column(
-                          children: [
-                            const SizedBox(height: 26),
-                            const MoonPhaseWidget(),
-                            const SizedBox(height: 12),
-                            const AdvertisingBlockWidget.capture(),
-                            const SizedBox(height: 24),
-                            AsteriaEntrance(child: _buildAffirmationCard()),
-                            const SizedBox(height: 24),
-                            _buildDailySymbolWidget(state),
-                            const SizedBox(height: 24),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
+                        final scenario = Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: ScenarioTile(
+                            key: const ValueKey('today-scenario-entry'),
+                            title:
+                                Localizations.localeOf(context).languageCode ==
+                                    'ru'
+                                ? 'Что вам сейчас близко?'
+                                : 'What speaks to you right now?',
+                            subtitle:
+                                Localizations.localeOf(context).languageCode ==
+                                    'ru'
+                                ? 'Выберите день, практику или личную подсказку'
+                                : 'Choose a day, a practice or personal guidance',
+                            art: 'assets/images/scenarios/compass.webp',
+                            onTap: () => context.push('/first-session'),
+                          ),
+                        );
+                        final affirmation = AsteriaEntrance(
+                          child: _buildAffirmationCard(),
+                        );
+                        final symbol = _buildDailySymbolWidget(state);
+                        return LayoutBuilder(
+                          builder: (context, constraints) => Center(
+                            child: ConstrainedBox(
+                              constraints: BoxConstraints(
+                                maxWidth: constraints.maxWidth >= 1050
+                                    ? 1120
+                                    : 680,
                               ),
-                              child: ScenarioTile(
-                                key: const ValueKey('today-scenario-entry'),
-                                title:
-                                    Localizations.localeOf(
-                                          context,
-                                        ).languageCode ==
-                                        'ru'
-                                    ? 'Что вам сейчас близко?'
-                                    : 'What speaks to you right now?',
-                                subtitle:
-                                    Localizations.localeOf(
-                                          context,
-                                        ).languageCode ==
-                                        'ru'
-                                    ? 'Выберите день, практику или личную подсказку'
-                                    : 'Choose a day, a practice or personal guidance',
-                                art: 'assets/images/scenarios/compass.webp',
-                                onTap: () => context.push('/first-session'),
+                              child: Padding(
+                                padding: const EdgeInsets.only(
+                                  top: 26,
+                                  bottom: 24,
+                                ),
+                                child: constraints.maxWidth >= 1050
+                                    ? Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Expanded(
+                                            flex: 6,
+                                            child: Column(
+                                              children: [
+                                                const MoonPhaseWidget(),
+                                                const SizedBox(height: 24),
+                                                scenario,
+                                              ],
+                                            ),
+                                          ),
+                                          Expanded(
+                                            flex: 5,
+                                            child: Column(
+                                              children: [
+                                                affirmation,
+                                                const SizedBox(height: 24),
+                                                symbol,
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      )
+                                    : Column(
+                                        children: [
+                                          const MoonPhaseWidget(),
+                                          const SizedBox(height: 24),
+                                          affirmation,
+                                          const SizedBox(height: 24),
+                                          symbol,
+                                          const SizedBox(height: 24),
+                                          scenario,
+                                        ],
+                                      ),
                               ),
                             ),
-                            const SizedBox(height: 24),
-                          ],
+                          ),
                         );
                       },
                     ),

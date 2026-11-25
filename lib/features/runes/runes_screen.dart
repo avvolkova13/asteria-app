@@ -83,7 +83,11 @@ class RunesScreen extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 358),
+                  constraints: BoxConstraints(
+                    maxWidth: MediaQuery.sizeOf(context).width >= 600
+                        ? 600
+                        : 358,
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [

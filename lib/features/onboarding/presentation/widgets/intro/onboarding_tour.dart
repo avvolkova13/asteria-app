@@ -1,5 +1,6 @@
 import 'intro_natal_tarot_story.dart';
 import 'intro_journal_story.dart';
+import 'intro_dream_journal_scene.dart';
 import 'intro_guide_story.dart';
 import 'package:flutter/material.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
@@ -335,6 +336,11 @@ class _SceneState extends State<_Scene> {
   String get title => widget.title;
   String get body => widget.body;
   Widget get child => widget.child;
+  bool get _isDream =>
+      child is IntroJournalStory && (child as IntroJournalStory).dream;
+
+  bool get _compactJournal =>
+      child is IntroJournalStory && MediaQuery.sizeOf(context).height < 740;
 
   void _rewind() {
     _lastFocus = null;
@@ -439,6 +445,36 @@ class _SceneState extends State<_Scene> {
     super.dispose();
   }
 
+  String _description(BuildContext context) {
+    if (!_isDream) return body;
+    final media = MediaQuery.of(context);
+    if (media.disableAnimations ||
+        media.accessibleNavigation ||
+        media.textScaler.scale(16) > 22) {
+      return IntroDreamJournalScene.transcript(context);
+    }
+    return _compactJournal
+        ? context.l10n.onboardingDreamDescriptionCompact
+        : body;
+  }
+
+  Widget _opening(double start, Widget content) {
+    final clock = _story;
+    final media = MediaQuery.of(context);
+    if (clock == null ||
+        media.disableAnimations ||
+        media.accessibleNavigation ||
+        media.textScaler.scale(16) > 22) {
+      return content;
+    }
+    return ValueListenableBuilder<double>(
+      valueListenable: clock.openingSeconds,
+      child: content,
+      builder: (context, seconds, child) =>
+          StoryEntrance(time: seconds, start: start, child: child!),
+    );
+  }
+
   @override
   Widget build(BuildContext context) => AnimatedBuilder(
     animation: controller,
@@ -462,26 +498,79 @@ class _SceneState extends State<_Scene> {
       excluding: !active,
       child: NotificationListener<ScrollNotification>(
         onNotification: _onScroll,
-        child: ListView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          controller: _scroll,
-          key: ValueKey('onboarding-content-$index'),
-          padding: const EdgeInsets.fromLTRB(16, 20, 16, 12),
-          children: [
-            HomeSectionHeading(title),
-            const SizedBox(height: 10),
-            Text(
-              body,
-              style: AppTypography.text1.copyWith(color: AppColors.textInverse),
-            ),
-            const SizedBox(height: 14),
-            KeyedSubtree(
-              key: ValueKey('onboarding-visual-$index'),
-              child: child,
-            ),
-          ],
-        ),
+        child: _content(context),
       ),
     ),
   );
+
+  Widget _content(BuildContext context) {
+    final compact =
+        (child is IntroCalendarStory || child is IntroJournalStory) &&
+        MediaQuery.sizeOf(context).height < 740;
+    final padding = EdgeInsets.fromLTRB(
+      16,
+      compact ? 8 : 20,
+      16,
+      compact ? 4 : 12,
+    );
+    final header = <Widget>[
+      _opening(
+        0,
+        _compactJournal
+            ? Semantics(
+                header: true,
+                child: Text(
+                  title,
+                  style: AppTypography.h2.copyWith(
+                    color: AppColors.textInverse,
+                  ),
+                ),
+              )
+            : HomeSectionHeading(title),
+      ),
+      SizedBox(height: _compactJournal ? 4 : 10),
+      _opening(
+        .09,
+        Text(
+          _description(context),
+          style: AppTypography.text1.copyWith(color: AppColors.textInverse),
+        ),
+      ),
+      SizedBox(height: _compactJournal ? 7 : 14),
+    ];
+    final visual = KeyedSubtree(
+      key: ValueKey('onboarding-visual-$index'),
+      child: child,
+    );
+    final key = ValueKey('onboarding-content-$index');
+    if (_isDream) {
+      return CustomScrollView(
+        key: key,
+        controller: _scroll,
+        physics: const AlwaysScrollableScrollPhysics(),
+        slivers: [
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: padding.copyWith(bottom: 0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: header,
+              ),
+            ),
+          ),
+          SliverFillRemaining(
+            hasScrollBody: false,
+            child: Padding(padding: padding.copyWith(top: 0), child: visual),
+          ),
+        ],
+      );
+    }
+    return ListView(
+      key: key,
+      controller: _scroll,
+      physics: const AlwaysScrollableScrollPhysics(),
+      padding: padding,
+      children: [...header, visual],
+    );
+  }
 }

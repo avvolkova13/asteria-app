@@ -96,7 +96,13 @@ class _StaticGlassBackdropState extends State<StaticGlassBackdrop> {
           fit: StackFit.expand,
           children: [
             if (_image != null) RawImage(image: _image, fit: BoxFit.fill),
-            widget.child,
+            Align(
+              alignment: Alignment.topCenter,
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 740),
+                child: SizedBox.expand(child: widget.child),
+              ),
+            ),
           ],
         ),
       );

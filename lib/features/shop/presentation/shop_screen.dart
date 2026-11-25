@@ -428,7 +428,13 @@ class _ShopBackground extends StatelessWidget {
             ),
           ),
         ),
-        child,
+        Align(
+          alignment: Alignment.topCenter,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 740),
+            child: SizedBox.expand(child: child),
+          ),
+        ),
       ],
     );
   }

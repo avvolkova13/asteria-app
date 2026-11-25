@@ -1,8 +1,9 @@
 import 'package:asteria_app/core/ui_kit/widgets/journal_actions.dart';
-import 'dream_entry_screen.dart';
+import 'create_sonnik_initial_screen.dart';
+import 'create_sonnik_loaded_screen.dart';
+import 'package:asteria_app/app/data/models/sonnik/sonnik_model.dart';
 import '../widgets/dream_journal_layout.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_action_button.dart';
-import 'package:asteria_app/core/routing/app_route.dart';
 import 'package:provider/provider.dart';
 import 'package:asteria_app/app/providers/user_provider.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
@@ -13,76 +14,67 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-Future<DreamEntry?> openDreamJournal(
+Future<void> _openOwnedPage(
   BuildContext context,
-  UserProvider user, {
-  bool startNew = false,
-}) async {
-  final owner = user.currentUser?.id;
-  if (owner == null || owner.isEmpty) return null;
-  if (startNew) return openDreamEntry(context, user, owner: owner);
+  UserProvider user,
+  String owner,
+  Widget child,
+) async {
+  if (user.currentUser?.id != owner) return;
   FocusManager.instance.primaryFocus?.unfocus();
   final page = InheritedTheme.captureAll(
     context,
-    ListenableBuilder(
-      listenable: user,
-      builder: (context, _) => user.currentUser?.id == owner
-          ? DreamJournalScreen(owner: owner, user: user)
-          : const SizedBox.shrink(),
+    ChangeNotifierProvider<UserProvider>.value(
+      value: user,
+      child: Consumer<UserProvider>(
+        builder: (context, account, _) =>
+            account.currentUser?.id == owner ? child : const SizedBox.shrink(),
+      ),
     ),
   );
-  final text = await Navigator.of(
+  await Navigator.of(
     context,
-  ).push<DreamEntry>(MaterialPageRoute(builder: (_) => page));
-  return user.currentUser?.id == owner ? text : null;
+  ).push<void>(MaterialPageRoute(builder: (_) => page));
 }
 
-Future<void> _showDreams(BuildContext context, {required bool write}) async {
-  final user = context.read<UserProvider?>();
-  final owner = user?.currentUser?.id;
-  if (user == null || owner == null || owner.isEmpty) {
-    CreateSonnikInitialRoute.push(context);
-    return;
-  }
-  final entry = await openDreamJournal(context, user, startNew: write);
-  if (!context.mounted || user.currentUser?.id != owner || entry == null) {
-    return;
-  }
-  CreateSonnikInitialRoute.push(
+Future<void> openDreamJournal(
+  BuildContext context,
+  UserProvider user, {
+  Future<bool> Function(BuildContext)? checkScenarioAccess,
+}) async {
+  final owner = user.currentUser?.id;
+  if (owner == null || owner.isEmpty) return;
+  await _openOwnedPage(
     context,
-    params: CreateSonnikInitialRouteParams(initialEntry: entry, ownerId: owner),
+    user,
+    owner,
+    DreamJournalScreen(
+      owner: owner,
+      user: user,
+      checkScenarioAccess: checkScenarioAccess,
+    ),
   );
 }
 
 class DreamJournalLink extends StatelessWidget {
   const DreamJournalLink({super.key});
-
   @override
   Widget build(BuildContext context) {
-    final owner = context.watch<UserProvider?>()?.currentUser?.id;
-    if (owner == null || owner.isEmpty) return const SizedBox.shrink();
+    final user = context.watch<UserProvider?>();
+    if (user == null || user.currentUser?.id.isNotEmpty != true) {
+      return const SizedBox.shrink();
+    }
     final ru = Localizations.localeOf(context).languageCode == 'ru';
     return LotusButtons.textIcon(
       style: TextButton.styleFrom(
         foregroundColor: AppColorsDark.linkGold,
         minimumSize: const Size(44, 44),
       ),
-      onPressed: () => _showDreams(context, write: false),
+      onPressed: () => openDreamJournal(context, user),
       icon: const Icon(Icons.menu_book_rounded, size: 19),
       label: Text(ru ? 'Дневник снов' : 'Dream journal'),
     );
   }
-}
-
-class DreamCaptureButton extends StatelessWidget {
-  const DreamCaptureButton({super.key});
-  @override
-  Widget build(BuildContext context) => AsteriaActionButton(
-    text: context.l10n.adDecode,
-    gold: true,
-    width: double.infinity,
-    onPressed: () => _showDreams(context, write: true),
-  );
 }
 
 class DreamJournalScreen extends StatefulWidget {
@@ -90,7 +82,9 @@ class DreamJournalScreen extends StatefulWidget {
     super.key,
     required this.owner,
     required this.user,
+    this.checkScenarioAccess,
   });
+  final Future<bool> Function(BuildContext)? checkScenarioAccess;
   final String owner;
   final UserProvider user;
   @override
@@ -103,43 +97,84 @@ class _DreamJournalScreenState extends State<DreamJournalScreen> {
   bool _loading = true, _failed = false, _busy = false, _opening = false;
   bool get _owns => widget.user.currentUser?.id == widget.owner;
   bool get _ru => Localizations.localeOf(context).languageCode == 'ru';
+  int _loadVersion = 0;
+  List<SonnikModel>? _history;
   @override
   void initState() {
     super.initState();
+    widget.user.addListener(_onAccountChanged);
     _load();
   }
 
-  Future<void> _load() async {
-    try {
-      final entries = await _journal.read();
-      if (mounted && _owns) {
-        setState(() {
-          _entries = entries;
-          _failed = false;
-        });
-      }
-    } catch (_) {
-      if (mounted && _owns) setState(() => _failed = true);
-    } finally {
-      if (mounted) setState(() => _loading = false);
+  @override
+  void dispose() {
+    widget.user.removeListener(_onAccountChanged);
+    super.dispose();
+  }
+
+  void _onAccountChanged() {
+    if (!_owns) {
+      _loadVersion++;
+      _history = null;
+      setState(() => _entries = []);
+    } else if (!identical(_history, widget.user.currentUser?.sonnikHistory)) {
+      _load();
     }
   }
 
-  Future<void> _open([DreamEntry? entry]) async {
+  Future<void> _load() async {
+    final version = ++_loadVersion;
+    if (!_owns) return;
+    _history = widget.user.currentUser?.sonnikHistory;
+    try {
+      final entries = await _journal.read(history: _history ?? const []);
+      if (mounted && _owns && version == _loadVersion) {
+        setState(() {
+          _entries = entries;
+          _failed = false;
+          _loading = false;
+        });
+      }
+    } catch (_) {
+      if (mounted && _owns && version == _loadVersion) {
+        setState(() {
+          _failed = true;
+          _loading = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _open([DreamEntry? entry, SonnikModel? reading]) async {
     if (_busy || _opening || !_owns) return;
     _opening = true;
-    final chosen = await openDreamEntry(
-      context,
-      widget.user,
-      owner: widget.owner,
-      entry: entry,
-    );
-    _opening = false;
-    if (!mounted || !_owns) return;
-    if (chosen != null) {
-      Navigator.pop(context, chosen);
-    } else {
-      await _load();
+    try {
+      final result =
+          reading ??
+          (entry?.historyOnly == true ? entry!.interpretations.first : null);
+      await _openOwnedPage(
+        context,
+        widget.user,
+        widget.owner,
+        result == null
+            ? CreateSonnikInitialScreen(
+                initialEntry: entry,
+                entryOwnerId: widget.owner,
+                checkScenarioAccess: widget.checkScenarioAccess,
+                fromJournal: true,
+                journalRoute: ModalRoute.of(context),
+              )
+            : CreateSonnikLoadedScreen(
+                sonnik: result,
+                ownerId: widget.owner,
+                fromJournal: true,
+                journalRoute: ModalRoute.of(context),
+                checkScenarioAccess: widget.checkScenarioAccess,
+              ),
+      );
+      if (mounted && _owns) await _load();
+    } finally {
+      _opening = false;
     }
   }
 
@@ -153,7 +188,13 @@ class _DreamJournalScreenState extends State<DreamJournalScreen> {
             _ru ? 'Удалить запись о сне?' : 'Delete this dream entry?',
           ),
           content: Text(
-            _ru ? 'Восстановить её не получится.' : 'This cannot be undone.',
+            entry.interpretations.isEmpty
+                ? (_ru
+                      ? 'Восстановить её не получится.'
+                      : 'This cannot be undone.')
+                : (_ru
+                      ? 'Запись и расшифровка исчезнут из дневника на этом устройстве.'
+                      : 'The entry and its interpretation will be removed from the journal on this device.'),
           ),
           actions: [
             CupertinoDialogAction(
@@ -187,25 +228,10 @@ class _DreamJournalScreenState extends State<DreamJournalScreen> {
     final locale = Localizations.localeOf(context).toLanguageTag();
     return DreamJournalScaffold(
       title: ru ? 'Дневник снов' : 'Dream journal',
-      footer: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          AsteriaActionButton(
-            text: ru ? 'Записать сон' : 'Write a dream',
-            width: double.infinity,
-            onPressed: _busy ? null : () => _open(),
-          ),
-          const SizedBox(height: 10),
-          Text(
-            ru
-                ? 'Записи хранятся на этом устройстве'
-                : 'Entries stay on this device',
-            style: context.textTheme.inverseUrbanistRegular14.copyWith(
-              color: AppColorsDark.textSecondary,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ],
+      footer: AsteriaActionButton(
+        text: ru ? 'Записать сон' : 'Write a dream',
+        width: double.infinity,
+        onPressed: _busy ? null : () => _open(),
       ),
       child: _loading
           ? const Center(child: CircularProgressIndicator())
@@ -272,48 +298,93 @@ class _DreamJournalScreenState extends State<DreamJournalScreen> {
                     child: Row(
                       children: [
                         Expanded(
-                          child: InkWell(
-                            onTap: _busy ? null : () => _open(entry),
-                            borderRadius: BorderRadius.circular(24),
-                            child: Padding(
-                              padding: const EdgeInsets.fromLTRB(16, 18, 0, 18),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    entry.text.replaceAll(RegExp(r'\s+'), ' '),
-                                    maxLines: 3,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: context
-                                        .textTheme
-                                        .inverseUrbanistRegular16,
-                                  ),
-                                  const SizedBox(height: 12),
-                                  Row(
-                                    children: [
-                                      Text(
-                                        DateFormat.Hm(
-                                          locale,
-                                        ).format(entry.recordedAt),
-                                        style: context
-                                            .textTheme
-                                            .inverseUrbanistRegular14
-                                            .copyWith(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Semantics(
+                                button: true,
+                                child: InkWell(
+                                  onTap: _busy ? null : () => _open(entry),
+                                  borderRadius: BorderRadius.circular(24),
+                                  child: Padding(
+                                    padding: const EdgeInsets.fromLTRB(
+                                      16,
+                                      14,
+                                      0,
+                                      12,
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          entry.text.replaceAll(
+                                            RegExp(r'\s+'),
+                                            ' ',
+                                          ),
+                                          maxLines: 3,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: context
+                                              .textTheme
+                                              .inverseUrbanistRegular16,
+                                        ),
+                                        const SizedBox(height: 6),
+                                        Row(
+                                          children: [
+                                            Expanded(
+                                              child: Text(
+                                                [
+                                                  DateFormat.Hm(
+                                                    locale,
+                                                  ).format(entry.recordedAt),
+                                                  if (entry.historyOnly)
+                                                    ru
+                                                        ? 'Расшифровка Ливеи'
+                                                        : 'Liveya’s interpretation',
+                                                ].join(' · '),
+                                                style: context
+                                                    .textTheme
+                                                    .inverseUrbanistRegular14
+                                                    .copyWith(
+                                                      color: AppColorsDark
+                                                          .textSecondary,
+                                                    ),
+                                              ),
+                                            ),
+                                            const Icon(
+                                              Icons.chevron_right,
+                                              size: 20,
                                               color:
                                                   AppColorsDark.textSecondary,
                                             ),
-                                      ),
-                                      const Spacer(),
-                                      const Icon(
-                                        Icons.chevron_right,
-                                        size: 20,
-                                        color: AppColorsDark.textSecondary,
-                                      ),
-                                    ],
+                                          ],
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                ],
+                                ),
                               ),
-                            ),
+                              if (!entry.historyOnly)
+                                for (final reading in entry.interpretations)
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                      left: 16,
+                                      bottom: 4,
+                                    ),
+                                    child: LotusButtons.text(
+                                      onPressed: _busy
+                                          ? null
+                                          : () => _open(entry, reading),
+                                      child: Text(
+                                        entry.interpretations.length == 1
+                                            ? (ru
+                                                  ? 'Открыть расшифровку'
+                                                  : 'Read interpretation')
+                                            : reading.title,
+                                      ),
+                                    ),
+                                  ),
+                            ],
                           ),
                         ),
                         JournalEntryMenu(

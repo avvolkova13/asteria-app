@@ -1,3 +1,4 @@
+import 'package:asteria_app/app/data/models/affirmation/affirmation_model.dart';
 import 'package:asteria_app/app/data/models/article/article_model.dart';
 import 'package:asteria_app/app/data/models/user/user_model.dart';
 import 'package:asteria_app/app/providers/content_provider.dart';
@@ -120,6 +121,8 @@ class _Repository extends Fake implements UserRepository {}
 class _Content extends ChangeNotifier implements ContentProvider {
   @override
   List<ArticleModel> get articles => const [];
+  @override
+  List<AffirmationModel> get affirmations => const [];
   @override
   List<String> get affirmationCategories => const [];
   @override

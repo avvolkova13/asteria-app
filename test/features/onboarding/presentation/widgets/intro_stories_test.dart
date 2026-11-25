@@ -319,6 +319,48 @@ void main() {
   });
 
   testWidgets(
+    'staggered entrances reserve space and settle on the supplied story time',
+    (tester) async {
+      Future<void> show(double time) => tester.pumpWidget(
+        MaterialApp(
+          home: Column(
+            children: [
+              for (final start in [0.0, .09, .2])
+                StoryEntrance(
+                  time: time,
+                  start: start,
+                  child: const SizedBox(height: 40),
+                ),
+            ],
+          ),
+        ),
+      );
+      List<double> opacities() => tester
+          .widgetList<Opacity>(
+            find.descendant(
+              of: find.byType(StoryEntrance),
+              matching: find.byType(Opacity),
+            ),
+          )
+          .map((widget) => widget.opacity)
+          .toList();
+      await show(.08);
+      final origins = tester.getTopLeft(find.byType(StoryEntrance).last);
+      expect(opacities()[0], inExclusiveRange(0, 1));
+      expect(opacities().skip(1), [0.0, 0.0]);
+      await show(.24);
+      final partial = opacities();
+      expect(partial[0], greaterThan(partial[1]));
+      expect(partial[1], greaterThan(partial[2]));
+      await tester.pump(const Duration(seconds: 1));
+      expect(opacities(), partial);
+      await show(.8);
+      expect(opacities(), [1.0, 1.0, 1.0]);
+      expect(tester.getTopLeft(find.byType(StoryEntrance).last), origins);
+    },
+  );
+
+  testWidgets(
     'approved reveals fade in place without moving or scaling content',
     (tester) async {
       var time = .24;

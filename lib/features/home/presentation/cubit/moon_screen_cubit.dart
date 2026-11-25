@@ -16,51 +16,7 @@ class MoonScreenCubit extends Cubit<MoonScreenState> {
 
   int _requestGeneration = 0;
 
-  Future<void> loadData() async {
-    emit(state.copyWith(isLoading: true, clearError: true));
-
-    final generation = ++_requestGeneration;
-    try {
-      final now = DateTime.now();
-      final normalizedDate = DateTime(now.year, now.month, now.day);
-      await _contentProvider.loadPersonalizedLunarMonth(now);
-      if (isClosed || generation != _requestGeneration) return;
-      final personalizedDay = _contentProvider.getPersonalizedLunarDayByDate(
-        normalizedDate,
-      );
-      final dayStatuses = _generateDayStatuses(now, state.selectedSphere);
-      final primaryPhaseDates = _generatePrimaryPhaseDates(now);
-      final selectedDayStatus = _getStatusForPersonalizedDay(
-        personalizedDay,
-        state.selectedSphere,
-      );
-
-      emit(
-        state.copyWith(
-          isLoading: false,
-          selectedDate: now,
-          focusedDay: now,
-          dayStatuses: dayStatuses,
-          primaryPhaseDates: primaryPhaseDates,
-          clearSelectedSphere: state.selectedSphere == null,
-          selectedPersonalizedDayData: personalizedDay,
-          clearSelectedPersonalizedDayData: personalizedDay == null,
-          selectedDayStatus: selectedDayStatus,
-        ),
-      );
-    } catch (e) {
-      if (isClosed || generation != _requestGeneration) return;
-      emit(
-        state.copyWith(
-          isLoading: false,
-          primaryPhaseDates: state.primaryPhaseDates.isNotEmpty
-              ? null
-              : _generatePrimaryPhaseDates(state.focusedDay, useAlmanac: true),
-          error: MoonScreenErrorCode.loadData,
-        ),
-      );
-    }
-  }
+  Future<void> loadData() => loadMonth(DateTime.now());
 
   void selectDate(DateTime date) {
     final normalizedDate = DateTime(date.year, date.month, date.day);
@@ -86,26 +42,37 @@ class MoonScreenCubit extends Cubit<MoonScreenState> {
 
   Future<void> loadMonth(DateTime month, {bool forceRefresh = false}) async {
     final generation = ++_requestGeneration;
-    emit(state.copyWith(isLoading: true, clearError: true));
+    final changingMonth =
+        state.focusedDay.year != month.year ||
+        state.focusedDay.month != month.month;
+    emit(
+      state.copyWith(
+        focusedDay: month,
+        selectedDate: _selectedDateForLoadedMonth(month),
+        isLoading: true,
+        clearError: true,
+        dayStatuses: changingMonth ? const {} : null,
+        primaryPhaseDates: changingMonth || state.selectedDate == null
+            ? _generatePrimaryPhaseDates(month)
+            : null,
+        clearSelectedPersonalizedDayData: changingMonth,
+        selectedDayStatus: changingMonth ? DayStatus.neutral : null,
+      ),
+    );
     try {
       await _contentProvider.loadPersonalizedLunarMonth(
         month,
         forceRefresh: forceRefresh,
       );
       if (isClosed || generation != _requestGeneration) return;
-      final dayStatuses = _generateDayStatuses(month, state.selectedSphere);
-      final primaryPhaseDates = _generatePrimaryPhaseDates(month);
-      final selectedDate = _selectedDateForLoadedMonth(month);
       final personalizedDay = _contentProvider.getPersonalizedLunarDayByDate(
-        selectedDate,
+        state.selectedDate!,
       );
       emit(
         state.copyWith(
           isLoading: false,
-          focusedDay: month,
-          selectedDate: selectedDate,
-          dayStatuses: dayStatuses,
-          primaryPhaseDates: primaryPhaseDates,
+          dayStatuses: _generateDayStatuses(state.selectedSphere),
+          primaryPhaseDates: _generatePrimaryPhaseDates(month),
           selectedPersonalizedDayData: personalizedDay,
           clearSelectedPersonalizedDayData: personalizedDay == null,
           selectedDayStatus: _getStatusForPersonalizedDay(
@@ -130,19 +97,16 @@ class MoonScreenCubit extends Cubit<MoonScreenState> {
   }
 
   void selectSphere(Sphere? sphere) {
-    final dayStatuses = _generateDayStatuses(state.focusedDay, sphere);
-    final primaryPhaseDates = _generatePrimaryPhaseDates(state.focusedDay);
-    final selectedDate = state.selectedDate;
-    final personalizedDay = selectedDate == null
-        ? state.selectedPersonalizedDayData
-        : _contentProvider.getPersonalizedLunarDayByDate(selectedDate);
-
+    final date = state.selectedDate;
+    final personalizedDay = date == null
+        ? null
+        : _contentProvider.getPersonalizedLunarDayByDate(date);
     emit(
       state.copyWith(
         selectedSphere: sphere,
         clearSelectedSphere: sphere == null,
-        dayStatuses: dayStatuses,
-        primaryPhaseDates: primaryPhaseDates,
+        dayStatuses: _generateDayStatuses(sphere),
+        primaryPhaseDates: _generatePrimaryPhaseDates(state.focusedDay),
         selectedPersonalizedDayData: personalizedDay,
         clearSelectedPersonalizedDayData: personalizedDay == null,
         selectedDayStatus: _getStatusForPersonalizedDay(
@@ -153,48 +117,31 @@ class MoonScreenCubit extends Cubit<MoonScreenState> {
     );
   }
 
-  Map<DateTime, DayStatus> _generateDayStatuses(
-    DateTime month,
-    Sphere? selectedSphere,
-  ) {
-    final Map<DateTime, DayStatus> statuses = {};
-    final lastDay = DateTime(month.year, month.month + 1, 0);
-
-    for (int day = 1; day <= lastDay.day; day++) {
+  Map<DateTime, DayStatus> _generateDayStatuses(Sphere? sphere) {
+    if (sphere == null) return const {};
+    final month = state.focusedDay;
+    final last = DateTime(month.year, month.month + 1, 0).day;
+    final statuses = <DateTime, DayStatus>{};
+    for (var day = 1; day <= last; day++) {
       final date = DateTime(month.year, month.month, day);
-      final normalizedDate = DateTime(date.year, date.month, date.day);
-
-      final lunarDay = _contentProvider.getPersonalizedLunarDayByDate(
-        normalizedDate,
-      );
-
-      if (lunarDay != null && selectedSphere != null) {
-        final status = _getStatusForSphere(lunarDay, selectedSphere);
-        statuses[normalizedDate] = status;
-      }
+      final data = _contentProvider.getPersonalizedLunarDayByDate(date);
+      if (data != null) statuses[date] = _getStatusForSphere(data, sphere);
     }
-
     return statuses;
   }
 
-  Set<DateTime> _generatePrimaryPhaseDates(
-    DateTime month, {
-    bool useAlmanac = false,
-  }) {
+  Set<DateTime> _generatePrimaryPhaseDates(DateTime month) {
     final dates = <DateTime>{};
     final lastDay = DateTime(month.year, month.month + 1, 0);
 
     for (int day = 1; day <= lastDay.day; day++) {
       final date = DateTime(month.year, month.month, day);
-      final normalizedDate = DateTime(date.year, date.month, date.day);
-      final lunarDay = useAlmanac
-          ? null
-          : _contentProvider.getPersonalizedLunarDayByDate(normalizedDate);
+      final lunarDay = _contentProvider.getPersonalizedLunarDayByDate(date);
       final marksPhaseChange = lunarDay == null
-          ? LunarAlmanacDay.on(normalizedDate)?.phase.marksPhaseChange == true
+          ? LunarAlmanacDay.on(date)?.phase.marksPhaseChange == true
           : lunarDay.lunarContext.phaseEvent != null;
       if (marksPhaseChange) {
-        dates.add(normalizedDate);
+        dates.add(date);
       }
     }
 

@@ -1,3 +1,4 @@
+import 'package:asteria_app/features/sonnik/presentation/widgets/sonnik_layout.dart';
 import 'dart:ui' as ui;
 import 'package:flutter/rendering.dart';
 import '../../../compatibility/support/selection_test_support.dart';
@@ -127,6 +128,25 @@ void main() {
     tab.value = index;
     observer.homeTab(index);
   }
+
+  testWidgets(
+    'only Readings shows the dream capture and journal entry points',
+    (tester) async {
+      user.currentUser = UserModel.empty().copyWith(id: 'dream-journal-owner');
+      await mount(tester, initialTab: 0);
+      expect(find.text('Записать сон'), findsNothing);
+      showTab(3);
+      await tester.pumpAndSettle();
+      expect(find.text('Записать сон'), findsOneWidget);
+      expect(find.text('Дневник снов'), findsOneWidget);
+      final portrait = find.byType(SonnikLiveyaAvatar);
+      expect(portrait, findsOneWidget);
+      expect(
+        find.descendant(of: portrait, matching: find.byType(ClipOval)),
+        findsOneWidget,
+      );
+    },
+  );
 
   for (final width in [320.0, 393.0]) {
     testWidgets(

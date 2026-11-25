@@ -65,14 +65,6 @@ class StrengthScenarioScreen extends StatelessWidget {
       );
     }
 
-    void switchToRunes() {
-      Navigator.of(context).pushReplacement<void, void>(
-        CupertinoPageRoute(
-          builder: (_) => const ScenarioSkyScope(child: FreeRuneScenario()),
-        ),
-      );
-    }
-
     return ScenarioPage(
       title: context.l10n.scenarioStrengthTitle,
       child: ScenarioChoiceGrid(
@@ -90,8 +82,12 @@ class StrengthScenarioScreen extends StatelessWidget {
           ScenarioChoiceCard(
             wide: true,
             title: ru ? 'Растолковать сон' : 'Interpret a dream',
-            art: 'assets/images/sonnik/liveya_character.webp',
-            onTap: () => open(FreeDreamScenario(onOpenRunes: switchToRunes)),
+            art: 'assets/images/practices/time-for-sleep.webp',
+            onTap: () => open(
+              FreeDreamScenario(
+                onOpenRunes: () => open(const FreeRuneScenario()),
+              ),
+            ),
           ),
         ],
       ),

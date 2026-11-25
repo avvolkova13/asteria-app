@@ -202,7 +202,8 @@ class ContentProvider extends ChangeNotifier with WidgetsBindingObserver {
   final Map<String, Future<PersonalizedLunarMonthModel>>
   _personalizedLunarInflight = {};
   PersonalizedLunarMonthModel? _activeLunarMonth;
-  String? _activeLunarMonthContextKey;
+  // Keep recent lookups independent across the Today, Calendar and Plans screens.
+  final _recentLunarMonths = <String, PersonalizedLunarMonthModel?>{};
   Future<void>? _contentLoadFuture;
   bool _isLoadingContent = false;
 
@@ -266,7 +267,7 @@ class ContentProvider extends ChangeNotifier with WidgetsBindingObserver {
 
   void _clearPersonalizedLunarState() {
     _activeLunarMonth = null;
-    _activeLunarMonthContextKey = null;
+    _recentLunarMonths.clear();
     _personalizedLunarInflight.clear();
   }
 
@@ -370,6 +371,12 @@ class ContentProvider extends ChangeNotifier with WidgetsBindingObserver {
     final normalizedMonth = DateTime(month.year, month.month);
     final contextKey = _personalizedMonthContextKey(normalizedMonth, location);
     final inflightKey = contextKey;
+    // Reserve by request order so late responses cannot evict the newest months.
+    final previous = _recentLunarMonths.remove(contextKey);
+    _recentLunarMonths[contextKey] = previous;
+    if (_recentLunarMonths.length > 12) {
+      _recentLunarMonths.remove(_recentLunarMonths.keys.first);
+    }
 
     final existing = _personalizedLunarInflight[inflightKey];
     if (existing != null) return existing;
@@ -377,23 +384,29 @@ class ContentProvider extends ChangeNotifier with WidgetsBindingObserver {
     final repository =
         _personalizedLunarCalendarRepository ??
         di.get<PersonalizedLunarCalendarRepository>();
-    final future = repository
+    late final Future<PersonalizedLunarMonthModel> future;
+    future = repository
         .loadMonth(month: normalizedMonth, location: location)
         .then((month) {
           final currentLocation = _currentLocationResolver
               .resolve(_userProvider.currentUser)
               .location;
-          if (currentLocation != null &&
+          if (identical(_personalizedLunarInflight[inflightKey], future) &&
+              currentLocation != null &&
               _personalizedMonthContextKey(normalizedMonth, currentLocation) ==
                   contextKey) {
             _activeLunarMonth = month;
-            _activeLunarMonthContextKey = contextKey;
+            if (_recentLunarMonths.containsKey(contextKey)) {
+              _recentLunarMonths[contextKey] = month;
+            }
             notifyListeners();
           }
           return month;
         })
         .whenComplete(() {
-          _personalizedLunarInflight.remove(inflightKey);
+          if (identical(_personalizedLunarInflight[inflightKey], future)) {
+            _personalizedLunarInflight.remove(inflightKey);
+          }
         });
 
     _personalizedLunarInflight[inflightKey] = future;
@@ -410,10 +423,11 @@ class ContentProvider extends ChangeNotifier with WidgetsBindingObserver {
       DateTime(date.year, date.month),
       location,
     );
-    if (_activeLunarMonthContextKey != contextKey) return null;
+    final month = _recentLunarMonths[contextKey];
+    if (month == null) return null;
 
     final normalized = DateTime(date.year, date.month, date.day);
-    for (final day in _activeLunarMonth?.days ?? const []) {
+    for (final day in month.days) {
       if (DateTime(day.date.year, day.date.month, day.date.day) == normalized) {
         return day;
       }

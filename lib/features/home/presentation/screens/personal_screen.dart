@@ -11,6 +11,7 @@ import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
 import 'package:asteria_app/core/ui_kit/widgets/card_lens_decoration.dart';
 import 'package:asteria_app/core/ui_kit/card_radii.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
+
 import 'dart:math' as math;
 
 import 'package:asteria_app/app/data/entities/zodiac_info_entity.dart';
@@ -299,12 +300,17 @@ class _PersonalScreenState extends State<PersonalScreen> {
                               backgroundColor: Colors.transparent,
                             ),
                           ).withEntrance(),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                            child: ListenableBuilder(
-                              listenable: userProvider,
-                              builder: (context, _) =>
-                                  _buildContent(context, userProvider),
+                          ConstrainedBox(
+                            constraints: const BoxConstraints(maxWidth: 760),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                              ),
+                              child: ListenableBuilder(
+                                listenable: userProvider,
+                                builder: (context, _) =>
+                                    _buildContent(context, userProvider),
+                              ),
                             ),
                           ),
                         ],
@@ -336,9 +342,8 @@ class _PersonalScreenState extends State<PersonalScreen> {
           ..._horoscopeSection(context, userProvider),
         _natalBanner(context, userProvider.currentUser).withEntrance(),
         const SizedBox(height: 24),
-        _PersonalCompatibilitySection(
-          onPressed: _onCompatibilityPressed,
-        ).withEntrance(),
+        _PersonalCompatibilitySection(onPressed: _onCompatibilityPressed)
+            .withEntrance(),
         const SizedBox(height: 24),
         const AdvertisingBlockWidget(horizontalMargin: 0).withEntrance(),
         const SizedBox(height: 16),
@@ -604,10 +609,8 @@ class _PersonalScreenState extends State<PersonalScreen> {
 
     return Theme(
       data: Theme.of(context).copyWith(
-        textTheme: Theme.of(context).textTheme.apply(
-          bodyColor: AppColors.white,
-          displayColor: AppColors.white,
-        ),
+        textTheme: Theme.of(context).textTheme
+            .apply(bodyColor: AppColors.white, displayColor: AppColors.white),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

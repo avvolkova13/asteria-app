@@ -65,10 +65,10 @@ class AppLocalizations {
     );
   }
 
-  /// `Time for a new look. Which date does the lunar calendar suggest?`
+  /// `Let’s check the lunar calendar.`
   String get onboardingPage1Description {
     return Intl.message(
-      'Time for a new look. Which date does the lunar calendar suggest?',
+      'Let’s check the lunar calendar.',
       name: 'onboardingPage1Description',
       desc: '',
       args: [],
@@ -9290,10 +9290,10 @@ class AppLocalizations {
     );
   }
 
-  /// `A favorable time for a new haircut.`
+  /// `A good day to freshen up your cut or try a new length.`
   String get introCalendarInsight {
     return Intl.message(
-      'A favorable time for a new haircut.',
+      'A good day to freshen up your cut or try a new length.',
       name: 'introCalendarInsight',
       desc: '',
       args: [],
@@ -9700,10 +9700,10 @@ class AppLocalizations {
     );
   }
 
-  /// `Added to my plans`
+  /// `Saved to My plans`
   String get introCalendarSavedText {
     return Intl.message(
-      'Added to my plans',
+      'Saved to My plans',
       name: 'introCalendarSavedText',
       desc: '',
       args: [],
@@ -9790,10 +9790,10 @@ class AppLocalizations {
     );
   }
 
-  /// `The workday is over, but my mind is still at work. What would help me unwind?`
+  /// `How can I unwind after work?`
   String get onboardingPracticeDescription {
     return Intl.message(
-      'The workday is over, but my mind is still at work. What would help me unwind?',
+      'How can I unwind after work?',
       name: 'onboardingPracticeDescription',
       desc: '',
       args: [],
@@ -9815,6 +9815,16 @@ class AppLocalizations {
     return Intl.message(
       'I woke up with just one image from my dream. Why did that part stay with me?',
       name: 'onboardingDreamDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Why do I still remember the lighthouse?`
+  String get onboardingDreamDescriptionCompact {
+    return Intl.message(
+      'Why do I still remember the lighthouse?',
+      name: 'onboardingDreamDescriptionCompact',
       desc: '',
       args: [],
     );

@@ -252,22 +252,24 @@ class SonnikTopNavBar extends StatelessWidget {
 }
 
 class SonnikLiveyaAvatar extends StatelessWidget {
-  const SonnikLiveyaAvatar({super.key});
+  const SonnikLiveyaAvatar({super.key, this.size = 156});
+
+  final double size;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 156,
-      height: 156,
-      padding: const EdgeInsets.all(3),
+      width: size,
+      height: size,
+      padding: EdgeInsets.all(size * 3 / 156),
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         border: Border.all(color: SonnikPalette.white.withValues(alpha: 0.8)),
         boxShadow: [
           BoxShadow(
             color: SonnikPalette.pink.withValues(alpha: 0.35),
-            blurRadius: 28,
-            offset: const Offset(0, 12),
+            blurRadius: size * 28 / 156,
+            offset: Offset(0, size * 12 / 156),
           ),
         ],
       ),
@@ -275,13 +277,18 @@ class SonnikLiveyaAvatar extends StatelessWidget {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            Image.asset(SonnikAssets.liveyaBackground, fit: BoxFit.cover),
+            Image.asset(
+              SonnikAssets.liveyaBackground,
+              fit: BoxFit.cover,
+              excludeFromSemantics: true,
+            ),
             Transform.translate(
-              offset: const Offset(0, 12),
+              offset: Offset(0, size * 12 / 156),
               child: Image.asset(
                 SonnikAssets.liveyaCharacter,
                 fit: BoxFit.cover,
                 alignment: Alignment.topCenter,
+                excludeFromSemantics: true,
               ),
             ),
           ],

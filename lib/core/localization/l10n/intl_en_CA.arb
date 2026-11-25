@@ -116,8 +116,8 @@
       }
     }
   },
-  "onboardingPage1Title": "Your day",
-  "onboardingPage1Description": "From a suitable day to a plan with a reminder.",
+  "onboardingPage1Title": "When should I get a haircut?",
+  "onboardingPage1Description": "Let’s check the lunar calendar.",
   "onboardingPage2Title": "Your character",
   "onboardingPage3Title": "Your relationship",
   "onboardingPage3Description": "Understand different reactions and find a way to talk.",
@@ -130,7 +130,7 @@
   "introCalendarFrom": "Upcoming days · from {date}",
   "introCalendarCompare": "Compare the next few days",
   "introCalendarResult": "Chosen day: {date}",
-  "introCalendarInsight": "A favorable time for a new haircut.",
+  "introCalendarInsight": "A good day to freshen up your cut or try a new length.",
   "introMoodRequest": "I’m always rushing.\nI need a moment to breathe.",
   "introMoodRush": "Always rushing",
   "introMoodTired": "Low on energy",
@@ -197,7 +197,7 @@
   "introMoodPractice": "Relax your shoulders. Breathe out slowly.",
   "introNatalQuestionTitle": "A question to reflect on",
   "introCalendarSavedTitle": "Haircut",
-  "introCalendarSavedText": "Added to my plans",
+  "introCalendarSavedText": "Saved to My plans",
   "introCalendarReminderTitle": "Remind me about this plan",
   "introCalendarReminderChoice": "One day before",
   "introCalendarReminderEnabled": "Reminder is on",

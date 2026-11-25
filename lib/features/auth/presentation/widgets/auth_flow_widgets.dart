@@ -113,7 +113,17 @@ class AuthFlowScaffold extends StatelessWidget {
                 child: _AuthBottomGradient(),
               ),
             ],
-            child,
+            Align(
+              alignment: Alignment.topCenter,
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 580),
+                child: SizedBox(
+                  width: double.infinity,
+                  height: double.infinity,
+                  child: child,
+                ),
+              ),
+            ),
             if (showBackButton)
               SafeArea(
                 bottom: false,

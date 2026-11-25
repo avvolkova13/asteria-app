@@ -143,7 +143,7 @@ void main() {
       expect(find.text('Compatibility destination'), findsOneWidget);
       router.pop();
       await tester.pumpAndSettle();
-      await tester.ensureVisible(find.text('Расшифровать'));
+      await tester.ensureVisible(find.text(l.adDecode));
       await tester.pumpAndSettle();
       await File('${dir.path}/lower.png').writeAsBytes(
         await binding.takeScreenshot(

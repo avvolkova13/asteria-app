@@ -39,93 +39,104 @@ class CompabilityResults extends StatelessWidget {
     final firstDate = hisBirthdate.toDateTimeFromShortDate();
     final secondDate = herBirthdate.toDateTimeFromShortDate();
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: AsteriaEntrance.sections([
-        _ZodiacCompatibilityHero(
-          firstDate: firstDate,
-          secondDate: secondDate,
-          percentage: _percentage(compatibilityData.percentage)?.round(),
-        ),
-        if (highlightConflicts &&
-            compatibilityData.conflicts.trim().isNotEmpty) ...[
-          const SizedBox(height: 16),
-          Text(
-            Localizations.localeOf(context).languageCode == 'ru'
-                ? 'Почему мы спорим?'
-                : 'Why do we disagree?',
-            style: context.textTheme.inversePlayfairSemiBold20,
-          ),
-          const SizedBox(height: 8),
-          Text(
-            compatibilityData.conflicts.trim(),
-            style: context.textTheme.inverseUrbanistRegular16,
-          ),
-          const SizedBox(height: 16),
-        ],
-        const SizedBox(height: 4),
-        Text(
-          compatibilityData.phrase,
-          style: context.textTheme.playfairMedium16.copyWith(
-            color: const Color(0xFFFFB45E),
-            height: 1.2,
-          ),
-          textAlign: TextAlign.start,
-        ),
-        const SizedBox(height: 4),
-        Text(
-          compatibilityData.introduction,
-          style: context.textTheme.inverseUrbanistRegular14.copyWith(
-            height: 1.18,
-          ),
-          textAlign: TextAlign.start,
-        ),
-        const SizedBox(height: 20),
-        PearlMetricRow(
-          metrics: [
-            for (final (label, reading) in [
-              (
-                context.l10n.compatibilityLove,
-                compatibilityData.loveCompatibilityPercentage,
-              ),
-              (
-                context.l10n.compatibilityConflicts,
-                compatibilityData.conflictsPercentage,
-              ),
-              (
-                context.l10n.compatibilityFamily,
-                compatibilityData.familyCompatibilityPercentage,
-              ),
-            ])
-              if (_percentage(reading) case final value?)
-                PearlMetric(label, '${value.toStringAsFixed(0)}%', value / 100),
-          ],
-        ),
-        const SizedBox(height: 24),
-        Text(
-          compatibilityData.generalCompatibility,
-          style: context.textTheme.inverseUrbanistRegular14.copyWith(
-            height: 1.16,
-          ),
-        ),
-        const SizedBox(height: 28),
-        CompatibilityGradientButton(
-          text: context.l10n.compatibilityNewPair,
-          onPressed:
-              onNewPairPressed ??
-              () => CreateCompatibilityInitialRoute.pushReplacement(context),
-        ),
-        const SizedBox(height: 14),
-        LotusButtons.text(
-          onPressed: onHistoryPressed,
-          child: Text(
-            context.l10n.viewHistory,
-            style: context.textTheme.inverseUrbanistSemiBold14.copyWith(
-              color: AppColorsDark.linkGold,
+    return Center(
+      heightFactor: 1,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 680),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: AsteriaEntrance.sections([
+            _ZodiacCompatibilityHero(
+              firstDate: firstDate,
+              secondDate: secondDate,
+              percentage: _percentage(compatibilityData.percentage)?.round(),
             ),
-          ),
+            if (highlightConflicts &&
+                compatibilityData.conflicts.trim().isNotEmpty) ...[
+              const SizedBox(height: 16),
+              Text(
+                Localizations.localeOf(context).languageCode == 'ru'
+                    ? 'Почему мы спорим?'
+                    : 'Why do we disagree?',
+                style: context.textTheme.inversePlayfairSemiBold20,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                compatibilityData.conflicts.trim(),
+                style: context.textTheme.inverseUrbanistRegular16,
+              ),
+              const SizedBox(height: 16),
+            ],
+            const SizedBox(height: 4),
+            Text(
+              compatibilityData.phrase,
+              style: context.textTheme.playfairMedium16.copyWith(
+                color: const Color(0xFFFFB45E),
+                height: 1.2,
+              ),
+              textAlign: TextAlign.start,
+            ),
+            const SizedBox(height: 4),
+            Text(
+              compatibilityData.introduction,
+              style: context.textTheme.inverseUrbanistRegular14.copyWith(
+                height: 1.18,
+              ),
+              textAlign: TextAlign.start,
+            ),
+            const SizedBox(height: 20),
+            PearlMetricRow(
+              metrics: [
+                for (final (label, reading) in [
+                  (
+                    context.l10n.compatibilityLove,
+                    compatibilityData.loveCompatibilityPercentage,
+                  ),
+                  (
+                    context.l10n.compatibilityConflicts,
+                    compatibilityData.conflictsPercentage,
+                  ),
+                  (
+                    context.l10n.compatibilityFamily,
+                    compatibilityData.familyCompatibilityPercentage,
+                  ),
+                ])
+                  if (_percentage(reading) case final value?)
+                    PearlMetric(
+                      label,
+                      '${value.toStringAsFixed(0)}%',
+                      value / 100,
+                    ),
+              ],
+            ),
+            const SizedBox(height: 24),
+            Text(
+              compatibilityData.generalCompatibility,
+              style: context.textTheme.inverseUrbanistRegular14.copyWith(
+                height: 1.16,
+              ),
+            ),
+            const SizedBox(height: 28),
+            CompatibilityGradientButton(
+              text: context.l10n.compatibilityNewPair,
+              onPressed:
+                  onNewPairPressed ??
+                  () =>
+                      CreateCompatibilityInitialRoute.pushReplacement(context),
+            ),
+            const SizedBox(height: 14),
+            LotusButtons.text(
+              onPressed: onHistoryPressed,
+              child: Text(
+                context.l10n.viewHistory,
+                style: context.textTheme.inverseUrbanistSemiBold14.copyWith(
+                  color: AppColorsDark.linkGold,
+                ),
+              ),
+            ),
+          ]),
         ),
-      ]),
+      ),
     );
   }
 }

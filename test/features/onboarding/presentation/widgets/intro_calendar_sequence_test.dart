@@ -1,3 +1,5 @@
+import 'package:asteria_app/core/ui_kit/app_colors/app_colors.dart';
+import 'package:asteria_app/features/home/presentation/widgets/lunar_card_image.dart';
 import 'package:asteria_app/features/home/presentation/widgets/moon_phase_widget.dart';
 import 'package:asteria_app/features/onboarding/presentation/widgets/intro/intro_calendar_story.dart';
 import 'package:flutter/material.dart';
@@ -40,11 +42,43 @@ void main() {
         );
         expect(find.byKey(ValueKey(date)), findsOneWidget);
       }
+      expect(find.byKey(const ValueKey('intro-day-result')), findsNothing);
+      await tester.pump(const Duration(seconds: 3));
+      expect(find.byKey(const ValueKey('intro-day-advice')), findsOneWidget);
+      expect(find.textContaining('новую длину'), findsOneWidget);
+      expect(find.byKey(const ValueKey('intro-saved-scissors')), findsNothing);
+      expect(find.textContaining('Напоминание на'), findsNothing);
+      await tester.pump(const Duration(seconds: 2));
       expect(find.byKey(const ValueKey('intro-day-result')), findsOneWidget);
+      expect(find.textContaining('Напоминание на'), findsOneWidget);
+      expect(find.byKey(const ValueKey('intro-day-advice')), findsNothing);
+      expect(
+        find.descendant(
+          of: day(2),
+          matching: find.byKey(const ValueKey('intro-saved-scissors')),
+        ),
+        findsOneWidget,
+      );
+      final marker = find.byKey(const ValueKey('intro-saved-scissors'));
+      final scissors = tester
+          .widgetList<Image>(
+            find.descendant(of: marker, matching: find.byType(Image)),
+          )
+          .singleWhere((image) => image.color == AppColorsDark.secondary);
+      final provider =
+          (scissors.image as ResizeImage).imageProvider as AssetImage;
+      expect(
+        provider.assetName,
+        LunarCardAsset.path(LunarCardAsset.forTaskKey('haircut')!),
+      );
+      expect(
+        find.descendant(of: marker, matching: find.byType(DecoratedBox)),
+        findsNothing,
+      );
       expect(find.text('Благоприятный день'), findsOneWidget);
       expect(tester.takeException(), isNull);
       await tester.pumpWidget(const SizedBox());
-    });
+    }, variant: TargetPlatformVariant.only(TargetPlatform.iOS));
   }
 
   testWidgets('touching a date cannot change or pause the demonstration', (

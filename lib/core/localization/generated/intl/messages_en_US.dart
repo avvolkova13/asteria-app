@@ -101,7 +101,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "introCalendarFrom": m24,
     "introCalendarInsight": MessageLookupByLibrary.simpleMessage(
-      "A favorable time for a new haircut.",
+      "A good day to freshen up your cut or try a new length.",
     ),
     "introCalendarReminderChoice": MessageLookupByLibrary.simpleMessage(
       "One day before",
@@ -117,9 +117,11 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "introCalendarResult": m25,
     "introCalendarSavedText": MessageLookupByLibrary.simpleMessage(
-      "Added to my plans",
+      "Saved to My plans",
     ),
-    "introCalendarSavedTitle": MessageLookupByLibrary.simpleMessage("Haircut"),
+    "introCalendarSavedTitle": MessageLookupByLibrary.simpleMessage(
+      "Haircut",
+    ),
     "introDemoLabel": MessageLookupByLibrary.simpleMessage("Example reading"),
     "introFavorable": MessageLookupByLibrary.simpleMessage("Favorable day"),
     "introFavorableTip": MessageLookupByLibrary.simpleMessage(
@@ -238,9 +240,11 @@ class MessageLookup extends MessageLookupByLibrary {
       "Planet positions are currently unavailable. Your saved reading is below.",
     ),
     "onboardingPage1Description": MessageLookupByLibrary.simpleMessage(
-      "From a suitable day to a plan with a reminder.",
+      "Let’s check the lunar calendar.",
     ),
-    "onboardingPage1Title": MessageLookupByLibrary.simpleMessage("Your day"),
+    "onboardingPage1Title": MessageLookupByLibrary.simpleMessage(
+      "When should I get a haircut?",
+    ),
     "onboardingPage2Description": MessageLookupByLibrary.simpleMessage(
       "Strengths, familiar reactions and new questions to ask yourself.",
     ),

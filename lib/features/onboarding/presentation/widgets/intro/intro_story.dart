@@ -131,6 +131,13 @@ class _IntroStoryState extends State<IntroStory>
     final progress = _clock.value;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
+        // The page heading settles during the first half-second. Stop
+        // rebuilding it while the illustrated story continues underneath.
+        controller.openingSeconds.value =
+            (progress *
+                    widget.duration.inMicroseconds /
+                    Duration.microsecondsPerSecond)
+                .clamp(0.0, .5);
         controller.progress.value = progress;
         controller.update(mode, _toggle);
       }
@@ -142,23 +149,54 @@ class _IntroStoryState extends State<IntroStory>
     animation: _clock,
     builder: (context, _) {
       _publishFooter(context);
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          RepaintBoundary(
-            child: widget.builder(
-              context,
-              _clock.value *
-                  widget.duration.inMicroseconds /
-                  Duration.microsecondsPerSecond,
-              _static,
-              widget.now(),
-            ),
+      return SizedBox(
+        width: double.infinity,
+        child: RepaintBoundary(
+          child: widget.builder(
+            context,
+            _clock.value *
+                widget.duration.inMicroseconds /
+                Duration.microsecondsPerSecond,
+            _static,
+            widget.now(),
           ),
-        ],
+        ),
       );
     },
   );
+}
+
+/// A short arrival on the scene clock. Its space is reserved from the start.
+class StoryEntrance extends StatelessWidget {
+  const StoryEntrance({
+    super.key,
+    required this.time,
+    this.start = 0,
+    this.duration = .34,
+    this.rise = 7,
+    required this.child,
+  });
+  final double time, start, duration, rise;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    if (MediaQuery.disableAnimationsOf(context) ||
+        MediaQuery.accessibleNavigationOf(context) ||
+        MediaQuery.textScalerOf(context).scale(16) > 22) {
+      return child;
+    }
+    final fraction = ((time - start) / duration).clamp(0.0, 1.0);
+    final visible = Curves.easeOutCubic.transform(fraction);
+    return Opacity(
+      opacity: visible,
+      alwaysIncludeSemantics: true,
+      child: Transform.translate(
+        offset: Offset(0, (1 - visible) * rise),
+        child: child,
+      ),
+    );
+  }
 }
 
 /// Removes expired cards from hit testing and accessibility, not just painting.
@@ -179,11 +217,10 @@ class StoryReveal extends StatelessWidget {
     final entering = ((time - start) / .48).clamp(0.0, 1.0);
     final leaving = end == null ? 0.0 : ((time - end!) / .24).clamp(0.0, 1.0);
     if (entering <= 0 || leaving >= 1) return const SizedBox.shrink();
-    final eased = Curves.easeOutCubic.transform(entering);
     return ExcludeSemantics(
       excluding: entering < 1 || leaving > 0,
       child: Opacity(
-        opacity: (eased * (1 - leaving)).clamp(0.0, 1.0),
+        opacity: Curves.easeOutCubic.transform(entering) * (1 - leaving),
         child: child,
       ),
     );
@@ -291,11 +328,13 @@ enum IntroPlaybackMode { pause, resume, replay, static }
 
 class IntroPlaybackController extends ChangeNotifier {
   final progress = ValueNotifier<double>(0);
+  final openingSeconds = ValueNotifier<double>(0);
   final focus = ValueNotifier<GlobalKey?>(null);
 
   @override
   void dispose() {
     progress.dispose();
+    openingSeconds.dispose();
     focus.dispose();
     super.dispose();
   }

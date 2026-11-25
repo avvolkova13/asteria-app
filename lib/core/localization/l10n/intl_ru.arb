@@ -1,7 +1,7 @@
 {
   "@@locale": "ru",
   "onboardingPage1Title": "Когда записаться на стрижку?",
-  "onboardingPage1Description": "Хочется сменить образ. Посмотрим, какой день для этого предлагает лунный календарь.",
+  "onboardingPage1Description": "Сверимся с лунным календарём.",
   "onboardingPage2Title": "Что даёт тебе опору?",
   "onboardingPage2Description": "Натальная карта по дате, времени и месту рождения предлагает взгляд на твои сильные стороны.",
   "onboardingPage3Title": "Как начать разговор?",
@@ -1480,7 +1480,7 @@
   "introCalendarFrom": "Ближайшие дни · с {date}",
   "introCalendarCompare": "Сравниваем ближайшие дни",
   "introCalendarResult": "Выбран день: {date}",
-  "introCalendarInsight": "Благоприятное время для новой стрижки.",
+  "introCalendarInsight": "Подходящий день, чтобы освежить форму стрижки или попробовать новую длину.",
   "introMoodRequest": "Всё время спешу.\nХочется выдохнуть.",
   "introMoodRush": "Всё время спешу",
   "introMoodTired": "Нет сил",
@@ -1544,7 +1544,7 @@
   "introMoodPractice": "Опусти плечи. Медленно выдохни.",
   "introNatalQuestionTitle": "Вопрос для размышления",
   "introCalendarSavedTitle": "Стрижка",
-  "introCalendarSavedText": "Добавлено в мои планы",
+  "introCalendarSavedText": "Сохранено в «Мои планы»",
   "introCalendarReminderTitle": "Напомнить о плане",
   "introCalendarReminderChoice": "За день до события",
   "introCalendarReminderEnabled": "Напоминание включено",
@@ -1553,9 +1553,10 @@
   "onboardingNatalTarotTitle": "На что опереться?",
   "onboardingNatalTarotDescription": "Хочу начать своё дело. Что у меня уже получается и каким может быть первый шаг?",
   "onboardingPracticeTitle": "Минута для себя",
-  "onboardingPracticeDescription": "Рабочий день позади, а мысли всё ещё на работе. Что поможет переключиться?",
+  "onboardingPracticeDescription": "Как переключиться после работы?",
   "onboardingDreamTitle": "Пока сон не растаял",
   "onboardingDreamDescription": "Проснулась, а от сна остался только один образ. Почему запомнился именно он?",
+  "onboardingDreamDescriptionCompact": "Почему мне запомнился именно маяк?",
   "onboardingGuideTitle": "Что тебя занимает?",
   "onboardingGuideDescription": "Задай Анакре свой вопрос. К разговору можно вернуться, когда захочется спросить ещё о чём-то."
 }
