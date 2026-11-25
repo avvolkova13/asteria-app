@@ -5,7 +5,7 @@ import 'cover_motion_spec.dart';
 const loveAbundanceMotions = <String, CoverScene>{
   // The quotation marks are separate ceramic pieces with a staggered drift.
   'MOgdL3XZWW6ZLIDUCmfH': CoverScene(
-    period: 20,
+    period: 5,
     parts: [
       CoverPart(
         shape: CoverShape.polygon([
@@ -15,8 +15,8 @@ const loveAbundanceMotions = <String, CoverScene>{
           Offset(79, 277),
         ]),
         pivot: Offset(130, 175),
-        shift: Offset(-2, -4),
-        degrees: 2.5,
+        shift: Offset(-1, -14),
+        degrees: 6,
       ),
       CoverPart(
         shape: CoverShape.polygon([
@@ -26,9 +26,9 @@ const loveAbundanceMotions = <String, CoverScene>{
           Offset(181, 277),
         ]),
         pivot: Offset(232, 175),
-        shift: Offset(2, -4),
-        degrees: -2.3,
-        phase: 0.9,
+        shift: Offset(1, 12),
+        degrees: 5,
+        phase: -.35,
       ),
     ],
   ),
