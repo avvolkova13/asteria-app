@@ -66,20 +66,6 @@ const loveAbundanceMotions = <String, CoverScene>{
       ),
     ],
   ),
-  // The brass frame and the rose hold still while light travels over glass.
-  'be-kinder': CoverScene(
-    period: 24,
-    effects: [
-      CoverEffect(
-        CoverEffectKind.glint,
-        at: Offset(134, 104),
-        to: Offset(195, 155),
-        size: 31,
-        strength: .28,
-        color: Color(0xffffd5c4),
-      ),
-    ],
-  ),
   'd09HZSKvdtMrmJ9TrsbZ': CoverScene(
     period: 20,
     effects: [

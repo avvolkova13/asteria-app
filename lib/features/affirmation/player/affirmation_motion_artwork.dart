@@ -9,6 +9,7 @@ part 'calm_motion.dart';
 part 'creative_motion.dart';
 part 'lunar_motion.dart';
 part 'pomegranate_motion.dart';
+part 'rose_reflection.dart';
 part 'strength_lion.dart';
 part 'strength_sun.dart';
 
@@ -49,7 +50,8 @@ class AffirmationMotionArtwork extends StatelessWidget {
             child: Stack(
               fit: StackFit.expand,
               children: switch (motion) {
-                PlayerSubjectMotion.mountain || PlayerSubjectMotion.sunInHand => [
+                PlayerSubjectMotion.mountain ||
+                PlayerSubjectMotion.sunInHand => [
                   _StrengthSun(
                     phase: phase,
                     mountain: motion == PlayerSubjectMotion.mountain,
@@ -171,11 +173,16 @@ abstract final class _SubjectMesh {
     i + stride,
   ];
 
-  static void draw(Canvas canvas, ui.Image texture, List<Offset> posed) {
+  static void draw(
+    Canvas canvas,
+    ui.Image texture,
+    List<Offset> posed, {
+    List<Offset>? textureCoordinates,
+  }) {
     final mesh = ui.Vertices(
       ui.VertexMode.triangles,
       posed,
-      textureCoordinates: points,
+      textureCoordinates: textureCoordinates ?? points,
       indices: triangles,
     );
     final shader = ui.ImageShader(
@@ -400,8 +407,7 @@ class _SilkCord extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(_SilkCord oldDelegate) =>
-      oldDelegate.points != points;
+  bool shouldRepaint(_SilkCord oldDelegate) => oldDelegate.points != points;
 }
 
 /// The coins are clipped at the velvet lip, with room to rise above the back.
