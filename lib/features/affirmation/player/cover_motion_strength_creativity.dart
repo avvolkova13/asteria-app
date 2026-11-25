@@ -63,7 +63,31 @@ const strengthCreativityMotions = <String, CoverScene>{
     ],
   ),
   'DWuLPUAlzUUXyCPulH13': CoverScene(
-    period: 18,
+    period: 4.8,
+    parts: [
+      CoverPart(
+        shape: CoverShape.polygon([
+          Offset(120, 22),
+          Offset(232, 22),
+          Offset(230, 129),
+          Offset(230, 150),
+          Offset(226, 172),
+          Offset(217, 185),
+          Offset(205, 194),
+          Offset(189, 199),
+          Offset(163, 199),
+          Offset(146, 193),
+          Offset(132, 182),
+          Offset(124, 166),
+          Offset(122, 148),
+          Offset(122, 129),
+        ]),
+        pivot: Offset(176, 135),
+        verticalScale: -.23,
+        phase: .6,
+        travel: CoverTravel.ease,
+      ),
+    ],
     effects: [
       CoverEffect(
         CoverEffectKind.glint,
