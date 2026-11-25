@@ -10,13 +10,15 @@ import 'package:asteria_app/core/ui_kit/widgets/asteria_action_button.dart';
 import 'package:provider/provider.dart';
 import 'package:asteria_app/app/providers/user_provider.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
+import 'package:asteria_app/core/ui_kit/widgets/clay_icon.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_feedback.dart';
 import 'package:asteria_app/features/sonnik/data/dream_journal.dart';
 import 'package:asteria_app/features/sonnik/presentation/widgets/sonnik_layout.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
-import 'package:intl/intl.dart';
+
+const _journalCardRadius = BorderRadius.all(Radius.circular(20));
 
 Future<void> _openOwnedPage(
   BuildContext context,
@@ -232,7 +234,10 @@ class _DreamJournalScreenState extends State<DreamJournalScreen> {
   @override
   Widget build(BuildContext context) {
     final ru = _ru;
-    final locale = Localizations.localeOf(context).toLanguageTag();
+    final locale = Localizations.localeOf(context);
+    final metadataStyle = context.textTheme.inverseUrbanistRegular14.copyWith(
+      color: AppColorsDark.textSecondary,
+    );
     final tablet = MediaQuery.sizeOf(context).shortestSide >= 600;
     final empty = tablet && !_loading && !_failed && _entries.isEmpty;
     final write = AsteriaActionButton(
@@ -301,20 +306,7 @@ class _DreamJournalScreenState extends State<DreamJournalScreen> {
                       ),
                     ),
                   ),
-                for (final (index, entry) in _entries.indexed) ...[
-                  if (index == 0 ||
-                      !DateUtils.isSameDay(
-                        entry.recordedAt,
-                        _entries[index - 1].recordedAt,
-                      ))
-                    Padding(
-                      padding: const EdgeInsets.only(top: 10, bottom: 8),
-                      child: Text(
-                        DateFormat.yMMMd(locale).format(entry.recordedAt),
-                        style: context.textTheme.inverseUrbanistMedium16
-                            .copyWith(color: AppColorsDark.linkGold),
-                      ),
-                    ),
+                for (final entry in _entries) ...[
                   _DreamEntrySwipe(
                     key: ValueKey(entry.id),
                     revealed: _revealedEntryId == entry.id,
@@ -324,6 +316,7 @@ class _DreamJournalScreenState extends State<DreamJournalScreen> {
                     deleteLabel: ru ? 'Удалить запись' : 'Delete entry',
                     onDelete: _busy ? null : () => _delete(entry),
                     child: SonnikGlassPanel(
+                      borderRadius: _journalCardRadius,
                       padding: EdgeInsets.zero,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -332,13 +325,13 @@ class _DreamJournalScreenState extends State<DreamJournalScreen> {
                             button: true,
                             child: InkWell(
                               onTap: _busy ? null : () => _open(entry),
-                              borderRadius: BorderRadius.circular(24),
+                              borderRadius: _journalCardRadius,
                               child: Padding(
                                 padding: const EdgeInsets.fromLTRB(
                                   16,
                                   14,
-                                  16,
-                                  12,
+                                  14,
+                                  14,
                                 ),
                                 child: Row(
                                   children: [
@@ -347,47 +340,64 @@ class _DreamJournalScreenState extends State<DreamJournalScreen> {
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
+                                          Wrap(
+                                            spacing: 8,
+                                            runSpacing: 4,
+                                            crossAxisAlignment:
+                                                WrapCrossAlignment.center,
+                                            children: [
+                                              Text(
+                                                LocaleFormatters.shortDate(
+                                                  entry.recordedAt,
+                                                  locale,
+                                                ),
+                                                style: context
+                                                    .textTheme
+                                                    .urbanistSemiBold16
+                                                    .copyWith(
+                                                      color: SonnikPalette.gold,
+                                                    ),
+                                              ),
+                                              Text(
+                                                LocaleFormatters.timeOfDay(
+                                                  context,
+                                                  TimeOfDay.fromDateTime(
+                                                    entry.recordedAt,
+                                                  ),
+                                                ),
+                                                style: metadataStyle,
+                                              ),
+                                            ],
+                                          ),
+                                          const SizedBox(height: 6),
                                           Text(
                                             entry.text.replaceAll(
                                               RegExp(r'\s+'),
                                               ' ',
                                             ),
-                                            maxLines: 3,
+                                            maxLines: 2,
                                             overflow: TextOverflow.ellipsis,
-                                            style: context
-                                                .textTheme
-                                                .inverseUrbanistRegular16,
+                                            style: AppTypography.h4.copyWith(
+                                              color: SonnikPalette.white,
+                                            ),
                                           ),
-                                          const SizedBox(height: 6),
-                                          Text(
-                                            [
-                                              LocaleFormatters.timeOfDay(
-                                                context,
-                                                TimeOfDay.fromDateTime(
-                                                  entry.recordedAt,
-                                                ),
-                                              ),
-                                              if (entry.historyOnly)
-                                                ru
-                                                    ? 'Расшифровка Ливеи'
-                                                    : 'Liveya’s interpretation',
-                                            ].join(' · '),
-                                            style: context
-                                                .textTheme
-                                                .inverseUrbanistRegular14
-                                                .copyWith(
-                                                  color: AppColorsDark
-                                                      .textSecondary,
-                                                ),
-                                          ),
+                                          if (entry.historyOnly) ...[
+                                            const SizedBox(height: 6),
+                                            Text(
+                                              ru
+                                                  ? 'Расшифровка Ливеи'
+                                                  : 'Liveya’s interpretation',
+                                              style: metadataStyle,
+                                            ),
+                                          ],
                                         ],
                                       ),
                                     ),
                                     const SizedBox(width: 12),
-                                    const Icon(
-                                      Icons.chevron_right,
-                                      size: 22,
-                                      color: AppColorsDark.textSecondary,
+                                    const ClayIcon(
+                                      Icons.arrow_forward_ios_rounded,
+                                      color: SonnikPalette.white,
+                                      size: 18,
                                     ),
                                   ],
                                 ),
@@ -418,7 +428,7 @@ class _DreamJournalScreenState extends State<DreamJournalScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 14),
                 ],
               ],
             ),
@@ -498,7 +508,7 @@ class _DreamEntrySwipeState extends State<_DreamEntrySwipe> {
             ? () => _settle(widget.revealed)
             : null,
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: _journalCardRadius,
           child: Stack(
             children: [
               if (offset > 0)
