@@ -109,15 +109,23 @@ const strengthCreativityMotions = <String, CoverScene>{
   ),
   // Light travels from the central join along the repaired edge.
   'NyNDyj8u1W9FPs9mqEJh': CoverScene(
-    period: 23,
+    period: 24,
+    parts: [
+      CoverPart(
+        shape: CoverShape.oval(Rect.fromLTRB(32, 38, 316, 320)),
+        pivot: Offset(174, 179),
+        travel: CoverTravel.spin,
+      ),
+    ],
     effects: [
       CoverEffect(
         CoverEffectKind.glint,
-        at: Offset(178, 175),
-        to: Offset(219, 126),
-        size: 13,
-        strength: .58,
-        color: Color(0xffffd27d),
+        at: Offset(112, 129),
+        to: Offset(190, 106),
+        size: 30,
+        strength: .85,
+        color: Color(0xffffe6b9),
+        phase: 1.15,
       ),
       CoverEffect(
         CoverEffectKind.glow,
