@@ -188,6 +188,7 @@ class _CoverPainter extends CustomPainter {
             part.pivot.dy + part.shift.dy * oscillation,
           )
           ..rotate(rotation)
+          ..skew(part.horizontalShear * oscillation, 0)
           ..scale(
             1 + part.scale * oscillation,
             1 + (part.scale + part.verticalScale) * oscillation,

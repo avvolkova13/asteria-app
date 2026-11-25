@@ -50,12 +50,13 @@ class CoverPart {
     this.travel = CoverTravel.swing,
     this.scale = 0,
     this.verticalScale = 0,
+    this.horizontalShear = 0,
   });
 
   final CoverShape shape;
   final Offset pivot;
   final Offset shift;
-  final double degrees, phase, scale, verticalScale;
+  final double degrees, phase, scale, verticalScale, horizontalShear;
   final CoverTravel travel;
 }
 

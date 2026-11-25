@@ -5,7 +5,29 @@ import 'cover_motion_spec.dart';
 const strengthCreativityMotions = <String, CoverScene>{
   // A tuning fork excites the air just beyond the two prongs.
   'SjgtsPxXKEponVBlYiD6': CoverScene(
-    period: 15,
+    period: 1.6,
+    parts: [
+      CoverPart(
+        shape: CoverShape.polygon([
+          Offset(135, 40),
+          Offset(172, 40),
+          Offset(172, 184),
+          Offset(135, 184),
+        ]),
+        pivot: Offset(154, 184),
+        horizontalShear: .047,
+      ),
+      CoverPart(
+        shape: CoverShape.polygon([
+          Offset(172, 40),
+          Offset(210, 40),
+          Offset(210, 184),
+          Offset(172, 184),
+        ]),
+        pivot: Offset(192, 184),
+        horizontalShear: -.047,
+      ),
+    ],
     effects: [
       CoverEffect(
         CoverEffectKind.sound,
