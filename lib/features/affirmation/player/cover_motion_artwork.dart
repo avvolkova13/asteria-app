@@ -52,8 +52,9 @@ class _CoverMotionArtworkState extends State<CoverMotionArtwork> {
   }
 
   void _resolveImage() {
-    final stream = AssetImage(widget.asset)
-        .resolve(createLocalImageConfiguration(context));
+    final stream = AssetImage(
+      widget.asset,
+    ).resolve(createLocalImageConfiguration(context));
     if (_stream?.key == stream.key) return;
     _stream?.removeListener(_listener);
     _stream = stream..addListener(_listener);
@@ -257,6 +258,50 @@ class _CoverPainter extends CustomPainter {
               ..strokeCap = StrokeCap.round
               ..style = PaintingStyle.stroke
               ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 2.4),
+          );
+        }
+      case CoverEffectKind.pour:
+        final end = effect.to!;
+        // Follow the illustrated stream: water turns down at the lip, then
+        // falls almost vertically. Both ends stay fixed throughout the loop.
+        for (var strand = 0; strand < 2; strand++) {
+          final path = Path();
+          for (var step = 0; step <= 32; step++) {
+            final u = step / 32;
+            final bend = math.pow(1 - u, 3);
+            final wave =
+                math.sin(math.pi * u) * math.sin(_tau * 2 * u - t * 3 + strand);
+            final x =
+                end.dx +
+                (position.dx - end.dx) * bend +
+                (strand - .5) * radius +
+                wave * 1.1;
+            final y = position.dy + (end.dy - position.dy) * u;
+            if (step == 0) {
+              path.moveTo(x, y);
+            } else {
+              path.lineTo(x, y);
+            }
+          }
+          const spacing = 27.0;
+          final y = position.dy + spacing * (progress * 4 + strand * .47);
+          canvas.drawPath(
+            path,
+            Paint()
+              ..style = PaintingStyle.stroke
+              ..strokeWidth = strand == 0 ? 2.1 : 1.3
+              ..strokeCap = StrokeCap.round
+              ..shader = ui.Gradient.linear(
+                Offset(0, y),
+                Offset(0, y + spacing),
+                [
+                  color.withValues(alpha: .08),
+                  color.withValues(alpha: opacity),
+                  color.withValues(alpha: .08),
+                ],
+                const [0, .58, 1],
+                TileMode.repeated,
+              ),
           );
         }
       case CoverEffectKind.flow:

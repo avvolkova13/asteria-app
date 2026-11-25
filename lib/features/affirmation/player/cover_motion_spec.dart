@@ -7,6 +7,7 @@ enum CoverEffectKind {
   glint,
   steam,
   flow,
+  pour,
   sound,
   flicker,
   wave,
