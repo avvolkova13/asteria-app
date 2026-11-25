@@ -188,7 +188,10 @@ class _CoverPainter extends CustomPainter {
             part.pivot.dy + part.shift.dy * oscillation,
           )
           ..rotate(rotation)
-          ..scale(1 + part.scale * oscillation)
+          ..scale(
+            1 + part.scale * oscillation,
+            1 + (part.scale + part.verticalScale) * oscillation,
+          )
           ..translate(-part.pivot.dx, -part.pivot.dy)
           ..clipPath(layer.clip)
           ..drawImageRect(texture, bitmap, destination, paint)

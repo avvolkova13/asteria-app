@@ -177,16 +177,20 @@ const loveAbundanceMotions = <String, CoverScene>{
     ],
   ),
   'V3hQDZpjPVqDVEPedsNb': CoverScene(
-    period: 23,
-    effects: [
-      CoverEffect(
-        CoverEffectKind.glint,
-        at: Offset(156, 76),
-        to: Offset(196, 73),
-        size: 8,
-        strength: .36,
-        color: Color(0xfffbe2a6),
+    period: 4.8,
+    parts: [
+      CoverPart(
+        shape: CoverShape.polygon([
+          Offset(40, 54),
+          Offset(310, 54),
+          Offset(310, 201),
+          Offset(40, 201),
+        ]),
+        pivot: Offset(176, 201),
+        verticalScale: -.14,
       ),
+    ],
+    effects: [
       CoverEffect(
         CoverEffectKind.glint,
         at: Offset(160, 252),

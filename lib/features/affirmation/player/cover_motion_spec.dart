@@ -49,12 +49,13 @@ class CoverPart {
     this.phase = 0,
     this.travel = CoverTravel.swing,
     this.scale = 0,
+    this.verticalScale = 0,
   });
 
   final CoverShape shape;
   final Offset pivot;
   final Offset shift;
-  final double degrees, phase, scale;
+  final double degrees, phase, scale, verticalScale;
   final CoverTravel travel;
 }
 
