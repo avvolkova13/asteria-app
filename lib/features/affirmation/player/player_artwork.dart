@@ -510,8 +510,7 @@ class _CoverForeground extends StatelessWidget {
   }
 }
 
-// Registered to the 350 × 350 transparent cover. The paper overlaps the
-// bell at its right edge; extend its face underneath the swinging brass.
+// Swing into the paper silhouette so its originally occluded edge stays hidden.
 class _BellArtwork extends StatelessWidget {
   const _BellArtwork({required this.asset, required this.seconds});
 
@@ -528,17 +527,10 @@ class _BellArtwork extends StatelessWidget {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            ClipPath(
-              clipper: const _BellClip(paperUnderBell: true),
-              child: Transform.translate(
-                offset: const Offset(-38, 0),
-                child: plate(),
-              ),
-            ),
             ClipPath(clipper: const _BellClip(inverse: true), child: plate()),
             Transform.rotate(
               alignment: const Alignment(125 / 175 - 1, 95 / 175 - 1),
-              angle: .115 * math.sin(phase),
+              angle: -.085 * (1 - math.cos(phase)),
               child: ClipPath(clipper: const _BellClip(), child: plate()),
             ),
           ],
@@ -549,9 +541,8 @@ class _BellArtwork extends StatelessWidget {
 }
 
 class _BellClip extends CustomClipper<Path> {
-  const _BellClip({this.inverse = false, this.paperUnderBell = false});
+  const _BellClip({this.inverse = false});
   final bool inverse;
-  final bool paperUnderBell;
 
   @override
   Path getClip(Size size) {
@@ -570,21 +561,12 @@ class _BellClip extends CustomClipper<Path> {
         Path()..addRect(Offset.zero & size),
         bell,
       );
-    if (paperUnderBell) {
-      final paper = Path()
-        ..moveTo(177, 165)
-        ..lineTo(228, 168)
-        ..lineTo(211, 280)
-        ..lineTo(150, 274)
-        ..close();
-      return Path.combine(PathOperation.intersect, paper, bell);
-    }
     return bell;
   }
 
   @override
   bool shouldReclip(_BellClip old) =>
-      inverse != old.inverse || paperUnderBell != old.paperUnderBell;
+      inverse != old.inverse;
 }
 
 class _CraneGiftArtwork extends StatelessWidget {
