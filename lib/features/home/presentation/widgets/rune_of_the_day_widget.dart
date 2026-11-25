@@ -165,11 +165,21 @@ class _RuneOfTheDayWidgetState extends State<RuneOfTheDayWidget>
     );
   }
 
+  Size get _artSize {
+    final size = widget.isDarkLayout
+        ? const Size(182, 306)
+        : const Size(219, 328);
+    return !widget.showMoreButton &&
+            MediaQuery.sizeOf(context).shortestSide >= 600
+        ? size * 1.5
+        : size;
+  }
+
   Widget _buildLoadingContent() {
     return Column(
       children: AsteriaEntrance.sections([
         SizedBox(
-          height: widget.isDarkLayout ? 306 : 328,
+          height: _artSize.height,
           child: const Center(child: LoadingWidget()),
         ),
         const SizedBox(height: 16),
@@ -233,14 +243,16 @@ class _RuneOfTheDayWidgetState extends State<RuneOfTheDayWidget>
   }
 
   Widget _buildRuneBack() {
-    final width = widget.isDarkLayout ? 182.0 : 219.0;
-    final height = widget.isDarkLayout ? 306.0 : 328.0;
+    final size = _artSize;
+    final width = size.width;
+    final height = size.height;
     return RuneBackImage(width: width, height: height, borderRadius: 12);
   }
 
   Widget _buildRuneFront(RuneOfDayModel rune) {
-    final width = widget.isDarkLayout ? 182.0 : 219.0;
-    final height = widget.isDarkLayout ? 306.0 : 328.0;
+    final size = _artSize;
+    final width = size.width;
+    final height = size.height;
     return Container(
       height: height,
       width: width,

@@ -161,9 +161,12 @@ class _RunesBlockState extends State<RunesBlock> with TickerProviderStateMixin {
         final availableWidth = constraints.maxWidth.isFinite
             ? constraints.maxWidth
             : layoutWidth;
-        final scale = availableWidth < layoutWidth
-            ? availableWidth / layoutWidth
+        final maxScale = MediaQuery.sizeOf(context).shortestSide >= 600
+            ? 1.35
             : 1.0;
+        final scale = (availableWidth / layoutWidth)
+            .clamp(0.0, maxScale)
+            .toDouble();
         final width = layoutWidth * scale;
         final height = layoutHeight * scale;
         final scaledRuneWidth = runeWidth * scale;

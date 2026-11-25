@@ -76,6 +76,7 @@ class _EmailCodeScreenState extends State<EmailCodeScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return AuthFlowScaffold(
+      tabletFormHeight: 470,
       showBackButton: true,
       background: const AuthSilkBackground(),
       child: SafeArea(
@@ -232,7 +233,10 @@ class _EmailCodeScreenState extends State<EmailCodeScreen> {
                                       fontSize: 12,
                                     ),
                               ),
-                            const Spacer(),
+                            if (MediaQuery.sizeOf(context).shortestSide >= 600)
+                              const SizedBox(height: 28)
+                            else
+                              const Spacer(),
                             AuthBottomLink(
                               text: l10n.emailAccessIssueText,
                               onTap: _isDeleting

@@ -157,6 +157,7 @@ class _PersonalInfoInputScreenState extends State<PersonalInfoInputScreen> {
           }
 
           return AuthFlowScaffold(
+            tabletFormHeight: 790,
             background: const AuthSilkBackground(),
             child: SafeArea(
               bottom: false,

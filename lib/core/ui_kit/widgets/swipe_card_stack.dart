@@ -25,7 +25,8 @@ class SwipeCardStack<T> extends StatefulWidget {
     this.onSwipe,
   });
 
-  static const artworkHeight = 216.0;
+  static double artworkHeightFor(double width) =>
+      (width * .6).clamp(216.0, 400.0);
   static const artworkGestureKey = ValueKey('practice-deck-artwork-gesture');
 
   final List<T> items;
@@ -206,7 +207,12 @@ class _SwipeCardStackState<T> extends State<SwipeCardStack<T>>
     return LayoutBuilder(
       builder: (context, constraints) {
         final stackWidth = constraints.maxWidth
-            .clamp(0.0, _designWidth)
+            .clamp(
+              0.0,
+              MediaQuery.sizeOf(context).shortestSide >= 600
+                  ? 720.0
+                  : _designWidth,
+            )
             .toDouble();
         final scale = stackWidth / _designWidth;
 
@@ -263,7 +269,9 @@ class _SwipeCardStackState<T> extends State<SwipeCardStack<T>>
                           top: 0,
                           left: 0,
                           right: 0,
-                          height: peek + SwipeCardStack.artworkHeight,
+                          height:
+                              peek +
+                              SwipeCardStack.artworkHeightFor(stackWidth),
                           child: RawGestureDetector(
                             key: SwipeCardStack.artworkGestureKey,
                             behavior: HitTestBehavior.translucent,

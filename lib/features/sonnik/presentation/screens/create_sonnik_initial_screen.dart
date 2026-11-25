@@ -28,6 +28,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'create_sonnik_loaded_screen.dart';
+
 import 'package:asteria_app/features/sonnik/presentation/widgets/sonnik_layout.dart';
 
 class CreateSonnikInitialScreen extends StatefulWidget {
@@ -109,6 +110,7 @@ class _DreamFormState extends State<_DreamForm> {
   bool _savingDream = false;
   bool _dictating = false;
   bool _asking = false;
+  bool _interpretationFailed = false;
   SonnikModel? _unlinkedResult;
   String? _unlinkedText;
   bool get _ru => Localizations.localeOf(context).languageCode == 'ru';
@@ -144,7 +146,7 @@ class _DreamFormState extends State<_DreamForm> {
   }
 
   void _onTextChanged(String text) {
-    setState(() {});
+    setState(() => _interpretationFailed = false);
   }
 
   Future<void> _openJournal(UserProvider user) async {
@@ -298,7 +300,10 @@ class _DreamFormState extends State<_DreamForm> {
         text.isEmpty) {
       return;
     }
-    setState(() => _submitting = true);
+    setState(() {
+      _submitting = true;
+      _interpretationFailed = false;
+    });
     try {
       final pending = _pendingForCurrentText;
       if (pending != null) {
@@ -331,11 +336,24 @@ class _DreamFormState extends State<_DreamForm> {
     );
     productAnalytics.trackSonnikDreamSubmit(dreamLengthBand: dreamLengthBand);
 
+    if (await _persist() == null || !mounted || !_canShowResult) return;
     final scenarioAccess = widget.checkScenarioAccess;
-    final canMakeRequest = scenarioAccess == null
-        ? await checkRequestAccess(context, 'sonnik')
-        : await scenarioAccess(context);
-    if (!mounted || canMakeRequest == null || !_canShowResult) return;
+    final bool? canMakeRequest;
+    try {
+      canMakeRequest = scenarioAccess == null
+          ? await checkRequestAccess(context, 'sonnik', showError: false)
+          : await scenarioAccess(context);
+    } catch (_) {
+      if (mounted && _canShowResult) {
+        setState(() => _interpretationFailed = true);
+      }
+      return;
+    }
+    if (!mounted || !_canShowResult) return;
+    if (canMakeRequest == null) {
+      setState(() => _interpretationFailed = true);
+      return;
+    }
     if (!canMakeRequest) {
       productAnalytics.trackSonnikLimitReached(
         limitType: LimitType.requests,
@@ -346,7 +364,6 @@ class _DreamFormState extends State<_DreamForm> {
       return;
     }
 
-    if (await _persist() == null || !_canShowResult) return;
     facade.trackEvent(
       AnalyticsEvents.calculationStarted,
       params: _featureParam,
@@ -381,9 +398,7 @@ class _DreamFormState extends State<_DreamForm> {
         generationSeconds: stopwatch.elapsed.inSeconds,
       );
       if (!mounted || !_canShowResult) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(context.l10n.dreamCalculationError)),
-      );
+      setState(() => _interpretationFailed = true);
       return;
     } finally {
       _loaderService.hide();
@@ -443,9 +458,10 @@ class _DreamFormState extends State<_DreamForm> {
                   children: AsteriaEntrance.sections([
                     LayoutBuilder(
                       builder: (context, constraints) {
+                        final tablet = constraints.maxWidth >= 600;
                         final avatarSize = (constraints.maxWidth * .435).clamp(
                           120.0,
-                          156.0,
+                          tablet ? 228.0 : 156.0,
                         );
                         final largeText =
                             constraints.maxWidth < 360 &&
@@ -454,18 +470,21 @@ class _DreamFormState extends State<_DreamForm> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             ResponsiveHeading(
-                              largeText
+                              largeText || tablet
                                   ? context.l10n.dreamGreeting.replaceAll(
                                       '\n',
                                       ' ',
                                     )
                                   : context.l10n.dreamGreeting,
                               style: context.textTheme.inversePlayfairSemiBold24
-                                  .copyWith(height: 1.0),
+                                  .copyWith(
+                                    height: 1.1,
+                                    fontSize: tablet ? 34 : null,
+                                  ),
                             ),
                             const SizedBox(height: 8),
                             Text(
-                              largeText
+                              largeText || tablet
                                   ? context.l10n.dreamTellPrompt.replaceAll(
                                       '\n',
                                       ' ',
@@ -533,25 +552,35 @@ class _DreamFormState extends State<_DreamForm> {
                       ),
                     ),
                     SonnikGradientButton(
-                      text: hasResult || _pendingForCurrentText != null
-                          ? (ru ? 'Открыть расшифровку' : 'View interpretation')
-                          : context.l10n.dreamDecode,
+                      text: ru ? 'Сохранить и выйти' : 'Save and exit',
                       onPressed: signedIn && hasText && canSubmit
-                          ? _onCreateSonnikTap
+                          ? _saveAndExit
                           : null,
                     ),
-                    if (signedIn && hasText) ...[
+                    const SizedBox(height: 8),
+                    Center(
+                      child: LotusButtons.text(
+                        onPressed: signedIn && hasText && canSubmit
+                            ? _onCreateSonnikTap
+                            : null,
+                        child: Text(
+                          hasResult || _pendingForCurrentText != null
+                              ? (ru
+                                    ? 'Открыть расшифровку'
+                                    : 'View interpretation')
+                              : context.l10n.dreamDecode,
+                        ),
+                      ),
+                    ),
+                    if (_interpretationFailed) ...[
                       const SizedBox(height: 8),
-                      Center(
-                        child: LotusButtons.textIcon(
-                          icon: const Icon(
-                            Icons.bookmark_added_outlined,
-                            size: 18,
-                          ),
-                          onPressed: canSubmit ? _saveAndExit : null,
-                          label: Text(
-                            ru ? 'Сохранить и выйти' : 'Save and exit',
-                          ),
+                      Semantics(
+                        liveRegion: true,
+                        child: Text(
+                          ru
+                              ? 'Сон сохранён. Расшифровка не удалась. Можно попробовать снова или вернуться к записи позже.'
+                              : 'Your dream is saved. The interpretation failed. Try again now or return to the entry later.',
+                          textAlign: TextAlign.center,
                         ),
                       ),
                     ],

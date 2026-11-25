@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/reading_content_sliver.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_action_button.dart';
 import 'package:asteria_app/core/ui_kit/widgets/top_bar_geometry.dart';
 import 'package:asteria_app/features/scenarios/scenario_sky.dart';
@@ -60,7 +61,8 @@ class CompatibilityLayout extends StatelessWidget {
                     canPop: true,
                   ),
                 ),
-                SliverToBoxAdapter(
+                ReadingContentSliver(
+                  maxWidth: 760,
                   child: Padding(
                     padding: padding,
                     child: Column(

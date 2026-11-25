@@ -101,6 +101,10 @@ class _ArticleScreenState extends State<ArticleScreen> {
       );
     }
 
+    final pairedLead =
+        MediaQuery.sizeOf(context).shortestSide >= 600 &&
+        MediaQuery.sizeOf(context).width >= 720 &&
+        MediaQuery.textScalerOf(context).scale(16) <= 24;
     if (!_viewEventSent) {
       _viewEventSent = true;
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -129,16 +133,34 @@ class _ArticleScreenState extends State<ArticleScreen> {
             SliverToBoxAdapter(
               child: Center(
                 child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 720),
+                  constraints: BoxConstraints(maxWidth: pairedLead ? 820 : 720),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const SizedBox(height: 22),
-                        _ArticleHero(article: article).withEntrance(),
+                        if (pairedLead)
+                          Row(
+                            children: [
+                              Expanded(
+                                flex: 2,
+                                child: _ArticleHero(article: article),
+                              ),
+                              const SizedBox(width: 28),
+                              Expanded(
+                                flex: 3,
+                                child: _ArticleIntro(article: article),
+                              ),
+                            ],
+                          ).withEntrance()
+                        else
+                          _ArticleHero(article: article).withEntrance(),
                         const SizedBox(height: 16),
-                        _ArticleContentCard(article: article).withEntrance(),
+                        _ArticleContentCard(
+                          article: article,
+                          includeIntro: !pairedLead,
+                        ).withEntrance(),
                         SizedBox(key: _articleEndKey, height: 24),
                         ArticlesSectionWidget(excludeArticleId: article.id),
                         SizedBox(
@@ -323,8 +345,35 @@ class _ArticleHero extends StatelessWidget {
   }
 }
 
+class _ArticleIntro extends StatelessWidget {
+  const _ArticleIntro({required this.article});
+  final ArticleModel article;
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          articleCardTitle(article, Localizations.localeOf(context)),
+          style: AppTypography.h2.copyWith(color: AppColors.white, height: 1.2),
+          textAlign: TextAlign.start,
+        ),
+        const SizedBox(height: 16),
+        _ArticleParagraphs(
+          text: article.intro,
+          style: AppTypography.text1SemiBold.copyWith(color: AppColors.white),
+        ),
+      ],
+    );
+  }
+}
+
 class _ArticleContentCard extends StatelessWidget {
-  const _ArticleContentCard({required this.article});
+  const _ArticleContentCard({
+    required this.article,
+    required this.includeIntro,
+  });
+  final bool includeIntro;
 
   final ArticleModel article;
 
@@ -340,22 +389,10 @@ class _ArticleContentCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              articleCardTitle(article, Localizations.localeOf(context)),
-              style: AppTypography.h2.copyWith(
-                color: AppColors.white,
-                height: 1.2,
-              ),
-              textAlign: TextAlign.start,
-            ),
-            const SizedBox(height: 16),
-            _ArticleParagraphs(
-              text: article.intro,
-              style: AppTypography.text1SemiBold.copyWith(
-                color: AppColors.white,
-              ),
-            ),
-            const SizedBox(height: 8),
+            if (includeIntro) ...[
+              _ArticleIntro(article: article),
+              const SizedBox(height: 8),
+            ],
             _ArticleParagraphs(
               text: article.text,
               style: AppTypography.text1.copyWith(color: AppColors.white),

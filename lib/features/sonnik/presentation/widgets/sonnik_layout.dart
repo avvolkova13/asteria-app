@@ -102,11 +102,16 @@ class SonnikPageScaffold extends StatelessWidget {
             ),
             SafeArea(
               bottom: false,
-              child: Column(
-                children: AsteriaEntrance.sections([
-                  SonnikTopNavBar(title: title, canPop: canPop),
-                  Expanded(child: child),
-                ]),
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 820),
+                  child: Column(
+                    children: AsteriaEntrance.sections([
+                      SonnikTopNavBar(title: title, canPop: canPop),
+                      Expanded(child: child),
+                    ]),
+                  ),
+                ),
               ),
             ),
           ],
@@ -315,7 +320,7 @@ class SonnikTextArea extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 148,
+      height: MediaQuery.sizeOf(context).shortestSide >= 600 ? 236 : 148,
       child: InputBubbleSurface(
         surfaceBrightness: Brightness.dark,
         child: TextField(

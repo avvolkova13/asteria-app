@@ -180,6 +180,8 @@ class ScenarioCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final phase = context.dependOnInheritedWidgetOfExactType<_RimPhase>();
     final compact = _usesCompactCardLayout(context);
+    final tablet = !compact && MediaQuery.sizeOf(context).shortestSide >= 600;
+    final artScale = tablet ? 1.65 : 1.0;
     return Semantics(
       button: true,
       sortKey: OrdinalSortKey(mood.index.toDouble()),
@@ -204,20 +206,27 @@ class ScenarioCard extends StatelessWidget {
                       Center(
                         child: LotusRasterIcon(
                           art,
-                          width: 126,
-                          height: switch (mood) {
-                            ScenarioMood.calendar ||
-                            ScenarioMood.strength => compact ? 62 : 110,
-                            ScenarioMood.practice ||
-                            ScenarioMood.relationships => compact ? 44 : 64,
-                          },
+                          width: 126 * artScale,
+                          height:
+                              artScale *
+                              switch (mood) {
+                                ScenarioMood.calendar ||
+                                ScenarioMood.strength => compact ? 62 : 110,
+                                ScenarioMood.practice ||
+                                ScenarioMood.relationships => compact ? 44 : 64,
+                              },
                           fit: BoxFit.contain,
                           excludeFromSemantics: true,
                         ),
                       ),
                       Padding(
                         padding: EdgeInsets.only(top: compact ? 6 : 8),
-                        child: Text(title, style: _title),
+                        child: Text(
+                          title,
+                          style: tablet
+                              ? _title.copyWith(fontSize: 24)
+                              : _title,
+                        ),
                       ),
                     ],
                   ),

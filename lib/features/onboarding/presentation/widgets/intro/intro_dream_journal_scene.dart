@@ -86,7 +86,11 @@ class IntroDreamJournalScene extends StatelessWidget {
                               child: ClipRect(
                                 child: FittedBox(
                                   fit: BoxFit.cover,
-                                  alignment: const Alignment(.22, -.12),
+                                  alignment:
+                                      MediaQuery.sizeOf(context).shortestSide >=
+                                          640
+                                      ? Alignment.centerRight
+                                      : const Alignment(.22, -.12),
                                   child: SizedBox(
                                     width: 380,
                                     height: 180,

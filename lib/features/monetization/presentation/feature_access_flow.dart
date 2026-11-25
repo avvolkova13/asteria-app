@@ -9,19 +9,23 @@ import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 
 /// Null means access could not be checked; it must never open a paywall.
-Future<bool?> checkRequestAccess(BuildContext context, String feature) async {
+Future<bool?> checkRequestAccess(
+  BuildContext context,
+  String feature, {
+  bool showError = true,
+}) async {
   try {
     final provider =
         MonetizationProvider.maybeOf(context, listen: false) ??
         di.get<MonetizationProvider>();
     await provider.refreshForAccess();
     if (!provider.isFeatureEnabled(feature)) {
-      if (context.mounted) showAccessError(context);
+      if (showError && context.mounted) showAccessError(context);
       return null;
     }
     return provider.canMakeRequest(feature);
   } catch (_) {
-    if (context.mounted) showAccessError(context);
+    if (showError && context.mounted) showAccessError(context);
     return null;
   }
 }

@@ -340,39 +340,17 @@ class _AffirmationPlayerScreenState extends State<AffirmationPlayerScreen> {
           style: AppTypography.text1.copyWith(color: _ink),
           child: LayoutBuilder(
             builder: (context, bounds) {
-              final wide = bounds.maxWidth > 540 && bounds.maxHeight >= 580;
-              final panelHeight = wide
-                  ? math.min(870.0, bounds.maxHeight * .92)
-                  : bounds.maxHeight;
-              final panel = SizedBox(
-                width: wide
-                    ? math.min(416.0, bounds.maxWidth)
-                    : bounds.maxWidth,
-                height: panelHeight,
-                child: _buildPanel(
-                  wide ? EdgeInsets.zero : insets,
-                  panelHeight <= 620,
+              // Keep the scene immersive while the transcript and controls
+              // retain a comfortable reading width on a landscape tablet.
+              final gutter = math.max(0.0, (bounds.maxWidth - 780) / 2);
+              return _buildPanel(
+                EdgeInsets.fromLTRB(
+                  math.max(insets.left, gutter),
+                  insets.top,
+                  math.max(insets.right, gutter),
+                  insets.bottom,
                 ),
-              );
-              if (!wide) return panel;
-              return DecoratedBox(
-                decoration: const BoxDecoration(
-                  gradient: RadialGradient(
-                    colors: [
-                      Color(0xff45314c),
-                      Color(0xff24192d),
-                      Color(0xff100c18),
-                    ],
-                    stops: [0, .43, .83],
-                    radius: .85,
-                  ),
-                ),
-                child: Center(
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(36),
-                    child: panel,
-                  ),
-                ),
+                bounds.maxHeight <= 620,
               );
             },
           ),
@@ -832,6 +810,9 @@ class _AffirmationPlayerScreenState extends State<AffirmationPlayerScreen> {
                     child: Text(
                       _transcript[i].$2,
                       style: AppTypography.text1.copyWith(
+                        fontSize: MediaQuery.sizeOf(context).shortestSide >= 600
+                            ? 20
+                            : null,
                         color:
                             time >= _transcript[i].$1 &&
                                 time <
@@ -879,6 +860,7 @@ class _PlayerHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final strings = AppLocalizations.of(context);
+    final tablet = MediaQuery.sizeOf(context).shortestSide >= 600;
     const shadow = [
       Shadow(offset: Offset(0, 1), blurRadius: 8, color: Color(0x54382039)),
     ];
@@ -928,7 +910,10 @@ class _PlayerHeader extends StatelessWidget {
                     child: Text(
                       title,
                       textAlign: TextAlign.center,
-                      style: AppTypography.h1.copyWith(shadows: shadow),
+                      style: AppTypography.h1.copyWith(
+                        fontSize: tablet ? 40 : null,
+                        shadows: shadow,
+                      ),
                     ),
                   ),
                 ),
@@ -936,6 +921,7 @@ class _PlayerHeader extends StatelessWidget {
                   metadata,
                   textAlign: TextAlign.center,
                   style: AppTypography.text2.copyWith(
+                    fontSize: tablet ? 18 : null,
                     color: _headerInk,
                     shadows: shadow,
                   ),

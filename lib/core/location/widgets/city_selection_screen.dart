@@ -211,49 +211,55 @@ class _CitySelectionScreenState extends State<CitySelectionScreen> {
           backgroundColor: Colors.transparent,
           body: SafeArea(
             top: false,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: AsteriaEntrance.sections([
-                  const SizedBox(height: 16),
-                  Center(
-                    child: Container(
-                      width: 64,
-                      height: 4,
-                      decoration: BoxDecoration(
-                        color: ModalGlassTokens.grabber,
-                        borderRadius: BorderRadius.circular(4),
+            child: Align(
+              alignment: Alignment.topCenter,
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 740),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: AsteriaEntrance.sections([
+                      const SizedBox(height: 16),
+                      Center(
+                        child: Container(
+                          width: 64,
+                          height: 4,
+                          decoration: BoxDecoration(
+                            color: ModalGlassTokens.grabber,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                        ),
                       ),
-                    ),
+                      const SizedBox(height: 23),
+                      Semantics(
+                        header: true,
+                        child: Text(
+                          context.l10n.citySelectionTitle,
+                          style: AppTypography.h2.copyWith(
+                            color: AppColors.textInverse,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      _buildSearchField(context),
+                      if (_isLoading) const AsteriaLoadingLine(minHeight: 2),
+                      if (_error != null ||
+                          (!_isLoading &&
+                              _suggestions.isEmpty &&
+                              _controller.text.trim().length >= 2))
+                        Padding(
+                          padding: const EdgeInsets.only(top: 12),
+                          child: AsteriaEntrance(
+                            replayKey: _error,
+                            child: Text(_error ?? context.l10n.citySearchEmpty),
+                          ),
+                        ),
+                      const SizedBox(height: 4),
+                      Expanded(child: _buildSuggestionList(context)),
+                    ]),
                   ),
-                  const SizedBox(height: 23),
-                  Semantics(
-                    header: true,
-                    child: Text(
-                      context.l10n.citySelectionTitle,
-                      style: AppTypography.h2.copyWith(
-                        color: AppColors.textInverse,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  _buildSearchField(context),
-                  if (_isLoading) const AsteriaLoadingLine(minHeight: 2),
-                  if (_error != null ||
-                      (!_isLoading &&
-                          _suggestions.isEmpty &&
-                          _controller.text.trim().length >= 2))
-                    Padding(
-                      padding: const EdgeInsets.only(top: 12),
-                      child: AsteriaEntrance(
-                        replayKey: _error,
-                        child: Text(_error ?? context.l10n.citySearchEmpty),
-                      ),
-                    ),
-                  const SizedBox(height: 4),
-                  Expanded(child: _buildSuggestionList(context)),
-                ]),
+                ),
               ),
             ),
           ),
@@ -264,35 +270,42 @@ class _CitySelectionScreenState extends State<CitySelectionScreen> {
       backgroundColor: _background,
       resizeToAvoidBottomInset: true,
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 18, 16, 0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: AsteriaEntrance.sections([
-              const _CitySelectionHeader(),
-              const SizedBox(height: 18),
-              Text(
-                context.l10n.citySelectionTitle,
-                style: AppTypography.h2.copyWith(color: AppColors.textInverse),
-              ),
-              const SizedBox(height: 10),
-              _buildSearchField(context),
-              if (_isLoading) ...[
-                const SizedBox(height: 12),
-                const AsteriaLoadingLine(minHeight: 2),
-              ],
-              if (_error != null) ...[
-                const SizedBox(height: 12),
-                Text(
-                  _error!,
-                  style: context.textTheme.inverseUrbanistRegular14.copyWith(
-                    color: const Color(0xFFFF6D6D),
+        child: Align(
+          alignment: Alignment.topCenter,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 740),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 18, 16, 0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: AsteriaEntrance.sections([
+                  const _CitySelectionHeader(),
+                  const SizedBox(height: 18),
+                  Text(
+                    context.l10n.citySelectionTitle,
+                    style: AppTypography.h2.copyWith(
+                      color: AppColors.textInverse,
+                    ),
                   ),
-                ).withEntrance(),
-              ],
-              const SizedBox(height: 8),
-              Expanded(child: _buildSuggestionList(context)),
-            ]),
+                  const SizedBox(height: 10),
+                  _buildSearchField(context),
+                  if (_isLoading) ...[
+                    const SizedBox(height: 12),
+                    const AsteriaLoadingLine(minHeight: 2),
+                  ],
+                  if (_error != null) ...[
+                    const SizedBox(height: 12),
+                    Text(
+                      _error!,
+                      style: context.textTheme.inverseUrbanistRegular14
+                          .copyWith(color: const Color(0xFFFF6D6D)),
+                    ).withEntrance(),
+                  ],
+                  const SizedBox(height: 8),
+                  Expanded(child: _buildSuggestionList(context)),
+                ]),
+              ),
+            ),
           ),
         ),
       ),

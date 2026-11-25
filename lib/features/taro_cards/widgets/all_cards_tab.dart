@@ -89,6 +89,8 @@ class AllCardsTab extends StatelessWidget {
                     child: TarotCardFrame(
                       radius: 12,
                       child: LockedContentImage(
+                        width: cardWidth,
+                        height: cardWidth / 0.67,
                         imagePath: TarotCardAssetResolver.resolve(
                           imageName: card.imageName,
                           languageCode: Localizations.localeOf(
@@ -138,15 +140,15 @@ class _CardDescriptionModal extends StatelessWidget {
     final modalHeight = (screenHeight * .63)
         .clamp(minHeight, maxHeight)
         .toDouble();
-    return SizedBox(
-      height: modalHeight,
+    return ConstrainedBox(
+      constraints: BoxConstraints(maxHeight: modalHeight),
       child: ModalGlassSurface(
         color: _AllCardsModalColors.surface,
         child: SafeArea(
           top: false,
           bottom: false,
           child: Column(
-            mainAxisSize: MainAxisSize.max,
+            mainAxisSize: MainAxisSize.min,
             children: [
               const SizedBox(height: 16),
               Center(

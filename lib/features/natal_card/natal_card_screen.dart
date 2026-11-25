@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/reading_content_sliver.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_activity_indicator.dart';
 import 'package:asteria_app/core/ui_kit/widgets/top_bar_geometry.dart';
 import 'dart:math' as math;
@@ -367,74 +368,68 @@ class _NatalCardScreenState extends State<NatalCardScreen> {
                       ?.birthDate,
                 ),
               ),
-              SliverToBoxAdapter(
-                child: Center(
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 760),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SizedBox(height: useCompactHeader ? 22 : 30),
-                          if (_error != null) ...[
-                            Text(
-                              _error == 'translation_unavailable'
-                                  ? context.l10n.contentTranslationUnavailable
-                                  : _error == 'access_unavailable'
-                                  ? context.l10n.natalAccessUnavailable
-                                  : context.l10n.natalLoadError,
-                              style: context.textTheme.inverseUrbanistRegular16,
-                            ),
-                            LotusButtons.text(
-                              onPressed: _loadNatalCard,
-                              child: Text(context.l10n.retry),
-                            ),
-                          ] else if (!_hasNatalCard) ...[
-                            if (_generationFailed) ...[
-                              Text(
-                                context.l10n.natalGenerationFailed,
-                                style:
-                                    context.textTheme.inverseUrbanistRegular16,
-                              ),
-                              const SizedBox(height: 16),
-                            ],
-                            NatalCardEmptyScreen(
-                              isPro:
-                                  _monetizationProvider?.effectivePro ?? false,
-                              onBuyPressed: _openNatalCard,
-                            ),
-                          ] else
-                            ListenableBuilder(
-                              listenable: _userProvider,
-                              builder: (context, _) {
-                                final user = _userProvider.currentUser;
-                                if (user == null ||
-                                    !(user.natalCard?.hasAnyInterpretation ??
-                                        false)) {
-                                  return const SizedBox.shrink();
-                                }
-                                final birth = user.personalInfo?.birthDate;
-                                final place = user.personalInfo?.birthPlace;
-                                return _NatalCardContent(
-                                  key: ValueKey((
-                                    user.id,
-                                    birth?.birthDate,
-                                    birth?.birthTime,
-                                    birth?.hasExactBirthTime,
-                                    place?.latitude,
-                                    place?.longitude,
-                                  )),
-                                  user: user,
-                                );
-                              },
-                            ),
-                          SizedBox(
-                            height: MediaQuery.paddingOf(context).bottom + 24,
+              ReadingContentSliver(
+                maxWidth: 760,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(height: useCompactHeader ? 22 : 30),
+                      if (_error != null) ...[
+                        Text(
+                          _error == 'translation_unavailable'
+                              ? context.l10n.contentTranslationUnavailable
+                              : _error == 'access_unavailable'
+                              ? context.l10n.natalAccessUnavailable
+                              : context.l10n.natalLoadError,
+                          style: context.textTheme.inverseUrbanistRegular16,
+                        ),
+                        LotusButtons.text(
+                          onPressed: _loadNatalCard,
+                          child: Text(context.l10n.retry),
+                        ),
+                      ] else if (!_hasNatalCard) ...[
+                        if (_generationFailed) ...[
+                          Text(
+                            context.l10n.natalGenerationFailed,
+                            style: context.textTheme.inverseUrbanistRegular16,
                           ),
+                          const SizedBox(height: 16),
                         ],
+                        NatalCardEmptyScreen(
+                          isPro: _monetizationProvider?.effectivePro ?? false,
+                          onBuyPressed: _openNatalCard,
+                        ),
+                      ] else
+                        ListenableBuilder(
+                          listenable: _userProvider,
+                          builder: (context, _) {
+                            final user = _userProvider.currentUser;
+                            if (user == null ||
+                                !(user.natalCard?.hasAnyInterpretation ??
+                                    false)) {
+                              return const SizedBox.shrink();
+                            }
+                            final birth = user.personalInfo?.birthDate;
+                            final place = user.personalInfo?.birthPlace;
+                            return _NatalCardContent(
+                              key: ValueKey((
+                                user.id,
+                                birth?.birthDate,
+                                birth?.birthTime,
+                                birth?.hasExactBirthTime,
+                                place?.latitude,
+                                place?.longitude,
+                              )),
+                              user: user,
+                            );
+                          },
+                        ),
+                      SizedBox(
+                        height: MediaQuery.paddingOf(context).bottom + 24,
                       ),
-                    ),
+                    ],
                   ),
                 ),
               ),

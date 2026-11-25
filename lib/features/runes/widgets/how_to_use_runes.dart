@@ -23,8 +23,8 @@ class HowToUseRunes extends StatelessWidget {
         .clamp(minHeight, maxHeight)
         .toDouble();
 
-    return SizedBox(
-      height: modalHeight,
+    return ConstrainedBox(
+      constraints: BoxConstraints(maxHeight: modalHeight),
       child: ModalGlassSurface(
         color: _HowToUseRunesColors.surface,
         child: SafeArea(
@@ -32,6 +32,7 @@ class HowToUseRunes extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: AsteriaEntrance.sections([
                 const SizedBox(height: 16),
                 Container(
@@ -53,7 +54,7 @@ class HowToUseRunes extends StatelessWidget {
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 16),
-                Expanded(
+                Flexible(
                   child: SingleChildScrollView(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,

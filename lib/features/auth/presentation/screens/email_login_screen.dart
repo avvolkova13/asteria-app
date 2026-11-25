@@ -83,6 +83,7 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
     final l10n = AppLocalizations.of(context);
     final keyboardOpen = MediaQuery.viewInsetsOf(context).bottom > 0;
     return AuthFlowScaffold(
+      tabletFormHeight: 520,
       showBackButton: !widget.isRoot,
       background: const AuthSilkBackground(),
       child: SafeArea(
@@ -103,7 +104,10 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
                           ? localizedEmailAuthFailure(context, state.code)
                           : null;
                       return Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        mainAxisAlignment:
+                            MediaQuery.sizeOf(context).shortestSide >= 600
+                            ? MainAxisAlignment.start
+                            : MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           Column(

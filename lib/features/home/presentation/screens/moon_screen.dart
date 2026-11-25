@@ -256,7 +256,7 @@ class _MoonCalendarContent extends StatelessWidget {
       );
       return Center(
         child: ConstrainedBox(
-          constraints: BoxConstraints(maxWidth: split ? 1120 : 680),
+          constraints: BoxConstraints(maxWidth: split ? 1120 : 800),
           child: Padding(
             padding: EdgeInsets.fromLTRB(
               roomy ? 24 : 16,

@@ -97,7 +97,7 @@ class MoonCalendarWidget extends StatelessWidget {
         builder: (context, constraints) => Center(
           heightFactor: 1,
           child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 656),
+            constraints: const BoxConstraints(maxWidth: 768),
             child: _calendarGrid(
               context,
               state,

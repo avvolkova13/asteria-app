@@ -23,8 +23,8 @@ class HowToUseKeltDeck extends StatelessWidget {
         ? maxSheetHeight
         : preferredSheetHeight;
 
-    return SizedBox(
-      height: sheetHeight,
+    return ConstrainedBox(
+      constraints: BoxConstraints(maxHeight: sheetHeight),
       child: ModalGlassSurface(
         color: _HowToUseKeltDeckColors.surface,
         child: SafeArea(
@@ -32,6 +32,7 @@ class HowToUseKeltDeck extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Column(
+              mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: AsteriaEntrance.sections([
                 const SizedBox(height: 16),
@@ -55,7 +56,7 @@ class HowToUseKeltDeck extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 16),
-                Expanded(
+                Flexible(
                   child: SingleChildScrollView(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,

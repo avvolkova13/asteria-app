@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/reading_content_sliver.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_activity_indicator.dart';
 import 'package:asteria_app/core/ui_kit/widgets/top_bar_geometry.dart';
 import 'package:asteria_app/core/ui_kit/widgets/lotus_icon_surface.dart';
@@ -161,7 +162,8 @@ class _KeltDeckScreenState extends State<KeltDeckScreen> {
                     ?.birthDate,
               ),
             ),
-            SliverToBoxAdapter(
+            ReadingContentSliver(
+              maxWidth: 760,
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Column(

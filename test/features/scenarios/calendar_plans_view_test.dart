@@ -77,6 +77,28 @@ Future<void> tap(WidgetTester tester, Finder finder) async {
 }
 
 void main() {
+  testWidgets('plans move beside the calendar when the available width grows', (
+    tester,
+  ) async {
+    final saved = plan('Haircut', DateTime.utc(2026, 11, 16));
+    await host(tester, plans: [saved], size: const Size(780, 1100));
+    final calendar = find.byType(MoonCalendarWidget);
+    final card = find.byKey(const ValueKey('saved-plan-Haircut'));
+    expect(
+      tester.getTopLeft(card).dy,
+      greaterThan(tester.getBottomLeft(calendar).dy),
+    );
+
+    tester.view.physicalSize = const Size(1100, 780);
+    await tester.pumpAndSettle();
+    expect(
+      tester.getTopLeft(card).dx,
+      greaterThan(tester.getTopRight(calendar).dx),
+    );
+    expect(card.hitTestable(), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('compact English calendar keeps weekday and month words intact', (
     tester,
   ) async {

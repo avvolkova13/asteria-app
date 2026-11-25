@@ -20,7 +20,9 @@ class NatalCardEmptyScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: _NatalPaywall.maxWidth),
+        constraints: BoxConstraints(
+          maxWidth: MediaQuery.sizeOf(context).shortestSide >= 600 ? 640 : 358,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: AsteriaEntrance.sections([
@@ -82,11 +84,6 @@ class NatalCardEmptyScreen extends StatelessWidget {
       ),
     );
   }
-}
-
-class _NatalPaywall {
-  static const maxWidth = 358.0;
-
 }
 
 class _ForeverAccessItem extends StatelessWidget {

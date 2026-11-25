@@ -133,6 +133,7 @@ class _TourState extends State<OnboardingTour> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) => AuthFlowScaffold(
     background: const ScenarioSky(),
+    maxContentWidth: double.infinity,
     child: DefaultTextStyle.merge(
       style: const TextStyle(color: AppColors.textInverse),
       child: Stack(
@@ -140,8 +141,7 @@ class _TourState extends State<OnboardingTour> with WidgetsBindingObserver {
         children: [
           SafeArea(
             child: Center(
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 520),
+              child: _TourFrame(
                 child: Column(
                   children: [
                     AsteriaTopBarFrame(
@@ -300,6 +300,42 @@ class _TourState extends State<OnboardingTour> with WidgetsBindingObserver {
       ),
     ),
   );
+}
+
+class _TourFrame extends StatelessWidget {
+  const _TourFrame({required this.child});
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, bounds) {
+        if (bounds.biggest.shortestSide < 600) {
+          return ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 520),
+            child: child,
+          );
+        }
+        final wide = bounds.maxWidth > bounds.maxHeight;
+        return SizedBox.expand(
+          child: Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: wide ? 40 : 32,
+              vertical: 20,
+            ),
+            child: FittedBox(
+              fit: BoxFit.contain,
+              child: SizedBox(
+                width: wide ? 850 : 480,
+                height: wide ? 610 : 640,
+                child: child,
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
 }
 
 class _Scene extends StatefulWidget {
@@ -543,6 +579,45 @@ class _SceneState extends State<_Scene> {
       child: child,
     );
     final key = ValueKey('onboarding-content-$index');
+    final size = MediaQuery.sizeOf(context);
+    if (size.shortestSide >= 640) {
+      final wide = size.width > size.height;
+      final art = _isDream
+          ? SizedBox(height: wide ? 322 : 306, child: visual)
+          : visual;
+      final heading = Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: header,
+      );
+      return LayoutBuilder(
+        builder: (context, viewport) => SingleChildScrollView(
+          key: key,
+          controller: _scroll,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(minHeight: viewport.maxHeight),
+            child: Padding(
+              padding: padding,
+              child: Center(
+                child: wide
+                    ? Row(
+                        children: [
+                          Expanded(flex: 3, child: heading),
+                          const SizedBox(width: 32),
+                          Expanded(flex: 5, child: art),
+                        ],
+                      )
+                    : Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [heading, art],
+                      ),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
     if (_isDream) {
       return CustomScrollView(
         key: key,

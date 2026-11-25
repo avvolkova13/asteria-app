@@ -108,6 +108,7 @@ class CalendarScenarioScreen extends StatelessWidget {
       ),
     );
     return ScenarioPage(
+      maxContentWidth: 800,
       title: context.l10n.scenarioCalendarChooseActivity,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -319,120 +320,130 @@ class _DaySelectionState extends State<_DaySelection> {
       }
     }
     return ScenarioPage(
+      maxContentWidth: MediaQuery.sizeOf(context).width >= 1050 ? 1120 : 780,
       title: context.l10n.scenarioCalendarChooseDates,
       child: CalendarPlansBuilder(
-        builder: (context, plans) => Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: AsteriaEntrance.sections([
-            Text(
-              _activityLabel(context, widget.activity),
-              style: context.textTheme.playfairSemiBold20.copyWith(
-                color: AppColors.textInverse,
-              ),
-            ),
-            const SizedBox(height: 16),
-            SegmentedPicker<PlansCalendarMode>(
-              options: PlansCalendarMode.values,
-              selectedValue: _mode,
-              onChanged: (mode) {
-                setState(() => _mode = mode);
-                if (mode == PlansCalendarMode.day && _selected.isNotEmpty) {
-                  _showMonth(_selected.last);
-                }
-              },
-              labelBuilder: (mode) => switch (mode) {
-                PlansCalendarMode.month => context.l10n.scenarioPlansMonth,
-                PlansCalendarMode.week => context.l10n.scenarioPlansWeek,
-                PlansCalendarMode.day => context.l10n.scenarioPlansDay,
-              },
-            ),
-            const SizedBox(height: 16),
-            if (dayView)
-              Row(
-                children: [
-                  LotusButtons.icon(
-                    tooltip: context.l10n.scenarioPlansPrevious,
-                    onPressed: _movePeriod(-1),
-                    icon: const LotusArrowBubble(back: true),
-                  ),
-                  Expanded(
-                    child: Text(
-                      DateFormat.MMMMd(locale).format(_focused),
-                      textAlign: TextAlign.center,
-                      style: AppTypography.navTitle,
-                    ),
-                  ),
-                  LotusButtons.icon(
-                    tooltip: context.l10n.scenarioPlansNext,
-                    onPressed: _movePeriod(1),
-                    icon: const LotusArrowBubble(),
-                  ),
-                ],
-              )
-            else
-              MoonCalendarWidget.planning(
-                key: _calendarKey,
-                savedPlans: plans,
-                planningState: MoonScreenState(
-                  focusedDay: _focused,
-                  dayStatuses: statuses,
+        builder: (context, plans) => CalendarAgendaLayout(
+          calendar: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: AsteriaEntrance.sections([
+              Text(
+                _activityLabel(context, widget.activity),
+                style: context.textTheme.playfairSemiBold20.copyWith(
+                  color: AppColors.textInverse,
                 ),
-                planningSelection: _selected,
-                firstSelectableDay: _today,
-                onPlanDay: _toggle,
-                onPlanMonth: _showMonth,
-                week: week,
-                periodTitle: week
-                    ? '${DateFormat.MMMd(locale).format(_weekStart)} — ${DateFormat.MMMd(locale).format(_weekStart.add(const Duration(days: 6)))}'
-                    : null,
-                onPrevious: week ? _movePeriod(-1) : null,
-                onNext: week ? _movePeriod(1) : null,
               ),
-            const SizedBox(height: 8),
-            if (_loading)
-              const AsteriaLoadingLine()
-            else if (_needsLocation) ...[
-              Text(context.l10n.moonLocationSetupDescription),
-              CurrentLocationControls(
-                onLocationUpdated: () {
-                  _locationVersion++;
-                  _months.clear();
-                  _showMonth(
-                    _focused,
-                    refresh: true,
-                    resolveToday: _monthOf(_focused) == _monthOf(_today),
-                  );
+              const SizedBox(height: 16),
+              SegmentedPicker<PlansCalendarMode>(
+                options: PlansCalendarMode.values,
+                selectedValue: _mode,
+                onChanged: (mode) {
+                  setState(() => _mode = mode);
+                  if (mode == PlansCalendarMode.day && _selected.isNotEmpty) {
+                    _showMonth(_selected.last);
+                  }
+                },
+                labelBuilder: (mode) => switch (mode) {
+                  PlansCalendarMode.month => context.l10n.scenarioPlansMonth,
+                  PlansCalendarMode.week => context.l10n.scenarioPlansWeek,
+                  PlansCalendarMode.day => context.l10n.scenarioPlansDay,
                 },
               ),
-            ] else if (_failed)
-              _Retry(
-                text: context.l10n.scenarioCalendarMonthError,
-                onRetry: () => _showMonth(_focused, refresh: true),
-              )
-            else if (statuses.isNotEmpty && !dayView)
-              const CalendarStatusesWidget()
-            else if (statuses.isEmpty)
-              Text(context.l10n.scenarioCalendarUnratedDates),
-            const SizedBox(height: 16),
-            if (dayView || _selected.isNotEmpty)
-              _Comparison(
-                key: _detailsKey,
-                activity: widget.activity,
-                plans: plans,
-                days: {
-                  for (final day in dayView ? [_focused] : _selected)
-                    day: _dayData(day),
-                },
-                loading: _loading,
-                replaceDay: dayView
-                    ? null
-                    : (date) {
-                        setState(() => _selected.remove(date));
-                        _showMonth(date, refresh: true);
-                        _reveal(_calendarKey);
-                      },
-              ),
-          ]),
+              const SizedBox(height: 16),
+              if (dayView)
+                Row(
+                  children: [
+                    LotusButtons.icon(
+                      tooltip: context.l10n.scenarioPlansPrevious,
+                      onPressed: _movePeriod(-1),
+                      icon: const LotusArrowBubble(back: true),
+                    ),
+                    Expanded(
+                      child: Text(
+                        DateFormat.MMMMd(locale).format(_focused),
+                        textAlign: TextAlign.center,
+                        style: AppTypography.navTitle,
+                      ),
+                    ),
+                    LotusButtons.icon(
+                      tooltip: context.l10n.scenarioPlansNext,
+                      onPressed: _movePeriod(1),
+                      icon: const LotusArrowBubble(),
+                    ),
+                  ],
+                )
+              else
+                MoonCalendarWidget.planning(
+                  key: _calendarKey,
+                  savedPlans: plans,
+                  planningState: MoonScreenState(
+                    focusedDay: _focused,
+                    dayStatuses: statuses,
+                  ),
+                  planningSelection: _selected,
+                  firstSelectableDay: _today,
+                  onPlanDay: _toggle,
+                  onPlanMonth: _showMonth,
+                  week: week,
+                  periodTitle: week
+                      ? '${DateFormat.MMMd(locale).format(_weekStart)} — ${DateFormat.MMMd(locale).format(_weekStart.add(const Duration(days: 6)))}'
+                      : null,
+                  onPrevious: week ? _movePeriod(-1) : null,
+                  onNext: week ? _movePeriod(1) : null,
+                ),
+              const SizedBox(height: 8),
+              if (_loading)
+                const AsteriaLoadingLine()
+              else if (_needsLocation) ...[
+                Text(context.l10n.moonLocationSetupDescription),
+                CurrentLocationControls(
+                  onLocationUpdated: () {
+                    _locationVersion++;
+                    _months.clear();
+                    _showMonth(
+                      _focused,
+                      refresh: true,
+                      resolveToday: _monthOf(_focused) == _monthOf(_today),
+                    );
+                  },
+                ),
+              ] else if (_failed)
+                _Retry(
+                  text: context.l10n.scenarioCalendarMonthError,
+                  onRetry: () => _showMonth(_focused, refresh: true),
+                )
+              else if (statuses.isNotEmpty && !dayView)
+                const CalendarStatusesWidget()
+              else if (statuses.isEmpty)
+                Text(context.l10n.scenarioCalendarUnratedDates),
+              const SizedBox(height: 16),
+            ]),
+          ),
+          emptyAgenda: ScenarioChoiceHero(
+            description: context.l10n.scenarioCalendarSubtitle,
+            art: LunarCardAsset.path(
+              LunarCardAsset.forTaskKey(widget.activity.keys.first)!,
+            ),
+          ),
+          agenda: dayView || _selected.isNotEmpty
+              ? _Comparison(
+                  key: _detailsKey,
+                  activity: widget.activity,
+                  plans: plans,
+                  days: {
+                    for (final day in dayView ? [_focused] : _selected)
+                      day: _dayData(day),
+                  },
+                  loading: _loading,
+                  replaceDay: dayView
+                      ? null
+                      : (date) {
+                          setState(() => _selected.remove(date));
+                          _showMonth(date, refresh: true);
+                          _reveal(_calendarKey);
+                        },
+                )
+              : null,
         ),
       ),
     );
@@ -832,11 +843,12 @@ class _SavePlanState extends State<_SavePlan> {
 
   @override
   Widget build(BuildContext c) => ScenarioPage(
+    maxContentWidth: 740,
     title: c.l10n.scenarioCalendarSavePlan,
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: AsteriaEntrance.sections([
-        Text(_dateLabel(c, widget.date)),
+        _PlanDateHeader(date: widget.date, activity: _activity),
         const SizedBox(height: 20),
         Text(
           c.l10n.scenarioCalendarChooseActivity,
@@ -920,19 +932,53 @@ class _SavePlanState extends State<_SavePlan> {
   );
 }
 
+class _PlanDateHeader extends StatelessWidget {
+  const _PlanDateHeader({required this.date, required this.activity});
+
+  final DateTime date;
+  final CalendarActivity activity;
+
+  @override
+  Widget build(BuildContext context) {
+    final label = _dateLabel(context, date);
+    final art = LunarCardAsset.forTaskKey(activity.keys.first);
+    if (MediaQuery.sizeOf(context).shortestSide < 600 || art == null) {
+      return Text(label);
+    }
+    return AppCard(
+      backgroundColor: MoonDesignTokens.calendarSurface,
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              label,
+              style: AppTypography.h3.copyWith(color: AppColors.textInverse),
+            ),
+          ),
+          const SizedBox(width: 20),
+          ExcludeSemantics(
+            child: LunarCardImage(assetName: art, width: 148, height: 128),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _PlanDetails extends StatelessWidget {
   const _PlanDetails({required this.plan, this.saved = false});
   final CalendarPlan plan;
   final bool saved;
   @override
   Widget build(BuildContext c) => ScenarioPage(
+    maxContentWidth: 740,
     title: saved ? c.l10n.scenarioCalendarSaved : plan.title,
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: AsteriaEntrance.sections([
         if (saved)
           Text(plan.title, style: c.textTheme.inversePlayfairSemiBold20),
-        Text(_dateLabel(c, plan.day)),
+        _PlanDateHeader(date: plan.day, activity: plan.activity),
         const SizedBox(height: 16),
         _SavedPlanContent(
           plan: plan,
@@ -989,6 +1035,7 @@ class _PlansScreen extends StatelessWidget {
   const _PlansScreen();
   @override
   Widget build(BuildContext c) => ScenarioPage(
+    maxContentWidth: MediaQuery.sizeOf(c).width >= 1050 ? 1120 : 800,
     title: c.l10n.scenarioCalendarMyPlans,
     child: CalendarPlansBuilder(
       builder: (c, plans) => CalendarPlansView(

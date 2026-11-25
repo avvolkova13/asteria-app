@@ -34,13 +34,14 @@ class LoveDeckCardDescriptionModal extends StatelessWidget {
     final maxSheetHeight = mediaSize.height * 0.86;
     final sheetHeight = maxSheetHeight > 538 ? 538.0 : maxSheetHeight;
 
-    return SizedBox(
-      height: sheetHeight,
+    return ConstrainedBox(
+      constraints: BoxConstraints(maxHeight: sheetHeight),
       child: ModalGlassSurface(
         color: _LoveDeckCardModalColors.surface,
         child: SafeArea(
           top: false,
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
               const SizedBox(height: 16),
               Center(
@@ -54,7 +55,7 @@ class LoveDeckCardDescriptionModal extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 16),
-              Expanded(
+              Flexible(
                 child: SingleChildScrollView(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Column(

@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/reading_content_sliver.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_activity_indicator.dart';
 import 'package:asteria_app/core/ui_kit/widgets/top_bar_geometry.dart';
 import 'package:asteria_app/core/ui_kit/widgets/modal_glass_surface.dart';
@@ -167,54 +168,51 @@ class _LoveDeckScreenState extends State<LoveDeckScreen> {
                       ?.birthDate,
                 ),
               ),
-              SliverToBoxAdapter(
-                child: Align(
-                  alignment: Alignment.topCenter,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: 358),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const SizedBox(height: 24),
-                          if (_isRefreshing)
-                            const Center(
-                              child: Padding(
-                                padding: EdgeInsets.symmetric(vertical: 32),
-                                child: AsteriaEntrance(
-                                  child: AsteriaActivityIndicator(),
-                                ),
-                              ),
-                            )
-                          else if (userProvider
-                                  .currentUser
-                                  ?.loveDeck
-                                  ?.loveDeckCards
-                                  .isNotEmpty !=
-                              true)
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
-                                Text(context.l10n.loadingDataError),
-                                const SizedBox(height: 16),
-                                CustomButton(
-                                  text: context.l10n.retry,
-                                  onPressed: _restoreSavedDeck,
-                                ),
-                              ],
-                            )
-                          else
-                            _LoveDeckContent(
-                              onRefresh: onRefreshPressed,
-                              afterReading: widget.afterReading,
+              ReadingContentSliver(
+                maxWidth: MediaQuery.sizeOf(context).shortestSide >= 600
+                    ? 712
+                    : 390,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 24),
+                      if (_isRefreshing)
+                        const Center(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(vertical: 32),
+                            child: AsteriaEntrance(
+                              child: AsteriaActivityIndicator(),
                             ),
-                          SizedBox(
-                            height: MediaQuery.paddingOf(context).bottom + 24,
                           ),
-                        ],
+                        )
+                      else if (userProvider
+                              .currentUser
+                              ?.loveDeck
+                              ?.loveDeckCards
+                              .isNotEmpty !=
+                          true)
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Text(context.l10n.loadingDataError),
+                            const SizedBox(height: 16),
+                            CustomButton(
+                              text: context.l10n.retry,
+                              onPressed: _restoreSavedDeck,
+                            ),
+                          ],
+                        )
+                      else
+                        _LoveDeckContent(
+                          onRefresh: onRefreshPressed,
+                          afterReading: widget.afterReading,
+                        ),
+                      SizedBox(
+                        height: MediaQuery.paddingOf(context).bottom + 24,
                       ),
-                    ),
+                    ],
                   ),
                 ),
               ),

@@ -11,7 +11,7 @@ class AnakraChatMessage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isUser = message.isUser;
-    final width = MediaQuery.sizeOf(context).width;
+    final width = MediaQuery.sizeOf(context).width.clamp(0.0, 760.0);
     final largeText = MediaQuery.textScalerOf(context).scale(16) > 22;
     return Align(
       alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,

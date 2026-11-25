@@ -24,102 +24,108 @@ class HubEntryCard extends StatelessWidget {
   final bool alignAction;
   final bool fitCompactTitle;
   @override
-  Widget build(BuildContext context) => Semantics(
-    button: true,
-    child: HomeGlassSurface(
-      child: Material(
-        color: Colors.transparent,
-        child: LotusInkTap(
-          onTap: onTap,
-          child: Padding(
-            padding: const EdgeInsets.all(18),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (compact)
-                  Center(
-                    child: Image.asset(
-                      art,
-                      width: 126,
-                      height: 126,
-                      fit: BoxFit.contain,
-                      excludeFromSemantics: true,
-                    ),
-                  )
-                else
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: Text(
-                          title,
-                          style: context.textTheme.inversePlayfairSemiBold24,
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Image.asset(
+  Widget build(BuildContext context) {
+    final tablet = MediaQuery.sizeOf(context).shortestSide >= 600;
+    final artSize = compact
+        ? (tablet ? 194.0 : 126.0)
+        : (tablet ? 148.0 : 88.0);
+    return Semantics(
+      button: true,
+      child: HomeGlassSurface(
+        child: Material(
+          color: Colors.transparent,
+          child: LotusInkTap(
+            onTap: onTap,
+            child: Padding(
+              padding: const EdgeInsets.all(18),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (compact)
+                    Center(
+                      child: Image.asset(
                         art,
-                        width: 88,
-                        height: 88,
+                        width: artSize,
+                        height: artSize,
                         fit: BoxFit.contain,
                         excludeFromSemantics: true,
                       ),
-                    ],
-                  ),
-                if (compact) ...[
-                  const SizedBox(height: 10),
-                  if (fitCompactTitle)
-                    FittedBox(
-                      fit: BoxFit.scaleDown,
-                      alignment: AlignmentDirectional.centerStart,
-                      child: Text(
-                        title,
-                        maxLines: 1,
-                        style: context.textTheme.inversePlayfairSemiBold24,
-                      ),
                     )
                   else
-                    Text(
-                      title,
-                      style: context.textTheme.inversePlayfairSemiBold24,
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            title,
+                            style: context.textTheme.inversePlayfairSemiBold24,
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Image.asset(
+                          art,
+                          width: artSize,
+                          height: artSize,
+                          fit: BoxFit.contain,
+                          excludeFromSemantics: true,
+                        ),
+                      ],
                     ),
-                ],
-                const SizedBox(height: 10),
-                Text(
-                  description,
-                  style: compact
-                      ? AppTypography.body14.copyWith(color: AppColors.white)
-                      : context.textTheme.inverseUrbanistRegular16,
-                ),
-                if (alignAction) const Spacer(),
-                const SizedBox(height: 16),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        action,
-                        style:
-                            (compact
-                                    ? AppTypography.body14.copyWith(
-                                        fontWeight: FontWeight.w600,
-                                      )
-                                    : context
-                                          .textTheme
-                                          .inverseUrbanistSemiBold16)
-                                .copyWith(color: AppColorsDark.linkGold),
+                  if (compact) ...[
+                    const SizedBox(height: 10),
+                    if (fitCompactTitle)
+                      FittedBox(
+                        fit: BoxFit.scaleDown,
+                        alignment: AlignmentDirectional.centerStart,
+                        child: Text(
+                          title,
+                          maxLines: 1,
+                          style: context.textTheme.inversePlayfairSemiBold24,
+                        ),
+                      )
+                    else
+                      Text(
+                        title,
+                        style: context.textTheme.inversePlayfairSemiBold24,
                       ),
-                    ),
-                    const SizedBox(width: 8),
-                    const LotusArrowBubble(),
                   ],
-                ),
-              ],
+                  const SizedBox(height: 10),
+                  Text(
+                    description,
+                    style: compact && !tablet
+                        ? AppTypography.body14.copyWith(color: AppColors.white)
+                        : context.textTheme.inverseUrbanistRegular16,
+                  ),
+                  if (alignAction) const Spacer(),
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          action,
+                          style:
+                              (compact && !tablet
+                                      ? AppTypography.body14.copyWith(
+                                          fontWeight: FontWeight.w600,
+                                        )
+                                      : context
+                                            .textTheme
+                                            .inverseUrbanistSemiBold16)
+                                  .copyWith(color: AppColorsDark.linkGold),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      const LotusArrowBubble(),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),
       ),
-    ),
-  );
+    );
+  }
 }
 
 class PracticeToolEntries extends StatelessWidget {

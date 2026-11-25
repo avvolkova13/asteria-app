@@ -223,10 +223,19 @@ class _TarotCardOfTheDayWidgetState extends State<TarotCardOfTheDayWidget>
     );
   }
 
+  Size get _artSize =>
+      widget.showMoreButton == false &&
+          MediaQuery.sizeOf(context).shortestSide >= 600
+      ? const Size(312, 468)
+      : const Size(219, 328);
+
   Widget _buildLoadingContent() {
     return Column(
       children: AsteriaEntrance.sections([
-        const SizedBox(height: 328, child: Center(child: LoadingWidget())),
+        SizedBox(
+          height: _artSize.height,
+          child: const Center(child: LoadingWidget()),
+        ),
         const SizedBox(height: 16),
         Text(
           context.l10n.dailyTarotLoading,
@@ -297,10 +306,11 @@ class _TarotCardOfTheDayWidgetState extends State<TarotCardOfTheDayWidget>
   }
 
   Widget _buildCardBack() {
+    final size = _artSize;
     final borderRadius = BorderRadius.circular(widget.isDarkLayout ? 16 : 12);
     return Container(
-      height: 328,
-      width: 219,
+      height: size.height,
+      width: size.width,
       decoration: BoxDecoration(
         color: Colors.transparent,
         borderRadius: borderRadius,
@@ -311,13 +321,13 @@ class _TarotCardOfTheDayWidgetState extends State<TarotCardOfTheDayWidget>
           radius: borderRadius.topLeft.x,
           child: Image.asset(
             'assets/images/home/daily_symbol_tarot_back.webp',
-            width: 219,
-            height: 328,
+            width: size.width,
+            height: size.height,
             fit: BoxFit.fitWidth,
             errorBuilder: (context, error, stackTrace) {
               return ArtworkUnavailable(
-                width: 219,
-                height: 328,
+                width: size.width,
+                height: size.height,
                 radius: borderRadius.topLeft.x,
               );
             },
@@ -328,10 +338,11 @@ class _TarotCardOfTheDayWidgetState extends State<TarotCardOfTheDayWidget>
   }
 
   Widget _buildCardFront(TarotCardModel tarotCard) {
+    final size = _artSize;
     final borderRadius = BorderRadius.circular(widget.isDarkLayout ? 16 : 12);
     return Container(
-      height: 328,
-      width: 219, // Фиксированная ширина
+      height: size.height,
+      width: size.width,
       decoration: BoxDecoration(borderRadius: borderRadius),
       child: ClipRRect(
         borderRadius: borderRadius,
@@ -342,13 +353,13 @@ class _TarotCardOfTheDayWidgetState extends State<TarotCardOfTheDayWidget>
               imageName: tarotCard.imageName,
               languageCode: Localizations.localeOf(context).languageCode,
             ),
-            width: 219,
-            height: 328,
+            width: size.width,
+            height: size.height,
             fit: BoxFit.cover,
             errorBuilder: (context, error, stackTrace) {
               return ArtworkUnavailable(
-                width: 219,
-                height: 328,
+                width: size.width,
+                height: size.height,
                 radius: borderRadius.topLeft.x,
               );
             },

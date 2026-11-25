@@ -54,13 +54,14 @@ class TarotLayoutCardDescriptionModal extends StatelessWidget {
     final maxHeight = mediaSize.height * 0.9;
     final sheetHeight = targetHeight.clamp(minHeight, maxHeight).toDouble();
 
-    return SizedBox(
-      height: sheetHeight,
+    return ConstrainedBox(
+      constraints: BoxConstraints(maxHeight: sheetHeight),
       child: ModalGlassSurface(
         color: _TarotLayoutCardModalColors.surface,
         child: SafeArea(
           top: false,
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
               const SizedBox(height: 16),
               Center(
@@ -74,7 +75,7 @@ class TarotLayoutCardDescriptionModal extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 16),
-              Expanded(
+              Flexible(
                 child: SingleChildScrollView(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Column(

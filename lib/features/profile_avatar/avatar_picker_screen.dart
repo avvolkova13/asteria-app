@@ -77,6 +77,45 @@ class _AvatarPickerScreenState extends State<AvatarPickerScreen> {
   Widget build(BuildContext context) {
     final strings = context.l10n;
     final reduceMotion = MediaQuery.disableAnimationsOf(context);
+    final tablet = MediaQuery.sizeOf(context).shortestSide >= 600;
+    final inlineSave = tablet && MediaQuery.sizeOf(context).height >= 850;
+    final saveButton = Padding(
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (_failed)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: Semantics(
+                liveRegion: true,
+                child: Text(
+                  strings.avatarSaveError,
+                  textAlign: TextAlign.center,
+                  style: AppTypography.text1.copyWith(
+                    color: AppColors.textInverse,
+                  ),
+                ),
+              ),
+            ),
+          SizedBox(
+            width: double.infinity,
+            child: LotusButtons.elevated(
+              onPressed: _saving || widget.userId.isEmpty ? null : _save,
+              style: ElevatedButton.styleFrom(minimumSize: const Size(44, 50)),
+              child: _saving
+                  ? SizedBox.square(
+                      dimension: 20,
+                      child: AsteriaActivityIndicator(
+                        semanticsLabel: strings.avatarSave,
+                      ),
+                    )
+                  : Text(strings.avatarSave),
+            ),
+          ),
+        ],
+      ),
+    ).withEntrance(order: AvatarPreset.values.length + 2);
     return Scaffold(
       backgroundColor: ProfileFlowColors.background,
       body: ProfileFlowBackground(
@@ -99,7 +138,7 @@ class _AvatarPickerScreenState extends State<AvatarPickerScreen> {
                   child: Align(
                     alignment: Alignment.topCenter,
                     child: ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: 440),
+                      constraints: BoxConstraints(maxWidth: tablet ? 650 : 440),
                       child: Column(
                         children: [
                           Text(
@@ -137,53 +176,17 @@ class _AvatarPickerScreenState extends State<AvatarPickerScreen> {
                               );
                             },
                           ),
+                          if (inlineSave) ...[
+                            const SizedBox(height: 20),
+                            saveButton,
+                          ],
                         ],
                       ),
                     ),
                   ),
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (_failed)
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 12),
-                        child: Semantics(
-                          liveRegion: true,
-                          child: Text(
-                            strings.avatarSaveError,
-                            textAlign: TextAlign.center,
-                            style: AppTypography.text1.copyWith(
-                              color: AppColors.textInverse,
-                            ),
-                          ),
-                        ),
-                      ),
-                    SizedBox(
-                      width: double.infinity,
-                      child: LotusButtons.elevated(
-                        onPressed: _saving || widget.userId.isEmpty
-                            ? null
-                            : _save,
-                        style: ElevatedButton.styleFrom(
-                          minimumSize: const Size(44, 50),
-                        ),
-                        child: _saving
-                            ? SizedBox.square(
-                                dimension: 20,
-                                child: AsteriaActivityIndicator(
-                                  semanticsLabel: strings.avatarSave,
-                                ),
-                              )
-                            : Text(strings.avatarSave),
-                      ),
-                    ),
-                  ],
-                ),
-              ).withEntrance(order: AvatarPreset.values.length + 2),
+              if (!inlineSave) saveButton,
             ],
           ),
         ),

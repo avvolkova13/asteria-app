@@ -28,6 +28,7 @@ class AchievementCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tablet = MediaQuery.sizeOf(context).shortestSide >= 600;
     final completed = completedCount.clamp(0, totalCount);
     final remaining = context.l10n.achievementRemaining(
       totalCount - completed,
@@ -42,17 +43,19 @@ class AchievementCard extends StatelessWidget {
           radius: AsteriaCardRadii.tile,
           tint: AchievementsStyle.card,
           child: Padding(
-            padding: const EdgeInsets.all(8),
+            padding: EdgeInsets.all(tablet ? 18 : 8),
             child: LayoutBuilder(
               builder: (context, constraints) {
                 final stackContent =
+                    tablet ||
                     constraints.maxWidth <
-                    MediaQuery.textScalerOf(context).scale(20) * 15;
+                        MediaQuery.textScalerOf(context).scale(20) * 15;
                 final artwork = Align(
                   alignment: Alignment.topCenter,
                   child: _Artwork(
                     imageAsset: imageAsset,
-                    imageSize: imageSize,
+                    imageSize: tablet ? imageSize * 1.65 : imageSize,
+                    extent: tablet ? 174 : 112,
                     isLocked: isLocked,
                   ),
                 );
@@ -135,17 +138,19 @@ class _Artwork extends StatelessWidget {
   const _Artwork({
     required this.imageAsset,
     required this.imageSize,
+    required this.extent,
     required this.isLocked,
   });
   final String imageAsset;
   final Size imageSize;
   final bool isLocked;
+  final double extent;
 
   @override
   Widget build(BuildContext context) => ClipRRect(
     borderRadius: BorderRadius.circular(AsteriaCardRadii.compact),
     child: SizedBox.square(
-      dimension: 112,
+      dimension: extent,
       child: Stack(
         alignment: Alignment.center,
         children: [

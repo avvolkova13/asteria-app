@@ -19,7 +19,6 @@ class LoveLayout extends StatefulWidget {
 }
 
 class _LoveLayoutState extends State<LoveLayout> {
-  static const double _maxLayoutWidth = 358.0;
   static const double _cardAspectRatio = 114.0 / 171.0;
   static const double _gap = 8.0;
   static const int _cardsPerRow = 3;
@@ -81,12 +80,14 @@ class _LoveLayoutState extends State<LoveLayout> {
 
         return LayoutBuilder(
           builder: (context, constraints) {
+            final maxLayoutWidth =
+                MediaQuery.sizeOf(context).shortestSide >= 600 ? 520.0 : 358.0;
             final availableWidth = constraints.maxWidth.isFinite
                 ? constraints.maxWidth
-                : _maxLayoutWidth;
-            final layoutWidth = availableWidth < _maxLayoutWidth
+                : maxLayoutWidth;
+            final layoutWidth = availableWidth < maxLayoutWidth
                 ? availableWidth
-                : _maxLayoutWidth;
+                : maxLayoutWidth;
             final totalGapWidth = _gap * (_cardsPerRow - 1);
             final cardWidth = (layoutWidth - totalGapWidth) / _cardsPerRow;
             final cardHeight = cardWidth / _cardAspectRatio;

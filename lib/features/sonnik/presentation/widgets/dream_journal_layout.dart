@@ -10,19 +10,26 @@ class DreamJournalScaffold extends StatelessWidget {
     required this.footer,
   });
   final String title;
-  final Widget child, footer;
+  final Widget child;
+  final Widget? footer;
   @override
   Widget build(BuildContext context) => SonnikPageScaffold(
     title: title,
     resizeToAvoidBottomInset: true,
     child: Column(
       children: [
+        if (footer != null && MediaQuery.sizeOf(context).shortestSide >= 600)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+            child: footer!,
+          ),
         Expanded(child: child),
-        SafeArea(
-          top: false,
-          minimum: const EdgeInsets.fromLTRB(20, 12, 20, 12),
-          child: footer,
-        ),
+        if (footer != null && MediaQuery.sizeOf(context).shortestSide < 600)
+          SafeArea(
+            top: false,
+            minimum: const EdgeInsets.fromLTRB(20, 12, 20, 12),
+            child: footer!,
+          ),
       ],
     ),
   );

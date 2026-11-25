@@ -924,7 +924,7 @@ void main() {
 
   if (const bool.fromEnvironment('ONBOARDING_REVIEW_CAPTURE')) {
     for (final language in ['ru', 'en']) {
-      for (final width in [390.0, 320.0]) {
+      for (final width in [390.0, 320.0, 1032.0, 1376.0]) {
         testWidgets('$language animated full tour review at $width', (
           tester,
         ) async {
@@ -933,7 +933,12 @@ void main() {
             tester,
             bloc,
             locale: Locale(language),
-            size: Size(width, width == 390 ? 844 : 568),
+            size: Size(width, switch (width) {
+              1032 => 1376,
+              1376 => 1032,
+              390 => 844,
+              _ => 568,
+            }),
             padding: EdgeInsets.only(
               top: width == 390 ? 59 : 20,
               bottom: width == 390 ? 34 : 0,

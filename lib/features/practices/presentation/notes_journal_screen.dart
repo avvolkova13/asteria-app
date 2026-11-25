@@ -97,75 +97,110 @@ class _NotesJournalState extends State<_NotesJournal> {
   @override
   Widget build(BuildContext context) {
     final locale = Localizations.localeOf(context).toLanguageTag();
-    return ScenarioPage(
-      title: _ru ? 'Мои заметки' : 'My notes',
-      scrollable: false,
-      footer: AsteriaActionButton(
-        text: _ru ? 'Написать заметку' : 'Write a note',
-        width: double.infinity,
-        onPressed: () => _open(),
-      ),
-      child: FutureBuilder<List<JournalNote>>(
-        future: _entries,
-        builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            return Center(
-              child: LotusButtons.text(
-                onPressed: _refresh,
-                child: Text(context.l10n.retry),
-              ),
-            );
-          }
-          final entries = snapshot.data;
-          if (entries == null) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (entries.isEmpty) {
-            return Center(
-              child: Text(
-                _ru
-                    ? 'Здесь будут ваши мысли и заметки к практикам.'
-                    : 'Keep your thoughts and practice notes here.',
-                textAlign: TextAlign.center,
-                style: context.textTheme.inverseUrbanistRegular16,
-              ),
-            );
-          }
-          return ListView.separated(
-            padding: const EdgeInsets.only(top: 8, bottom: 16),
-            itemCount: entries.length,
-            separatorBuilder: (_, __) => const Divider(),
-            itemBuilder: (context, index) {
-              final entry = entries[index];
-              return ListTile(
-                contentPadding: const EdgeInsets.symmetric(
-                  vertical: 4,
-                  horizontal: 2,
+    final tablet = MediaQuery.sizeOf(context).shortestSide >= 600;
+    final write = AsteriaActionButton(
+      text: _ru ? 'Написать заметку' : 'Write a note',
+      width: double.infinity,
+      onPressed: () => _open(),
+    );
+    return FutureBuilder<List<JournalNote>>(
+      future: _entries,
+      builder: (context, snapshot) {
+        final empty =
+            tablet && !snapshot.hasError && snapshot.data?.isEmpty == true;
+        return ScenarioPage(
+          maxContentWidth: 780,
+          groupTabletFooter: true,
+          title: _ru ? 'Мои заметки' : 'My notes',
+          scrollable: false,
+          footer: empty ? null : write,
+          child: _journalBody(snapshot, locale, empty ? write : null),
+        );
+      },
+    );
+  }
+
+  Widget _journalBody(
+    AsyncSnapshot<List<JournalNote>> snapshot,
+    String locale,
+    Widget? firstAction,
+  ) {
+    if (snapshot.hasError) {
+      return Center(
+        child: LotusButtons.text(
+          onPressed: _refresh,
+          child: Text(context.l10n.retry),
+        ),
+      );
+    }
+    final entries = snapshot.data;
+    if (entries == null) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    if (entries.isEmpty) {
+      final message = Text(
+        _ru
+            ? 'Здесь будут ваши мысли и заметки к практикам.'
+            : 'Keep your thoughts and practice notes here.',
+        textAlign: TextAlign.center,
+        style: context.textTheme.inverseUrbanistRegular16,
+      );
+      if (firstAction == null) return Center(child: message);
+      return Center(
+        child: SingleChildScrollView(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 480),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Image.asset(
+                  'assets/images/practices/workday-is-over.webp',
+                  height: 180,
+                  fit: BoxFit.contain,
+                  excludeFromSemantics: true,
                 ),
-                onTap: () => _open(entry),
-                title: Text(
-                  entry.note.text,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: context.textTheme.inverseUrbanistRegular16,
-                ),
-                subtitle: Text(
-                  '${DateFormat.MMMd(locale).format(entry.note.recordedAt)} · ${_source(entry.practiceId)}',
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: context.textTheme.inverseUrbanistRegular14.copyWith(
-                    color: AppColorsDark.textSecondary,
-                  ),
-                ),
-                trailing: const Icon(
-                  Icons.chevron_right,
-                  color: AppColorsDark.textSecondary,
-                ),
-              );
-            },
-          );
-        },
-      ),
+                const SizedBox(height: 24),
+                message,
+                const SizedBox(height: 24),
+                firstAction,
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+    return ListView.separated(
+      padding: const EdgeInsets.only(top: 8, bottom: 16),
+      itemCount: entries.length,
+      separatorBuilder: (_, __) => const Divider(),
+      itemBuilder: (context, index) {
+        final entry = entries[index];
+        return ListTile(
+          contentPadding: const EdgeInsets.symmetric(
+            vertical: 4,
+            horizontal: 2,
+          ),
+          onTap: () => _open(entry),
+          title: Text(
+            entry.note.text,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: context.textTheme.inverseUrbanistRegular16,
+          ),
+          subtitle: Text(
+            '${DateFormat.MMMd(locale).format(entry.note.recordedAt)} · ${_source(entry.practiceId)}',
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: context.textTheme.inverseUrbanistRegular14.copyWith(
+              color: AppColorsDark.textSecondary,
+            ),
+          ),
+          trailing: const Icon(
+            Icons.chevron_right,
+            color: AppColorsDark.textSecondary,
+          ),
+        );
+      },
     );
   }
 }

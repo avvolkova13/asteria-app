@@ -30,6 +30,8 @@ Future<void> openPracticeNotes(
           if (user.currentUser?.id != owner) {
             final ru = Localizations.localeOf(context).languageCode == 'ru';
             return ScenarioPage(
+              maxContentWidth: 780,
+              groupTabletFooter: true,
               title: ru ? 'Мои заметки' : 'My notes',
               child: Text(
                 ru
@@ -283,6 +285,19 @@ class _PracticeNotesScreenState extends State<_PracticeNotesScreen> {
             ? 'Не удалось обновить заметку. Попробуйте ещё раз.'
             : 'Could not update the note. Please try again.',
     };
+    final viewport = MediaQuery.sizeOf(context);
+    final view = View.of(context);
+    final visibleHeight =
+        viewport.height - view.viewInsets.bottom / view.devicePixelRatio;
+    final tablet = viewport.shortestSide >= 600;
+    // Keep room for the title and Save action as the on-screen keyboard opens.
+    final lines = tablet
+        ? ((visibleHeight - 360) *
+                  .62 /
+                  MediaQuery.textScalerOf(context).scale(23))
+              .floor()
+              .clamp(5, 23)
+        : 4;
     return PopScope<void>(
       canPop:
           !_writing &&
@@ -391,11 +406,13 @@ class _PracticeNotesScreenState extends State<_PracticeNotesScreen> {
                     readOnly: _writing,
                     onChanged: (_) =>
                         setState(() => _status = _NoteStatus.ready),
-                    minLines: 4,
-                    maxLines: 7,
+                    minLines: lines,
+                    maxLines: tablet ? 25 : 7,
                     textCapitalization: TextCapitalization.sentences,
                     keyboardType: TextInputType.multiline,
-                    style: context.textTheme.inverseUrbanistRegular16,
+                    style: context.textTheme.inverseUrbanistRegular16.copyWith(
+                      fontSize: tablet ? 18 : null,
+                    ),
                     decoration: InputDecoration(
                       hintText: ru
                           ? 'Что хочется запомнить?'

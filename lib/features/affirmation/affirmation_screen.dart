@@ -14,6 +14,7 @@ import 'package:asteria_app/core/di/di.dart';
 import 'package:asteria_app/core/routing/app_route.dart';
 import 'package:asteria_app/core/ui_kit/ui_kit.dart';
 import 'package:asteria_app/features/affirmation/widgets/affirmation_category_widget.dart';
+import 'package:asteria_app/features/affirmation/widgets/affirmation_card_widget.dart';
 import 'package:asteria_app/features/monetization/presentation/monetization_provider.dart';
 import 'package:flutter/material.dart';
 
@@ -70,24 +71,29 @@ class _AffirmationScreenState extends State<AffirmationScreen> {
                           MonetizationProvider.maybeOf(context)?.effectivePro ??
                           false;
 
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          for (final category in categories) ...[
-                            AffirmationCategoryWidget(
-                              key: ValueKey('affirmation_category_$category'),
-                              category: category,
-                              affirmations: contentProvider
-                                  .getAffirmationsByCategory(category),
-                              showAffirmations:
-                                  hasSubscription ||
-                                  freeAffirmationCategoryIds.contains(category),
-                              showSwipeHint: category == categories.first,
-                            ),
-                            if (category != categories.last)
-                              const SizedBox(height: 24),
-                          ],
-                        ],
+                      return Center(
+                        child: ConstrainedBox(
+                          constraints: const BoxConstraints(maxWidth: 1080),
+                          child: PracticeDeckShelf(
+                            sections: [
+                              for (final category in categories)
+                                AffirmationCategoryWidget(
+                                  key: ValueKey(
+                                    'affirmation_category_$category',
+                                  ),
+                                  category: category,
+                                  affirmations: contentProvider
+                                      .getAffirmationsByCategory(category),
+                                  showAffirmations:
+                                      hasSubscription ||
+                                      freeAffirmationCategoryIds.contains(
+                                        category,
+                                      ),
+                                  showSwipeHint: category == categories.first,
+                                ),
+                            ],
+                          ),
+                        ),
                       );
                     },
                   ),

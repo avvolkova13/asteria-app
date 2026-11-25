@@ -15,68 +15,71 @@ class HowToUseTaroCards extends StatelessWidget {
       0.0,
       540.0,
     );
-    return ModalGlassSurface(
-      height: height,
-      child: SafeArea(
-        top: false,
-        child: Column(
-          children: [
-            Container(
-              margin: const EdgeInsets.symmetric(vertical: 16),
-              height: 4,
-              width: 64,
-              decoration: BoxDecoration(
-                color: ModalGlassTokens.grabber,
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: AsteriaEntrance.sections([
-                    ResponsiveHeading(
-                      context.l10n.deckHowToUse,
-                      style: AppTypography.h2.copyWith(
-                        color: ModalGlassTokens.text,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      context.l10n.tarotHowToSteps,
-                      style: AppTypography.text1.copyWith(
-                        color: ModalGlassTokens.text,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(top: 2),
-                          child: LotusRasterIcon(
-                            'assets/icons/magic_wand.png',
-                            height: 20,
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            context.l10n.tarotHowToReminder,
-                            style: AppTypography.text1.copyWith(
-                              color: ModalGlassTokens.muted,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ]),
+    return ConstrainedBox(
+      constraints: BoxConstraints(maxHeight: height),
+      child: ModalGlassSurface(
+        child: SafeArea(
+          top: false,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                margin: const EdgeInsets.symmetric(vertical: 16),
+                height: 4,
+                width: 64,
+                decoration: BoxDecoration(
+                  color: ModalGlassTokens.grabber,
+                  borderRadius: BorderRadius.circular(2),
                 ),
               ),
-            ),
-          ],
+              Flexible(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: AsteriaEntrance.sections([
+                      ResponsiveHeading(
+                        context.l10n.deckHowToUse,
+                        style: AppTypography.h2.copyWith(
+                          color: ModalGlassTokens.text,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        context.l10n.tarotHowToSteps,
+                        style: AppTypography.text1.copyWith(
+                          color: ModalGlassTokens.text,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(top: 2),
+                            child: LotusRasterIcon(
+                              'assets/icons/magic_wand.png',
+                              height: 20,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              context.l10n.tarotHowToReminder,
+                              style: AppTypography.text1.copyWith(
+                                color: ModalGlassTokens.muted,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ]),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -277,6 +277,7 @@ class _SubscriptionScreenContentState extends State<_SubscriptionScreenContent>
       });
     }
 
+    final tablet = MediaQuery.sizeOf(context).shortestSide >= 600;
     final actionBar = SafeArea(
       top: false,
       minimum: const EdgeInsets.fromLTRB(16, 8, 16, 12),
@@ -286,7 +287,7 @@ class _SubscriptionScreenContentState extends State<_SubscriptionScreenContent>
       final canExtend = activeGrant?.provider == 'arc_pay';
       return Scaffold(
         backgroundColor: ProfileFlowColors.background,
-        bottomNavigationBar: canExtend ? actionBar : null,
+        bottomNavigationBar: canExtend && !tablet ? actionBar : null,
         body: ProfileFlowBackground(
           child: SafeArea(
             bottom: false,
@@ -306,6 +307,7 @@ class _SubscriptionScreenContentState extends State<_SubscriptionScreenContent>
                     originSurface:
                         widget.originSurface ?? _defaultOriginSurface,
                   ),
+                  if (tablet && canExtend) actionBar,
                 ],
               ),
             ),
@@ -316,7 +318,7 @@ class _SubscriptionScreenContentState extends State<_SubscriptionScreenContent>
 
     return Scaffold(
       backgroundColor: ProfileFlowColors.background,
-      bottomNavigationBar: actionBar,
+      bottomNavigationBar: tablet ? null : actionBar,
       body: ProfileFlowBackground(
         child: SafeArea(
           bottom: false,
@@ -355,6 +357,10 @@ class _SubscriptionScreenContentState extends State<_SubscriptionScreenContent>
                     originSurface:
                         widget.originSurface ?? _defaultOriginSurface,
                   ),
+                ],
+                if (tablet) ...[
+                  const SizedBox(height: 20),
+                  _SubscribeCta(route: widget.route),
                 ],
               ],
             ),
@@ -630,8 +636,9 @@ class _ArcPaySubscriptionPlansState extends State<_ArcPaySubscriptionPlans> {
       launched = false;
     }
     if (!launched && mounted) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(context.l10n.paymentOpenError)));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(context.l10n.paymentOpenError)));
     }
     if (mounted) setState(() => _opening = false);
   }
@@ -1358,9 +1365,9 @@ String _planTitle(
           : null);
   final known =
       unit ??
-      RegExp(r'(?:^|[._-])(week|month|year)(?:ly)?(?:$|[._-])')
-          .firstMatch(id.toLowerCase())
-          ?.group(1);
+      RegExp(
+        r'(?:^|[._-])(week|month|year)(?:ly)?(?:$|[._-])',
+      ).firstMatch(id.toLowerCase())?.group(1);
   return switch (known) {
     'week' => context.l10n.subscriptionPlanWeek,
     'month' => context.l10n.subscriptionPlanMonth,

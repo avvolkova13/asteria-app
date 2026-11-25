@@ -174,8 +174,8 @@ void main() {
           expect(find.byType(CreateSonnikInitialScreen), findsOneWidget);
           monetization.allowed = true;
           await tester.enterText(find.byType(TextField), 'Море и маяк');
-          await tester.ensureVisible(find.byType(SonnikGradientButton));
-          await tester.tap(find.byType(SonnikGradientButton));
+          await tester.ensureVisible(find.text(l10n.dreamDecode));
+          await tester.tap(find.text(l10n.dreamDecode));
           await tester.pumpAndSettle();
           expect(find.byType(CreateSonnikLoadedScreen), findsOneWidget);
           expect(find.text('meaning'), findsOneWidget);
@@ -230,11 +230,7 @@ void main() {
         } else {
           tester.view.resetViewInsets();
           final params = CreateSonnikInitialRouteParams(
-            initialEntry: DreamEntry(
-              id: 'existing',
-              text: 'Тихий лес',
-              recordedAt: DateTime(2026),
-            ),
+            initialEntry: await DreamJournal(user.id).save('Тихий лес'),
             ownerId: user.id,
             autoInterpret: true,
           );
@@ -254,13 +250,18 @@ void main() {
           );
           monetization.allowed = true;
           content.failNext = true;
-          await tester.ensureVisible(find.byType(SonnikGradientButton));
-          await tester.tap(find.byType(SonnikGradientButton));
+          await tester.ensureVisible(find.text(l10n.dreamDecode));
+          await tester.tap(find.text(l10n.dreamDecode));
           await tester.pumpAndSettle();
           expect(content.requests, ['Тихий лес']);
-          expect(find.text(l10n.dreamCalculationError), findsOneWidget);
+          expect(
+            find.textContaining('Сон сохранён. Расшифровка не удалась.'),
+            findsOneWidget,
+          );
+          expect((await DreamJournal(user.id).read()).single.text, 'Тихий лес');
           monetization.gate = Completer<void>();
-          await tester.tap(find.byType(SonnikGradientButton));
+          await tester.ensureVisible(find.text(l10n.dreamDecode));
+          await tester.tap(find.text(l10n.dreamDecode));
           await tester.pump();
           user.switchAccount();
           monetization.gate!.complete();

@@ -57,6 +57,8 @@ class AuthFlowScaffold extends StatelessWidget {
   final String backgroundAsset;
   final double backgroundOpacity;
   final double backgroundHeightFactor;
+  final double maxContentWidth;
+  final double? tabletFormHeight;
 
   const AuthFlowScaffold({
     super.key,
@@ -64,6 +66,8 @@ class AuthFlowScaffold extends StatelessWidget {
     this.background,
     this.showBackButton = false,
     this.resizeToAvoidBottomInset = true,
+    this.maxContentWidth = 580,
+    this.tabletFormHeight,
     this.backgroundAsset = _authBackgroundAsset,
     this.backgroundOpacity = 0.5,
     this.backgroundHeightFactor = _authBackgroundHeightFactor,
@@ -71,6 +75,9 @@ class AuthFlowScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tabletForm =
+        tabletFormHeight != null &&
+        MediaQuery.sizeOf(context).shortestSide >= 600;
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: const SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
@@ -114,9 +121,14 @@ class AuthFlowScaffold extends StatelessWidget {
               ),
             ],
             Align(
-              alignment: Alignment.topCenter,
+              alignment: tabletForm
+                  ? const Alignment(0, -.24)
+                  : Alignment.topCenter,
               child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 580),
+                constraints: BoxConstraints(
+                  maxWidth: tabletForm ? 660 : maxContentWidth,
+                  maxHeight: tabletForm ? tabletFormHeight! : double.infinity,
+                ),
                 child: SizedBox(
                   width: double.infinity,
                   height: double.infinity,

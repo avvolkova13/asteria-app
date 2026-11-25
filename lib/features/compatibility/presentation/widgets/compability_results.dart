@@ -36,6 +36,13 @@ class CompabilityResults extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tablet = MediaQuery.sizeOf(context).shortestSide >= 600;
+    final bodyStyle = tablet
+        ? context.textTheme.inverseUrbanistRegular16.copyWith(
+            fontSize: 18,
+            height: 1.4,
+          )
+        : context.textTheme.inverseUrbanistRegular14;
     final firstDate = hisBirthdate.toDateTimeFromShortDate();
     final secondDate = herBirthdate.toDateTimeFromShortDate();
 
@@ -79,9 +86,7 @@ class CompabilityResults extends StatelessWidget {
             const SizedBox(height: 4),
             Text(
               compatibilityData.introduction,
-              style: context.textTheme.inverseUrbanistRegular14.copyWith(
-                height: 1.18,
-              ),
+              style: tablet ? bodyStyle : bodyStyle.copyWith(height: 1.18),
               textAlign: TextAlign.start,
             ),
             const SizedBox(height: 20),
@@ -112,9 +117,7 @@ class CompabilityResults extends StatelessWidget {
             const SizedBox(height: 24),
             Text(
               compatibilityData.generalCompatibility,
-              style: context.textTheme.inverseUrbanistRegular14.copyWith(
-                height: 1.16,
-              ),
+              style: tablet ? bodyStyle : bodyStyle.copyWith(height: 1.16),
             ),
             const SizedBox(height: 28),
             CompatibilityGradientButton(
@@ -155,6 +158,9 @@ class _ZodiacCompatibilityHero extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final locale = Localizations.localeOf(context);
+    final portraitSize = MediaQuery.sizeOf(context).shortestSide >= 600
+        ? 128.0
+        : 84.0;
     Widget caption(DateTime date) => Expanded(
       child: Column(
         children: [
@@ -184,8 +190,8 @@ class _ZodiacCompatibilityHero extends StatelessWidget {
         child: ClipOval(
           child: Image.asset(
             'assets/images/zodiacs/compatibility_round/${date.getZodiacSignAsset()}.webp',
-            width: 84,
-            height: 84,
+            width: portraitSize,
+            height: portraitSize,
             fit: BoxFit.cover,
           ),
         ),

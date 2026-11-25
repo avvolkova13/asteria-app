@@ -85,7 +85,14 @@ class AnakraPageScaffold extends StatelessWidget {
               child: Column(
                 children: AsteriaEntrance.sections([
                   AnakraTopNavBar(canPop: canPop),
-                  Expanded(child: child),
+                  Expanded(
+                    child: Center(
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 820),
+                        child: child,
+                      ),
+                    ),
+                  ),
                 ]),
               ),
             ),
@@ -236,7 +243,11 @@ class AnakraHeroHeader extends StatelessWidget {
         final paidRequestsLeft = quota.paidRemaining;
         final isPro = monetizationProvider.effectivePro;
         final isCompact = MediaQuery.sizeOf(context).width < 360;
-        final avatarSize = isCompact ? 132.0 : 156.0;
+        final avatarSize = MediaQuery.sizeOf(context).shortestSide >= 600
+            ? 212.0
+            : isCompact
+            ? 132.0
+            : 156.0;
         final titleStyle = AppTypography.h2.copyWith(color: Colors.white);
 
         return Padding(

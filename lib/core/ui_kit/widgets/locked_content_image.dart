@@ -26,6 +26,7 @@ class LockedContentImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return LotusTap(
+      behavior: HitTestBehavior.opaque,
       onTap: isLocked ? null : onTap,
       child: ClipRRect(
         borderRadius: BorderRadius.circular(borderRadius),

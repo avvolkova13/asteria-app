@@ -202,7 +202,7 @@ class _MainScreenState extends State<MainScreen> {
                               constraints: BoxConstraints(
                                 maxWidth: constraints.maxWidth >= 1050
                                     ? 1120
-                                    : 680,
+                                    : 800,
                               ),
                               child: Padding(
                                 padding: const EdgeInsets.only(

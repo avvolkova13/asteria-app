@@ -17,6 +17,7 @@ class SonnikResults extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tablet = MediaQuery.sizeOf(context).shortestSide >= 600;
     return Center(
       heightFactor: 1,
       child: ConstrainedBox(
@@ -26,12 +27,15 @@ class SonnikResults extends StatelessWidget {
           children: AsteriaEntrance.sections([
             ResponsiveHeading(
               sonnik.title,
-              style: context.textTheme.inversePlayfairSemiBold24,
+              style: context.textTheme.inversePlayfairSemiBold24.copyWith(
+                fontSize: tablet ? 32 : null,
+              ),
             ),
             const SizedBox(height: 16),
             Text(
               sonnik.interpretation,
               style: context.textTheme.inverseUrbanistRegular16.copyWith(
+                fontSize: tablet ? 19 : null,
                 color: SonnikPalette.white.withValues(alpha: 0.84),
                 height: 1.42,
               ),

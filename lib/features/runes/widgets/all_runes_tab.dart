@@ -205,15 +205,15 @@ class _RuneDescriptionModal extends StatelessWidget {
     final maxHeight = screenHeight * 0.9;
     final minHeight = maxHeight < 500.0 ? maxHeight : 500.0;
     final modalHeight = 556.0.clamp(minHeight, maxHeight).toDouble();
-    return SizedBox(
-      height: modalHeight,
+    return ConstrainedBox(
+      constraints: BoxConstraints(maxHeight: modalHeight),
       child: ModalGlassSurface(
         color: _AllRunesColors.surface,
         child: SafeArea(
           top: false,
           bottom: false,
           child: Column(
-            mainAxisSize: MainAxisSize.max,
+            mainAxisSize: MainAxisSize.min,
             children: [
               const SizedBox(height: 16),
               Center(

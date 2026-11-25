@@ -19,8 +19,8 @@ class HowToUseLoveDeck extends StatelessWidget {
     final maxSheetHeight = mediaSize.height * 0.86;
     final sheetHeight = maxSheetHeight > 562 ? 562.0 : maxSheetHeight;
 
-    return SizedBox(
-      height: sheetHeight,
+    return ConstrainedBox(
+      constraints: BoxConstraints(maxHeight: sheetHeight),
       child: ModalGlassSurface(
         color: _HowToUseLoveDeckColors.surface,
         child: SafeArea(
@@ -28,6 +28,7 @@ class HowToUseLoveDeck extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Column(
+              mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: AsteriaEntrance.sections([
                 const SizedBox(height: 16),
@@ -52,7 +53,7 @@ class HowToUseLoveDeck extends StatelessWidget {
                   textAlign: TextAlign.left,
                 ),
                 const SizedBox(height: 16),
-                Expanded(
+                Flexible(
                   child: SingleChildScrollView(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,

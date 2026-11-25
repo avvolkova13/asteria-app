@@ -190,7 +190,7 @@ class _CalendarPlansViewState extends State<CalendarPlansView> {
         ? List.generate(7, (i) => weekStart.add(Duration(days: i)))
         : [_selected];
     final shown = days.where((day) => _on(day).isNotEmpty).toList();
-    return Column(
+    final calendar = Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         SegmentedPicker<PlansCalendarMode>(
@@ -287,6 +287,11 @@ class _CalendarPlansViewState extends State<CalendarPlansView> {
             ],
           ),
         ),
+      ],
+    );
+    final agenda = Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
         if (_mode == PlansCalendarMode.month)
           Padding(
             padding: const EdgeInsets.only(bottom: 14),
@@ -354,6 +359,44 @@ class _CalendarPlansViewState extends State<CalendarPlansView> {
           ),
         ),
       ],
+    );
+    return CalendarAgendaLayout(calendar: calendar, agenda: agenda);
+  }
+}
+
+class CalendarAgendaLayout extends StatelessWidget {
+  const CalendarAgendaLayout({
+    super.key,
+    required this.calendar,
+    required this.agenda,
+    this.emptyAgenda,
+  });
+  final Widget calendar;
+  final Widget? agenda;
+  final Widget? emptyAgenda;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        if (constraints.maxWidth >= 960) {
+          return Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(flex: 3, child: calendar),
+              const SizedBox(width: 32),
+              Expanded(
+                flex: 2,
+                child: agenda ?? emptyAgenda ?? const SizedBox.shrink(),
+              ),
+            ],
+          );
+        }
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [calendar, ?agenda],
+        );
+      },
     );
   }
 }

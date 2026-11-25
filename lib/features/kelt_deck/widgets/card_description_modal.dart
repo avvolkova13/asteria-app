@@ -75,13 +75,14 @@ class CardDescriptionModal extends StatelessWidget {
     final maxHeight = (mediaSize.height * .9).clamp(0.0, 700.0);
     final sheetHeight = (mediaSize.height * .83).clamp(0.0, maxHeight);
 
-    return SizedBox(
-      height: sheetHeight,
+    return ConstrainedBox(
+      constraints: BoxConstraints(maxHeight: sheetHeight),
       child: ModalGlassSurface(
         color: _KeltCardModalColors.surface,
         child: SafeArea(
           top: false,
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
               const SizedBox(height: 16),
               Center(
@@ -95,7 +96,7 @@ class CardDescriptionModal extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 16),
-              Expanded(
+              Flexible(
                 child: SingleChildScrollView(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Column(

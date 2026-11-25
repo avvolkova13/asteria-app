@@ -178,9 +178,11 @@ class _CelticCrossLayoutState extends State<CelticCrossLayout>
 
     return SizedBox(
       width: double.infinity,
-      height: _layoutHeight,
+      height: MediaQuery.sizeOf(context).shortestSide >= 600
+          ? _layoutHeight * 1.35
+          : _layoutHeight,
       child: FittedBox(
-        fit: BoxFit.scaleDown,
+        fit: BoxFit.contain,
         alignment: Alignment.topCenter,
         child: SizedBox(
           width: _layoutWidth,

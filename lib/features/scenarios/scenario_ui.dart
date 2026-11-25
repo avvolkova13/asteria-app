@@ -39,6 +39,8 @@ class ScenarioPage extends StatelessWidget {
     this.scrollable = true,
     this.footer,
     this.showBack = true,
+    this.maxContentWidth = 840,
+    this.groupTabletFooter,
   });
   final String title;
   final Widget child;
@@ -46,9 +48,18 @@ class ScenarioPage extends StatelessWidget {
   final bool scrollable;
   final Widget? footer;
   final bool showBack;
+  final double maxContentWidth;
+  final bool? groupTabletFooter;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) => LayoutBuilder(builder: _buildPage);
+
+  Widget _buildPage(BuildContext context, BoxConstraints constraints) {
+    final tablet =
+        constraints.biggest.shortestSide >= 600 &&
+        MediaQuery.sizeOf(context).shortestSide >= 600;
+    final inlineFooter =
+        tablet && footer != null && (groupTabletFooter ?? scrollable);
     final back = showBack && Navigator.canPop(context);
     final darkTheme = Theme.of(context).copyWith(
       brightness: Brightness.dark,
@@ -64,6 +75,7 @@ class ScenarioPage extends StatelessWidget {
     return Theme(
       data: darkTheme,
       child: AuthFlowScaffold(
+        maxContentWidth: tablet ? maxContentWidth : 580,
         background: background ?? const ScenarioSky(),
         backgroundOpacity: .25,
         child: SafeArea(
@@ -92,6 +104,10 @@ class ScenarioPage extends StatelessWidget {
                             HomeSectionHeading(title).withEntrance(),
                             const SizedBox(height: 24),
                             child,
+                            if (inlineFooter) ...[
+                              const SizedBox(height: 24),
+                              footer!,
+                            ],
                           ],
                         )
                       : Column(
@@ -99,11 +115,15 @@ class ScenarioPage extends StatelessWidget {
                           children: [
                             HomeSectionHeading(title).withEntrance(),
                             const SizedBox(height: 12),
+                            if (inlineFooter) ...[
+                              footer!,
+                              const SizedBox(height: 16),
+                            ],
                             Expanded(child: child),
                           ],
                         ),
                 ),
-                if (footer != null)
+                if (footer != null && !inlineFooter)
                   Padding(
                     padding: const EdgeInsets.only(bottom: 8),
                     child: footer,

@@ -116,21 +116,25 @@ class PracticeDeckCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           mainAxisSize: MainAxisSize.min,
           children: [
-            SizedBox(
-              height: SwipeCardStack.artworkHeight,
-              child: Stack(
-                fit: StackFit.expand,
-                children: [
-                  artwork,
-                  if (isFront && showOpenIndicator)
-                    const Positioned(
-                      top: 12,
-                      right: 14,
-                      child: _CardIconButton(icon: Icons.chevron_right),
-                    ),
-                  if (isFront && showSwipeHint)
-                    const Center(child: IgnorePointer(child: _SwipeHandHint())),
-                ],
+            LayoutBuilder(
+              builder: (context, bounds) => SizedBox(
+                height: SwipeCardStack.artworkHeightFor(bounds.maxWidth),
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    artwork,
+                    if (isFront && showOpenIndicator)
+                      const Positioned(
+                        top: 12,
+                        right: 14,
+                        child: _CardIconButton(icon: Icons.chevron_right),
+                      ),
+                    if (isFront && showSwipeHint)
+                      const Center(
+                        child: IgnorePointer(child: _SwipeHandHint()),
+                      ),
+                  ],
+                ),
               ),
             ),
             if (isFront) footer,
@@ -295,4 +299,29 @@ class _CardIconButton extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Groups related decks in reading order, keeping each heading above its deck.
+class PracticeDeckShelf extends StatelessWidget {
+  const PracticeDeckShelf({super.key, required this.sections, this.gap = 24});
+  final List<Widget> sections;
+  final double gap;
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (context, bounds) {
+      final wide = bounds.maxWidth >= 760 && sections.length > 1;
+      final width = wide ? (bounds.maxWidth - gap) / 2 : bounds.maxWidth;
+      return Align(
+        alignment: Alignment.topCenter,
+        child: Wrap(
+          spacing: gap,
+          runSpacing: gap,
+          children: [
+            for (final section in sections)
+              SizedBox(width: width, child: section),
+          ],
+        ),
+      );
+    },
+  );
 }

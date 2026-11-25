@@ -128,40 +128,82 @@ class _PracticeCatalogScreen extends StatelessWidget {
         ? [_PracticeKind.meditation]
         : _PracticeKind.values.skip(1);
 
-    return DeckCatalogScroll(
-      child: ScenarioPage(
+    if (category == PracticeCategory.meditation &&
+        MediaQuery.sizeOf(context).shortestSide >= 600) {
+      final sessions = _practices
+          .where((entry) => entry.kind == _PracticeKind.meditation)
+          .toList();
+      Widget sessionCard(_Practice entry) => Semantics(
+        button: true,
+        child: LotusTap(
+          onTap: () => Navigator.of(context).push<void>(
+            CupertinoPageRoute(builder: (_) => _PracticeDetailScreen(entry)),
+          ),
+          child: PracticeDeckCard(
+            artwork: _PracticeDeckArtwork(asset: entry.art),
+            footer: Padding(
+              padding: const EdgeInsets.all(18),
+              child: _PracticeCardLabel(practice: entry, ru: ru),
+            ),
+          ),
+        ),
+      );
+      return ScenarioPage(
         title: category.title(ru),
+        maxContentWidth: 1000,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            for (final kind in kinds) ...[
-              if (kind != kinds.first) const SizedBox(height: 30),
-              if (category == PracticeCategory.body) ...[
-                Semantics(
-                  header: true,
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          kind.title(ru),
-                          style: context.textTheme.inversePlayfairSemiBold24,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Image.asset(
-                        kind.art,
-                        height: 29,
-                        width: 29,
-                        fit: BoxFit.contain,
-                        excludeFromSemantics: true,
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 16),
+            sessionCard(sessions.first),
+            const SizedBox(height: 24),
+            PracticeDeckShelf(
+              sections: [
+                for (final entry in sessions.skip(1)) sessionCard(entry),
               ],
-              _PracticeDeck(kind: kind, showHint: kind == kinds.first),
-            ],
+            ),
+          ],
+        ),
+      );
+    }
+    return DeckCatalogScroll(
+      child: ScenarioPage(
+        title: category.title(ru),
+        maxContentWidth: category == PracticeCategory.meditation ? 780 : 1120,
+        child: PracticeDeckShelf(
+          gap: 30,
+          sections: [
+            for (final kind in kinds)
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  if (category == PracticeCategory.body) ...[
+                    Semantics(
+                      header: true,
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              kind.title(ru),
+                              style:
+                                  context.textTheme.inversePlayfairSemiBold24,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Image.asset(
+                            kind.art,
+                            height: 29,
+                            width: 29,
+                            fit: BoxFit.contain,
+                            excludeFromSemantics: true,
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                  ],
+                  _PracticeDeck(kind: kind, showHint: kind == kinds.first),
+                ],
+              ),
           ],
         ),
       ),
@@ -198,27 +240,35 @@ class _PracticeDeck extends StatelessWidget {
             index: index,
             children: [
               for (final practice in practices)
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      _localized(practice.title, ru),
-                      style: context.textTheme.inversePlayfairSemiBold24,
-                    ),
-                    const SizedBox(height: 5),
-                    Text(
-                      practice.metadata(ru),
-                      style: context.textTheme.inverseUrbanistRegular16,
-                    ),
-                  ],
-                ),
+                _PracticeCardLabel(practice: practice, ru: ru),
             ],
           ),
         ),
       ),
     );
   }
+}
+
+class _PracticeCardLabel extends StatelessWidget {
+  const _PracticeCardLabel({required this.practice, required this.ru});
+  final _Practice practice;
+  final bool ru;
+  @override
+  Widget build(BuildContext context) => Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      Text(
+        _localized(practice.title, ru),
+        style: context.textTheme.inversePlayfairSemiBold24,
+      ),
+      const SizedBox(height: 5),
+      Text(
+        practice.metadata(ru),
+        style: context.textTheme.inverseUrbanistRegular16,
+      ),
+    ],
+  );
 }
 
 class _PracticeDeckArtwork extends StatelessWidget {
@@ -237,14 +287,19 @@ class _PracticeDeckArtwork extends StatelessWidget {
           alignment: const Alignment(0, .7),
           excludeFromSemantics: true,
         ),
-        Center(
-          child: Image.asset(
-            asset,
-            height: 150,
-            width: 174,
-            fit: BoxFit.contain,
-            excludeFromSemantics: true,
-          ),
+        LayoutBuilder(
+          builder: (context, bounds) {
+            final scale = (bounds.maxHeight / 216).clamp(1.0, 1.9);
+            return Center(
+              child: Image.asset(
+                asset,
+                height: 150 * scale,
+                width: 174 * scale,
+                fit: BoxFit.contain,
+                excludeFromSemantics: true,
+              ),
+            );
+          },
         ),
       ],
     );
@@ -297,11 +352,14 @@ class _PracticeDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final ru = _isRussian(context);
     final bodyStyle = context.textTheme.inverseUrbanistRegular16.copyWith(
+      fontSize: MediaQuery.sizeOf(context).shortestSide >= 600 ? 19 : null,
       height: 1.5,
     );
 
     return ScenarioPage(
       title: _localized(practice.title, ru),
+      maxContentWidth: 800,
+      groupTabletFooter: true,
       footer: Padding(
         padding: const EdgeInsets.symmetric(vertical: 12),
         child: Column(
@@ -432,6 +490,8 @@ class _PracticeCompletionScreen extends StatelessWidget {
     void close() => Navigator.of(context).pop();
     return ScenarioPage(
       title: ru ? 'Практика завершена' : 'Practice complete',
+      maxContentWidth: 800,
+      groupTabletFooter: true,
       footer: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisSize: MainAxisSize.min,
@@ -460,9 +520,21 @@ class _PracticeCompletionScreen extends StatelessWidget {
             LotusButtons.text(onPressed: close, child: Text(doneLabel)),
         ],
       ),
-      child: Text(
-        _localized(practice.title, ru),
-        style: context.textTheme.inverseUrbanistRegular16,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (MediaQuery.sizeOf(context).shortestSide >= 600) ...[
+            HomeGlassSurface(
+              animateEntrance: false,
+              child: _PracticeCover(art: practice.art),
+            ),
+            const SizedBox(height: 20),
+          ],
+          Text(
+            _localized(practice.title, ru),
+            style: context.textTheme.inverseUrbanistRegular16,
+          ),
+        ],
       ),
     );
   }
@@ -502,7 +574,9 @@ class _PracticeCoverState extends State<_PracticeCover>
 
   @override
   Widget build(BuildContext context) => SizedBox(
-    height: MediaQuery.textScalerOf(context).scale(1) >= 1.5 ? 128 : 200,
+    height: MediaQuery.textScalerOf(context).scale(1) >= 1.5
+        ? 128
+        : (MediaQuery.sizeOf(context).shortestSide >= 600 ? 320 : 200),
     child: Center(
       child: AnimatedBuilder(
         animation: _motion,

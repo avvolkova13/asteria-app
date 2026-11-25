@@ -25,7 +25,7 @@ class PracticesScreen extends StatelessWidget {
         bottom: false,
         child: Center(
           child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 880),
+            constraints: const BoxConstraints(maxWidth: 1000),
             child: ListView(
               padding: const EdgeInsets.only(bottom: 16),
               children: [

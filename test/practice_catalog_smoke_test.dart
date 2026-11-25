@@ -66,12 +66,15 @@ void main() {
     expect(calls.last.method, 'close');
   });
 
-  for (final (locale, width, scale) in [
-    ('ru', 390.0, 1.0),
-    ('en', 320.0, 2.0),
+  for (final (locale, width, height, scale) in [
+    ('ru', 390.0, 844.0, 1.0),
+    ('en', 320.0, 844.0, 2.0),
+    ('ru', 1032.0, 1376.0, 1.0),
+    ('en', 1376.0, 1032.0, 1.0),
   ]) {
     testWidgets('browse practices in $locale at $width', (tester) async {
-      tester.view.physicalSize = Size(width, 844);
+      final tablet = width >= 600;
+      tester.view.physicalSize = Size(width, height);
       tester.view.devicePixelRatio = 1;
       addTearDown(tester.view.reset);
 
@@ -145,7 +148,11 @@ void main() {
             ),
           );
           expect(foreground, findsOneWidget);
-          expect(tester.getSize(foreground), const Size(174, 150));
+          if (tablet) {
+            expect(tester.getSize(foreground).height, greaterThan(150));
+          } else {
+            expect(tester.getSize(foreground), const Size(174, 150));
+          }
           final image = tester.widget<Image>(foreground).image as AssetImage;
           artwork.add(image.assetName);
         }
@@ -240,7 +247,16 @@ void main() {
           await tester.binding.handlePopRoute();
           await tester.pumpAndSettle();
         }
-        if (category == 'meditation') {
+        if (category == 'meditation' && tablet) {
+          expect(cards, findsNWidgets(3));
+          final featured = tester.getRect(cards.at(0));
+          final second = tester.getRect(cards.at(1));
+          final third = tester.getRect(cards.at(2));
+          expect(featured.bottom, lessThan(second.top));
+          expect(second.top, third.top);
+          expect(second.right, lessThan(third.left));
+        }
+        if (category == 'meditation' && !tablet) {
           final stack = find.byType(PracticeDeckCard);
           final card = stack.last;
           final original = find.text(
@@ -296,14 +312,22 @@ void main() {
           findsOneWidget,
         );
         final viewport = find.byType(ListView).last;
-        final startPosition = tester.getRect(launch);
-        expect(
-          startPosition.top,
-          greaterThanOrEqualTo(tester.getRect(viewport).bottom),
-        );
-        await tester.drag(viewport, const Offset(0, -220));
-        await tester.pumpAndSettle();
-        expect(tester.getRect(launch), startPosition);
+        if (tablet) {
+          expect(
+            find.descendant(of: viewport, matching: launch),
+            findsOneWidget,
+          );
+          await tester.ensureVisible(launch);
+        } else {
+          final startPosition = tester.getRect(launch);
+          expect(
+            startPosition.top,
+            greaterThanOrEqualTo(tester.getRect(viewport).bottom),
+          );
+          await tester.drag(viewport, const Offset(0, -220));
+          await tester.pumpAndSettle();
+          expect(tester.getRect(launch), startPosition);
+        }
         expect(launch.hitTestable(), findsOneWidget);
         await tester.tap(launch);
         await tester.pumpAndSettle();

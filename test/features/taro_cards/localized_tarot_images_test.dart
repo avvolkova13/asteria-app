@@ -1,6 +1,7 @@
 import 'package:asteria_app/app/data/models/tarot_card/tarot_card_model.dart';
 import 'package:asteria_app/core/localization/localization.dart';
 import 'package:asteria_app/core/ui_kit/theme/theme.dart';
+import 'package:asteria_app/core/ui_kit/widgets/locked_content_image.dart';
 import 'package:asteria_app/features/home/presentation/widgets/daily_symbol_of_the_day_widget.dart';
 import 'package:asteria_app/features/home/presentation/widgets/tarot_card_of_the_day_widget.dart';
 import 'package:asteria_app/features/taro_cards/widgets/card_description_modal.dart';
@@ -9,6 +10,31 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets('catalog tile accepts a tap before its artwork is decoded', (
+    tester,
+  ) async {
+    var opened = false;
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: Center(
+            child: SizedBox(
+              width: 194,
+              height: 290,
+              child: LockedContentImage(
+                imagePath: 'assets/images/cards/the_strength.webp',
+                isLocked: false,
+                onTap: () => opened = true,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.tap(find.byType(LockedContentImage));
+    expect(opened, isTrue);
+  });
+
   final cases = <String, Widget>{
     'daily symbol': DailySymbolOfTheDayWidget(
       tarotCard: _card,

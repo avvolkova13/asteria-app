@@ -41,38 +41,54 @@ class AchievementsScreen extends StatelessWidget {
                   children: AsteriaEntrance.sections([
                     const _AchievementsHeader(),
                     const SizedBox(height: 24),
-                    AchievementCard(
-                      key: const ValueKey('achievement-tarot'),
-                      id: 'tarot',
-                      imageAsset:
-                          'assets/images/achievements/balance_reward_tarot.webp',
-                      title: context.l10n.achievementTarot,
-                      completedCount: statistics.tarotCardsOpened,
-                      totalCount: 5,
-                    ),
-                    const SizedBox(height: 16),
-                    if (AppFeatureVisibility.horoscopes) ...[
-                      AchievementCard(
-                        key: const ValueKey('achievement-horoscope'),
-                        id: 'horoscope',
-                        imageAsset:
-                            'assets/images/achievements/achievement-horoscope-figma.webp',
-                        title: context.l10n.achievementHoroscope,
-                        completedCount: statistics.horoscopeOpened,
-                        totalCount: 3,
-                      ),
-                      const SizedBox(height: 16),
-                    ],
-                    AchievementCard(
-                      key: const ValueKey('achievement-runes'),
-                      id: 'runes',
-                      imageAsset:
-                          'assets/images/achievements/achievement-rune-figma.webp',
-                      // The export includes eight points of shadow on each side.
-                      imageSize: const Size(65, 96),
-                      title: context.l10n.achievementRunes,
-                      completedCount: statistics.runesOpened,
-                      totalCount: 3,
+                    LayoutBuilder(
+                      builder: (context, constraints) {
+                        final useGrid = constraints.maxWidth >= 660;
+                        final width = useGrid
+                            ? (constraints.maxWidth - 16) / 2
+                            : constraints.maxWidth;
+                        final cards = <Widget>[
+                          AchievementCard(
+                            key: const ValueKey('achievement-tarot'),
+                            id: 'tarot',
+                            imageAsset:
+                                'assets/images/achievements/balance_reward_tarot.webp',
+                            title: context.l10n.achievementTarot,
+                            completedCount: statistics.tarotCardsOpened,
+                            totalCount: 5,
+                          ),
+                          if (AppFeatureVisibility.horoscopes) ...[
+                            AchievementCard(
+                              key: const ValueKey('achievement-horoscope'),
+                              id: 'horoscope',
+                              imageAsset:
+                                  'assets/images/achievements/achievement-horoscope-figma.webp',
+                              title: context.l10n.achievementHoroscope,
+                              completedCount: statistics.horoscopeOpened,
+                              totalCount: 3,
+                            ),
+                          ],
+                          AchievementCard(
+                            key: const ValueKey('achievement-runes'),
+                            id: 'runes',
+                            imageAsset:
+                                'assets/images/achievements/achievement-rune-figma.webp',
+                            // The export includes eight points of shadow on each side.
+                            imageSize: const Size(65, 96),
+                            title: context.l10n.achievementRunes,
+                            completedCount: statistics.runesOpened,
+                            totalCount: 3,
+                          ),
+                        ];
+                        return Wrap(
+                          spacing: 16,
+                          runSpacing: 16,
+                          children: [
+                            for (final card in cards)
+                              SizedBox(width: width, child: card),
+                          ],
+                        );
+                      },
                     ),
                   ]),
                 ),

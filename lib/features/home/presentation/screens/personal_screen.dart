@@ -1,3 +1,4 @@
+import 'package:asteria_app/core/ui_kit/widgets/reading_content_sliver.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_action_button.dart';
 import 'package:asteria_app/core/ui_kit/widgets/asteria_activity_indicator.dart';
 import 'package:asteria_app/features/home/home_tabs.dart';
@@ -285,38 +286,37 @@ class _PersonalScreenState extends State<PersonalScreen> {
           backgroundColor: _headerBackground,
           body: SafeArea(
             bottom: false,
-            child: CustomScrollView(
-              physics: const ClampingScrollPhysics(),
-              slivers: [
-                SliverToBoxAdapter(
-                  child: Stack(
-                    children: [
-                      const Positioned.fill(child: _PersonalBackground()),
-                      Column(
-                        children: [
-                          const Padding(
-                            padding: EdgeInsets.only(bottom: 8),
-                            child: HomeAccountBar(
-                              backgroundColor: Colors.transparent,
-                            ),
-                          ).withEntrance(),
-                          ConstrainedBox(
-                            constraints: const BoxConstraints(maxWidth: 760),
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                              ),
-                              child: ListenableBuilder(
-                                listenable: userProvider,
-                                builder: (context, _) =>
-                                    _buildContent(context, userProvider),
-                              ),
-                            ),
-                          ),
-                        ],
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                const _PersonalBackground(),
+                CustomScrollView(
+                  physics: const ClampingScrollPhysics(),
+                  slivers: [
+                    SliverToBoxAdapter(
+                      child: const Padding(
+                        padding: EdgeInsets.only(bottom: 8),
+                        child: HomeAccountBar(
+                          backgroundColor: Colors.transparent,
+                        ),
+                      ).withEntrance(),
+                    ),
+                    ReadingContentSliver(
+                      maxWidth:
+                          MediaQuery.orientationOf(context) ==
+                              Orientation.landscape
+                          ? 1120
+                          : 880,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: ListenableBuilder(
+                          listenable: userProvider,
+                          builder: (context, _) =>
+                              _buildContent(context, userProvider),
+                        ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -327,6 +327,19 @@ class _PersonalScreenState extends State<PersonalScreen> {
   }
 
   Widget _buildContent(BuildContext context, UserProvider userProvider) {
+    final natal = _natalBanner(
+      context,
+      userProvider.currentUser,
+    ).withEntrance();
+    final compatibility = _PersonalCompatibilitySection(
+      onPressed: _onCompatibilityPressed,
+    ).withEntrance();
+    final advertising = const AdvertisingBlockWidget(
+      horizontalMargin: 0,
+    ).withEntrance();
+    final wide =
+        MediaQuery.sizeOf(context).width >= 1000 &&
+        MediaQuery.orientationOf(context) == Orientation.landscape;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -340,12 +353,27 @@ class _PersonalScreenState extends State<PersonalScreen> {
         const SizedBox(height: 24),
         if (AppFeatureVisibility.horoscopes)
           ..._horoscopeSection(context, userProvider),
-        _natalBanner(context, userProvider.currentUser).withEntrance(),
-        const SizedBox(height: 24),
-        _PersonalCompatibilitySection(onPressed: _onCompatibilityPressed)
-            .withEntrance(),
-        const SizedBox(height: 24),
-        const AdvertisingBlockWidget(horizontalMargin: 0).withEntrance(),
+        if (wide)
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [natal, const SizedBox(height: 24), advertising],
+                ),
+              ),
+              const SizedBox(width: 24),
+              Expanded(child: compatibility),
+            ],
+          )
+        else ...[
+          natal,
+          const SizedBox(height: 24),
+          compatibility,
+          const SizedBox(height: 24),
+          advertising,
+        ],
         const SizedBox(height: 16),
       ],
     );
@@ -609,8 +637,10 @@ class _PersonalScreenState extends State<PersonalScreen> {
 
     return Theme(
       data: Theme.of(context).copyWith(
-        textTheme: Theme.of(context).textTheme
-            .apply(bodyColor: AppColors.white, displayColor: AppColors.white),
+        textTheme: Theme.of(context).textTheme.apply(
+          bodyColor: AppColors.white,
+          displayColor: AppColors.white,
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

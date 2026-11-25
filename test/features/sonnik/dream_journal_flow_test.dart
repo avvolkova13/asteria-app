@@ -217,9 +217,11 @@ void main() {
         expect(find.text('An open door'), findsOneWidget);
         expect(find.byType(TextField), findsNothing);
         expect(await journal.read(), hasLength(1));
-        await tester.tap(find.byType(PopupMenuButton<String>).first);
+        await tester.drag(find.text('An open door'), const Offset(-120, 0));
         await tester.pumpAndSettle();
-        await tester.tap(find.text(ru ? 'Удалить запись' : 'Delete entry'));
+        await tester.tap(
+          find.byTooltip(ru ? 'Удалить запись' : 'Delete entry'),
+        );
         await tester.pumpAndSettle();
         await tester.tap(find.text(ru ? 'Отмена' : 'Cancel'));
         await tester.pumpAndSettle();
